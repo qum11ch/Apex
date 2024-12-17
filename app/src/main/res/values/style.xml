@@ -37,9 +37,15 @@
     <style name="RaceLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style</item>
     </style>
+    <style name="CircuitLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/circuit_layout_style</item>
+    </style>
 
     <style name="RaceInfoLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/races_info_style</item>
+    </style>
+    <style name="CircuitInfoLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/circuit_info_style</item>
     </style>
 
     <style name="roundedImageView" parent="">
