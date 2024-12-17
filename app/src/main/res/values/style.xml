@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/dark_pink</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="CountdownStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded_for_countdown</item>
+    </style>
+    <style name="FooterStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/footer_style</item>
+    </style>
+    <style name="ToggleButtonShowStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded_for_toggle</item>
+    </style>
+    <style name="ItemStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style</item>
+    </style>
+    <style name="ItemStyleAlt" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_alt</item>
+    </style>
+    <style name="ItemStyleOngoing" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_ongoing</item>
+    </style>
+    <style name="SecondTitleTextStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/second_title_text_style</item>
+    </style>
+    <style name="PtsStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/pts_style</item>
+    </style>
+    <style name="LayoutStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/layout_style</item>
+    </style>
+    <style name="RaceLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_layout_style</item>
+    </style>
+
+    <style name="RaceInfoLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/races_info_style</item>
+    </style>
+
+    <style name="roundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
+
+    <style name="TextStyle"/>
+    <style name="TextStyle.Gram"/>
+
+    <style name="TextStyle.Gram.Bold">
+        <item name="fontFamily">@font/gram_bold</item>
+        <item name="android:fontFamily">@font/gram_bold</item>
+    </style>
+    <style name="TextStyle.Gram.Bold.ForTab">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular.ForTab">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular">
+        <item name="fontFamily">@font/gram_regular</item>
+        <item name="android:fontFamily">@font/gram_regular</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.ForInfo">
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular.Secondary">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Secondary_white">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.SimpleBold">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Simple">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.ItemStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Countdown">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming"/>
+
+    <style name='TextStyle.GoodTiming.Regular'>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/good_timing_regular</item>
+        <item name="android:fontFamily">@font/good_timing_regular</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming.Regular.ForHeader">
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming.Bold">
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/good_timing_bd</item>
+        <item name="android:fontFamily">@font/good_timing_bd</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.ForCodes">
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.ForHeader">
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.Big">
+        <item name="android:textSize">26sp</item>
+    </style>
+
+    <style name="TextStyle.Audiowide">
+        <item name="android:fontFamily">@font/audiowide</item>
+        <item name="fontFamily">@font/audiowide</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPTS">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPTS.White">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForDays">
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForDays.White">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPlacement">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForCountdown">
+        <item name="android:textSize">36sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextStyle.Fishmonger">
+        <item name="fontFamily">@font/fishmonger_regular</item>
+        <item name="android:fontFamily">@font/fishmonger_regular</item>
+    </style>
+    <style name="TextStyle.Fishmonger.ForInfo">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="footerButtonOn" parent="android:Widget.TextView">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">"@font/fishmonger_regular"</item>
+        <item name="android:background">@drawable/buttons_footer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="footerButtonOff" parent="android:Widget.TextView">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">"@font/fishmonger_regular"</item>
+        <item name="android:background">@drawable/buttons_footer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabPaddingStart">6dp</item>
+        <item name="tabPaddingEnd">6dp</item>
+        <item name="tabBackground">@color/red</item>
+        <item name="tabTextAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
+    </style>
+
+
+    <style name="MyCardView" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
+    </style>
+    <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+</resources>

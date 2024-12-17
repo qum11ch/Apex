@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_results"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:paddingTop="40dp"
+        android:paddingBottom="20dp"
+        android:layout_height="wrap_content"
+        android:background="@color/red">
+        <ImageButton
+            android:layout_marginTop="2dp"
+            android:id='@+id/backButton'
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back_arrow"
+            android:background="@color/red"/>
+        <TextView
+            android:textColor="@color/white"
+            android:text="TEAMS STANDING"
+            android:id="@+id/teamsHeader"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+    </RelativeLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/currentTeamsLayout"
+            android:orientation="vertical"
+            android:layout_marginEnd="10dp"
+            android:paddingBottom="10dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:overScrollMode="never"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recyclerview_currentTeams"/>
+        </LinearLayout>
+    </ScrollView>
+    <include layout="@layout/footer_teams"/>
+</LinearLayout>

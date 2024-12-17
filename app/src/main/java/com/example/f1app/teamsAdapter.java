@@ -1,0 +1,164 @@
+package com.example.f1app;
+
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.List;
+
+public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
+    Context context;
+    List<teamsList> dataList;
+
+    public teamsAdapter(Context context , List<teamsList> datum){
+        this.context = context;
+        dataList = datum;
+    }
+
+    @NonNull
+    @Override
+    public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view;
+        switch (viewType){
+            case 1:
+                view = LayoutInflater.from(context).inflate(R.layout.item_team_first, parent , false);
+                break;
+            default:
+                view = LayoutInflater.from(context).inflate(R.layout.item_team, parent , false);
+                break;
+        }
+        return new teamsAdapter.DataHolder(view, viewType);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull DataHolder holder, int position) {
+        teamsList datum = dataList.get(position);
+        ArrayList<String> teamDrivers = datum.getDrivers();
+        if (holder.getItemViewType() == 1){
+            holder.teamName.setText(datum.getTeam());
+            String teamPoints = datum.getPoints() + " PTS";
+            holder.teamPoints.setText(teamPoints);
+            holder.teamPosition.setText(datum.getPosition());
+
+            holder.teamDriverFirst.setText(teamDrivers.get(0));
+            holder.teamDriverSecond.setText(teamDrivers.get(1));
+
+            int resourceId_carImage = context.getResources().getIdentifier(datum.getTeamId(), "drawable",
+                    context.getPackageName());
+
+            Glide.with(context)
+                    .load(resourceId_carImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(holder.team_car);
+        }else{
+            holder.teamName.setText(datum.getTeam());
+            String teamPoints = datum.getPoints() + " PTS";
+            holder.teamPoints.setText(teamPoints);
+            holder.teamPosition.setText(datum.getPosition());
+
+            holder.teamDriverFirst.setText(teamDrivers.get(0));
+            holder.teamDriverSecond.setText(teamDrivers.get(1));
+
+            int resourceId_carImage = context.getResources().getIdentifier(datum.getTeamId(), "drawable",
+                    context.getPackageName());
+
+            Glide.with(context)
+                    .load(resourceId_carImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(holder.team_car);
+
+            int resourceId_teamColor = getColorByName(datum.getTeamId());
+            holder.line.setBackgroundResource(resourceId_teamColor);
+        }
+
+
+        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context , teamPageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("teamName", datum.getTeam());
+                bundle.putStringArrayList("teamDrivers", teamDrivers);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
+
+
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return 1;
+        else
+            return 2;
+    }
+
+
+    @Override
+    public int getItemCount() {
+        return dataList.size();
+    }
+
+    public class DataHolder extends RecyclerView.ViewHolder{
+        TextView teamName, teamPoints, teamPosition,
+                teamDriverFirst, teamDriverSecond;
+        ImageView team_car;
+        ConstraintLayout constraintLayout;
+        View line;
+        public DataHolder(@NonNull View itemView, int viewType) {
+            super(itemView);
+            if(viewType == 1){
+                teamName = itemView.findViewById(R.id.teamName);
+                teamPoints = itemView.findViewById(R.id.team_pts);
+                teamPosition = itemView.findViewById(R.id.team_placement);
+                teamDriverFirst = itemView.findViewById(R.id.driverFirst);
+                teamDriverSecond = itemView.findViewById(R.id.driverSecond);
+                constraintLayout = itemView.findViewById(R.id.main_layout);
+                team_car = itemView.findViewById(R.id.team_car);
+            }else{
+                line = itemView.findViewById(R.id.line);
+                teamName = itemView.findViewById(R.id.teamName);
+                teamPoints = itemView.findViewById(R.id.team_pts);
+                teamPosition = itemView.findViewById(R.id.team_placement);
+                teamDriverFirst = itemView.findViewById(R.id.driverFirst);
+                teamDriverSecond = itemView.findViewById(R.id.driverSecond);
+                constraintLayout = itemView.findViewById(R.id.main_layout);
+                team_car = itemView.findViewById(R.id.team_car);
+            }
+        }
+    }
+
+
+    public int getColorByName(String name) {
+        int colorId = 0;
+
+        try {
+            Class res = R.color.class;
+            Field field = res.getField(name);
+            colorId = field.getInt(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return colorId;
+    }
+}

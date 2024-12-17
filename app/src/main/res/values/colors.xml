@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="white_alpha">#99FFFFFF</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="pink">#FFDAD5</color>
+    <color name="light_blue">#EAF0F8</color>
+    <color name="blue">#3366CC</color>
+    <color name="black">#FF000000</color>
+    <color name="second_pink">#F9F4F1</color>
+    <color name="light_dark_blue">#EAECF0</color>
+    <color name="grey">#8c8c8c</color>
+    <color name="dark_grey">#38393e</color>
+    <color name="dark_blue">#090e27</color>
+    <color name="red">#ee0000</color>
+    <color name="dark_pink">#71423C</color>
+    <color name="light_grey">#f2f2f2</color>
+    <color name="alpine">#0093CC</color>
+    <color name="aston_martin">#1D9C71</color>
+    <color name="ferrari">#E80020</color>
+    <color name="haas">#B6BABD</color>
+    <color name="mclaren">#FF8000</color>
+    <color name="mercedes">#27F4D2</color>
+    <color name="rb">#6692FF</color>
+    <color name="red_bull">#3671C6</color>
+    <color name="sauber">#5FDA4F</color>
+    <color name="williams">#64C4FF</color>
+</resources>

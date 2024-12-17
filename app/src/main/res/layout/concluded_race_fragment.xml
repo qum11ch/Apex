@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:background="@drawable/background_results"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".concludedRaceFragment">
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/currentTeamsLayout"
+            android:orientation="vertical"
+            android:layout_marginEnd="10dp"
+            android:paddingBottom="5dp">
+            <androidx.recyclerview.widget.RecyclerView
+                android:background="@null"
+                android:overScrollMode="never"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/recyclerview_concludedRaces"/>
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
