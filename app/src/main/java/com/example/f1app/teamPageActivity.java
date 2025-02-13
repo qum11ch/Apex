@@ -62,7 +62,7 @@ public class teamPageActivity extends AppCompatActivity {
             teamNameCur = "Stake F1 Team Kick Sauber";
         }
         teamName.setText(teamNameCur);
-        requestWithSomeHttpHeaders(teamNameCur);
+        //requestWithSomeHttpHeaders(teamNameCur);
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -112,68 +112,68 @@ public class teamPageActivity extends AppCompatActivity {
 
     }
 
-    public void requestWithSomeHttpHeaders(String teamNameEnter) {
-        RequestQueue queue = Volley.newRequestQueue(teamPageActivity.this);
-        String url = "https://v1.formula-1.api-sports.io/teams?search=" + teamNameEnter;
-        JsonObjectRequest getRequest = new JsonObjectRequest(
-                url,
-                new Response.Listener<JSONObject>()
-                {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            ViewGroup.LayoutParams params = posterImage.getLayoutParams();
-                            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-                            posterImage.setLayoutParams(params);
-                            JSONArray response_val = response.getJSONArray("response");
-                            for(int i = 0; i < response_val.length(); i++){
-                                JSONObject team = response_val.getJSONObject(i);
-                                teamName.setText(team.getString("name"));
-                                location.setText(team.getString("base"));
-                                if(team.getJSONObject("highest_race_finish").getString("position").equals("1")){
-                                    wins.setText(team.getJSONObject("highest_race_finish").getString("number"));
-                                }
-                                else{
-                                    wins.setText("0");
-                                }
-                                firstTeamEntry.setText(team.getString("first_team_entry"));
-                                worldChamps.setText(team.getString("world_championships"));
-                                polePositions.setText(team.getString("pole_positions"));
-                                teamPrincipal.setText(team.getString("director"));
-                                engine.setText(team.getString("engine"));
-
-                                GlideApp.with(teamPageActivity.this)
-                                        .load(team.getString("logo"))
-                                        .placeholder(R.drawable.f1)
-                                        .into(posterImage);
-                            }
-
-                        } catch (JSONException e) {
-                            throw new RuntimeException(e);
-                        }
-                        //Log.i("Response", response.toString());
-                    }
-                },
-                new Response.ErrorListener()
-                {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
-                        Log.d("ERROR","error => "+error.toString());
-
-                    }
-                }
-        ) {
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                Map<String, String>  params = new HashMap<String, String>();
-                params.put("x-rapidapi-key", "bc49e4741eb4558816f488a229f67b1d");
-                params.put("x-rapidapi-host", "v1.formula-1.api-sports.io");
-
-                return params;
-            }
-        };
-        queue.add(getRequest);
-    }
+    //public void requestWithSomeHttpHeaders(String teamNameEnter) {
+    //    RequestQueue queue = Volley.newRequestQueue(teamPageActivity.this);
+    //    String url = "https://v1.formula-1.api-sports.io/teams?search=" + teamNameEnter;
+    //    JsonObjectRequest getRequest = new JsonObjectRequest(
+    //            url,
+    //            new Response.Listener<JSONObject>()
+    //            {
+    //                @Override
+    //                public void onResponse(JSONObject response) {
+    //                    try {
+    //                        ViewGroup.LayoutParams params = posterImage.getLayoutParams();
+    //                        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+    //                        posterImage.setLayoutParams(params);
+    //                        JSONArray response_val = response.getJSONArray("response");
+    //                        for(int i = 0; i < response_val.length(); i++){
+    //                            JSONObject team = response_val.getJSONObject(i);
+    //                            teamName.setText(team.getString("name"));
+    //                            location.setText(team.getString("base"));
+    //                            if(team.getJSONObject("highest_race_finish").getString("position").equals("1")){
+    //                                wins.setText(team.getJSONObject("highest_race_finish").getString("number"));
+    //                            }
+    //                            else{
+    //                                wins.setText("0");
+    //                            }
+    //                            firstTeamEntry.setText(team.getString("first_team_entry"));
+    //                            worldChamps.setText(team.getString("world_championships"));
+    //                            polePositions.setText(team.getString("pole_positions"));
+    //                            teamPrincipal.setText(team.getString("director"));
+    //                            engine.setText(team.getString("engine"));
+//
+    //                            GlideApp.with(teamPageActivity.this)
+    //                                    .load(team.getString("logo"))
+    //                                    .placeholder(R.drawable.f1)
+    //                                    .into(posterImage);
+    //                        }
+//
+    //                    } catch (JSONException e) {
+    //                        throw new RuntimeException(e);
+    //                    }
+    //                    //Log.i("Response", response.toString());
+    //                }
+    //            },
+    //            new Response.ErrorListener()
+    //            {
+    //                @Override
+    //                public void onErrorResponse(VolleyError error) {
+    //                    // TODO Auto-generated method stub
+    //                    Log.d("ERROR","error => "+error.toString());
+//
+    //                }
+    //            }
+    //    ) {
+    //        @Override
+    //        public Map<String, String> getHeaders() throws AuthFailureError {
+    //            Map<String, String>  params = new HashMap<String, String>();
+    //            params.put("x-rapidapi-key", "bc49e4741eb4558816f488a229f67b1d");
+    //            params.put("x-rapidapi-host", "v1.formula-1.api-sports.io");
+//
+    //            return params;
+    //        }
+    //    };
+    //    queue.add(getRequest);
+    //}
 
 }

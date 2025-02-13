@@ -63,10 +63,10 @@ public class futureRaceFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         datum = new ArrayList<>();
                         for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                            String raceName = ds.child("raceName").getValue(String.class);
-                            String dateStart = ds.child("firstPracticeDate").getValue(String.class);
+                            String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                            String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                             String dateEnd = ds.child("raceDate").getValue(String.class);
-                            String circuitId = ds.child("circuitId").getValue(String.class);
+                            String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
 
                             rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:overScrollMode="never"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/scrollView">
+    <RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
     android:paddingTop="30dp">
     <androidx.cardview.widget.CardView
@@ -19,7 +25,6 @@
             android:id="@+id/flag"
             android:layout_width="105dp"
             android:layout_height="70dp"
-            android:src="@drawable/ru"
             android:scaleType="centerCrop"/>
     </androidx.cardview.widget.CardView>
     <RelativeLayout
@@ -28,7 +33,7 @@
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/flag_layout"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
         <TextView
             android:id="@+id/raceName"
@@ -36,8 +41,8 @@
             android:gravity="bottom"
             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:text="Las Vegas 2024"
+            android:layout_height="wrap_content"
+            android:text=""
             android:textAllCaps="true"/>
         <TextView
             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
@@ -45,7 +50,7 @@
             android:id="@+id/circuitName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Las Vegas Strip Circuit"/>
+            android:text=""/>
     </RelativeLayout>
     <ImageView
         android:paddingStart="10dp"
@@ -56,7 +61,6 @@
         android:layout_below="@id/flag_layout"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:src="@drawable/vegas"
         android:scaleType="fitCenter"/>
     <RelativeLayout
         android:layout_width="match_parent"
@@ -85,7 +89,7 @@
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="6.201"/>
+                android:text=""/>
             <TextView
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/length"
@@ -126,7 +130,7 @@
                     android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="50"/>
+                    android:text=""/>
             </LinearLayout>
             <LinearLayout
 
@@ -147,7 +151,7 @@
                     android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="2023"/>
+                    android:text=""/>
             </LinearLayout>
         </LinearLayout>
         <RelativeLayout
@@ -172,7 +176,7 @@
                 android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="309.958"/>
+                android:text=""/>
             <TextView
                 android:layout_marginStart="10dp"
                 android:layout_toEndOf="@id/raceDist"
@@ -206,16 +210,17 @@
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="1:35.490"/>
+                android:text=""/>
             <TextView
                 android:id="@+id/lapRecord_driver"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:textColor="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Oscar Piastri (2023)"
+                android:text=""
                 android:paddingBottom="5dp"/>
         </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>
+</ScrollView>

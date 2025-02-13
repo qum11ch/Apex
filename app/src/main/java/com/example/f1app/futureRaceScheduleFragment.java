@@ -148,28 +148,28 @@ public class futureRaceScheduleFragment extends Fragment {
         rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String firstPractice = snapshot.child("firstPracticeDate").getValue(String.class) +
-                        " " + snapshot.child("firstPracticeTime").getValue(String.class);
+                String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
+                        " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
                 scheduleData firstPracticeEvent = new scheduleData(firstPractice, "Practice 1");
 
                 String race = snapshot.child("raceDate").getValue(String.class) +
                         " " + snapshot.child("raceTime").getValue(String.class);
                 scheduleData raceEvent = new scheduleData(race, "Race");
 
-                String raceQuali = snapshot.child("raceQualiDate").getValue(String.class) +
-                        " " + snapshot.child("raceQualiTime").getValue(String.class);
+                String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
+                        " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
                 scheduleData qualiEvent = new scheduleData(raceQuali, "Qualifying");
 
                 datum.add(firstPracticeEvent);
 
-                String sprintDate = snapshot.child("sprintRaceDate").getValue(String.class);
+                String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
                 if (sprintDate.equals("N/A")){
-                    String secondPractice = snapshot.child("secondPracticeDate").getValue(String.class) +
-                            " " + snapshot.child("secondPracticeTime").getValue(String.class);
+                    String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
+                            " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
                     scheduleData secondPracticeEvent = new scheduleData(secondPractice, "Practice 2");
 
-                    String thirdPractice = snapshot.child("thirdPracticeDate").getValue(String.class) +
-                            " " + snapshot.child("thirdPracticeTime").getValue(String.class);
+                    String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
+                            " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
                     scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, "Practice 3");
 
                     datum.add(secondPracticeEvent);
@@ -181,12 +181,12 @@ public class futureRaceScheduleFragment extends Fragment {
                     eventsCountdown.put("Qualifying", raceQuali);
                     eventsCountdown.put("Race", race);
                 }else{
-                    String sprintQuali = snapshot.child("sprintQualiDate").getValue(String.class) +
-                            " " + snapshot.child("sprintQualiTime").getValue(String.class);
+                    String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
+                            " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
                     scheduleData sprintQualiEvent = new scheduleData(sprintQuali, "Sprint Qualifying");
 
                     String sprint = sprintDate +
-                            " " + snapshot.child("sprintRaceTime").getValue(String.class);
+                            " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
                     scheduleData sprintEvent = new scheduleData(sprint, "Sprint");
 
                     datum.add(sprintQualiEvent);

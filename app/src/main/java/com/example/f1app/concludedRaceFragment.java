@@ -78,16 +78,16 @@ public class concludedRaceFragment extends Fragment {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         datum = new ArrayList<>();
                         for(DataSnapshot ds : snapshot.getChildren()) {
-                            String winnerCode = ds.child("raceWinnerCode").getValue(String.class);
+                            String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
                             if (winnerCode.equals("N/A")){
                                 continue;
                             }else{
-                                String raceName = ds.child("raceName").getValue(String.class);
-                                String dateStart = ds.child("firstPracticeDate").getValue(String.class);
+                                String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                                String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                                 String dateEnd = ds.child("raceDate").getValue(String.class);
-                                String circuitId = ds.child("circuitId").getValue(String.class);
-                                String secondCode = ds.child("raceSecondCode").getValue(String.class);
-                                String thirdCode = ds.child("raceThirdCode").getValue(String.class);
+                                String circuitId = ds.child("FirstPractice/circuitId").getValue(String.class);
+                                String secondCode = ds.child("RaceResults/raceSecondCode").getValue(String.class);
+                                String thirdCode = ds.child("RaceResults/raceThirdCode").getValue(String.class);
                                 rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

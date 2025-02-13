@@ -105,8 +105,9 @@ public class futureRaceActivity extends AppCompatActivity {
 
         Bundle circuitBundle = new Bundle();
         circuitBundle.putString("circuitId", mCircuitId);
-        scheduleBundle.putString("raceName", mRaceName);
-        scheduleBundle.putString("gpYear", gpYear);
+        circuitBundle.putString("raceName", mRaceName);
+        circuitBundle.putString("gpYear", gpYear);
+        circuitBundle.putString("raceCountry", mCountry);
 
         init(scheduleBundle, circuitBundle);
 

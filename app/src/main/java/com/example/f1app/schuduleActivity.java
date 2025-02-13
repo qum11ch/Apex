@@ -134,10 +134,10 @@ public class schuduleActivity extends AppCompatActivity {
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Integer round = ds.child("round").getValue(Integer.class);
-                    String dateStart = ds.child("firstPracticeDate").getValue(String.class);
+                    String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                     String dateEnd = ds.child("raceDate").getValue(String.class);
-                    String raceName = ds.child("raceName").getValue(String.class);
-                    String circuitId = ds.child("circuitId").getValue(String.class);
+                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
 
 
                     String currentDateString = currentDate.toString();
@@ -179,8 +179,7 @@ public class schuduleActivity extends AppCompatActivity {
                     if (future){
                         futureRaceRoundNumber.add(round.toString());
                     }
-                    //if (isOnGoing){
-                    if (round == 24){
+                    if (isOnGoing){
                         CardView cardView = (CardView) findViewById(R.id.cardView);
                         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
