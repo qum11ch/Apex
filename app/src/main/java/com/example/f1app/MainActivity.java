@@ -113,73 +113,6 @@ public class MainActivity extends AppCompatActivity {
 
         updateData(currentDate);
         updateSprintData(currentDate);
-
-        String team = "williams";
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference nameRef = rootRef.child("constructors").child(team);
-        ValueEventListener nameValueEventListener = new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot nameDataSnapshot) {
-                String className = nameDataSnapshot.child("name").getValue(String.class);
-                Log.d("FIREBASECHECK", team + " named " + className);
-
-                DatabaseReference class1Ref = rootRef.child("constructors").child(team);
-                ValueEventListener class1EventListener = new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        long numberOfStudent = dataSnapshot.child("drivers").getChildrenCount();
-                        Log.d("FIREBASECHECK", "has " + numberOfStudent + " drivers");
-
-                        for(DataSnapshot studentDataSnapshot : dataSnapshot.child("drivers").getChildren()) {
-                            String driverKey = studentDataSnapshot.getKey();
-                            Log.d("FIREBASECHECK", "name:" + driverKey);
-                            DatabaseReference driversRef = rootRef.child("drivers");
-                            DatabaseReference driverRef = driversRef.child(driverKey);
-                            ValueEventListener studentsValueEventListener = new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    String name = dataSnapshot.child("enterYear").getValue(String.class);
-                                    Log.d("FIREBASECHECK", "" + name);
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Log.d("FIREBASECHECK", databaseError.getMessage()); //Don't ignore errors!
-                                }
-                            };
-                            driverRef.addListenerForSingleValueEvent(studentsValueEventListener);
-                            DatabaseReference resRef = rootRef.child("results/season/2024");
-                            DatabaseReference resultsRef = resRef.child(driverKey);
-                            ValueEventListener resultValueEventListener = new ValueEventListener() {
-                                @Override
-                                public void onDataChange(DataSnapshot dataSnapshot) {
-                                    Map<String, String> results = (Map<String, String>) dataSnapshot.getValue();
-                                    Log.d("FIREBASECHECK", "" + results.toString());
-                                }
-
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError databaseError) {
-                                    Log.d("FIREBASECHECK", databaseError.getMessage()); //Don't ignore errors!
-                                }
-                            };
-                            resultsRef.addListenerForSingleValueEvent(resultValueEventListener);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.d("FIREBASECHECK", databaseError.getMessage()); //Don't ignore errors!
-                    }
-                };
-                class1Ref.addListenerForSingleValueEvent(class1EventListener);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("FIREBASECHECK", databaseError.getMessage()); //Don't ignore errors!
-            }
-        };
-        nameRef.addListenerForSingleValueEvent(nameValueEventListener);
     }
 
     private void updateSprintData(LocalDate currentDate){
@@ -463,7 +396,6 @@ public class MainActivity extends AppCompatActivity {
                                                                         .addListenerForSingleValueEvent(new ValueEventListener() {
                                                                             @Override
                                                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                Log.i("proverka", " " + constructorId);
                                                                                 if(rank.equals("1")){
                                                                                     String fastestLapsTotal = snapshot
                                                                                             .child("totalFastestLaps")

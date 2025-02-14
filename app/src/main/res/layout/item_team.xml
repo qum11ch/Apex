@@ -27,6 +27,7 @@
                 android:orientation="horizontal"
                 android:weightSum="5">
                 <RelativeLayout
+                    android:id="@+id/left_layout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
@@ -49,6 +50,7 @@
                     android:layout_height="match_parent"
                     android:background="@color/dark_grey"/>
                 <RelativeLayout
+                    android:id="@+id/team_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2.7"

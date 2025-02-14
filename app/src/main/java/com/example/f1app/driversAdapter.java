@@ -5,9 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,7 +20,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHolder>{
+public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHolder> {
     Context context;
     List<driversList> dataList;
 
@@ -31,7 +34,7 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
     }
 
 
-    public driversAdapter(Context context, List<driversList> datum){
+    public driversAdapter(Context context, List<driversList> datum) {
         this.context = context;
         dataList = datum;
     }
@@ -39,13 +42,14 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
     @NonNull
     @Override
     public driversAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+
         View view;
-        switch (viewType){
+        switch (viewType) {
             case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver_first, parent , false);
+                view = LayoutInflater.from(context).inflate(R.layout.item_driver_first, parent, false);
                 break;
             default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent , false);
+                view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
                 break;
         }
         return new driversAdapter.DataHolder(view, viewType);
@@ -54,62 +58,53 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
     @Override
     public void onBindViewHolder(@NonNull driversAdapter.DataHolder holder, int position) {
         driversList datum = dataList.get(position);
-        if (holder.getItemViewType() == 1){
-            holder.driverName.setText(datum.getDriverName());
-            holder.driverFamilyName.setText(datum.getDriverFamilyName());
-            holder.driverTeam.setText(datum.getDriverTeam());
-            holder.driver_placement.setText(datum.getDriverPlacement());
-            String driver_points = datum.getDriverPoints() + " PTS";
-            holder.driver_points.setText(driver_points);
+        holder.driverName.setText(datum.getDriverName());
+        holder.driverFamilyName.setText(datum.getDriverFamilyName());
+        holder.driverTeam.setText(datum.getDriverTeam());
 
-            int resourceId_driverTeam = context.getResources().getIdentifier(datum.getConstructorId() + "_logo", "drawable",
-                    context.getPackageName());
+        int resourceId_driverTeam = context.getResources().getIdentifier(datum.getConstructorId() + "_logo", "drawable",
+                context.getPackageName());
 
-            Glide.with(context)
-                    .load(resourceId_driverTeam)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
-                    .into(holder.driverTeam_logo);
+        Glide.with(context)
+                .load(resourceId_driverTeam)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .error(R.drawable.f1)
+                .into(holder.driverTeam_logo);
 
-            int resourceId_driverImage = context.getResources().getIdentifier(datum.getDriverCode().toLowerCase(), "drawable",
-                    context.getPackageName());
+        int resourceId_driverImage = context.getResources().getIdentifier(datum.getDriverCode().toLowerCase(), "drawable",
+                context.getPackageName());
 
-            Glide.with(context)
-                    .load(resourceId_driverImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
-                    .into(holder.driverImage);
-        }else{
-            holder.driverName.setText(datum.getDriverName());
-            holder.driverFamilyName.setText(datum.getDriverFamilyName());
-            holder.driverTeam.setText(datum.getDriverTeam());
-            holder.driver_placement.setText(datum.getDriverPlacement());
-            String driver_points = datum.getDriverPoints() + " PTS";
-            holder.driver_points.setText(driver_points);
-
-            int resourceId_driverTeam = context.getResources().getIdentifier(datum.getConstructorId() + "_logo", "drawable",
-                    context.getPackageName());
-
-            Glide.with(context)
-                    .load(resourceId_driverTeam)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
-                    .into(holder.driverTeam_logo);
-
-            int resourceId_driverImage = context.getResources().getIdentifier(datum.getDriverCode().toLowerCase(), "drawable",
-                    context.getPackageName());
-
-            Glide.with(context)
-                    .load(resourceId_driverImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
-                    .into(holder.driverImage);
+        Glide.with(context)
+                .load(resourceId_driverImage)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .error(R.drawable.f1)
+                .into(holder.driverImage);
+        if (holder.getItemViewType() == 1) {
+            if (datum.getStartSeasonInfo()) {
+                int width = 0;
+                int height = 0;
+                holder.cardView.getLayoutParams().width = width;
+                holder.cardView.getLayoutParams().height = height;
+            }
+        } else {
+            if (datum.getStartSeasonInfo()) {
+                holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3.3f);
+                layoutParams.setMargins(0, 10,0,80);
+                holder.driver_layout.setLayoutParams(layoutParams);
+                int width = 0;
+                holder.driver_placement.getLayoutParams().width = width;
+                holder.driver_points.getLayoutParams().width = width;
+            } else {
+                holder.driver_placement.setText(datum.getDriverPlacement());
+                String driver_points = datum.getDriverPoints() + " PTS";
+                holder.driver_points.setText(driver_points);
+            }
 
             int resourceId_teamColor = getColorByName(datum.getConstructorId());
             holder.line.setBackgroundResource(resourceId_teamColor);
         }
     }
-
 
 
     @Override
@@ -122,43 +117,38 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
                 driverFamilyName;
         ImageView driverTeam_logo, driverImage, driverNumber;
         ConstraintLayout constraintLayout;
+        RelativeLayout leftLayout, driver_layout;
         View line;
+        CardView cardView;
 
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);
-            if (viewType == 1) {
-                driverName = itemView.findViewById(R.id.driverName);
-                driverFamilyName = itemView.findViewById(R.id.driverFamilyName);
-                driverTeam = itemView.findViewById(R.id.driverTeam);
-                driver_placement = itemView.findViewById(R.id.driver_placement);
-                driver_points = itemView.findViewById(R.id.driver_points);
-                constraintLayout = itemView.findViewById(R.id.main_layout);
-                driverTeam_logo = itemView.findViewById(R.id.driverTeam_logo);
-                driverImage = itemView.findViewById(R.id.driverImage);
-            } else {
-                line = itemView.findViewById(R.id.line);
-                driverName = itemView.findViewById(R.id.driverName);
-                driverFamilyName = itemView.findViewById(R.id.driverFamilyName);
-                driverTeam = itemView.findViewById(R.id.driverTeam);
-                driver_placement = itemView.findViewById(R.id.driver_placement);
-                driver_points = itemView.findViewById(R.id.driver_points);
-                constraintLayout = itemView.findViewById(R.id.main_layout);
-                driverTeam_logo = itemView.findViewById(R.id.driverTeam_logo);
-                driverImage = itemView.findViewById(R.id.driverImage);
+            cardView = itemView.findViewById(R.id.cardView);
+            leftLayout = itemView.findViewById(R.id.leftLayout);
+            driver_layout = itemView.findViewById(R.id.driver_layout);
+            driverName = itemView.findViewById(R.id.driverName);
+            driverFamilyName = itemView.findViewById(R.id.driverFamilyName);
+            driverTeam = itemView.findViewById(R.id.driverTeam);
+            driver_placement = itemView.findViewById(R.id.driver_placement);
+            driver_points = itemView.findViewById(R.id.driver_points);
+            constraintLayout = itemView.findViewById(R.id.main_layout);
+            driverTeam_logo = itemView.findViewById(R.id.driverTeam_logo);
+            driverImage = itemView.findViewById(R.id.driverImage);
+            line = itemView.findViewById(R.id.line);
+        }
+    }
+
+        public int getColorByName(String name) {
+            int colorId = 0;
+
+            try {
+                Class res = R.color.class;
+                Field field = res.getField(name);
+                colorId = field.getInt(null);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
-    }
-    public int getColorByName(String name) {
-        int colorId = 0;
 
-        try {
-            Class res = R.color.class;
-            Field field = res.getField(name);
-            colorId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
+            return colorId;
         }
-
-        return colorId;
-    }
 }

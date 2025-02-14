@@ -7,6 +7,7 @@ public class driversList {
     private String driverPoints;
     private String driverPlacement;
     private String driverCode;
+    private boolean startSeason;
 
     public String getConstructorId() {
         return constructorId;
@@ -30,7 +31,8 @@ public class driversList {
 
     private String constructorId;
 
-    public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode) {
+    public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode,
+                       boolean startSeason) {
         this.driverFamilyName = driverFamilyName;
         this.driverName = driverName;
         this.driverTeam = driverTeam;
@@ -38,6 +40,7 @@ public class driversList {
         this.driverPlacement = driverPlacement;
         this.driverCode = driverCode;
         this.constructorId = constructorId;
+        this.startSeason = startSeason;
     }
 
     public String getDriverFamilyName() {
@@ -47,6 +50,9 @@ public class driversList {
     public void setDriverFamilyName(String driverFamilyName) {
         this.driverFamilyName = driverFamilyName;
     }
+
+    public boolean getStartSeasonInfo(){return startSeason;}
+    public void setStartSeasonInfo(boolean startSeason){this.startSeason = startSeason;}
 
     public String getDriverName() {
         return driverName;

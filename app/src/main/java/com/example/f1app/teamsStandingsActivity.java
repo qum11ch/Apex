@@ -2,12 +2,14 @@ package com.example.f1app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,6 +20,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -101,84 +108,8 @@ public class teamsStandingsActivity extends AppCompatActivity {
     }
 
     public void getTeamStanding(String currentYear){
-        getDriverStandings(currentYear, new VolleyCallback() {
-            @Override
-            public void onSuccess(HashMap<String, String> res) {
-                RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
-                String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
-                JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
-                        Request.Method.GET,
-                        url2,
-                        null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject MRData = response.getJSONObject("MRData");
-                                    JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                    JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                    for(int i = 0; i < StandingsLists.length(); i++){
-                                        JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
-                                                .getJSONArray("ConstructorStandings");
-                                        for(int j = 0; j < ConstructorStandings.length(); j++){
-                                            ArrayList<String> teamDrivers = new ArrayList<>();
-                                            String constructorName = ConstructorStandings.getJSONObject(j)
-                                                    .getJSONObject("Constructor").getString("name");
-                                            String position = ConstructorStandings.getJSONObject(j).getString("positionText");
-                                            String points = ConstructorStandings.getJSONObject(j).getString("points");
-                                            String constructorId = ConstructorStandings.getJSONObject(j)
-                                                    .getJSONObject("Constructor").getString("constructorId");
-                                            for(Map.Entry<String, String> entry: res.entrySet()){
-                                                if(entry.getValue().equals(constructorName)){
-                                                    teamDrivers.add(entry.getKey());
-                                                }
-                                            }
-                                            if(currentYear.equals("2024")){
-                                                switch (constructorName){
-                                                    case ("Haas F1 Team"):
-                                                        teamDrivers.clear();
-                                                        teamDrivers.add("Nico Hülkenberg");
-                                                        teamDrivers.add("Kevin Magnussen");
-                                                        break;
-                                                    case ("RB F1 Team"):
-                                                        teamDrivers.clear();
-                                                        teamDrivers.add("Yuki Tsunoda");
-                                                        teamDrivers.add("Liam Lawson");
-                                                        break;
-                                                    case ("Williams"):
-                                                        teamDrivers.clear();
-                                                        teamDrivers.add("Alexander Albon");
-                                                        teamDrivers.add("Franco Colapinto");
-                                                }
-                                                if (constructorName.equals("Sauber")){
-                                                    constructorName = "Kick Sauber";
-                                                }
-                                            }
-                                            teamsList smth = new teamsList(constructorName, position, points, constructorId);
-                                            smth.setDrivers(teamDrivers);
-                                            datum.add(smth);
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
-                                recyclerView.setAdapter(adapter);
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(teamsStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-                queue.add(jsonObjectRequest2);
-            }
-        });
-    }
-
-    public void getDriverStandings(String currentYear, VolleyCallback volleyCallback2){
         RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/driverstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -188,23 +119,98 @@ public class teamsStandingsActivity extends AppCompatActivity {
                     public void onResponse(JSONObject response) {
                         try {
                             JSONObject MRData = response.getJSONObject("MRData");
-                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                            HashMap<String, String> driver = new HashMap<>();
-                            for (int i = 0; i < StandingsLists.length(); i++) {
-                                JSONArray DriverStandings = StandingsLists.getJSONObject(i)
-                                        .getJSONArray("DriverStandings");
-                                for (int j = 0; j < DriverStandings.length(); j++) {
-                                    String driverName = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("givenName") + " " +
-                                            DriverStandings.getJSONObject(j)
-                                                    .getJSONObject("Driver").getString("familyName");
-                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                    driver.put(driverName, constructorsName);
+                            String total = MRData.getString("total");
+                            if (!total.equals("0")){
+                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                                for(int i = 0; i < StandingsLists.length(); i++){
+                                    JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
+                                            .getJSONArray("ConstructorStandings");
+                                    for(int j = 0; j < ConstructorStandings.length(); j++){
+                                        String constructorName = ConstructorStandings.getJSONObject(j)
+                                                .getJSONObject("Constructor").getString("name");
+                                        String position = ConstructorStandings.getJSONObject(j).getString("positionText");
+                                        String points = ConstructorStandings.getJSONObject(j).getString("points");
+                                        String constructorId = ConstructorStandings.getJSONObject(j)
+                                                .getJSONObject("Constructor").getString("constructorId");
+                                        //if(currentYear.equals("2024")){
+                                        //    if (constructorName.equals("Sauber")){
+                                        //        constructorName = "Kick Sauber";
+                                        //    }
+                                        //}
+                                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                ArrayList<String> teamDrivers = new ArrayList<>();
+                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                    String driverFullname = driverDataSnapshot.getKey();
+                                                    teamDrivers.add(driverFullname);
+                                                }
+                                                teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                smth.setDrivers(teamDrivers);
+                                                datum.add(smth);
+                                                adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
+                                                recyclerView.setAdapter(adapter);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("teamStandingsError", error.getMessage());
+                                            }
+                                        });
+                                    }
                                 }
+
                             }
-                            volleyCallback2.onSuccess(driver);
+                            else{
+                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        ArrayList<String> firstDrivers = new ArrayList<>();
+                                        firstDrivers.add("");
+                                        firstDrivers.add("");
+                                        teamsList first = new teamsList("","","","", true);
+                                        first.setDrivers(firstDrivers);
+                                        datum.add(first);
+                                        for (DataSnapshot child: snapshot.getChildren()) {
+
+                                            String constructorId = child.child("constructorId").getValue(String.class);
+                                            String constructorsName = child.child("name").getValue(String.class);
+
+                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    ArrayList<String> teamDrivers = new ArrayList<>();
+                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                        String driverFullname = driverDataSnapshot.getKey();
+                                                        teamDrivers.add(driverFullname);
+                                                    }
+                                                    teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
+                                                    smth.setDrivers(teamDrivers);
+                                                    datum.add(smth);
+                                                    adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
+
+                                                    recyclerView.setAdapter(adapter);
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e("teamStandingsError", error.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("teamStandingsError", error.getMessage());
+                                    }
+                                });
+
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -218,7 +224,4 @@ public class teamsStandingsActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
-    public interface VolleyCallback{
-        void onSuccess(HashMap<String, String> res);
-    }
 }

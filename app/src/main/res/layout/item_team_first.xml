@@ -27,6 +27,7 @@
                 android:orientation="horizontal"
                 android:weightSum="5">
                 <RelativeLayout
+                    android:id="@+id/left_layout"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="0.5"
@@ -43,12 +44,14 @@
                         android:textColor="@color/white"/>
                 </RelativeLayout>
                 <View
+                    android:id="@+id/line"
                     android:layout_marginTop="15dp"
                     android:layout_marginBottom="10dp"
                     android:layout_width="3dp"
                     android:layout_height="match_parent"
                     android:background="@color/white"/>
                 <RelativeLayout
+                    android:id="@+id/team_layout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
