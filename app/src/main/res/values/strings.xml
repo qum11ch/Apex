@@ -109,4 +109,7 @@
     <string name="eventname">EventName</string>
     <string name="eventtime">eventTime</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="teamlogo">teamLogo</string>
+    <string name="carimage">carImage</string>
+    <string name="driverimage">driverImage</string>
 </resources>

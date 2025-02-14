@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
@@ -21,11 +19,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -35,16 +29,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,9 +42,6 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
-    private DBHandler dbHandler;
-    SQLiteDatabase db;
-    Cursor userCursor;
     FirebaseDatabase database;
     private static final String TAG = "FirebaseERROR";
     SharedPreferences prefs;
@@ -69,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isLoged = prefs.getBoolean("Islogin", false);
+        //boolean isLoged = prefs.getBoolean("Islogin", false);
 
         Log.i("prefs_all", prefs.getAll().toString());
 
@@ -165,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
                                                                 @Override
                                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                                     String sprintPointsTotal = Double.toString(
-                                                                            Double.valueOf(Objects.requireNonNull(snapshot
+                                                                            Double.parseDouble(Objects.requireNonNull(snapshot
                                                                                     .child("totalPoints")
                                                                                     .getValue(String.class))) + Integer.parseInt(sprintPoints));
                                                                     Log.i("sprintPointsTotal", sprintDriverName + " " + sprintPointsTotal);
@@ -401,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
                                                                                             .child("totalFastestLaps")
                                                                                             .getValue(String.class);
 
-                                                                                    fastestLapsTotal = Integer.toString(Integer.valueOf(fastestLapsTotal) + 1);
+                                                                                    fastestLapsTotal = Integer.toString(Integer.parseInt(fastestLapsTotal) + 1);
 
                                                                                     rootRef.child("constructors/" + constructorId)
                                                                                             .child("totalFastestLaps")
@@ -440,7 +427,7 @@ public class MainActivity extends AppCompatActivity {
                                                                                             .child("totalPoles")
                                                                                             .getValue(String.class);
 
-                                                                                    totalPoles = Integer.toString(Integer.valueOf(totalPoles) + 1);
+                                                                                    totalPoles = Integer.toString(Integer.parseInt(totalPoles) + 1);
 
                                                                                     rootRef.child("constructors/" + constructorId)
                                                                                             .child("totalPoles")
@@ -468,18 +455,15 @@ public class MainActivity extends AppCompatActivity {
                                                                                         Date fastestLap = formatterFastLap.parse(time);
                                                                                         Date currentFastestLap = formatterFastLap.parse(currentFastLap);
                                                                                         if (fastestLap.getTime() < currentFastestLap.getTime()){
-                                                                                            String fastestLapOwner = driverName;
-                                                                                            String fastestLapYear = currentYear;
-                                                                                            currentFastLap = time;
                                                                                             rootRef.child("circuits/" + circuitId)
                                                                                                     .child("lapRecordDriver")
-                                                                                                    .setValue(fastestLapOwner);
+                                                                                                    .setValue(driverName);
                                                                                             rootRef.child("circuits/" + circuitId)
                                                                                                     .child("lapRecordTime")
-                                                                                                    .setValue(currentFastLap);
+                                                                                                    .setValue(time);
                                                                                             rootRef.child("circuits/" + circuitId)
                                                                                                     .child("lapRecordYear")
-                                                                                                    .setValue(fastestLapYear);
+                                                                                                    .setValue(currentYear);
                                                                                         }
                                                                                     }catch (ParseException e) {
                                                                                         Log.d("ParseExeption", "" + e);
