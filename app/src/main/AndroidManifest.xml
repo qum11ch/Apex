@@ -41,9 +41,7 @@
         <activity android:name=".concludedRaceActivity" />
         <activity android:name=".futureRaceActivity" />
         <activity android:name=".schuduleActivity" />
-        <activity
-            android:name=".driversStandingsActivity"
-            android:windowSoftInputMode="adjustPan" />
+        <activity android:name=".driversStandingsActivity" />
         <activity android:name=".teamsStandingsActivity" />
         <activity android:name=".teamPageActivity" />
         <activity

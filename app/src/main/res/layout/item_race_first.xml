@@ -177,7 +177,7 @@
                                 android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@drawable/gradient"/>
+                                android:background="@drawable/background_striped_lines"/>
                             <ImageView
                                 android:id="@+id/firstPlace_image"
                                 android:layout_width="match_parent"
@@ -195,7 +195,7 @@
                                 android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@drawable/gradient"/>
+                                android:background="@drawable/background_striped_lines"/>
                             <ImageView
                                 android:id="@+id/secondPlace_image"
                                 android:layout_width="match_parent"
@@ -213,7 +213,7 @@
                                 android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:background="@drawable/gradient"/>
+                                android:background="@drawable/background_striped_lines"/>
                             <ImageView
                                 android:scaleType="fitEnd"
                                 android:layout_alignParentBottom="true"

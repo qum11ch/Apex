@@ -66,6 +66,7 @@ public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
                 .into(holder.team_car);
+
         if (holder.getItemViewType() == 1){
             if (datum.getStartSeasonInfo()) {
                 int width = 0;
@@ -98,6 +99,7 @@ public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
                 Intent intent = new Intent(context , teamPageActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("teamName", datum.getTeam());
+                bundle.putString("teamId", datum.getTeamId());
                 bundle.putStringArrayList("teamDrivers", teamDrivers);
                 intent.putExtras(bundle);
                 context.startActivity(intent);

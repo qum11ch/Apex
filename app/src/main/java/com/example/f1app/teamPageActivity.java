@@ -1,6 +1,10 @@
 package com.example.f1app;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -9,9 +13,13 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -19,19 +27,24 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 public class teamPageActivity extends AppCompatActivity {
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
-    private TextView teamName, location, wins, firstTeamEntry, worldChamps, polePositions,
-    teamPrincipal, engine;
-    private ImageView posterImage;
+    private TextView teamName, teamNameFull, location, wins, firstTeamEntry, worldChamps, polePositions,
+            teamPrincipal, engine;
+    private ImageView teamLogo, team_car;
 
     private ImageButton backButton;
 
@@ -41,66 +54,72 @@ public class teamPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.team_page);
 
-
         teamName = (TextView) findViewById(R.id.teamName);
-        location = (TextView) findViewById(R.id.location);
-        wins = (TextView) findViewById(R.id.wins);
-        firstTeamEntry = (TextView) findViewById(R.id.firstTeamEntry);
-        worldChamps = (TextView) findViewById(R.id.worldChamps);
-        polePositions = (TextView) findViewById(R.id.polePositions);
-        teamPrincipal = (TextView) findViewById(R.id.teamPrincipal);
-        engine = (TextView) findViewById(R.id.engine);
-        posterImage = (ImageView) findViewById(R.id.poster_image);
+        teamNameFull = (TextView) findViewById(R.id.teamNameFull);
+        teamLogo = (ImageView) findViewById(R.id.teamLogo);
+        team_car = (ImageView) findViewById(R.id.team_car);
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
 
         Bundle bundle = getIntent().getExtras();
-        String teamNameCur = bundle.getString("teamName");
+        if (!bundle.isEmpty()){
+            String mTeamId = bundle.getString("teamId");
+            String mTeamName = bundle.getString("teamName");
+            ArrayList<String> driversList = bundle.getStringArrayList("teamDrivers");
 
-        if (teamNameCur.equals("RB F1 Team")){
-            teamNameCur = "Visa Cash App RB Formula One Team";
+            teamNameFull.setText(mTeamName);
+            int resourceId_teamLogo;
+
+            int resourceId_carImage = getApplicationContext().getResources().getIdentifier(mTeamId, "drawable",
+                    getApplicationContext().getPackageName());
+
+            Glide.with(getApplicationContext())
+                    .load(resourceId_carImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(team_car);
+
+            if (mTeamId.equals("alpine")){
+                resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
+                        getApplicationContext().getPackageName());
+
+            }else{
+                resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo", "drawable",
+                        getApplicationContext().getPackageName());
+            }
+            Glide.with(getApplicationContext())
+                    .load(resourceId_teamLogo)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(teamLogo);
+
+
+
+            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                boolean isShow = true;
+                int scrollRange = -1;
+
+                @Override
+                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                    if (scrollRange == -1) {
+                        scrollRange = appBarLayout.getTotalScrollRange();
+                    }
+                    if (scrollRange + verticalOffset == 0) {
+                        teamName.setText(mTeamName);
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                        isShow = true;
+                    } else if (isShow) {
+                        teamName.setText(" ");
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
+                        isShow = false;
+                    }
+                }
+            });
+        }else{
+            Log.e("teamPageActivity", "Error: Bundle from teamsAdapter is empty!");
         }
-        else if (teamNameCur.equals("Sauber")){
-            teamNameCur = "Stake F1 Team Kick Sauber";
-        }
-        teamName.setText(teamNameCur);
-        //requestWithSomeHttpHeaders(teamNameCur);
-
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(teamPageActivity.this, driversStandingsActivity.class);
-                teamPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(teamPageActivity.this, schuduleActivity.class);
-                teamPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showHomePage = (Button) findViewById(R.id.showHomePage);
-        showHomePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(teamPageActivity.this, MainActivity.class);
-                teamPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showTeams = (Button) findViewById(R.id.showTeams);
-
-        showAccount = (Button) findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(teamPageActivity.this, LogInActivity.class);
-                teamPageActivity.this.startActivity(intent);
-            }
-        });
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -110,70 +129,9 @@ public class teamPageActivity extends AppCompatActivity {
             }
         });
 
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
+
     }
-
-    //public void requestWithSomeHttpHeaders(String teamNameEnter) {
-    //    RequestQueue queue = Volley.newRequestQueue(teamPageActivity.this);
-    //    String url = "https://v1.formula-1.api-sports.io/teams?search=" + teamNameEnter;
-    //    JsonObjectRequest getRequest = new JsonObjectRequest(
-    //            url,
-    //            new Response.Listener<JSONObject>()
-    //            {
-    //                @Override
-    //                public void onResponse(JSONObject response) {
-    //                    try {
-    //                        ViewGroup.LayoutParams params = posterImage.getLayoutParams();
-    //                        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-    //                        posterImage.setLayoutParams(params);
-    //                        JSONArray response_val = response.getJSONArray("response");
-    //                        for(int i = 0; i < response_val.length(); i++){
-    //                            JSONObject team = response_val.getJSONObject(i);
-    //                            teamName.setText(team.getString("name"));
-    //                            location.setText(team.getString("base"));
-    //                            if(team.getJSONObject("highest_race_finish").getString("position").equals("1")){
-    //                                wins.setText(team.getJSONObject("highest_race_finish").getString("number"));
-    //                            }
-    //                            else{
-    //                                wins.setText("0");
-    //                            }
-    //                            firstTeamEntry.setText(team.getString("first_team_entry"));
-    //                            worldChamps.setText(team.getString("world_championships"));
-    //                            polePositions.setText(team.getString("pole_positions"));
-    //                            teamPrincipal.setText(team.getString("director"));
-    //                            engine.setText(team.getString("engine"));
-//
-    //                            GlideApp.with(teamPageActivity.this)
-    //                                    .load(team.getString("logo"))
-    //                                    .placeholder(R.drawable.f1)
-    //                                    .into(posterImage);
-    //                        }
-//
-    //                    } catch (JSONException e) {
-    //                        throw new RuntimeException(e);
-    //                    }
-    //                    //Log.i("Response", response.toString());
-    //                }
-    //            },
-    //            new Response.ErrorListener()
-    //            {
-    //                @Override
-    //                public void onErrorResponse(VolleyError error) {
-    //                    // TODO Auto-generated method stub
-    //                    Log.d("ERROR","error => "+error.toString());
-//
-    //                }
-    //            }
-    //    ) {
-    //        @Override
-    //        public Map<String, String> getHeaders() throws AuthFailureError {
-    //            Map<String, String>  params = new HashMap<String, String>();
-    //            params.put("x-rapidapi-key", "bc49e4741eb4558816f488a229f67b1d");
-    //            params.put("x-rapidapi-host", "v1.formula-1.api-sports.io");
-//
-    //            return params;
-    //        }
-    //    };
-    //    queue.add(getRequest);
-    //}
-
 }

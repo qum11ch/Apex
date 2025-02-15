@@ -17,6 +17,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
@@ -119,6 +121,10 @@ public class schuduleActivity extends AppCompatActivity {
         String currentYear = Integer.toString(currentDate.getYear());
 
         getSchedule(currentYear, currentDate);
+
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);;
     }
 
     private void getSchedule(String year, LocalDate currentDate){
