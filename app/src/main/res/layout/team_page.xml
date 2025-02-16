@@ -8,10 +8,9 @@
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
         android:layout_width="match_parent"
-        android:layout_height="320dp"
+        android:layout_height="410dp"
         android:fitsSystemWindows="true"
         android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
             android:layout_width="wrap_content"
@@ -90,280 +89,47 @@
                         android:layout_height="wrap_content"
                         android:background="@android:color/transparent"
                         android:src="@drawable/back_arrow" />
-
                     <TextView
                         android:id="@+id/teamName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_toRightOf="@id/backButton"
+                        android:layout_toEndOf="@id/backButton"
                         android:gravity="center"
                         android:paddingStart="0dp"
                         android:paddingEnd="40dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
                         android:textSize="24sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"/>
                 </RelativeLayout>
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.CollapsingToolbarLayout>
+        <com.google.android.material.tabs.TabLayout
+            android:elevation="5dp"
+            app:layout_collapseMode="pin"
+            style="@style/AppTabLayoutPages"
+            android:background="@color/white"
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="bottom" />
     </com.google.android.material.appbar.AppBarLayout>
     <androidx.core.widget.NestedScrollView
-        android:background="@color/white"
+        android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/white"
+        android:overScrollMode="never"
+        app:layout_anchor="@+id/nestedScrollView"
+        app:layout_anchorGravity="center"
         app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
         <RelativeLayout
-            android:id="@+id/staticLayout"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="50dp"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-            <TextView
-                android:id="@+id/statisticHeader"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Statistics since debut"/>
-            <RelativeLayout
-                android:layout_below="@id/statisticHeader"
-                android:layout_marginEnd="20dp"
-                android:id="@+id/enterYear_layout"
-                style="@style/StatisticLayout"
-                android:paddingTop="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_marginStart="10dp"
-                    android:id="@+id/enterYear_info"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Enter year"/>
-                <TextView
-                    android:layout_marginStart="10dp"
-                    android:layout_below="@id/enterYear_info"
-                    android:id="@+id/enterYear"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                style="@style/CircuitInfoLayout"
-                android:layout_below="@id/enterYear_layout"
-                android:id="@+id/winsCount_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:id="@+id/winsCount_info"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Wins"/>
-                <TextView
-                    android:layout_below="@id/winsCount_info"
-                    android:id="@+id/wins"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                style="@style/CircuitInfoLayout"
-                android:layout_below="@id/winsCount_layout"
-                android:id="@+id/podiumCount_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:id="@+id/podium_info"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Podiums"/>
-                <TextView
-                    android:layout_below="@id/podium_info"
-                    android:id="@+id/podium"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                style="@style/CircuitInfoLayout"
-                android:layout_below="@id/podiumCount_layout"
-                android:id="@+id/polesCount_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:id="@+id/poles_info"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Poles"/>
-                <TextView
-                    android:layout_below="@id/poles_info"
-                    android:id="@+id/poles"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text=""/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_below="@id/polesCount_layout"
-                android:id="@+id/championships_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp">
-                <TextView
-                    android:id="@+id/championships_info"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Constructors` Championships"/>
-                <TextView
-                    android:layout_below="@id/championships_info"
-                    android:id="@+id/championships"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textSize="50sp"
-                    android:textColor="@color/black"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/championships_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_marginStart="10dp"
-                    android:id="@+id/lineup_header"
-                    android:textStyle="bold"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="TEAM LINEUP"/>
-                <LinearLayout
-                    android:layout_below="@id/lineup_header"
-                    android:baselineAligned="false"
-                    android:weightSum="2"
-                    android:paddingTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-                    <RelativeLayout
-                        android:layout_marginStart="10dp"
-                        android:id="@+id/firstDriver_layout"
-                        style="@style/StatisticLayout"
-                        android:layout_weight="1"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content">
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="150dp"
-                            android:id="@+id/striped_first"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@drawable/background_striped_lines_white">
-                            <ImageView
-                                android:src="@drawable/ham"
-                                android:paddingEnd="10dp"
-                                android:paddingStart="0dp"
-                                android:id="@+id/firstDriver_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="150dp"
-                                android:scaleType="fitEnd"
-                                android:layout_alignParentBottom="true"/>
-                        </RelativeLayout>
-                        <LinearLayout
-                            android:gravity="center"
-                            android:layout_below="@id/striped_first"
-                            android:id="@+id/firstDriverName_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView
-                                android:text="Lewis"
-                                android:id='@+id/firstDriverName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
-                            <TextView
-                                android:text="Hamilton"
-                                android:id='@+id/firstDriverFamilyName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                        </LinearLayout>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:layout_marginStart="10dp"
-                        android:id="@+id/secondDriver_layout"
-                        style="@style/StatisticLayout"
-                        android:layout_weight="1"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content">
-                        <RelativeLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="150dp"
-                            android:id="@+id/striped_second"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:background="@drawable/background_striped_lines_white">
-                            <ImageView
-                                android:src="@drawable/ham"
-                                android:paddingEnd="10dp"
-                                android:paddingStart="0dp"
-                                android:id="@+id/secondDriver_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="150dp"
-                                android:scaleType="fitEnd"
-                                android:layout_alignParentBottom="true"/>
-                        </RelativeLayout>
-                        <LinearLayout
-                            android:gravity="center"
-                            android:layout_below="@id/striped_second"
-                            android:id="@+id/secondDriverName_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <TextView
-                                android:text="Lewis"
-                                android:id='@+id/secondDriverName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
-                            <TextView
-                                android:text="Hamilton"
-                                android:id='@+id/secondDriverFamilyName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                        </LinearLayout>
-                    </RelativeLayout>
-                </LinearLayout>
-            </RelativeLayout>
+                android:layout_marginBottom="30dp"/>
         </RelativeLayout>
 
     </androidx.core.widget.NestedScrollView>
