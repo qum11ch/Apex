@@ -13,6 +13,9 @@
     <style name="FooterStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/footer_style</item>
     </style>
+    <style name="Borders" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/simple_borders</item>
+    </style>
     <style name="ToggleButtonShowStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_toggle</item>
     </style>

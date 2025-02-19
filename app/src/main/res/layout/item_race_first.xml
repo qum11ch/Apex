@@ -171,52 +171,48 @@
                             android:paddingEnd="10dp"
                             android:paddingStart="0dp"
                             android:layout_width="0dp"
-                            android:layout_height="100dp"
+                            android:layout_height="84dp"
                             android:layout_weight="1">
                             <View
-                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@drawable/background_striped_lines"/>
                             <ImageView
                                 android:id="@+id/firstPlace_image"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="fitEnd"
+                                android:layout_height="84dp"
+                                android:scaleType="fitCenter"
                                 android:layout_alignParentBottom="true"/>
                         </RelativeLayout>
                         <RelativeLayout
                             android:paddingStart="0dp"
                             android:paddingEnd="10dp"
                             android:layout_width="0dp"
-                            android:layout_height="100dp"
+                            android:layout_height="84dp"
                             android:layout_weight="1">
                             <View
-                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@drawable/background_striped_lines"/>
                             <ImageView
                                 android:id="@+id/secondPlace_image"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:scaleType="fitEnd"
+                                android:layout_height="84dp"
+                                android:scaleType="fitCenter"
                                 android:layout_alignParentBottom="true"/>
                         </RelativeLayout>
                         <RelativeLayout
                             android:paddingStart="0dp"
                             android:paddingEnd="10dp"
                             android:layout_width="0dp"
-                            android:layout_height="100dp"
+                            android:layout_height="84dp"
                             android:layout_weight="1">
                             <View
-                                android:layout_marginTop="10dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:background="@drawable/background_striped_lines"/>
                             <ImageView
-                                android:scaleType="fitEnd"
-                                android:layout_alignParentBottom="true"
+                                android:scaleType="fitCenter"
                                 android:id="@+id/thirdPlace_image"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent" />

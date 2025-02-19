@@ -113,11 +113,13 @@ public class teamPageActivity extends AppCompatActivity {
 
         int resourceId_teamLogo;
 
-        if (mTeamId.equals("alpine")){
+        if (mTeamId.equals("alpine")) {
             resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
                     getApplicationContext().getPackageName());
-
-        }else{
+        } else if (mTeamId.equals("williams")) {
+            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
+                    getApplicationContext().getPackageName());
+        } else{
             resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo", "drawable",
                     getApplicationContext().getPackageName());
         }

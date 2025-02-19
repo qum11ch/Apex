@@ -198,7 +198,6 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     smth.setDrivers(teamDrivers);
                                                     datum.add(smth);
                                                     adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
-
                                                     recyclerView.setAdapter(adapter);
                                                 }
                                                 @Override
