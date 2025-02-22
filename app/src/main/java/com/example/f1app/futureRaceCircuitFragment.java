@@ -80,11 +80,7 @@ public class futureRaceCircuitFragment extends Fragment {
                 .into(circuitImage);
 
         World.init(this.getActivity());
-        flag.setImageResource(World.getFlagOf(getCountryCode(mCountry)));
-
-        Log.i("check_info_bundle", "" + mCountry + mRaceName + mYear);
-
-
+        flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -118,9 +114,9 @@ public class futureRaceCircuitFragment extends Fragment {
     }
     public String getCountryCode(String countryName) {
         String[] isoCountryCodes = Locale.getISOCountries();
-        if(countryName.equals("USA")){
+        if(countryName.equals("usa")){
             return "us";
-        } else if (countryName.equals("UK")) {
+        } else if (countryName.equals("uk")) {
             return "gb";
         }
         for (String code : isoCountryCodes) {

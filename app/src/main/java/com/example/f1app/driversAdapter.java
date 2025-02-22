@@ -1,6 +1,8 @@
 package com.example.f1app;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -104,6 +106,20 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
             int resourceId_teamColor = getColorByName(datum.getConstructorId());
             holder.line.setBackgroundResource(resourceId_teamColor);
         }
+
+        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context , driverPageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("driverName", datum.getDriverName());
+                bundle.putString("driverCode", datum.getDriverCode());
+                bundle.putString("driverTeam", datum.getDriverTeam());
+                bundle.putString("driverFamilyName", datum.getDriverFamilyName());
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
     }
 
 

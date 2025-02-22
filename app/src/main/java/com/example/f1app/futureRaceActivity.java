@@ -66,7 +66,7 @@ public class futureRaceActivity extends AppCompatActivity {
     private Handler handler = new Handler();
     private TextView futureRaceTitle;
     private ViewPager2 myViewPager2;
-    private raceViewPagerAdapter raceAdapter ;
+    private viewPagerAdapter adapter ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -226,14 +226,14 @@ public class futureRaceActivity extends AppCompatActivity {
 
     private void init(Bundle scheduleBundle, Bundle circuitBundle) {
         myViewPager2 = findViewById(R.id.viewPager2);
-        raceAdapter = new raceViewPagerAdapter(this);
+        adapter = new viewPagerAdapter(this);
         futureRaceScheduleFragment scheduleFragment = new futureRaceScheduleFragment();
         scheduleFragment.setArguments(scheduleBundle);
-        raceAdapter.addFragment(scheduleFragment);
+        adapter.addFragment(scheduleFragment);
         futureRaceCircuitFragment circuitFragment = new futureRaceCircuitFragment();
         circuitFragment.setArguments(circuitBundle);
-        raceAdapter.addFragment(circuitFragment);
-        myViewPager2.setAdapter(raceAdapter);
+        adapter.addFragment(circuitFragment);
+        myViewPager2.setAdapter(adapter);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
             @Override

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">f1app</string>
+    <string name="app_name">F1 App</string>
     <string name="login_text">Log In</string>
     <string name="signup_text">Sign Up</string>
     <string name="usernameText">Username</string>

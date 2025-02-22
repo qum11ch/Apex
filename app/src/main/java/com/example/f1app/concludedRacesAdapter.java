@@ -21,9 +21,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 
-public class concludedRaceAdapter extends RecyclerView.Adapter<concludedRaceAdapter.DataHolder>{
+public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAdapter.DataHolder>{
     Activity context;
-    List<concludedRaceData> dataList;
+    List<concludedRacesData> dataList;
 
     @Override
     public int getItemViewType(int position) {
@@ -33,7 +33,7 @@ public class concludedRaceAdapter extends RecyclerView.Adapter<concludedRaceAdap
             return 2;
     }
 
-    public concludedRaceAdapter(Activity context , List<concludedRaceData> datum){
+    public concludedRacesAdapter(Activity context , List<concludedRacesData> datum){
         this.context = context;
         dataList = datum;
     }
@@ -59,7 +59,7 @@ public class concludedRaceAdapter extends RecyclerView.Adapter<concludedRaceAdap
         String currentYear = Integer.toString(currentDate.getYear());
         if (holder.getItemViewType() == 1){
 
-            concludedRaceData datum = dataList.get(position);
+            concludedRacesData datum = dataList.get(position);
 
             String round = datum.getRoundNumber();
             holder.round.setText(round);
@@ -150,7 +150,7 @@ public class concludedRaceAdapter extends RecyclerView.Adapter<concludedRaceAdap
                 }
             });
         } else{
-            concludedRaceData datum = dataList.get(position);
+            concludedRacesData datum = dataList.get(position);
 
             String round = datum.getRoundNumber();
             holder.round.setText(round);

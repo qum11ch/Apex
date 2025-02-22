@@ -16,7 +16,7 @@
             android:id="@+id/resHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Drivers results in 2024 season"
+            android:text="Driver results in 2024 season"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/black"
             android:textSize="28sp"
@@ -36,10 +36,10 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:weightSum="5">
+                android:weightSum="2">
                 <TextView
                     android:layout_width="0dp"
-                    android:layout_weight="2.5"
+                    android:layout_weight="1"
                     android:layout_height="match_parent"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:textColor="@color/black"
@@ -47,65 +47,16 @@
                     android:textStyle="bold"
                     android:gravity="bottom"
                     android:text="Race name"/>
-                <RelativeLayout
-                    android:layout_weight="1.25"
+                <TextView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="1dp">
-                    <RelativeLayout
-                        android:id="@+id/striped_first"
-                        android:layout_width="match_parent"
-                        android:layout_height="84dp"
-                        android:background="@drawable/background_striped_lines_white">
-                        <ImageView
-                            android:id="@+id/firstDriver_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:scaleType="fitCenter" />
-                    </RelativeLayout>
-                    <TextView
-                        android:layout_below="@id/striped_first"
-                        android:gravity="center"
-                        android:id='@+id/firstDriverFamilyName'
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-                </RelativeLayout>
-                <RelativeLayout
-                    android:layout_weight="1.25"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginStart="1dp">
-                    <RelativeLayout
-                        android:id="@+id/striped_second"
-                        android:layout_width="match_parent"
-                        android:layout_height="84dp"
-                        android:background="@drawable/background_striped_lines_white">
-                        <ImageView
-                            android:id="@+id/secondDriver_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:scaleType="fitCenter" />
-                    </RelativeLayout>
-                    <TextView
-                        android:layout_below="@id/striped_second"
-                        android:gravity="center"
-                        android:id='@+id/secondDriverFamilyName'
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/black"
-                        android:textSize="20sp"
-                        android:textStyle="bold"/>
-                </RelativeLayout>
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:gravity="bottom"
+                    android:text="Result"/>
             </LinearLayout>
             <View
                 android:id="@+id/line"
@@ -116,11 +67,12 @@
                 android:layout_marginEnd="10dp"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:paddingEnd="5dp"
+                android:paddingStart="0dp"
                 android:layout_below="@id/line"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/drivers_results"/>
+                android:id="@+id/driver_results"/>
         </RelativeLayout>
         <RelativeLayout
             style="@style/Borders"

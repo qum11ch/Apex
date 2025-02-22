@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".schuduleActivity"
     android:id="@+id/main_layout"
-    android:background="@drawable/background_results"
+    android:background="@drawable/blue_gradient"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">

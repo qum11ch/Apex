@@ -39,18 +39,22 @@ public class futureRaceFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.future_race_fragment, container, false);
+        if (!getArguments().isEmpty()){
+            return inflater.inflate(R.layout.future_race_fragment, container, false);
+        }else{
+            return inflater.inflate(R.layout.future_race_fragment_empty, container, false);
+        }
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        recyclerView = view.findViewById(R.id.recyclerview_futureRaces);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
-        recyclerView.setLayoutManager(linearLayoutManager);
-        LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
         if (!getArguments().isEmpty()){
+            recyclerView = view.findViewById(R.id.recyclerview_futureRaces);
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            recyclerView.setLayoutManager(linearLayoutManager);
+            LocalDate currentDate = LocalDate.now();
+            String currentYear = Integer.toString(currentDate.getYear());
             ArrayList<String> futureRaceRoundNumber = getArguments().getStringArrayList("raceRound");
 
             for (int i = 0; i < futureRaceRoundNumber.size(); i++){
@@ -59,48 +63,43 @@ public class futureRaceFragment extends Fragment {
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.child("schedule/season/" + currentYear).orderByChild("round")
                         .equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        datum = new ArrayList<>();
-                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                            String raceName = ds.child("Circuit/raceName").getValue(String.class);
-                            String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
-                            String dateEnd = ds.child("raceDate").getValue(String.class);
-                            String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                datum = new ArrayList<>();
+                                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                                    String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
+                                    String dateEnd = ds.child("raceDate").getValue(String.class);
+                                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
 
-                            rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                    String circuitName = dataSnapshot.child("circuitName").getValue(String.class);
-                                    String raceCountry = dataSnapshot.child("country").getValue(String.class);
-                                    String raceLocation = dataSnapshot.child("location").getValue(String.class);
-                                    futureRaceData futureRaceData = new futureRaceData(raceName, dateStart, dateEnd,
-                                            circuitName, raceRound, raceCountry, circuitId);
-                                    futureRaceData.setLocality(raceLocation);
-                                    datum.add(futureRaceData);
-                                    adapter = new futureRaceAdapter(getActivity(), datum);
-                                    recyclerView.setAdapter(adapter);
+                                    rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            String circuitName = dataSnapshot.child("circuitName").getValue(String.class);
+                                            String raceCountry = dataSnapshot.child("country").getValue(String.class);
+                                            String raceLocation = dataSnapshot.child("location").getValue(String.class);
+                                            futureRaceData futureRaceData = new futureRaceData(raceName, dateStart, dateEnd,
+                                                    circuitName, raceRound, raceCountry, circuitId);
+                                            futureRaceData.setLocality(raceLocation);
+                                            datum.add(futureRaceData);
+                                            adapter = new futureRaceAdapter(getActivity(), datum);
+                                            recyclerView.setAdapter(adapter);
+                                        }
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                                        }
+                                    });
                                 }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("futureRaceFragmentFirebaseError", error.getMessage());
-                                }
-                            });
-                        }
 
-                    }
+                            }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("futureRaceFragmentFirebaseError", error.getMessage());
-                    }
-                });
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                            }
+                        });
             }
-
-        }else{
-            Log.e("futureFragment", "Bundle is null");
         }
-
-
     }
 }

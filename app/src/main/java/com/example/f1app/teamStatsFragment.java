@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.app.Application;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -88,6 +89,74 @@ public class teamStatsFragment extends Fragment {
             String mTeamId = getArguments().getString("teamId");
             String mTeamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
+
+            firstDriver_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String[] driverFullname = driversList.get(0).split(" ");
+                    String mDriverName, mDriverFamilyName;
+                    if(driversList.get(0).equals("Andrea Kimi Antonelli")){
+                        mDriverName = driverFullname[0] + " " + driverFullname[1];
+                        mDriverFamilyName = driverFullname[2];
+                    }else{
+                        mDriverName = driverFullname[0];
+                        mDriverFamilyName = driverFullname[1];
+                    }
+                    rootRef.child("drivers").child(driversList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                            Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("driverName", mDriverName);
+                            bundle.putString("driverFamilyName", mDriverFamilyName);
+                            bundle.putString("driverTeam", mTeamName);
+                            bundle.putString("driverCode", mDriverCode);
+                            intent.putExtras(bundle);
+                            requireContext().startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                        }
+                    });
+                }
+            });
+
+            secondDriver_layout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String[] driverFullname = driversList.get(1).split(" ");
+                    String mDriverName, mDriverFamilyName;
+                    if(driversList.get(1).equals("Andrea Kimi Antonelli")){
+                        mDriverName = driverFullname[0] + " " + driverFullname[1];
+                        mDriverFamilyName = driverFullname[2];
+                    }else{
+                        mDriverName = driverFullname[0];
+                        mDriverFamilyName = driverFullname[1];
+                    }
+                    rootRef.child("drivers").child(driversList.get(1)).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                            Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("driverName", mDriverName);
+                            bundle.putString("driverFamilyName", mDriverFamilyName);
+                            bundle.putString("driverTeam", mTeamName);
+                            bundle.putString("driverCode", mDriverCode);
+                            intent.putExtras(bundle);
+                            requireContext().startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                        }
+                    });
+                }
+            });
 
             int resourceId_teamLogo;
             rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {

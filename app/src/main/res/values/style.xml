@@ -7,6 +7,15 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="customRoundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">1dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeBottomRight">5dp</item>
+        <item name="cornerSizeBottomLeft">5dp</item>
+    </style>
+
     <style name="CountdownStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_countdown</item>
     </style>
@@ -45,6 +54,9 @@
     </style>
     <style name="StatisticLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/statistic_layout_style</item>
+    </style>
+    <style name="ScheduleEmptyLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/schedule_empty_layout_style</item>
     </style>
     <style name="StatisticLayoutColored" parent="android:Widget.TextView">
         <item name="android:background">@drawable/statistic_layout_style_colored</item>

@@ -1,31 +1,24 @@
 package com.example.f1app;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversResultsAdapter.DataHolder>{
     Activity context;
-    List<driverResultsData> dataList;
+    List<teamDriversResultsData> dataList;
 
-    public teamDriversResultsAdapter(Activity context , List<driverResultsData> datum){
+    public teamDriversResultsAdapter(Activity context , List<teamDriversResultsData> datum){
         this.context = context;
         this.dataList = datum;
     }
@@ -33,13 +26,13 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
     @NonNull
     @Override
     public teamDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_result, parent , false);
+        View view = LayoutInflater.from(context).inflate(R.layout.item_team_result, parent , false);
         return new teamDriversResultsAdapter.DataHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull teamDriversResultsAdapter.DataHolder holder, int position) {
-        driverResultsData datum = dataList.get(position);
+        teamDriversResultsData datum = dataList.get(position);
 
         String raceName = datum.getRaceName();
         String firstDriverResult = datum.getFirstDriverResult();

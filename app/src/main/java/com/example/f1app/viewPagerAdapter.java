@@ -7,10 +7,10 @@ import androidx.viewpager2.adapter.FragmentStateAdapter;
 
 import java.util.ArrayList;
 
-public class raceViewPagerAdapter extends FragmentStateAdapter {
+public class viewPagerAdapter extends FragmentStateAdapter {
     private ArrayList<Fragment> arrayList = new ArrayList<>();
 
-    public raceViewPagerAdapter(FragmentActivity fa) {
+    public viewPagerAdapter(FragmentActivity fa) {
         super(fa);
     }
 

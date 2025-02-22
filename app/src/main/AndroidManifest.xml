@@ -44,6 +44,7 @@
         <activity android:name=".driversStandingsActivity" />
         <activity android:name=".teamsStandingsActivity" />
         <activity android:name=".teamPageActivity" />
+        <activity android:name=".driverPageActivity" />
         <activity
             android:name=".LogInActivity"
             android:windowSoftInputMode="adjustPan" />

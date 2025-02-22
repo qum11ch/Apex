@@ -1,12 +1,12 @@
 package com.example.f1app;
 
-public class concludedRaceData {
+public class concludedRacesData {
     String dateStart, dateEnd, raceName, roundNumber, circuitName, country, locality,
             winnerDriverCode, secondPlaceCode, thirdPlaceCode;
 
-    public concludedRaceData(String dateStart, String dateEnd, String raceName, String roundNumber,
-                             String circuitName, String country, String locality, String winnerDriverCode,
-                             String secondPlaceCode, String thirdPlaceCode) {
+    public concludedRacesData(String dateStart, String dateEnd, String raceName, String roundNumber,
+                              String circuitName, String country, String locality, String winnerDriverCode,
+                              String secondPlaceCode, String thirdPlaceCode) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
         this.raceName = raceName;

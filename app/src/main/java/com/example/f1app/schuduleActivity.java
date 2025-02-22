@@ -8,7 +8,6 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -21,12 +20,6 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
@@ -34,10 +27,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,15 +39,15 @@ import java.util.List;
 import androidx.viewpager2.widget.ViewPager2;
 
 public class schuduleActivity extends AppCompatActivity {
-    List<concludedRaceData> datum;
+    List<concludedRacesData> datum;
     private RecyclerView recyclerView;
     Button showDriverButton, showTeams, showHomePage, showAccount;
     private ToggleButton showConcluded, showFuture;
-    private concludedRaceAdapter adapter;
+    private concludedRacesAdapter adapter;
     private Toolbar toolbar;
     private ImageButton backButton;
     private ViewPager2 myViewPager2;
-    private raceViewPagerAdapter raceAdapter ;
+    private viewPagerAdapter raceAdapter ;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -300,7 +289,7 @@ public class schuduleActivity extends AppCompatActivity {
 
     private void init(Bundle concludedRaceBundle, Bundle futureRaceBundle) {
         myViewPager2 = findViewById(R.id.viewPager2);
-        raceAdapter = new raceViewPagerAdapter(this);
+        raceAdapter = new viewPagerAdapter(this);
         futureRaceFragment futureRaceFragment = new futureRaceFragment();
         futureRaceFragment.setArguments(futureRaceBundle);
         raceAdapter.addFragment(futureRaceFragment);

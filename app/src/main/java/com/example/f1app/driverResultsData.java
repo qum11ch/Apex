@@ -1,16 +1,13 @@
 package com.example.f1app;
 
 public class driverResultsData {
-    String raceName, firstDriverResult, firstDriverName,
-        secondDriverResult, secondDriverName;
+    String raceName, driverResult, driverName;
     Integer season;
 
-    public driverResultsData(String raceName, String firstDriverResult, String firstDriverName, String secondDriverResult, String secondDriverName, Integer season) {
+    public driverResultsData(String raceName, String driverResult, String driverName, Integer season) {
         this.raceName = raceName;
-        this.firstDriverResult = firstDriverResult;
-        this.firstDriverName = firstDriverName;
-        this.secondDriverResult = secondDriverResult;
-        this.secondDriverName = secondDriverName;
+        this.driverResult = driverResult;
+        this.driverName = driverName;
         this.season = season;
     }
 
@@ -22,36 +19,20 @@ public class driverResultsData {
         this.raceName = raceName;
     }
 
-    public String getFirstDriverResult() {
-        return firstDriverResult;
+    public String getDriverResult() {
+        return driverResult;
     }
 
-    public void setFirstDriverResult(String firstDriverResult) {
-        this.firstDriverResult = firstDriverResult;
+    public void setDriverResult(String driverResult) {
+        this.driverResult = driverResult;
     }
 
-    public String getFirstDriverName() {
-        return firstDriverName;
+    public String getDriverName() {
+        return driverName;
     }
 
-    public void setFirstDriverName(String firstDriverName) {
-        this.firstDriverName = firstDriverName;
-    }
-
-    public String getSecondDriverResult() {
-        return secondDriverResult;
-    }
-
-    public void setSecondDriverResult(String secondDriverResult) {
-        this.secondDriverResult = secondDriverResult;
-    }
-
-    public String getSecondDriverName() {
-        return secondDriverName;
-    }
-
-    public void setSecondDriverName(String secondDriverName) {
-        this.secondDriverName = secondDriverName;
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 
     public Integer getSeason() {

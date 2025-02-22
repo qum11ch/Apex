@@ -1,40 +1,21 @@
 package com.example.f1app;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.media.Image;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
@@ -47,87 +28,87 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
-public class teamPageActivity extends AppCompatActivity {
+public class driverPageActivity extends AppCompatActivity {
     private ImageButton backButton;
     private ViewPager2 myViewPager2;
     private viewPagerAdapter adapter;
-    private TextView teamNameFull, teamName;
-    private ImageView teamLogo, team_car;
+    private TextView teamName, driverNumber, driverfullName,
+            driverFamilyName, driverName;
+    private ImageView driverImage;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.team_page);
+        setContentView(R.layout.driver_page);
         EdgeToEdge.enable(this);
 
         Bundle bundle = getIntent().getExtras();
-        String mTeamId = bundle.getString("teamId");
-        String mTeamName = bundle.getString("teamName");
-        ArrayList<String> mDriversList = bundle.getStringArrayList("teamDrivers");
+        String mDriverName = bundle.getString("driverName");
+        String mDriverFamilyName = bundle.getString("driverFamilyName");
+        String mDriverTeam = bundle.getString("driverTeam");
+        String mDriverCode = bundle.getString("driverCode");
 
-        Log.i("teamName", "" + mTeamName);
-        Bundle teamPageBundle = new Bundle();
-        teamPageBundle.putString("teamId", mTeamId);
-        teamPageBundle.putString("teamName", mTeamName);
-        teamPageBundle.putStringArrayList("teamDrivers", mDriversList);
+        String driver = mDriverName + " " + mDriverFamilyName;
+
+        Bundle driverPageBundle = new Bundle();
+        driverPageBundle.putString("driverName", mDriverName);
+        driverPageBundle.putString("driverFamilyName", mDriverFamilyName);
+        driverPageBundle.putString("driverTeam", mDriverTeam);
+        driverPageBundle.putString("driverCode", mDriverCode);
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+
             }
         });
 
-        init(teamPageBundle);
+        init(driverPageBundle);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        teamNameFull = (TextView) findViewById(R.id.teamNameFull);
-        teamLogo = (ImageView) findViewById(R.id.teamLogo);
-        team_car = (ImageView) findViewById(R.id.team_car);
+        driverfullName = (TextView) findViewById(R.id.driverfullName);
+        driverFamilyName = (TextView) findViewById(R.id.driverFamilyName);
+        driverImage = (ImageView) findViewById(R.id.driver_image);
+        driverNumber = (TextView) findViewById(R.id.driverNumber);
+        driverName = (TextView) findViewById(R.id.driverName);
         teamName = (TextView) findViewById(R.id.teamName);
 
-        teamNameFull.setText(mTeamName);
 
-        int resourceId_carImage = getApplicationContext().getResources().getIdentifier(mTeamId, "drawable",
+        driverfullName.setText(mDriverName);
+        teamName.setText(mDriverTeam);
+        driverFamilyName.setText(mDriverFamilyName);
+
+
+        int resourceId_driverImage = getApplicationContext().getResources().getIdentifier(mDriverCode.toLowerCase(), "drawable",
                 getApplicationContext().getPackageName());
 
         Glide.with(getApplicationContext())
-                .load(resourceId_carImage)
+                .load(resourceId_driverImage)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
-                .into(team_car);
+                .into(driverImage);
 
-        int resourceId_teamLogo;
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("drivers").child(driver).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String mDriverNumber = snapshot.child("permanentNumber").getValue(String.class);
+                driverNumber.setText(mDriverNumber);
+            }
 
-        if (mTeamId.equals("alpine")) {
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
-                    getApplicationContext().getPackageName());
-        } else if (mTeamId.equals("williams")) {
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
-                    getApplicationContext().getPackageName());
-        } else{
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo", "drawable",
-                    getApplicationContext().getPackageName());
-        }
-        Glide.with(getApplicationContext())
-                .load(resourceId_teamLogo)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
-                .into(teamLogo);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("driverPageActivity firebase error: ", error.getMessage());
+            }
+        });
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
@@ -142,11 +123,11 @@ public class teamPageActivity extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    teamName.setText(mTeamName);
+                    driverName.setText(driver);
                     toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
                     isShow = true;
                 } else if (isShow) {
-                    teamName.setText(" ");
+                    driverName.setText(" ");
                     toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
                     isShow = false;
                 }
@@ -154,15 +135,15 @@ public class teamPageActivity extends AppCompatActivity {
         });
     }
 
-    private void init(Bundle teamPageBundle) {
+    private void init(Bundle driverPageBundle) {
         myViewPager2 = findViewById(R.id.viewPager2);
         adapter = new viewPagerAdapter(this);
-        teamStatsFragment teamStatsFragment = new teamStatsFragment();
-        teamStatsFragment.setArguments(teamPageBundle);
-        adapter.addFragment(teamStatsFragment);
-        teamResultsFragment teamResultsFragment = new teamResultsFragment();
-        teamResultsFragment.setArguments(teamPageBundle);
-        adapter.addFragment(teamResultsFragment);
+        driverStatsFragment driverStatsFragment = new driverStatsFragment();
+        driverStatsFragment.setArguments(driverPageBundle);
+        adapter.addFragment(driverStatsFragment);
+        driverResultsFragment driverResultsFragment = new driverResultsFragment();
+        driverResultsFragment.setArguments(driverPageBundle);
+        adapter.addFragment(driverResultsFragment);
         myViewPager2.setAdapter(adapter);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setTag("sticky");
