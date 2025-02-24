@@ -57,55 +57,50 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
+
+        concludedRacesData datum = dataList.get(position);
+
+        String round = datum.getRoundNumber();
+        holder.round.setText(round);
+
+        String dateStart_string = datum.getDateStart();
+        String dateEnd_string = datum.getDateEnd();
+
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+        LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
+        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
+
+        LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
+        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
+
+        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
+        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
+
+        if(monthStart.equals(monthEnd)){
+            holder.raceMonth.setText(monthStart);
+        }
+        else{
+            String month = monthStart + "-" + monthEnd;
+            holder.raceMonth.setText(month);
+        }
+
+        holder.raceName.setText(datum.getRaceName() + " " + currentYear);
+        holder.circuitName.setText(datum.getCircuitName());
+
+        String locale = datum.getLocality() + ", " + datum.getCountry();
+        holder.raceCountry.setText(locale);
+        holder.day_start.setText(dayStart);
+        holder.day_end.setText(dayEnd);
+
+
+        String firstPlace_code = datum.getWinnerDriverCode();
+        String secondPlace_code = datum.getSecondPlaceCode();
+        String thirdPlace_code = datum.getThirdPlaceCode();
+        holder.firstPlace_code.setText(firstPlace_code);
+        holder.secondPlace_code.setText(secondPlace_code);
+        holder.thirdPlace_code.setText(thirdPlace_code);
+
         if (holder.getItemViewType() == 1){
-
-            concludedRacesData datum = dataList.get(position);
-
-            String round = datum.getRoundNumber();
-            holder.round.setText(round);
-
-            String dateStart_string = datum.getDateStart();
-            String dateEnd_string = datum.getDateEnd();
-
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-            LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-            String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
-
-            LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-            String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
-
-            String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-            String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
-
-            if(monthStart.equals(monthEnd)){
-                holder.raceMonth.setText(monthStart);
-            }
-            else{
-                String month = monthStart + "-" + monthEnd;
-                holder.raceMonth.setText(month);
-            }
-
-            holder.raceName.setText(datum.getRaceName() + " " + currentYear);
-
-            //World.init(context);
-            //holder.countryImage.setImageResource(World.getFlagOf(getCountryCode(datum.getCountry())));
-
-            holder.circuitName.setText(datum.getCircuitName());
-
-            String locale = datum.getLocality() + ", " + datum.getCountry();
-            holder.raceCountry.setText(locale);
-            holder.day_start.setText(dayStart);
-            holder.day_end.setText(dayEnd);
-
-
-            String firstPlace_code = datum.getWinnerDriverCode();
-            String secondPlace_code = datum.getSecondPlaceCode();
-            String thirdPlace_code = datum.getThirdPlaceCode();
-            holder.firstPlace_code.setText(firstPlace_code);
-            holder.secondPlace_code.setText(secondPlace_code);
-            holder.thirdPlace_code.setText(thirdPlace_code);
-
-
             int firstPlace_imageId = context.getResources().getIdentifier(firstPlace_code.toLowerCase(), "drawable",
                     context.getPackageName());
 
@@ -132,87 +127,29 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(holder.thirdPlace_image);
-
-            holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, concludedRaceActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("raceName" , datum.getRaceName());
-                    bundle.putString("raceDate" , datum.getDateEnd());
-                    bundle.putString("circuitName" , datum.getCircuitName());
-                    bundle.putString("raceRound" , datum.getRoundNumber());
-                    bundle.putString("raceCountry" , datum.getCountry());
-                    bundle.putString("circuitId", datum.getCircuitName());
-                    intent.putExtras(bundle);
-
-                    context.startActivity(intent);
-                }
-            });
-        } else{
-            concludedRacesData datum = dataList.get(position);
-
-            String round = datum.getRoundNumber();
-            holder.round.setText(round);
-
-            String dateStart_string = datum.getDateStart();
-            String dateEnd_string = datum.getDateEnd();
-
-            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-            LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-            String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
-
-            LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-            String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
-
-            String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-            String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
-
-            if(monthStart.equals(monthEnd)){
-                holder.raceMonth.setText(monthStart);
-            }
-            else{
-                String month = monthStart + "-" + monthEnd;
-                holder.raceMonth.setText(month);
-            }
-
-            holder.raceName.setText(datum.getRaceName() + " " + currentYear);
-
-            //World.init(context);
-            //holder.countryImage.setImageResource(World.getFlagOf(getCountryCode(datum.getCountry())));
-
-            holder.circuitName.setText(datum.getCircuitName());
-
-            String locale = datum.getLocality() + ", " + datum.getCountry();
-            holder.raceCountry.setText(locale);
-            holder.day_start.setText(dayStart);
-            holder.day_end.setText(dayEnd);
-
-
-            String firstPlace_code = datum.getWinnerDriverCode();
-            String secondPlace_code = datum.getSecondPlaceCode();
-            String thirdPlace_code = datum.getThirdPlaceCode();
-            holder.firstPlace_code.setText(firstPlace_code);
-            holder.secondPlace_code.setText(secondPlace_code);
-            holder.thirdPlace_code.setText(thirdPlace_code);
-
-            holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(context, concludedRaceActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("raceName" , datum.getRaceName());
-                    bundle.putString("raceDate" , datum.getDateEnd());
-                    bundle.putString("circuitName" , datum.getCircuitName());
-                    bundle.putString("raceRound" , datum.getRoundNumber());
-                    bundle.putString("raceCountry" , datum.getCountry());
-                    bundle.putString("circuitId", datum.getCircuitName());
-                    intent.putExtras(bundle);
-
-                    context.startActivity(intent);
-                }
-            });
         }
+
+        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, concludedRaceActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("raceName" , datum.getRaceName());
+                bundle.putString("raceStartDay" , dayStart);
+                bundle.putString("raceEndDay" , dayEnd);
+                bundle.putString("raceStartMonth" , monthStart);
+                bundle.putString("raceEndMonth" , monthEnd);
+                bundle.putString("circuitName" , datum.getCircuitName());
+                bundle.putString("roundCount" , datum.getRoundNumber());
+                bundle.putString("raceCountry" , datum.getCountry());
+                bundle.putString("dateStart", datum.getDateStart());
+                bundle.putString("firstPlaceCode", firstPlace_code);
+                bundle.putString("secondPlaceCode", secondPlace_code);
+                bundle.putString("thirdPlaceCode", thirdPlace_code);
+                intent.putExtras(bundle);
+                context.startActivity(intent);
+            }
+        });
 
     }
 

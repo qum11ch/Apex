@@ -37,7 +37,6 @@
             android:name=".settingsActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".savedRacePage" />
-        <activity android:name=".previousGPActivity" />
         <activity android:name=".concludedRaceActivity" />
         <activity android:name=".futureRaceActivity" />
         <activity android:name=".schuduleActivity" />
@@ -45,6 +44,7 @@
         <activity android:name=".teamsStandingsActivity" />
         <activity android:name=".teamPageActivity" />
         <activity android:name=".driverPageActivity" />
+        <activity android:name=".raceResultsActivity"/>
         <activity
             android:name=".LogInActivity"
             android:windowSoftInputMode="adjustPan" />

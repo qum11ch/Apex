@@ -53,7 +53,6 @@ public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         teamsList datum = dataList.get(position);
         ArrayList<String> teamDrivers = datum.getDrivers();
-        Log.i("check_problems_teams", " " + teamDrivers.toString());
         holder.teamName.setText(datum.getTeam());
         holder.teamDriverFirst.setText(teamDrivers.get(0));
         holder.teamDriverSecond.setText(teamDrivers.get(1));

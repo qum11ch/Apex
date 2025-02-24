@@ -1,19 +1,18 @@
 package com.example.f1app;
 
-import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.blongho.country_data.World;
 import com.bumptech.glide.Glide;
@@ -26,13 +25,14 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.Locale;
 
-public class futureRaceCircuitFragment extends Fragment {
+public class raceCircuitFragment extends Fragment {
     private TextView raceName, circuitName, length, lapsNum, firstGP, raceDist, lapRecord_time,
-            lapRecord_driver;
+            lapRecord_driver, prevGPtext;
     private ImageView circuitImage, flag;
+    private RelativeLayout previousGP;
 
 
-    public futureRaceCircuitFragment() {
+    public raceCircuitFragment() {
         // required empty public constructor.
     }
 
@@ -60,26 +60,44 @@ public class futureRaceCircuitFragment extends Fragment {
         lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
         circuitImage = view.findViewById(R.id.circuitImage);
         flag = view.findViewById(R.id.flag);
+        previousGP = view.findViewById(R.id.previousGP);
+        prevGPtext = view.findViewById(R.id.prevGPtext);
 
         String mCircuitId = getArguments().getString("circuitId");
         String mRaceName = getArguments().getString("raceName");
         String mCountry = getArguments().getString("raceCountry");
         String mYear = getArguments().getString("gpYear");
 
+        String mPrevGPtext = (Integer.parseInt(mYear) - 1) + " Race Results";
+        prevGPtext.setText(mPrevGPtext);
+
         String fullRaceName = mRaceName + " " + mYear;
         raceName.setText(fullRaceName);
 
+        previousGP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("raceName", mRaceName);
+                bundle.putString("circuitId", mCircuitId);
+                bundle.putString("season", String.valueOf(Integer.parseInt(mYear) - 1));
+                intent.putExtras(bundle);
+                requireContext().startActivity(intent);
+            }
+        });
 
-        int resourceId_driverTeam = this.getActivity().getResources().getIdentifier(mCircuitId, "drawable",
-                this.getActivity().getPackageName());
 
-        Glide.with(this.getActivity())
+        int resourceId_driverTeam = requireContext().getResources().getIdentifier(mCircuitId, "drawable",
+                requireContext().getPackageName());
+
+        Glide.with(requireContext())
                 .load(resourceId_driverTeam)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
                 .into(circuitImage);
 
-        World.init(this.getActivity());
+        World.init(requireContext());
         flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -118,6 +136,8 @@ public class futureRaceCircuitFragment extends Fragment {
             return "us";
         } else if (countryName.equals("uk")) {
             return "gb";
+        } else if (countryName.equals("uae")){
+            return "ae";
         }
         for (String code : isoCountryCodes) {
             Locale locale = new Locale("", code);

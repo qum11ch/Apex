@@ -37,8 +37,8 @@
     <style name="ItemStyleOngoing" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_ongoing</item>
     </style>
-    <style name="SecondTitleTextStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/second_title_text_style</item>
+    <style name="StinkyBottomStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/stinky_bottom_style</item>
     </style>
     <style name="PtsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/pts_style</item>
@@ -70,11 +70,6 @@
     </style>
     <style name="CircuitInfoLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/circuit_info_style</item>
-    </style>
-
-    <style name="roundedImageView" parent="">
-        <item name="cornerFamily">rounded</item>
-        <item name="cornerSize">20dp</item>
     </style>
 
 

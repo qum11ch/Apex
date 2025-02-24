@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".futureRaceActivity"
+    android:background="@color/second_pink">
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:paddingTop="40dp"
+        android:layout_height="wrap_content"
+        android:background="@color/red">
+        <ImageButton
+            android:layout_marginTop="2dp"
+            android:id='@+id/backButton'
+            android:layout_marginStart="10dp"
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back_arrow"
+            android:background="@color/red"/>
+        <TextView
+            android:textColor="@color/white"
+            android:id="@+id/raceTitle"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+        <com.google.android.material.tabs.TabLayout
+            style="@style/AppTabLayout"
+            android:id="@+id/tab_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/raceTitle"/>
+    </RelativeLayout>
+    <androidx.viewpager2.widget.ViewPager2
+        android:layout_below="@id/header"
+        android:id="@+id/viewPager2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+</RelativeLayout>

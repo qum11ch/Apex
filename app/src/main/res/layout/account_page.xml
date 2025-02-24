@@ -57,7 +57,7 @@
                     android:gravity="center"
                     android:layout_height="40dp"
                     android:text="userName"
-                    style="@style/SecondTitleTextStyle"
+                    style="@style/StinkyBottomStyle"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"/>
                 <ImageView

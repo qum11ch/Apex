@@ -4,20 +4,19 @@
     android:id="@+id/footer"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="75dp"
+    android:layout_height="80dp"
     android:layout_alignParentBottom="true"
-    android:paddingTop="10dp"
-    android:paddingBottom="20dp"
+    android:paddingTop="6dp"
     android:orientation="horizontal"
     android:weightSum="5">
     <Button
         android:id="@+id/showHomePage"
-        android:drawableTop="@drawable/home_on"
-        android:layout_width="0dp"
-        android:layout_weight="1"
         style="@style/footerButtonOn"
-        android:text="@string/footer_homePage"
-        android:layout_height="wrap_content"/>
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:drawableTop="@drawable/home_on"
+        android:text="@string/footer_homePage" />
     <Button
         android:id="@+id/showDriver"
         android:drawableTop="@drawable/drivers_off"

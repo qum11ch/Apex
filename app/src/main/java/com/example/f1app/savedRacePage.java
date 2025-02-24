@@ -57,20 +57,11 @@ public class savedRacePage extends AppCompatActivity {
         scrollView = (ScrollView) findViewById(R.id.scrollView);
 
         Button previousGP = findViewById(R.id.previousGP);
-        saveRace = (Button) findViewById(R.id.saveRace);
+        //saveRace = (Button) findViewById(R.id.saveRace);
 
 
         Bundle bundle = getIntent().getExtras();
 
-        String mCircuitId = bundle.getString("circuitId");
-        previousGP.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(savedRacePage.this , previousGPActivity.class);
-                intent.putExtra("circuitId", mCircuitId);
-                startActivity(intent);
-            }
-        });
         String mRaceName = bundle.getString("raceName");
         String mRaceDate = bundle.getString("raceDate");
         String mCircuitName = bundle.getString("circuitName");

@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".futureRaceActivity"
-    android:background="@color/second_pink"
-    android:orientation="vertical">
+    android:background="@color/white">
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -24,7 +23,7 @@
             android:background="@color/red"/>
         <TextView
             android:textColor="@color/white"
-            android:id="@+id/futureRaceTitle"
+            android:id="@+id/raceTitile"
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
@@ -34,13 +33,11 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/futureRaceTitle"/>
+            android:layout_below="@id/raceTitile"/>
     </RelativeLayout>
     <androidx.viewpager2.widget.ViewPager2
         android:layout_below="@id/header"
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="80dp"/>
-    <include layout="@layout/footer"/>
+        android:layout_height="wrap_content"/>
 </RelativeLayout>

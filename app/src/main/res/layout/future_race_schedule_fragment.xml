@@ -244,9 +244,9 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/currentDriversLayout"
                     android:orientation="vertical"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="20dp">
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="15dp">
                     <androidx.recyclerview.widget.RecyclerView
                         android:overScrollMode="never"
                         android:layout_width="match_parent"

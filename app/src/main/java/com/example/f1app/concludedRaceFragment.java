@@ -65,7 +65,8 @@ public class concludedRaceFragment extends Fragment {
                 String raceRound = concludedRaceRoundNumber.get(i);
 
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                //rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                rootRef.child("schedule/season/" + "2024").orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         datum = new ArrayList<>();
@@ -77,7 +78,7 @@ public class concludedRaceFragment extends Fragment {
                                 String raceName = ds.child("Circuit/raceName").getValue(String.class);
                                 String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                                 String dateEnd = ds.child("raceDate").getValue(String.class);
-                                String circuitId = ds.child("FirstPractice/circuitId").getValue(String.class);
+                                String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
                                 String secondCode = ds.child("RaceResults/raceSecondCode").getValue(String.class);
                                 String thirdCode = ds.child("RaceResults/raceThirdCode").getValue(String.class);
                                 rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {

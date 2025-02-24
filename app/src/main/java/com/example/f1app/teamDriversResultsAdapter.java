@@ -64,15 +64,15 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                         switch(finishPos){
                             case (1):
                                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.gold));
+                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gold));
                                 break;
                             case (2):
                                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.silver));
+                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_silver));
                                 break;
                             case (3):
                                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.bronze));
+                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_bronze));
                                 break;
                             default:
                                 break;
@@ -114,15 +114,15 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                         switch(finishPos){
                             case (1):
                                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.gold));
+                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gold));
                                 break;
                             case (2):
                                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.silver));
+                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_silver));
                                 break;
                             case (3):
                                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.bronze));
+                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_bronze));
                                 break;
                             default:
                                 break;

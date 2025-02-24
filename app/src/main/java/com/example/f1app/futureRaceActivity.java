@@ -2,27 +2,18 @@ package com.example.f1app;
 
 import static android.app.PendingIntent.getActivity;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.os.Handler;
-import android.util.Log;
-import android.util.TimeUtils;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.Request;
@@ -33,31 +24,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 
 public class futureRaceActivity extends AppCompatActivity {
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
 
     private List<scheduleData> datum;
     private ImageButton backButton;
@@ -72,9 +48,9 @@ public class futureRaceActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.future_race_page);
+        setContentView(R.layout.race_page);
 
-        futureRaceTitle = findViewById(R.id.futureRaceTitle);
+        futureRaceTitle = findViewById(R.id.raceTitile);
         Bundle bundle = getIntent().getExtras();
 
         String mCircuitId = bundle.getString("circuitId");
@@ -88,7 +64,6 @@ public class futureRaceActivity extends AppCompatActivity {
         String mDate = bundle.getString("dateStart");
 
 
-        Log.i("mDate", "" + mDate);
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
         LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
         String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
@@ -114,52 +89,6 @@ public class futureRaceActivity extends AppCompatActivity {
         init(scheduleBundle, circuitBundle);
 
         futureRaceTitle.setText(mRaceName);
-
-
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(futureRaceActivity.this, driversStandingsActivity.class);
-                futureRaceActivity.this.startActivity(intent);
-            }
-        });
-
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(futureRaceActivity.this, schuduleActivity.class);
-                futureRaceActivity.this.startActivity(intent);
-            }
-        });
-
-        showHomePage = (Button) findViewById(R.id.showHomePage);
-        showHomePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(futureRaceActivity.this, MainActivity.class);
-                futureRaceActivity.this.startActivity(intent);
-            }
-        });
-
-        showTeams = (Button) findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(futureRaceActivity.this, teamsStandingsActivity.class);
-                futureRaceActivity.this.startActivity(intent);
-            }
-        });
-
-        showAccount = (Button) findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(futureRaceActivity.this, LogInActivity.class);
-                futureRaceActivity.this.startActivity(intent);
-            }
-        });
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -230,7 +159,7 @@ public class futureRaceActivity extends AppCompatActivity {
         futureRaceScheduleFragment scheduleFragment = new futureRaceScheduleFragment();
         scheduleFragment.setArguments(scheduleBundle);
         adapter.addFragment(scheduleFragment);
-        futureRaceCircuitFragment circuitFragment = new futureRaceCircuitFragment();
+        raceCircuitFragment circuitFragment = new raceCircuitFragment();
         circuitFragment.setArguments(circuitBundle);
         adapter.addFragment(circuitFragment);
         myViewPager2.setAdapter(adapter);

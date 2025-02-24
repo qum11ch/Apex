@@ -17,147 +17,143 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:paddingTop="10dp"
+            android:layout_marginTop="10dp"
+            style="@style/ItemStyle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                style="@style/ItemStyle"
-                android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="5">
+            <RelativeLayout
+                android:layout_weight="1.1"
+                android:layout_height="match_parent"
+                android:layout_width="0dp"
+                android:gravity="center">
+                <LinearLayout
+                    android:id="@+id/header_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerInParent="true">
+                    <TextView
+                        android:id="@+id/day_start"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="00"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                    <TextView
+                        android:layout_height="match_parent"
+                        android:layout_width="wrap_content"
+                        android:gravity="center"
+                        android:text="-"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                    <TextView
+                        android:id="@+id/day_end"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="00"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                </LinearLayout>
+                <TextView
+                    android:textAllCaps="true"
+                    android:id="@+id/raceMonth"
+                    style="@style/PtsStyle"
+                    android:layout_width="match_parent"
+                    android:layout_marginStart="3dp"
+                    android:layout_marginEnd="3dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/header_layout"
+                    android:layout_centerInParent="true"
+                    android:textAlignment="center"
+                    android:paddingStart="3dp"
+                    android:paddingEnd="3dp"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textColor="@color/grey" />
+            </RelativeLayout>
+            <View
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/grey" />
+            <RelativeLayout
+                android:paddingBottom="10dp"
+                android:layout_width="0dp"
+                android:layout_weight="3.9"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="5">
-                <RelativeLayout
-                    android:layout_weight="1.1"
-                    android:layout_height="match_parent"
-                    android:layout_width="0dp"
-                    android:gravity="center">
-                    <LinearLayout
-                        android:id="@+id/header_layout"
+                android:paddingStart="10dp"
+                android:paddingTop="10dp">
+                <LinearLayout
+                    android:id="@+id/roundLayout"
+                    android:layout_width="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp">
+                    <TextView
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:id="@+id/round_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:layout_centerInParent="true">
-                        <TextView
-                            android:id="@+id/day_start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="00"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                        <TextView
-                            android:layout_height="match_parent"
-                            android:layout_width="wrap_content"
-                            android:gravity="center"
-                            android:text="-"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                        <TextView
-                            android:id="@+id/day_end"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="00"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                    </LinearLayout>
+                        android:gravity="center_vertical"
+                        android:text="@string/round"
+                        android:paddingEnd="5dp"
+                        android:paddingStart="0dp"
+                        android:background="@color/white"
+                        android:textColor="@color/red"
+                        android:textSize="14sp"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForPTS"/>
+
                     <TextView
-                        android:textAllCaps="true"
-                        android:id="@+id/raceMonth"
-                        style="@style/PtsStyle"
-                        android:layout_width="match_parent"
-                        android:layout_marginStart="3dp"
-                        android:layout_marginEnd="3dp"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/header_layout"
-                        android:layout_centerInParent="true"
-                        android:textAlignment="center"
-                        android:paddingStart="3dp"
-                        android:paddingEnd="3dp"
+                        android:id="@+id/round"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:background="@color/white"
+                        android:gravity="center_vertical"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:paddingStart="0dp"
+                        android:paddingEnd="10dp"
+                        android:text="0"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                        android:textColor="@color/grey" />
-                </RelativeLayout>
-                <View
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/grey" />
-                <RelativeLayout
-                    android:paddingBottom="10dp"
-                    android:layout_width="0dp"
-                    android:layout_weight="3.9"
+                        android:textColor="@color/red"
+                        android:textSize="14sp" />
+                </LinearLayout>
+                <TextView
+                    android:layout_below="@id/roundLayout"
+                    android:id="@+id/raceCountry"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingStart="10dp"
-                    android:paddingTop="10dp">
-                    <LinearLayout
-                        android:id="@+id/roundLayout"
-                        android:layout_width="match_parent"
-                        android:layout_marginEnd="8dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="5dp">
-                        <TextView
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:id="@+id/round_text"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:gravity="center_vertical"
-                            android:text="@string/round"
-                            android:paddingEnd="5dp"
-                            android:paddingStart="0dp"
-                            android:background="@color/white"
-                            android:textColor="@color/red"
-                            android:textSize="14sp"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"/>
+                    android:layout_marginEnd="8dp"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="0dp"
+                    android:text="@string/race_country"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
-                        <TextView
-                            android:id="@+id/round"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:background="@color/white"
-                            android:gravity="center_vertical"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="10dp"
-                            android:text="0"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                            android:textColor="@color/red"
-                            android:textSize="14sp" />
-                    </LinearLayout>
-                    <TextView
-                        android:layout_below="@id/roundLayout"
-                        android:id="@+id/raceCountry"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="8dp"
-                        android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:text="@string/race_country"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                <TextView
+                    android:id="@+id/raceName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/raceCountry"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="bottom"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="0dp"
+                    android:text="@string/race_name"
+                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
 
-                    <TextView
-                        android:id="@+id/raceName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/raceCountry"
-                        android:layout_marginEnd="8dp"
-                        android:gravity="bottom"
-                        android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:text="@string/race_name"
-                        android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
-
-                    <TextView
-                        android:id="@+id/circuitName"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/raceName"
-                        android:layout_marginEnd="8dp"
-                        android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:text="@string/circuit_name"
-                        android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
-                </RelativeLayout>
-            </LinearLayout>
+                <TextView
+                    android:id="@+id/circuitName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/raceName"
+                    android:layout_marginEnd="8dp"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="0dp"
+                    android:text="@string/circuit_name"
+                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+            </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

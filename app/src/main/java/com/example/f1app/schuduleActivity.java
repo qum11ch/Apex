@@ -55,7 +55,6 @@ public class schuduleActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.main_layout);
-        //main_layout.setBackground(new TileDrawable(ContextCompat.getDrawable(this, R.drawable.test_bg), Shader.TileMode.REPEAT));
         setContentView(R.layout.schudule_page);
         LocalDate currentDate = LocalDate.now();
 
@@ -118,7 +117,8 @@ public class schuduleActivity extends AppCompatActivity {
 
     private void getSchedule(String year, LocalDate currentDate){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+        //rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> concludedRoundNumber = new ArrayList<>();

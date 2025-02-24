@@ -64,15 +64,15 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                         switch (finishPos) {
                             case (1):
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.gold));
+                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gold));
                                 break;
                             case (2):
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.silver));
+                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_silver));
                                 break;
                             case (3):
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.bronze));
+                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_bronze));
                                 break;
                             default:
                                 break;

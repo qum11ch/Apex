@@ -106,7 +106,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="Gold"
-                android:backgroundTint="@color/gold"/>
+                android:backgroundTint="@color/light_gold"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -120,7 +120,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Winner"
-                android:background="@color/gold"/>
+                android:background="@color/light_gold"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -134,7 +134,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="Silver"
-                android:background="@color/silver"/>
+                android:background="@color/light_silver"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -148,7 +148,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Second place"
-                android:background="@color/silver"/>
+                android:background="@color/light_silver"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -162,7 +162,7 @@
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:text="Bronze"
-                android:background="@color/bronze"/>
+                android:background="@color/light_bronze"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -176,7 +176,7 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text="Third place"
-                android:background="@color/bronze"/>
+                android:background="@color/light_bronze"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
