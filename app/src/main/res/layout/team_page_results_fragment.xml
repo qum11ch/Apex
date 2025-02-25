@@ -2,7 +2,6 @@
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingStart="10dp"
     android:paddingEnd="0dp"
     android:paddingTop="20dp"
     android:layout_marginBottom="30dp"
@@ -10,17 +9,48 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <TextView
             android:id="@+id/resHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Drivers results in 2024 season"
+            android:text="Drivers results"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/black"
             android:textSize="28sp"
             android:textStyle="bold" />
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/resHeader"
+            android:id="@+id/toggleButtons"
+            android:orientation="horizontal">
+            <CheckBox
+                android:id="@+id/radioButton_2025"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:text="2025 Season"
+                android:textColor="@drawable/toggle_text_color"
+                style="@style/ToggleButton"
+                android:checked="false"/>
+            <CheckBox
+                android:id="@+id/radioButton_2024"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@drawable/toggle_text_color"
+                android:text="2024 Season"
+                style="@style/ToggleButton"
+                android:layout_marginEnd="5dp"/>
+        </LinearLayout>
         <RelativeLayout
             android:id="@+id/results_layout"
             android:paddingStart="10dp"
@@ -29,8 +59,7 @@
             android:layout_height="wrap_content"
             style="@style/StatisticLayout"
             android:paddingTop = "10dp"
-            android:layout_marginEnd="20dp"
-            android:layout_below="@id/resHeader">
+            android:layout_below="@id/toggleButtons">
             <LinearLayout
                 android:id="@+id/results_header"
                 android:orientation="horizontal"
@@ -123,6 +152,7 @@
                 android:id="@+id/drivers_results"/>
         </RelativeLayout>
         <RelativeLayout
+            android:layout_centerHorizontal="true"
             style="@style/Borders"
             android:layout_marginTop="20dp"
             android:orientation="horizontal"
@@ -347,6 +377,36 @@
                 android:layout_below="@id/keyMap_white"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
+                android:id="@+id/keyMap_black"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="Black"
+                android:backgroundTint="@color/black"/>
+            <TextView
+                android:layout_marginStart="0.5dp"
+                android:layout_marginEnd="0.5dp"
+                style="@style/Borders"
+                android:layout_below="@id/keyMap_white"
+                android:layout_toRightOf="@id/keyMap_black"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="Disqualified (DSQ)"
+                android:background="@color/black"/>
+            <TextView
+                android:layout_marginStart="0.5dp"
+                android:layout_marginEnd="0.5dp"
+                style="@style/Borders"
+                android:layout_below="@id/keyMap_black"
+                android:paddingStart="10dp"
+                android:paddingEnd="0dp"
                 android:id="@+id/keyMap_blank"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/dark_grey"
@@ -359,7 +419,7 @@
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 style="@style/Borders"
-                android:layout_below="@id/keyMap_white"
+                android:layout_below="@id/keyMap_black"
                 android:layout_toRightOf="@id/keyMap_blank"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"

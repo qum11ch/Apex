@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -29,6 +31,7 @@ public class driverResultsFragment extends Fragment {
     private driverResultsAdapter adapter;
     private RecyclerView recyclerView;
     private List<driverResultsData> datum;
+    private CheckBox radioButton_2025, radioButton_2024;
 
     public driverResultsFragment() {
         // required empty public constructor.
@@ -48,51 +51,108 @@ public class driverResultsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        datum = new ArrayList<>();
+
+        radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
+        radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
 
         recyclerView = view.findViewById(R.id.driver_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         if (!getArguments().isEmpty()) {
             String mDriverTeam = getArguments().getString("driverTeam");
             String mDriverName = getArguments().getString("driverName");
             String mDriverCode = getArguments().getString("driverCode");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
 
-            String fullDriverName = mDriverName + " " + mDriverFamilyName;
+            radioButton_2025.setChecked(true);
+            getResults("2025", mDriverName, mDriverFamilyName);
 
-            rootRef.child("schedule/season/2024/").orderByChild("round").addValueEventListener(new ValueEventListener() {
+            radioButton_2025.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds : snapshot.getChildren()) {
-                        String raceName = ds.getKey();
-                        rootRef.child("results/season/2024").addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                public void onClick(View view) {
+                    if (!radioButton_2025.isChecked()){
+                        radioButton_2025.setChecked(true);
+                        radioButton_2024.setChecked(false);
+                    }
+                    radioButton_2024.setChecked(false);
+                }
+            });
+
+            radioButton_2024.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (!radioButton_2024.isChecked()){
+                        radioButton_2025.setChecked(false);
+                        radioButton_2024.setChecked(true);
+                    }
+                    radioButton_2025.setChecked(false);
+                }
+            });
+
+            radioButton_2025.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (radioButton_2025.isChecked()){
+                        getResults("2025", mDriverName, mDriverFamilyName);
+                    }
+                }
+            });
+
+            radioButton_2024.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if (radioButton_2024.isChecked()){
+                        getResults("2024", mDriverName, mDriverFamilyName);
+                    }
+                }
+            });
+        }
+    }
+
+    private void getResults(String season, String driverName, String driverFamilyName){
+        String fullDriverName = driverName + " " + driverFamilyName;
+        datum = new ArrayList<>();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("schedule/season/" + season + "/").orderByChild("round").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String raceName = ds.getKey();
+                    rootRef.child("results/season/" + season).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.hasChild(fullDriverName)){
                                 String driverResult = snapshot.child(fullDriverName)
                                         .child(raceName).getValue(String.class);
                                 driverResultsData results = new driverResultsData(raceName,
-                                        driverResult, fullDriverName, 2025);
+                                        driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);
                                 adapter = new driverResultsAdapter(getActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e("error", "" + error);
+                            else{
+                                String driverResult = "NP";
+                                driverResultsData results = new driverResultsData(raceName,
+                                        driverResult, fullDriverName, Integer.parseInt(season));
+                                datum.add(results);
+                                adapter = new driverResultsAdapter(getActivity(), datum);
+                                recyclerView.setAdapter(adapter);
                             }
-                        });
+                        }
 
-                    }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("error", "" + error);
+                        }
+                    });
+
                 }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("error", "" + error);
-                }
-            });
-        }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("error", "" + error);
+            }
+        });
     }
 }

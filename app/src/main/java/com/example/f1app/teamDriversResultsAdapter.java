@@ -23,6 +23,12 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
         this.dataList = datum;
     }
 
+    public void updateData(List<teamDriversResultsData> datum) {
+        dataList.clear();
+        dataList.addAll(datum);
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public teamDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -55,9 +61,13 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
                     holder.firstDriverResult.setText("Ret");
                 } else if (firstDriverFinish.equals("W")) {
-                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_grey));
+                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
                     holder.firstDriverResult.setText("WD");
+                } else if (firstDriverFinish.equals("D")) {
+                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
+                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+                    holder.firstDriverResult.setText("DSQ");
                 } else{
                     int finishPos = Integer.parseInt(firstDriverFinish);
                     if (finishPos <= 3){
@@ -105,9 +115,13 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
                     holder.secondDriverResult.setText("Ret");
                 } else if (secondDriverFinish.equals("W")) {
-                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_grey));
+                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
                     holder.secondDriverResult.setText("WD");
+                } else if (secondDriverFinish.equals("D")) {
+                        holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
+                        holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+                        holder.secondDriverResult.setText("DSQ");
                 } else{
                     int finishPos = Integer.parseInt(secondDriverFinish);
                     if (finishPos <= 3){
@@ -142,11 +156,13 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 }
             }
         } else{
+            holder.firstDriverResult.setText(secondDriverResult);
             holder.secondDriverResult.setText(secondDriverResult);
         }
 
 
     }
+
 
     @Override
     public int getItemCount() {

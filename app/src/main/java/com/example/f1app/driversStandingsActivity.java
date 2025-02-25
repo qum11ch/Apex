@@ -175,8 +175,14 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                             @Override
                                                             public void onDataChange(DataSnapshot dataSnapshot) {
                                                                 String[] parts = driverFullname.split(" ");
-                                                                String driverName = parts[0];
-                                                                String driverFamilyName = parts[1];
+                                                                String driverName, driverFamilyName;
+                                                                if(driverFullname.equals("Andrea Kimi Antonelli")){
+                                                                    driverName = parts[0] + " " + parts[1];
+                                                                    driverFamilyName = parts[2];
+                                                                }else{
+                                                                    driverName = parts[0];
+                                                                    driverFamilyName = parts[1];
+                                                                }
                                                                 String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
                                                                 driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                         true);

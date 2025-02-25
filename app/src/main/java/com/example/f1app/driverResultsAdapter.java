@@ -58,6 +58,10 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
                     holder.driverResults.setText("WD");
+                } else if (driverFinish.equals("D")) {
+                    holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.white));
+                    holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+                    holder.driverResults.setText("DSQ");
                 } else {
                     int finishPos = Integer.parseInt(driverFinish);
                     if (finishPos <= 3) {
@@ -91,6 +95,8 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                     holder.driverResults.setText(driverFinish);
                 }
             }
+        }else {
+            holder.driverResults.setText(driverResult);
         }
     }
 

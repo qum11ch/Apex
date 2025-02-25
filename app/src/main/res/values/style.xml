@@ -16,6 +16,16 @@
         <item name="cornerSizeBottomLeft">5dp</item>
     </style>
 
+    <style name="ToggleButton" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:background">@drawable/toggle_background</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
     <style name="CountdownStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_countdown</item>
     </style>
@@ -25,8 +35,11 @@
     <style name="Borders" parent="android:Widget.TextView">
         <item name="android:background">@drawable/simple_borders</item>
     </style>
-    <style name="ToggleButtonShowStyle" parent="android:Widget.TextView">
+    <style name="ToggleButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_toggle</item>
+    </style>
+    <style name="ToggleButtonStyle.Checked">
+        <item name="backgroundTint">@color/red</item>
     </style>
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
