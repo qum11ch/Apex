@@ -6,7 +6,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.preference.PreferenceManager;
+
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
+import androidx.preference.PreferenceManager;
+
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -17,14 +23,18 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class accountPageActivity extends AppCompatActivity {
-    private TextView userName, fullName, Email;
+    private TextView userName, fullName, Email, username_toolbar;
     private Button logout, settings, savedRace;
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
     private ImageButton backButton;
+    private NestedScrollView nestedScrollView;
     private ImageView imageView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,17 +42,19 @@ public class accountPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_page);
 
-        userName = (TextView) findViewById(R.id.userName);
-        fullName = (TextView) findViewById(R.id.fullname);
-        Email = (TextView) findViewById(R.id.email);
+        //userName = (TextView) findViewById(R.id.userName);
+        //fullName = (TextView) findViewById(R.id.fullname);
+        //Email = (TextView) findViewById(R.id.email);
         logout = (Button) findViewById(R.id.logout);
-        imageView = (ImageView) findViewById(R.id.poster_image);
+        //imageView = (ImageView) findViewById(R.id.poster_image);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isloged = prefs.getBoolean("Islogin", false);
+        String username = prefs.getString("username", " ");
+
 
         if(!isloged){
-            Intent i = new Intent(accountPageActivity.this, LogInActivity.class);
+            Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
             startActivity(i);
             finish();
         }
@@ -51,14 +63,14 @@ public class accountPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 prefs.edit().putBoolean("Islogin",false).commit();
-                Intent i = new Intent(accountPageActivity.this, LogInActivity.class);
+                prefs.edit().putString("username",null).commit();
+                Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
                 startActivity(i);
                 finish();
             }
         });
 
-        String username = prefs.getString("username","");
-        getText(username);
+        //getText(username);
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +113,7 @@ public class accountPageActivity extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, LogInActivity.class);
+                Intent intent = new Intent(accountPageActivity.this, logInPageActivity.class);
                 accountPageActivity.this.startActivity(intent);
             }
         });
@@ -156,38 +168,5 @@ public class accountPageActivity extends AppCompatActivity {
                 });
             }
         });
-    }
-
-    public void getText(String username) {
-        if (!username.equals("")) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    GetDataAccount putData = new GetDataAccount(
-                            "http://192.168.56.1/login/getAccount.php",
-                            "GET", username);
-                    if (putData.startPut()) {
-                        if (putData.onComplete()) {
-                            JSONObject resultGet = putData.getResult();
-                            try {
-                                userName.setText(resultGet.getString("username"));
-                                Email.setText(resultGet.getString("email"));
-                                fullName.setText(resultGet.getString("fullname"));
-                                Uri selectedImage = Uri.parse(resultGet.getString("image"));
-                                GlideApp.with(accountPageActivity.this)
-                                        .load(selectedImage)
-                                        .placeholder(R.drawable.image_placeholder)
-                                        .into(imageView);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            });
-        }else{
-            Toast.makeText(getApplicationContext(),"All fields required!",Toast.LENGTH_SHORT).show();
-        }
     }
 }

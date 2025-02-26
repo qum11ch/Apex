@@ -198,20 +198,4 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         }
     }
 
-    public String getCountryCode(String countryName) {
-        String[] isoCountryCodes = Locale.getISOCountries();
-        if(countryName.equals("USA")){
-            return "us";
-        } else if (countryName.equals("UK")) {
-            return "gb";
-        }
-        for (String code : isoCountryCodes) {
-            Locale locale = new Locale("", code);
-            if (countryName.equalsIgnoreCase(locale.getDisplayCountry())) {
-                return code;
-            }
-        }
-        return "";
-    }
-
 }

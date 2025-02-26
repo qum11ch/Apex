@@ -34,9 +34,7 @@ import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class teamsStandingsActivity extends AppCompatActivity {
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
@@ -89,7 +87,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(teamsStandingsActivity.this, LogInActivity.class);
+                Intent intent = new Intent(teamsStandingsActivity.this, logInPageActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
             }
         });

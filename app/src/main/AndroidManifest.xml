@@ -46,10 +46,10 @@
         <activity android:name=".driverPageActivity" />
         <activity android:name=".raceResultsActivity"/>
         <activity
-            android:name=".LogInActivity"
+            android:name=".logInPageActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity
-            android:name=".signUpActivity"
+            android:name=".registerPageActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".accountPageActivity" />
         <activity android:name=".savedRacesActivity" />

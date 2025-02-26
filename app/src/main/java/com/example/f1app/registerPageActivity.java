@@ -1,0 +1,168 @@
+package com.example.f1app;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
+import android.util.Patterns;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+public class registerPageActivity extends AppCompatActivity {
+    FirebaseAuth auth;
+    EditText editTextUsername, editTextEmail, editTextPassword;
+    Button signUpButton;
+    TextView logInTextView;
+    private ImageButton backButton;
+    TextInputLayout til_username, til_email, til_password;
+    String email, password, username;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        EdgeToEdge.enable(this);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.register_page);
+        editTextUsername = findViewById(R.id.signUpUsername);
+        editTextEmail = findViewById(R.id.signUpEmail);
+        editTextPassword = findViewById(R.id.signUpPassword);
+        signUpButton = findViewById(R.id.registerButton);
+        logInTextView = findViewById(R.id.logInText);
+
+        til_username = (TextInputLayout) findViewById(R.id.username_layout);
+        til_email = (TextInputLayout) findViewById(R.id.email_layout);
+        til_password = (TextInputLayout) findViewById(R.id.password_layout);
+
+        auth = FirebaseAuth.getInstance();
+
+        logInTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), logInPageActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+
+        signUpButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                registerNewUser();
+            }
+        });
+
+        backButton = (ImageButton) findViewById(R.id.backButton);
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        editTextEmail.addTextChangedListener(textWatcher);
+        editTextPassword.addTextChangedListener(textWatcher);
+        editTextUsername.addTextChangedListener(textWatcher);
+
+    }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            email = editTextEmail.getText().toString().trim();
+            password = editTextPassword.getText().toString().trim();
+            username = editTextUsername.getText().toString().trim();
+
+            if(!username.isEmpty()){
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if(snapshot.hasChild(username)){
+                            til_username.setError("This username is already taken");
+                        }else{
+                            til_username.setError(null);
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("registerPageActivity", "Error while checking username. Error:" + error.getMessage());
+                    }
+                });
+            }
+
+            if(password.length()<6 && !password.isEmpty()){
+                til_password.setError("Password must has at least 6 symbols");
+            }else{
+                til_password.setError(null);
+            }
+
+            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.isEmpty()){
+                til_email.setError("Invalid email");
+            }else{
+                til_email.setError(null);
+            }
+
+            signUpButton.setEnabled(!email.isEmpty() && !(password.length() < 6) && !username.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable editable) {}
+    };
+
+    private void registerNewUser() {
+        email = editTextEmail.getText().toString().trim();
+        password = editTextPassword.getText().toString().trim();
+        username = editTextUsername.getText().toString().trim();
+
+        if(til_email.getError() != null || til_password.getError() != null || til_username.getError() != null){
+            Toast.makeText(registerPageActivity.this, "All field must be filled", Toast.LENGTH_LONG).show();
+        }else{
+            auth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(registerPageActivity.this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(registerPageActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+                                createNewUser(task.getResult().getUser(), username);
+                                startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
+                                finish();
+                            } else {
+                                Toast.makeText(registerPageActivity.this, "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void createNewUser(FirebaseUser userFromRegistration, String username) {
+        String email = userFromRegistration.getEmail();
+        String userId = userFromRegistration.getUid();
+        userData user = new userData(userId, email);
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").child(username).setValue(user);
+    }
+}

@@ -27,7 +27,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
@@ -37,7 +36,6 @@ import org.json.JSONObject;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class driversStandingsActivity extends AppCompatActivity {
     Button showTeamsButton, showDriverStanding, showTeams, showHomePage, showAccount;
@@ -90,7 +88,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(driversStandingsActivity.this, LogInActivity.class);
+                Intent intent = new Intent(driversStandingsActivity.this, logInPageActivity.class);
                 driversStandingsActivity.this.startActivity(intent);
             }
         });

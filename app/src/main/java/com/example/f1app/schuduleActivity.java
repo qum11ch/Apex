@@ -93,7 +93,7 @@ public class schuduleActivity extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(schuduleActivity.this, LogInActivity.class);
+                Intent intent = new Intent(schuduleActivity.this, logInPageActivity.class);
                 schuduleActivity.this.startActivity(intent);
             }
         });

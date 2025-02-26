@@ -145,7 +145,7 @@ public class savedRacePage extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(savedRacePage.this, LogInActivity.class);
+                Intent intent = new Intent(savedRacePage.this, logInPageActivity.class);
                 savedRacePage.this.startActivity(intent);
             }
         });

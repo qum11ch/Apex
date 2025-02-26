@@ -148,7 +148,7 @@ public class settingsActivity extends AppCompatActivity {
                                             Toast.makeText(getApplicationContext(), "Update success",
                                                     Toast.LENGTH_LONG).show();
                                             Intent intent = new
-                                                    Intent(getApplicationContext(), LogInActivity.class);
+                                                    Intent(getApplicationContext(), logInPageActivity.class);
                                             startActivity(intent);
                                             finish();
                                         } else {
