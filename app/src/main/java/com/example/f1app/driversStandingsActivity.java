@@ -44,7 +44,7 @@ public class driversStandingsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageButton backButton;
     private Toolbar toolbar;
-    private driversAdapter adapter;
+    private driversStandingsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -147,7 +147,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         datum.add(smth);
                                     }
                                 }
-                                adapter = new driversAdapter(driversStandingsActivity.this, datum);
+                                adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
                                 recyclerView.setAdapter(adapter);
                             //14.02.2025 WORK HERE
                             }else{
@@ -185,7 +185,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                 driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                         true);
                                                                 datum.add(smth);
-                                                                adapter = new driversAdapter(driversStandingsActivity.this, datum);
+                                                                adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
                                                                 recyclerView.setAdapter(adapter);
                                                             }
 

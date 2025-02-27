@@ -22,7 +22,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import java.lang.reflect.Field;
 import java.util.List;
 
-public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHolder> {
+public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandingsAdapter.DataHolder> {
     Context context;
     List<driversList> dataList;
 
@@ -36,14 +36,14 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
     }
 
 
-    public driversAdapter(Context context, List<driversList> datum) {
+    public driversStandingsAdapter(Context context, List<driversList> datum) {
         this.context = context;
         dataList = datum;
     }
 
     @NonNull
     @Override
-    public driversAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public driversStandingsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view;
         switch (viewType) {
@@ -54,11 +54,11 @@ public class driversAdapter extends RecyclerView.Adapter<driversAdapter.DataHold
                 view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
                 break;
         }
-        return new driversAdapter.DataHolder(view, viewType);
+        return new driversStandingsAdapter.DataHolder(view, viewType);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull driversAdapter.DataHolder holder, int position) {
+    public void onBindViewHolder(@NonNull driversStandingsAdapter.DataHolder holder, int position) {
         driversList datum = dataList.get(position);
         holder.driverName.setText(datum.getDriverName());
         holder.driverFamilyName.setText(datum.getDriverFamilyName());

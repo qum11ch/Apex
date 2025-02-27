@@ -43,7 +43,6 @@ public class savedRacesActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         String username = prefs.getString("username","");
-        getText2(username);
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -97,55 +96,5 @@ public class savedRacesActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
-    public void getText2(String username) {
-        if (!username.equals("")) {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    GetRaceData putData = new GetRaceData(
-                            "http://192.168.56.1/login/getRace.php",
-                            "GET", username);
-                    if (putData.startPut()) {
-                        if (putData.onComplete()) {
-                            JSONArray resultGet = putData.getResult();
-                            try {
-                                for (int i = 0; i < resultGet.length(); i++){
-                                    if (!resultGet.getJSONObject(i).getString("id").equals("null")) {
-                                        JSONObject query = resultGet.getJSONObject(i);
-                                        String id = query.getString("id");
-                                        String raceName = query.getString("raceName");
-                                        String raceDate = query.getString("raceDate");
-                                        String circuitName = query.getString("circuitName");
-                                        String round = query.getString("round");
-                                        String country = query.getString("country");
-                                        String src = query.getString("src");
-                                        String circuitId = query.getString("circuitId");
-                                        String winnerDriver = query.getString("winnerDriver");
-                                        String winnerConstructor = query.getString("winnerConstructor");
-                                        String secondDriver = query.getString("secondDriver");
-                                        String secondConstructor = query.getString("secondConstructor");
-                                        String thirdDriver = query.getString("thirdDriver");
-                                        String thirdConstructor = query.getString("thirdConstructor");
-                                        raceData raceData = new raceData(raceName, raceDate, circuitName, round,
-                                                country, src, circuitId, winnerDriver, winnerConstructor, secondDriver,
-                                                secondConstructor, thirdDriver, thirdConstructor);
-                                        raceData.setId(id);
-                                        datum.add(raceData);
-                                    }
-                                }
-                                raceDataAdapter adapter = new raceDataAdapter(savedRacesActivity.this, datum);
-                                recyclerView.setAdapter(adapter);
-                            } catch (JSONException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
-                    }
-                }
-            });
-        }else{
-            Toast.makeText(getApplicationContext(),"All fields required!",Toast.LENGTH_SHORT).show();
-        }
     }
 }

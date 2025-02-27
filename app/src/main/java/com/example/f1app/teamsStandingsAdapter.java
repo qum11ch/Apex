@@ -4,7 +4,6 @@ package com.example.f1app;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,11 +24,11 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
+public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAdapter.DataHolder>{
     Context context;
     List<teamsList> dataList;
 
-    public teamsAdapter(Context context , List<teamsList> datum){
+    public teamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
         dataList = datum;
     }
@@ -46,7 +45,7 @@ public class teamsAdapter extends RecyclerView.Adapter<teamsAdapter.DataHolder>{
                 view = LayoutInflater.from(context).inflate(R.layout.item_team, parent , false);
                 break;
         }
-        return new teamsAdapter.DataHolder(view, viewType);
+        return new teamsStandingsAdapter.DataHolder(view, viewType);
     }
 
     @Override

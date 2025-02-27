@@ -1,23 +1,24 @@
 <resources>
+    <string-array name="array">
+        <item>First time here? Register there!</item>
+        <item>F1 App</item>
+        <item>First time here? Register there!</item>
+    </string-array>
     <string name="app_name">F1 App</string>
     <string name="login_text">Log In</string>
     <string name="register_text">Register</string>
     <string name="usernameText">Username</string>
-    <string name="username_hint">Username</string>
+    <string name="username_hint">Username*</string>
     <string name="passwordText">Password</string>
-    <string name="cityText">City</string>
-    <string name="password_hint">Password</string>
+    <string name="password_hint">Password*</string>
     <string name="fullnameText">Full name</string>
     <string name="fullname_hint">Full name</string>
-    <string name="age_hint">Age</string>
     <string name="emailText">Email</string>
-    <string name="email_hint">Email</string>
-    <string name="city_hint">City</string>
+    <string name="email_hint">Email*</string>
     <string name="loginButton">LOG IN</string>
     <string name="registerButton">SIGN IN</string>
     <string name="singUpText">First time here? Register there!</string>
     <string name="logInText">Login Here</string>
-    <string name="main_text">You`re successfully loginned</string>
     <string name="footer_driver">Drivers</string>
     <string name="footer_teams">Teams</string>
     <string name="footer_schedule">Schedule</string>
@@ -38,7 +39,6 @@
     <string name="place">Pos</string>
     <string name="driver">Driver</string>
     <string name="team">Team</string>
-    <string name="place_4_to_20">place 4 to 20</string>
     <string name="previous_gp">Previous years GP results</string>
     <string name="previous_gp_second">Previous years GP</string>
     <string name="save_race">Save Race</string>
@@ -112,4 +112,6 @@
     <string name="teamlogo">teamLogo</string>
     <string name="carimage">carImage</string>
     <string name="driverimage">driverImage</string>
+    <string name="driver_choice">Choose your favourite driver (optional):</string>
+    <string name="choiceTeam_hint">Choose your favourite team (optional):</string>
 </resources>

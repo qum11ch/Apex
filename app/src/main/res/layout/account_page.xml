@@ -4,14 +4,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/light_grey">
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:background="@color/white"
         android:overScrollMode="never">
         <RelativeLayout
+            android:background="@color/light_grey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <RelativeLayout
@@ -19,7 +21,7 @@
                 android:background="@drawable/blue_gradient"
                 android:id="@+id/header"
                 android:layout_width="match_parent"
-                android:layout_height="420dp">
+                android:layout_height="wrap_content">
                 <ImageButton
                     android:layout_marginTop="2dp"
                     android:id='@+id/backButton'
@@ -29,6 +31,7 @@
                     android:src="@drawable/back_arrow"
                     android:background="@android:color/transparent"/>
                 <View
+                    android:id="@+id/grid"
                     android:layout_alignParentBottom="true"
                     android:layout_width="match_parent"
                     android:layout_height="130dp"
@@ -40,28 +43,27 @@
                     android:id="@+id/line"
                     android:layout_width="3dp"
                     android:layout_height="160dp"
-                    android:background="@color/white" />
+                    android:background="@color/white"/>
                 <TextView
                     android:layout_marginTop="80dp"
-                    android:text="username"
                     android:layout_marginStart="20dp"
                     android:layout_toEndOf="@id/line"
                     android:textColor="@color/white"
                     android:id='@+id/username'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                 <TextView
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
                     android:layout_toEndOf="@id/line"
-                    android:text="Fan of"
+                    android:textSize="24sp"
                     android:layout_below="@id/username"
                     android:textColor="@color/white"
                     android:id='@+id/fanText'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
                 <TextView
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="20dp"
@@ -69,7 +71,6 @@
                     android:layout_below="@id/fanText"
                     android:textColor="@color/white"
                     android:id='@+id/driverNumber'
-                    android:text="33"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
@@ -83,7 +84,6 @@
                     android:layout_height="20dp"
                     android:background="@color/white_alpha" />
                 <TextView
-                    android:text="driverName"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_toEndOf="@id/line2"
@@ -99,39 +99,35 @@
                     android:layout_width="30dp"
                     android:id="@+id/team_logo"
                     android:layout_height="30dp"
-                    android:src="@drawable/ferrari_logo"
                     android:layout_below="@id/userFavDriver"
                     android:layout_toEndOf="@id/line"/>
                 <TextView
-                    android:layout_toEndOf="@id/line2"
+                    android:layout_toEndOf="@id/team_logo"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="10dp"
                     android:layout_below="@id/userFavDriver"
-                    android:text="teamName"
                     android:textColor="@color/white"
                     android:id='@+id/userFavTeam'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                 <ImageView
                     android:layout_below="@id/line"
-                    android:src="@drawable/haas"
                     android:id="@+id/team_car"
                     android:layout_width="wrap_content"
                     android:layout_height="150dp"
-                    android:fitsSystemWindows="true"
                     android:scaleType="fitEnd"
                     android:scrollX="135dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentStart="true"
                     android:scaleX="1"/>
                 <ImageView
-                    android:src="@drawable/ham"
+                    android:layout_below="@id/userFavTeam"
                     android:id="@+id/driver_image"
                     android:layout_width="210dp"
                     android:layout_height="210dp"
-                    android:layout_marginStart="10dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
-                    android:fitsSystemWindows="true"
                     android:scaleType="fitEnd"/>
             </RelativeLayout>
             <LinearLayout

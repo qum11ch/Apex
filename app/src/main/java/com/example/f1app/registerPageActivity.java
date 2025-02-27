@@ -28,6 +28,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.shawnlin.numberpicker.NumberPicker;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class registerPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
@@ -37,6 +42,7 @@ public class registerPageActivity extends AppCompatActivity {
     private ImageButton backButton;
     TextInputLayout til_username, til_email, til_password;
     String email, password, username;
+    NumberPicker driverPicker, teamPicker;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -47,6 +53,55 @@ public class registerPageActivity extends AppCompatActivity {
         editTextPassword = findViewById(R.id.signUpPassword);
         signUpButton = findViewById(R.id.registerButton);
         logInTextView = findViewById(R.id.logInText);
+        driverPicker = findViewById(R.id.driver_picker);
+        teamPicker = findViewById(R.id.team_picker);
+
+        LocalDate currentDate = LocalDate.now();
+        String currentYear = Integer.toString(currentDate.getYear());
+
+        ArrayList<String> driversList = new ArrayList<>();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("driverLineUp/season").child(currentYear).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot teamSnapshot: snapshot.getChildren()){
+                    for(DataSnapshot driverSnaphot: teamSnapshot.child("drivers").getChildren()){
+                        driversList.add(driverSnaphot.getKey());
+                    }
+                }
+                driverPicker.setMinValue(1);
+                driverPicker.setMaxValue(driversList.size());
+                Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
+                Collections.reverse(driversList);
+                driversList.add("Nobody");
+                Collections.reverse(driversList);
+                driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("registerPageActivity", "Error while getting drivers. Error:" + error.getMessage());
+            }
+        });
+
+        ArrayList<String> teamList = new ArrayList<>();
+        teamList.add("Nobody");
+        rootRef.child("constructors").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot teamSnapshot: snapshot.getChildren()){
+                    teamList.add(teamSnapshot.child("name").getValue(String.class));
+                }
+                teamPicker.setMinValue(1);
+                teamPicker.setMaxValue(teamList.size());
+                teamPicker.setDisplayedValues(teamList.toArray(new String[teamList.size()]));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("registerPageActivity", "Error while getting constructors. Error:" + error.getMessage());
+            }
+        });
 
         til_username = (TextInputLayout) findViewById(R.id.username_layout);
         til_email = (TextInputLayout) findViewById(R.id.email_layout);
@@ -67,7 +122,7 @@ public class registerPageActivity extends AppCompatActivity {
         signUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                registerNewUser();
+                registerNewUser(driversList, teamList);
             }
         });
 
@@ -82,6 +137,7 @@ public class registerPageActivity extends AppCompatActivity {
         editTextEmail.addTextChangedListener(textWatcher);
         editTextPassword.addTextChangedListener(textWatcher);
         editTextUsername.addTextChangedListener(textWatcher);
+
 
     }
 
@@ -132,10 +188,13 @@ public class registerPageActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
-    private void registerNewUser() {
+    private void registerNewUser(ArrayList<String> driversList, ArrayList<String> teamList) {
         email = editTextEmail.getText().toString().trim();
         password = editTextPassword.getText().toString().trim();
         username = editTextUsername.getText().toString().trim();
+
+        String choiceDriver = driversList.get(driverPicker.getValue() - 1);
+        String choiceTeam = teamList.get(teamPicker.getValue() - 1);
 
         if(til_email.getError() != null || til_password.getError() != null || til_username.getError() != null){
             Toast.makeText(registerPageActivity.this, "All field must be filled", Toast.LENGTH_LONG).show();
@@ -146,7 +205,7 @@ public class registerPageActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Toast.makeText(registerPageActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
-                                createNewUser(task.getResult().getUser(), username);
+                                createNewUser(task.getResult().getUser(), username, choiceDriver, choiceTeam);
                                 startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
                                 finish();
                             } else {
@@ -157,10 +216,11 @@ public class registerPageActivity extends AppCompatActivity {
         }
     }
 
-    private void createNewUser(FirebaseUser userFromRegistration, String username) {
+    private void createNewUser(FirebaseUser userFromRegistration, String username, String choiceDriver,
+                               String choiceTeam) {
         String email = userFromRegistration.getEmail();
         String userId = userFromRegistration.getUid();
-        userData user = new userData(userId, email);
+        userData user = new userData(userId, email, choiceDriver, choiceTeam);
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("users").child(username).setValue(user);

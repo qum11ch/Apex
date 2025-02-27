@@ -56,7 +56,6 @@ public class schuduleActivity extends AppCompatActivity {
 
         RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.main_layout);
         setContentView(R.layout.schudule_page);
-        LocalDate currentDate = LocalDate.now();
 
         recyclerView = findViewById(R.id.recyclerview_concludedRaces);
 
@@ -105,7 +104,9 @@ public class schuduleActivity extends AppCompatActivity {
                 finish();
             }
         });
+
         datum = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
 
         getSchedule(currentYear, currentDate);

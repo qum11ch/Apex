@@ -157,43 +157,6 @@ public class savedRacePage extends AppCompatActivity {
                 finish();
             }
         });
-
-
-        deleteRace = (Button) findViewById(R.id.deleteRace);
-        deleteRace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        String[] field = new String[1];
-                        field[0] = "id";
-                        String[] data = new String[1];
-                        data[0] = mId;
-                        PutData putData = new PutData(
-                                "http://192.168.56.1/login/deleteRace.php",
-                                "POST", field, data);
-                        if (putData.startPut()) {
-                            if (putData.onComplete()) {
-                                String result = putData.getResult();
-                                if (result.equals("1")) {
-                                    Toast.makeText(getApplicationContext(), "Delete success",
-                                            Toast.LENGTH_LONG).show();
-                                    Intent intent = new Intent(savedRacePage.this, savedRacesActivity.class);
-                                    savedRacePage.this.startActivity(intent);
-                                    finish();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), result,
-                                            Toast.LENGTH_LONG).show();
-                                    //Log.i("resultCustom", " " + result);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
     }
 
 

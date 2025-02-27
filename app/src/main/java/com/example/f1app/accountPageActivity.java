@@ -2,56 +2,195 @@ package com.example.f1app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
-import androidx.core.widget.NestedScrollView;
+import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 
-import android.view.MotionEvent;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class accountPageActivity extends AppCompatActivity {
-    private TextView userName, fullName, Email, username_toolbar;
+    private TextView username, userFavDriverNumber, userFavDriver, userFavTeam, fanText;
     private Button logout, settings, savedRace;
+    View line, line2;
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
     private ImageButton backButton;
-    private NestedScrollView nestedScrollView;
-    private ImageView imageView;
+    private ImageView teamLogo, teamCar, driverImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_page);
 
-        //userName = (TextView) findViewById(R.id.userName);
-        //fullName = (TextView) findViewById(R.id.fullname);
-        //Email = (TextView) findViewById(R.id.email);
         logout = (Button) findViewById(R.id.logout);
-        //imageView = (ImageView) findViewById(R.id.poster_image);
+
+        username = (TextView) findViewById(R.id.username);
+        userFavDriverNumber = (TextView) findViewById(R.id.driverNumber);
+        userFavDriver = (TextView) findViewById(R.id.userFavDriver);
+        userFavTeam = (TextView) findViewById(R.id.userFavTeam);
+        fanText = (TextView) findViewById(R.id.fanText);
+
+        teamLogo = (ImageView) findViewById(R.id.team_logo);
+        teamCar = (ImageView) findViewById(R.id.team_car);
+        driverImage = (ImageView) findViewById(R.id.driver_image);
+
+        line2 = (View) findViewById(R.id.line2);
+        line = (View) findViewById(R.id.line);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isloged = prefs.getBoolean("Islogin", false);
-        String username = prefs.getString("username", " ");
+        String mUsername = prefs.getString("username", " ");
 
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").child(mUsername).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String choiceDriver = snapshot.child("choiceDriver").getValue(String.class);
+                String choiceTeam = snapshot.child("choiceTeam").getValue(String.class);
+                username.setText(mUsername);
+
+                if(!choiceDriver.equals("Nobody")){
+                    fanText.setText("Fan of");
+                    rootRef.child("drivers").child(choiceDriver).addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            String driverNumber = snapshot.child("permanentNumber").getValue(String.class);
+                            String driversCode = snapshot.child("driversCode").getValue(String.class);
+                            int resourceId_driver = getApplicationContext().getResources().getIdentifier(driversCode.toLowerCase(), "drawable",
+                                    getApplicationContext().getPackageName());
+                            Glide.with(getApplicationContext())
+                                    .load(resourceId_driver)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .error(R.drawable.f1)
+                                    .into(driverImage);
+                            userFavDriverNumber.setText(driverNumber);
+                            userFavDriver.setText(choiceDriver);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("accountPageActivity", "Error while getting driver`s info. Error:" + error.getMessage());
+                        }
+                    });
+                }else{
+                    int height = 0;
+                    userFavDriverNumber.getLayoutParams().height = height;
+                    userFavDriver.getLayoutParams().height = height;
+                    line2.getLayoutParams().height = height;
+                    driverImage.getLayoutParams().height = height;
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    int marginLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics());
+                    int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
+                    layoutParams.setMargins(marginLeft, marginTop,0,0);
+                    layoutParams.addRule(RelativeLayout.BELOW, R.id.userFavDriver);
+                    layoutParams.addRule(RelativeLayout.END_OF, R.id.team_logo);
+                    userFavTeam.setLayoutParams(layoutParams);
+                    int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 130, getResources().getDisplayMetrics());
+                    line.getLayoutParams().height = lineHeight;
+                }
+
+                if(!choiceTeam.equals("Nobody")){
+                    fanText.setText("Fan of");
+                    rootRef.child("constructors").orderByChild("name").equalTo(choiceTeam).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot teamSnap: snapshot.getChildren()){
+                                String teamId = teamSnap.child("constructorId").getValue(String.class);
+                                String teamColor = "#" + teamSnap.child("color").getValue(String.class);
+
+                                username.setTextColor(Color.parseColor(teamColor));
+                                userFavTeam.setTextColor(Color.parseColor(teamColor));
+
+                                int resourceId_teamLogo;
+                                if (teamId.equals("alpine")) {
+                                    resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(teamId + "_logo_alt", "drawable",
+                                            getApplicationContext().getPackageName());
+                                } else if (teamId.equals("williams")) {
+                                    resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(teamId + "_logo_alt", "drawable",
+                                            getApplicationContext().getPackageName());
+                                } else{
+                                    resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(teamId + "_logo", "drawable",
+                                            getApplicationContext().getPackageName());
+                                }
+                                Glide.with(getApplicationContext())
+                                        .load(resourceId_teamLogo)
+                                        .transition(DrawableTransitionOptions.withCrossFade())
+                                        .error(R.drawable.f1)
+                                        .into(teamLogo);
+
+                                int resourceId_teamCar = getApplicationContext().getResources().getIdentifier(teamId, "drawable",
+                                        getApplicationContext().getPackageName());
+                                Glide.with(getApplicationContext())
+                                        .load(resourceId_teamCar)
+                                        .transition(DrawableTransitionOptions.withCrossFade())
+                                        .error(R.drawable.f1)
+                                        .into(teamCar);
+                                userFavTeam.setText(choiceTeam);
+                            }
+                        }
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("accountPageActivity", "Error while getting constructors. Error:" + error.getMessage());
+                        }
+                    });
+                }else{
+                    int height = 0;
+                    userFavTeam.getLayoutParams().height = height;
+                    teamCar.getLayoutParams().height = height;
+                    teamLogo.getLayoutParams().height = height;
+                    int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
+                    line.getLayoutParams().height = lineHeight;
+                }
+                if(choiceTeam.equals("Nobody")&&choiceDriver.equals("Nobody")){
+                    fanText.setText("Has no favourite driver and team");
+                    int height = 0;
+                    userFavTeam.getLayoutParams().height = height;
+                    teamCar.getLayoutParams().height = height;
+                    teamLogo.getLayoutParams().height = height;
+                    int lineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
+                    int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
+                    int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
+                    int marginStartLine = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics());
+                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout
+                            .LayoutParams(lineWidth, lineHeight);
+                    layoutParams.setMargins(marginStartLine, marginTop,0,0);
+                    line.setLayoutParams(layoutParams);
+                    RelativeLayout.LayoutParams Params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                    int marginStartDriver = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
+                    Params.setMargins(marginStartDriver, marginTop,0,0);
+                    Params.addRule(RelativeLayout.END_OF, R.id.line);
+                    username.setLayoutParams(Params);
+                    View grid = (View) findViewById(R.id.grid);
+                    int gridHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
+                    grid.getLayoutParams().height = gridHeight;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
 
         if(!isloged){
             Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
@@ -70,7 +209,6 @@ public class accountPageActivity extends AppCompatActivity {
             }
         });
 
-        //getText(username);
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -137,36 +275,5 @@ public class accountPageActivity extends AppCompatActivity {
         });
 
         settings = (Button) findViewById(R.id.profileSettings);
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Handler handler = new Handler(Looper.getMainLooper());
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        GetDataAccount putData = new GetDataAccount(
-                                "http://192.168.56.1/login/getAccount.php",
-                                "GET", username);
-                        if (putData.startPut()) {
-                            if (putData.onComplete()) {
-                                JSONObject resultGet = putData.getResult();
-                                try {
-                                    String email = resultGet.getString("email");
-                                    String fullName = resultGet.getString("fullname");
-                                    String image = resultGet.getString("image");
-                                    Intent intent = new Intent(accountPageActivity.this, settingsActivity.class);
-                                    intent.putExtra("email", email);
-                                    intent.putExtra("fullName", fullName);
-                                    intent.putExtra("image", image);
-                                    accountPageActivity.this.startActivity(intent);
-                                } catch (JSONException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        });
     }
 }

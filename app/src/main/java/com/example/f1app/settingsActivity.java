@@ -114,63 +114,6 @@ public class settingsActivity extends AppCompatActivity {
                 finish();
             }
         });
-
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String fullname, email;
-                fullname = String.valueOf(editTextFullname.getText());
-                email = String.valueOf(editTextEmail.getText());
-                if(isValidEmail(email)){
-                    if(!email.equals("")&&!fullname.equals(""))
-                    {
-                        Handler handler = new Handler(Looper.getMainLooper());
-                        handler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                String[] field = new String[4];
-                                field[0] = "username";
-                                field[1] = "email";
-                                field[2] = "fullname";
-                                field[3] = "image";
-                                String[] data = new String[4];
-                                data[0] = username;
-                                data[1] = email;
-                                data[2] = fullname;
-                                data[3] = selectedImage.toString();
-                                PutData putData = new PutData(
-                                        "http://192.168.56.1/login/update.php",
-                                        "POST", field, data);
-                                if (putData.startPut()) {
-                                    if (putData.onComplete()) {
-                                        String result = putData.getResult();
-                                        if (result.equals("1")) {
-                                            Toast.makeText(getApplicationContext(), "Update success",
-                                                    Toast.LENGTH_LONG).show();
-                                            Intent intent = new
-                                                    Intent(getApplicationContext(), logInPageActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        } else {
-                                            Toast.makeText(getApplicationContext(), result,
-                                                    Toast.LENGTH_SHORT).show();
-                                            Log.i("errorUpdateAccount", "" + result);
-                                        }
-                                    }
-                                }
-                            }
-                        });
-                    }
-                    else{
-                        Toast.makeText(getApplicationContext(),"All fields required!",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                }else{
-                    Toast.makeText(getApplicationContext(),"email is not validate!",
-                            Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
     }
 
     @Override

@@ -43,7 +43,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private ImageButton backButton;
 
-    private teamsAdapter adapter;
+    private teamsStandingsAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -154,7 +154,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                                 smth.setDrivers(teamDrivers);
                                                 datum.add(smth);
-                                                adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
+                                                adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
                                                 recyclerView.setAdapter(adapter);
                                             }
 
@@ -195,7 +195,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
                                                     smth.setDrivers(teamDrivers);
                                                     datum.add(smth);
-                                                    adapter = new teamsAdapter(teamsStandingsActivity.this, datum);
+                                                    adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
                                                     recyclerView.setAdapter(adapter);
                                                 }
                                                 @Override
