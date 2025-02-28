@@ -147,7 +147,7 @@
                     android:layout_height="wrap_content"
                     android:paddingTop="10dp"
                     android:drawableTop="@drawable/settings"
-                    android:backgroundTint="@color/grey"
+                    android:backgroundTint="@color/dark_blue"
                     android:layout_marginEnd="5dp"
                     android:text="@string/settings"
                     android:paddingBottom="10dp"
@@ -155,7 +155,7 @@
                 <Button
                     android:id="@+id/savedRace"
                     style="@style/ButtonStyle"
-                    android:backgroundTint="@color/grey"
+                    android:backgroundTint="@color/dark_blue"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:paddingTop="10dp"
@@ -177,7 +177,7 @@
                 android:layout_marginEnd="10dp"
                 android:weightSum="2">
                 <Button
-                    android:backgroundTint="@color/grey"
+                    android:backgroundTint="@color/dark_blue"
                     android:id="@+id/logout"
                     style="@style/ButtonStyle"
                     android:layout_width="0dp"

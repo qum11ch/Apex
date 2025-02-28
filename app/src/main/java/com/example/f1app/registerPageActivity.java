@@ -3,6 +3,8 @@ package com.example.f1app;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,9 +40,10 @@ import java.util.Collections;
 public class registerPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
     EditText editTextUsername, editTextEmail, editTextPassword;
-    Button signUpButton;
+    Button registerButton;
     TextView logInTextView;
     private ImageButton backButton;
+    ProgressBar registerProgress;
     TextInputLayout til_username, til_email, til_password;
     String email, password, username;
     NumberPicker driverPicker, teamPicker;
@@ -51,13 +55,18 @@ public class registerPageActivity extends AppCompatActivity {
         editTextUsername = findViewById(R.id.signUpUsername);
         editTextEmail = findViewById(R.id.signUpEmail);
         editTextPassword = findViewById(R.id.signUpPassword);
-        signUpButton = findViewById(R.id.registerButton);
-        logInTextView = findViewById(R.id.logInText);
+        registerButton = findViewById(R.id.registerButton);
         driverPicker = findViewById(R.id.driver_picker);
         teamPicker = findViewById(R.id.team_picker);
+        registerProgress = findViewById(R.id.registerProgress);
 
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
+
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
+
 
         ArrayList<String> driversList = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -109,17 +118,8 @@ public class registerPageActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        logInTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), logInPageActivity.class);
-                startActivity(intent);
-                finish();
-            }
-        });
 
-
-        signUpButton.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 registerNewUser(driversList, teamList);
@@ -181,7 +181,7 @@ public class registerPageActivity extends AppCompatActivity {
                 til_email.setError(null);
             }
 
-            signUpButton.setEnabled(!email.isEmpty() && !(password.length() < 6) && !username.isEmpty());
+            registerButton.setEnabled(!email.isEmpty() && !(password.length() < 6) && !username.isEmpty());
         }
 
         @Override
@@ -189,6 +189,9 @@ public class registerPageActivity extends AppCompatActivity {
     };
 
     private void registerNewUser(ArrayList<String> driversList, ArrayList<String> teamList) {
+        registerProgress.setVisibility(View.VISIBLE);
+        registerButton.setVisibility(View.INVISIBLE);
+
         email = editTextEmail.getText().toString().trim();
         password = editTextPassword.getText().toString().trim();
         username = editTextUsername.getText().toString().trim();
@@ -209,6 +212,8 @@ public class registerPageActivity extends AppCompatActivity {
                                 startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
                                 finish();
                             } else {
+                                registerProgress.setVisibility(View.INVISIBLE);
+                                registerButton.setVisibility(View.VISIBLE);
                                 Toast.makeText(registerPageActivity.this, "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
                             }
                         }

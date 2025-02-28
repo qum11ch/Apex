@@ -37,7 +37,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RelativeLayout
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="150dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:layout_marginEnd="20dp"
                 android:layout_height="wrap_content"
                 app:errorEnabled="true"
-                android:hint="@string/username_hint"
+                android:hint="@string/usernameText"
                 app:hintEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -78,7 +78,7 @@
                 app:passwordToggleEnabled="true"
                 app:errorEnabled="true"
                 app:hintEnabled="true"
-                android:hint="@string/password_hint">
+                android:hint="@string/passwordText">
                 <com.google.android.material.textfield.TextInputEditText
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:inputType="textPassword"
@@ -86,32 +86,74 @@
                     android:id="@+id/loginPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
+                <TextView
+                    android:gravity="end"
+                    android:textColor="@color/red"
+                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:textSize="20sp"
+                    android:id="@+id/resetPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Forgot password?" />
             </com.google.android.material.textfield.TextInputLayout>
-            <Button
-                android:enabled="false"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:elevation="0dp"
+            <FrameLayout
+                android:layout_below="@id/password_layout"
+                android:id="@+id/loginButton_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/loginButton"
-                android:text="@string/loginButton"
-                android:layout_below="@id/password_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
-                style="@style/ButtonStyle"/>
-            <TextView
-                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                android:id="@+id/signUpText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/loginButton"
+                android:layout_marginTop="30dp">
+                <ProgressBar
+                    android:backgroundTint="@color/red"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="center_horizontal"
+                    android:visibility="invisible"
+                    android:id="@+id/loginProgress"
+                    android:indeterminate="true"
+                    android:indeterminateTintMode="src_atop"
+                    android:indeterminateTint="@color/red"/>
+                <Button
+                    android:enabled="false"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/loginButton"
+                    android:text="@string/loginButton"
+                    style="@style/ButtonStyle"/>
+            </FrameLayout>
+            <LinearLayout
                 android:layout_marginTop="10dp"
-                android:text="@string/singUpText"
-                android:textAlignment="center" />
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:gravity="center"
+                android:layout_below="@id/loginButton_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/signUpLayout">
+                <TextView
+                    android:textAppearance="@style/TextStyle.Gram.Regular"
+                    android:textSize="20sp"
+                    android:id="@+id/signUpText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/singUpText1"
+                    android:textAlignment="center" />
+                <TextView
+                    android:textAppearance="@style/TextStyle.Gram.Regular"
+                    android:textSize="20sp"
+                    android:id="@+id/signUpText2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/singUpText2"
+                    android:layout_marginStart="5dp"
+                    android:textColor="@color/red"
+                    android:textAlignment="center" />
+            </LinearLayout>
         </RelativeLayout>
     </ScrollView>
     <include layout="@layout/footer_account"/>

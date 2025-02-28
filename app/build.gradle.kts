@@ -36,11 +36,10 @@ android {
 }
 
 dependencies {
-    implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     implementation ("com.google.android.material:material:1.12.0")
+    implementation ("io.github.ShawnLin013:number-picker:2.4.13")
     implementation ("com.google.firebase:firebase-auth")
     implementation ("androidx.preference:preference:1.2.1")
-    implementation ("com.google.android.material:material:1.12.0")
     implementation("com.android.volley:volley:1.2.1")
     implementation ("com.github.blongho:worldCountryData:v1.5.4-alpha-1")
     implementation ("com.qcloud.cos:avif:1.0.0")
@@ -51,7 +50,6 @@ dependencies {
     implementation ("com.google.code.gson:gson:2.10.1")
     implementation ("org.jsoup:jsoup:1.10.3")
     implementation ("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation ("com.android.volley:volley:1.2.1")
     implementation("com.google.android.gms:play-services-maps:19.1.0")
     implementation("com.google.firebase:firebase-database:21.0.0")
     implementation("androidx.credentials:credentials:1.3.0")
@@ -61,7 +59,6 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.9.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.9.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

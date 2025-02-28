@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static kotlin.jvm.internal.Reflection.function;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,6 +11,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -18,6 +23,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,7 +45,8 @@ public class logInPageActivity extends AppCompatActivity {
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
     EditText editTextUsername, editTextPassword;
     Button loginButton;
-    TextView signUpTextView;
+    ProgressBar loginProgress;
+    LinearLayout signUpLayout;
     TextInputLayout til_username, til_password;
     private ImageButton backButton;
     String password, username;
@@ -48,32 +56,46 @@ public class logInPageActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
+
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
+
         editTextUsername = findViewById(R.id.loginUsername);
         editTextPassword = findViewById(R.id.loginPassword);
         loginButton = findViewById(R.id.loginButton);
-        signUpTextView = findViewById(R.id.signUpText);
-        signUpTextView.setOnClickListener(new View.OnClickListener() {
+
+        signUpLayout = findViewById(R.id.signUpLayout);
+        signUpLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getApplicationContext(), registerPageActivity.class);
                 startActivity(intent);
-                finish();
             }
         });
 
+        loginProgress = findViewById(R.id.loginProgress);
         til_username = (TextInputLayout) findViewById(R.id.username_layout);
         til_password = (TextInputLayout) findViewById(R.id.password_layout);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean Islogin = prefs.getBoolean("Islogin", false);
-        String username = prefs.getString("username", "none");
-
-        if(Islogin)
-        {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null){
+            Log.i("checkUSer"," " + user.getEmail());
             Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
             startActivity(i);
             finish();
+        }else{
+            Log.i("checkUSer", "NO USER");
         }
+
+        TextView resetPassword = (TextView) findViewById(R.id.resetPassword);
+        resetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(logInPageActivity.this, resetPageActivity.class);
+                startActivity(i);
+            }
+        });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +103,6 @@ public class logInPageActivity extends AppCompatActivity {
                 loginUserAccount();
             }
         });
-
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +175,9 @@ public class logInPageActivity extends AppCompatActivity {
     };
 
     private void loginUserAccount() {
+        loginProgress.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.INVISIBLE);
+
         String username = editTextUsername.getText().toString().trim();
         String password = editTextPassword.getText().toString().trim();
 
@@ -177,11 +201,11 @@ public class logInPageActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
                                         Toast.makeText(logInPageActivity.this, "Login successful!!", Toast.LENGTH_LONG).show();
-                                        prefs.edit().putBoolean("Islogin", true).apply();
-                                        prefs.edit().putString("username", username).apply();
                                         startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
                                         finish();
                                     } else {
+                                        loginProgress.setVisibility(View.INVISIBLE);
+                                        loginButton.setVisibility(View.VISIBLE);
                                         Toast.makeText(logInPageActivity.this, "Login failed!!", Toast.LENGTH_LONG).show();
                                     }
                                 }

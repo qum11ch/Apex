@@ -1,53 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-    <LinearLayout
+    android:background="@color/light_grey">
+    <RelativeLayout
+        android:id="@+id/header"
         android:layout_width="match_parent"
-        android:paddingTop="15dp"
-        android:layout_height="65dp"
-        android:orientation="horizontal"
-        android:weightSum="9"
-        android:background="@color/pink">
+        android:paddingTop="40dp"
+        android:paddingBottom="20dp"
+        android:layout_height="wrap_content"
+        android:background="@color/red">
         <ImageButton
+            android:layout_marginTop="2dp"
             android:id='@+id/backButton'
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"
-            android:src="@drawable/back_arrow"
-            android:background="@color/pink"/>
-        <TextView
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:id="@+id/teamsHeader"
-            android:layout_width="0dp"
-            android:layout_weight="8"
-            android:gravity="center_vertical"
-            android:background="@color/pink"
-            android:text="@string/saved_races_header"
-            android:layout_height="match_parent" />
-    </LinearLayout>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/currentTeamsLayout"
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
-            android:layout_marginTop="20dp"
-            android:orientation="vertical"
-            style="@style/LayoutStyle">
-            <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/back_arrow"
+            android:background="@color/red"/>
+        <TextView
+            android:textAllCaps="true"
+            android:textColor="@color/white"
+            android:text="@string/saved_race"
+            android:id="@+id/raceHeader"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+    </RelativeLayout>
+    <ScrollView
+        android:layout_below="@id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recyclerview_currentTeams"/>
-        </LinearLayout>
+                android:id="@+id/currentTeamsLayout"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical"
+                style="@style/SavedRacesLayout">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="visible"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recyclerview_savedRaces"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:visibility="invisible"
+                android:id="@+id/emptySavedRace_layout"
+                style="@style/SavedRacesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="10dp">
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:background="@drawable/striped_background_grey_white"
+                    android:id="@+id/team"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginStart="0dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:paddingTop="20dp">
+                    <TextView
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="10dp"
+                        android:textSize="28sp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="CHECK \nBACK HERE"/>
+                    <TextView
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="100dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Save the race for pocket access to its results!"/>
+                </LinearLayout>
+            </RelativeLayout>
+        </RelativeLayout>
+
     </ScrollView>
-    <include layout="@layout/footer_account"/>
-</LinearLayout>
+</RelativeLayout>

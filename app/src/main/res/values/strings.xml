@@ -7,7 +7,7 @@
     <string name="app_name">F1 App</string>
     <string name="login_text">Log In</string>
     <string name="register_text">Register</string>
-    <string name="usernameText">Username</string>
+    <string name="usernameText">Username:</string>
     <string name="username_hint">Username*</string>
     <string name="passwordText">Password</string>
     <string name="password_hint">Password*</string>
@@ -17,7 +17,8 @@
     <string name="email_hint">Email*</string>
     <string name="loginButton">LOG IN</string>
     <string name="registerButton">SIGN IN</string>
-    <string name="singUpText">First time here? Register there!</string>
+    <string name="singUpText1">Don`t have account?</string>
+    <string name="singUpText2">Sign Up</string>
     <string name="logInText">Login Here</string>
     <string name="footer_driver">Drivers</string>
     <string name="footer_teams">Teams</string>
@@ -55,10 +56,9 @@
     <string name="full_name">Full name:</string>
     <string name="email">Email:</string>
     <string name="settings">Settings</string>
-    <string name="saved_race">Saved Race</string>
+    <string name="saved_race">Saved Races</string>
     <string name="logout">Logout</string>
     <string name="log_in_page_header">Log In Page</string>
-    <string name="main_header">Welcome to Formula One encyclopedia</string>
     <string name="races">Races</string>
     <string name="upcoming">Upcoming</string>
     <string name="ongoing">Ongoing</string>
@@ -89,7 +89,7 @@
     <string name="saved_races_header">Saved Races</string>
     <string name="settings_header">Settings</string>
     <string name="setting_page_info">Choose image from gallery</string>
-    <string name="save_button_text">SAVE</string>
+    <string name="save_button_text">Save changes</string>
     <string name="team_page_header">Team Page</string>
     <string name="team_information">Team Information</string>
     <string name="location">Location:</string>
@@ -112,6 +112,10 @@
     <string name="teamlogo">teamLogo</string>
     <string name="carimage">carImage</string>
     <string name="driverimage">driverImage</string>
-    <string name="driver_choice">Choose your favourite driver (optional):</string>
+    <string name="driver_choice_hint">Choose your favourite driver (optional):</string>
+    <string name="driver_choice_text">Change your favourite driver:</string>
     <string name="choiceTeam_hint">Choose your favourite team (optional):</string>
+    <string name="choiceTeam_text">Change your favourite team:</string>
+    <string name="hint_email_new">New email:</string>
+    <string name="hint_password_new">New password:</string>
 </resources>

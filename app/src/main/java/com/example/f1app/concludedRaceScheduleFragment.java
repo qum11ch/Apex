@@ -1,6 +1,8 @@
 package com.example.f1app;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.media.Image;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -8,17 +10,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -28,8 +38,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,15 +50,15 @@ import java.util.concurrent.TimeUnit;
 
 public class concludedRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
-    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private TextView secondPlace_code, firstPlace_code, thirdPlace_code,
             infoRaceName, infoSeason, raceName, circuitName, day_start, day_end, month,
             show_results;
     private ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
     private scheduleAdapter adapter;
     private RecyclerView recyclerView;
-    private long startTime;
-    private long diff;
+    private ToggleButton saveRace;
+    private LocalDate currentDate;
+    private String fullRaceName_key, mRaceName, mYear;
 
 
     public concludedRaceScheduleFragment() {
@@ -80,6 +92,7 @@ public class concludedRaceScheduleFragment extends Fragment {
         day_end = view.findViewById(R.id.day_end);
         month = view.findViewById(R.id.month);
         show_results = view.findViewById(R.id.show_results);
+        saveRace = view.findViewById(R.id.saveRace);
 
         recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
@@ -90,14 +103,14 @@ public class concludedRaceScheduleFragment extends Fragment {
 
 
         String mCircuitId = getArguments().getString("circuitId");
-        String mRaceName = getArguments().getString("raceName");
+        mRaceName = getArguments().getString("raceName");
         String mRaceStartDay = getArguments().getString("raceStartDay");
         String mRaceEndDay = getArguments().getString("raceEndDay");
         String mRaceStartMonth = getArguments().getString("raceStartMonth");
         String mRaceEndMonth = getArguments().getString("raceEndMonth");
         String mRound = getArguments().getString("roundCount");
         String mCountry = getArguments().getString("raceCountry");
-        String mYear = getArguments().getString("gpYear");
+        mYear = getArguments().getString("gpYear");
         String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
         String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
         String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
@@ -114,6 +127,25 @@ public class concludedRaceScheduleFragment extends Fragment {
                 requireContext().startActivity(intent);
             }
         });
+
+        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
+
+        isSaved(fullRaceName_key);
+        currentDate = LocalDate.now();
+
+
+        saveRace.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            if(saveRace.isChecked()){
+                                                saveRace(currentDate);
+                                            }else{
+                                                deleteRace(fullRaceName_key);
+                                            }
+                                        }
+                                    });
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         int resourceId_firstDriverImage = requireContext().getResources().getIdentifier(mFirstPlaceCode.toLowerCase(), "drawable",
                 requireContext().getPackageName());
@@ -139,7 +171,6 @@ public class concludedRaceScheduleFragment extends Fragment {
                 .error(R.drawable.f1)
                 .into(thirdPlace_image);
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -234,12 +265,101 @@ public class concludedRaceScheduleFragment extends Fragment {
         day_start.setText(mRaceStartDay);
         day_end.setText(mRaceEndDay);
 
-        LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
 
         datum = new ArrayList<>();
         getRaceSchedule(mRaceName, currentYear);
 
+    }
+
+    private void saveRace(LocalDate currentDate){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId")
+                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot userSnap: snapshot.getChildren()){
+                            String username = userSnap.getKey();
+                            DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
+                            String saveDate = currentDate.format(formatterUpdate);
+                            savedRacesData savedRacesData = new savedRacesData(mRaceName, mYear, saveDate);
+                            rootRef.child("savedRaces").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if(snapshot.getChildrenCount()<32){
+                                        rootRef.child("savedRaces").child(username).child(fullRaceName_key).setValue(savedRacesData);
+                                        Toast.makeText(requireContext(), "This race saved!", Toast.LENGTH_LONG).show();
+                                        //saveRace.setChecked(true);
+                                    }else{
+                                        Toast.makeText(requireContext(), "You can have maximum 32 saved races. Please clear your saved races list!", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+    }
+
+    public void deleteRace(String fullRaceName_key){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId").equalTo(user.getUid())
+                .addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot userSnap: snapshot.getChildren()){
+                    String username = userSnap.getKey();
+                    rootRef.child("savedRaces").child(username).child(fullRaceName_key).removeValue();
+                    Toast.makeText(requireContext(), "This race is deleted from saved races list!", Toast.LENGTH_LONG).show();
+                    //saveRace.setChecked(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+            }
+        });
+    }
+
+    private void isSaved(String fullRaceName_key){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId")
+                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot userSnap: snapshot.getChildren()){
+                            String username = userSnap.getKey();
+                            rootRef.child("savedRaces").child(username).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    saveRace.setChecked(snapshot.hasChild(fullRaceName_key));
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
     }
 
     private void getRaceSchedule(String raceName, String currentYear){

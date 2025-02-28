@@ -25,7 +25,7 @@
         <TextView
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:text="Register"
+            android:text="settings"
             android:id="@+id/raceHeader"
             android:layout_width="match_parent"
             android:gravity="center"
@@ -38,87 +38,40 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RelativeLayout
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="100dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
-            <com.google.android.material.textfield.TextInputLayout
-                android:theme="@style/StyledTilEditTextTheme"
-                app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
-                app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:errorTextColor="@color/red"
-                android:id="@+id/username_layout"
-                android:layout_width="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                app:hintEnabled="true"
-                android:hint="@string/username_hint">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:theme="@style/StyledTilEditTextTheme"
-                    android:id="@+id/signUpUsername"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:theme="@style/StyledTilEditTextTheme"
-                app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:errorTextColor="@color/red"
-                app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
-                android:id="@+id/email_layout"
-                android:layout_below="@id/username_layout"
-                android:layout_width="match_parent"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_height="wrap_content"
-                app:errorEnabled="true"
-                app:hintEnabled="true"
-                android:hint="@string/email_hint">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:theme="@style/StyledTilEditTextTheme"
-                    android:inputType="textEmailAddress"
-                    android:id="@+id/signUpEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </com.google.android.material.textfield.TextInputLayout>
-            <com.google.android.material.textfield.TextInputLayout
-                android:theme="@style/StyledTilEditTextTheme"
-                app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
-                app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:errorTextColor="@color/red"
-                android:id="@+id/password_layout"
-                android:layout_below="@id/email_layout"
-                android:layout_width="match_parent"
-                android:layout_marginStart="20dp"
-                app:passwordToggleEnabled="true"
-                android:layout_marginEnd="20dp"
-                android:layout_height="wrap_content"
-                app:hintEnabled="true"
-                app:errorEnabled="true"
-                android:hint="@string/password_hint">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:inputType="textPassword"
-                    android:theme="@style/StyledTilEditTextTheme"
-                    android:id="@+id/signUpPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
-            </com.google.android.material.textfield.TextInputLayout>
             <TextView
+                android:id="@+id/username_header"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/black"
+                android:text="@string/usernameText"/>
+            <TextView
+                android:layout_below="@id/username_header"
+                android:id="@+id/username"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                android:textColor="@color/black" />
+            <TextView
+                android:paddingStart="5dp"
+                android:paddingEnd="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:text="@string/driver_choice_hint"
+                android:layout_marginTop="30dp"
+                android:text="@string/driver_choice_text"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                android:layout_below="@id/password_layout"
+                android:layout_below="@id/username"
                 android:id="@+id/choiceDriver_hint"/>
             <com.shawnlin.numberpicker.NumberPicker
                 android:id="@+id/driver_picker"
@@ -136,12 +89,14 @@
                 app:np_selectedTextSize="20sp"
                 app:np_textSize="14sp" />
             <TextView
+                android:paddingStart="5dp"
+                android:paddingEnd="0dp"
                 android:layout_marginTop="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:text="@string/choiceTeam_hint"
+                android:text="@string/choiceTeam_text"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
                 android:layout_below="@id/driver_picker"
                 android:id="@+id/choiceTeam_hint"/>
@@ -160,34 +115,75 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/choiceTeam_hint"
                 android:id="@+id/team_picker"/>
-            <FrameLayout
-                android:layout_below="@id/team_picker"
-                android:id="@+id/registerButton_layout"
+            <LinearLayout
+                android:layout_marginTop="30dp"
+                android:id="@+id/buttons_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/team_picker"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                android:layout_marginTop="30dp">
+                android:orientation="horizontal"
+                android:weightSum="2">
+                <Button
+                    android:textSize="12sp"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/changePasswordButton"
+                    android:text="Change private data"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"/>
+                <Button
+                    android:layout_marginStart="5dp"
+                    android:textSize="12sp"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:backgroundTint="@color/dark_grey"
+                    android:elevation="0dp"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/deleteAccountButton"
+                    android:text="Delete account"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"/>
+            </LinearLayout>
+            <FrameLayout
+                android:layout_below="@id/buttons_layout"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:id="@+id/saveLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
                 <ProgressBar
                     android:backgroundTint="@color/red"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center_horizontal"
                     android:visibility="invisible"
-                    android:id="@+id/registerProgress"
+                    android:id="@+id/saveProgress"
                     android:indeterminate="true"
                     android:indeterminateTintMode="src_atop"
                     android:indeterminateTint="@color/red"/>
                 <Button
-                    android:enabled="false"
+                    android:textSize="16sp"
+                    android:enabled="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:elevation="0dp"
+                    android:id="@+id/saveButton"
+                    android:text="@string/save_button_text"
+                    android:textAllCaps="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/registerButton"
-                    android:text="@string/registerButton"
                     style="@style/ButtonStyle"/>
             </FrameLayout>
         </RelativeLayout>

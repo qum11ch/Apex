@@ -234,6 +234,7 @@
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_marginBottom="5dp"/>
             <RelativeLayout
+                android:id="@+id/schedule_layout"
                 android:layout_marginEnd="20dp"
                 style="@style/RaceLayout"
                 android:layout_below="@id/circuitName"
@@ -242,7 +243,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/currentDriversLayout"
                     android:orientation="vertical"
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="10dp"
@@ -254,6 +254,25 @@
                         android:id="@+id/recyclerview_schedule"/>
                 </LinearLayout>
             </RelativeLayout>
+            <ToggleButton
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="20dp"
+                style="@style/ItemStyle"
+                android:background="@drawable/save_toggle_button_style"
+                android:layout_below="@id/schedule_layout"
+                android:id="@+id/saveRace"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="30dp"
+                android:textAlignment="textStart"
+                android:paddingStart="30dp"
+                android:saveEnabled="false"
+                android:paddingEnd="0dp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                android:textColor="@drawable/toggle_text_color"
+                android:textSize="22sp"
+                android:textOff="@string/save_race"
+                android:textOn="@string/delete_race"/>
         </RelativeLayout>
     </ScrollView>
 

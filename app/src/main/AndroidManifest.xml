@@ -3,7 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
@@ -34,9 +33,12 @@
             android:value="YOUR_API_KEY" />
 
         <activity
-            android:name=".settingsActivity"
+            android:name=".accountSettingsActivity"
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".savedRacePage" />
+        <activity
+            android:name=".resetPageActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".concludedRaceActivity" />
         <activity android:name=".futureRaceActivity" />
         <activity android:name=".schuduleActivity" />
@@ -45,6 +47,9 @@
         <activity android:name=".teamPageActivity" />
         <activity android:name=".driverPageActivity" />
         <activity android:name=".raceResultsActivity"/>
+        <activity
+            android:name=".changeUserPrivateDataActivity"
+            android:windowSoftInputMode="adjustPan"/>
         <activity
             android:name=".logInPageActivity"
             android:windowSoftInputMode="adjustPan" />

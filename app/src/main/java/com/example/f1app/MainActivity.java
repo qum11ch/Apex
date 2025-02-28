@@ -7,6 +7,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
@@ -55,11 +58,6 @@ public class MainActivity extends AppCompatActivity {
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        //boolean isLoged = prefs.getBoolean("Islogin", false);
-
-        Log.i("prefs_all", prefs.getAll().toString());
-
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -100,6 +98,10 @@ public class MainActivity extends AppCompatActivity {
 
         updateData(currentDate);
         updateSprintData(currentDate);
+
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
     private void updateSprintData(LocalDate currentDate){

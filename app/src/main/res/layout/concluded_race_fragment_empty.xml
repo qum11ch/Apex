@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".concludedRaceFragment">
     <RelativeLayout
-        android:id="@+id/team_layout"
+        android:id="@+id/concludedRaceInform_layout"
         style="@style/ScheduleEmptyLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

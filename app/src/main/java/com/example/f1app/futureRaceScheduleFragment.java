@@ -7,9 +7,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +20,8 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -43,6 +49,9 @@ public class futureRaceScheduleFragment extends Fragment {
     private RecyclerView recyclerView;
     private long startTime;
     private long diff;
+    private ToggleButton saveRace;
+    private LocalDate currentDate;
+    private String fullRaceName_key, mRaceName, mYear;
 
 
     public futureRaceScheduleFragment() {
@@ -69,6 +78,8 @@ public class futureRaceScheduleFragment extends Fragment {
         infoSeason = view.findViewById(R.id.infoSeason);
         infoRaceName = view.findViewById(R.id.infoRaceName);
 
+        saveRace = view.findViewById(R.id.saveRace);
+
         recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
@@ -76,31 +87,50 @@ public class futureRaceScheduleFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        //previousGP.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //
-        //        Intent intent = new Intent(futureRaceActivity.this , previousGPActivity.class);
-        //        intent.putExtra("circuitId", mCircuitId);
-        //        startActivity(intent);
-        //    }
-        //});
 
         String mCircuitId = getArguments().getString("circuitId");
-        String mRaceName = getArguments().getString("raceName");
+        mRaceName = getArguments().getString("raceName");
         String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
         String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
         String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
         String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
         String mRound = getArguments().getString("roundCount");
         String mCountry = getArguments().getString("raceCountry");
-        String mYear = getArguments().getString("gpYear");
+        mYear = getArguments().getString("gpYear");
 
         TextView raceName = (TextView) view.findViewById(R.id.raceName);
         TextView circuitName = (TextView) view.findViewById(R.id.circuitName);
         TextView day_start = (TextView) view.findViewById(R.id.day_start);
         TextView day_end = (TextView) view.findViewById(R.id.day_end);
         TextView month = (TextView) view.findViewById(R.id.month);
+
+        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
+
+        isSaved(fullRaceName_key);
+        currentDate = LocalDate.now();
+
+        saveRace.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(saveRace.isChecked()){
+                    savedRace(currentDate);
+                }else{
+                    deleteRace(fullRaceName_key);
+                }
+            }
+        });
+
+        //saveRace.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        //    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        //        if (buttonView.isPressed()) {
+        //            // The toggle is enabled
+        //            deleteRace(fullRaceName_key);
+        //        } else {
+        //            // The toggle is disable
+        //            saveRace(currentDate);
+        //        }
+        //    }
+        //});
 
         infoSeason.setText(mYear);
         infoRaceName.setText(mRaceName);
@@ -210,6 +240,96 @@ public class futureRaceScheduleFragment extends Fragment {
                 Log.e("futureActivityFirebaseError", error.getMessage());
             }
         });
+    }
+
+    private void savedRace(LocalDate currentDate){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId")
+                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot userSnap: snapshot.getChildren()){
+                            String username = userSnap.getKey();
+                            DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
+                            String saveDate = currentDate.format(formatterUpdate);
+                            savedRacesData savedRacesData = new savedRacesData(mRaceName, mYear, saveDate);
+                            rootRef.child("savedRaces").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    if(snapshot.getChildrenCount()<32){
+                                        rootRef.child("savedRaces").child(username).child(fullRaceName_key).setValue(savedRacesData);
+                                        Toast.makeText(requireContext(), "This race saved!", Toast.LENGTH_LONG).show();
+                                        //saveRace.setChecked(true);
+                                    }else{
+                                        Toast.makeText(requireContext(), "You can have maximum 32 saved races. Please clear your saved races list!", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+    }
+
+    public void deleteRace(String fullRaceName_key){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId").equalTo(user.getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot userSnap: snapshot.getChildren()){
+                            String username = userSnap.getKey();
+                            rootRef.child("savedRaces").child(username).child(fullRaceName_key).removeValue();
+                            Toast.makeText(requireContext(), "This race is deleted from saved races list!", Toast.LENGTH_LONG).show();
+                            //saveRace.setChecked(false);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+    }
+
+    private void isSaved(String fullRaceName_key){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("users").orderByChild("userId")
+                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot userSnap: snapshot.getChildren()){
+                            String username = userSnap.getKey();
+                            rootRef.child("savedRaces").child(username).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    saveRace.setChecked(snapshot.hasChild(fullRaceName_key));
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                                }
+                            });
+                        }
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
     }
 
     private void countDownStart(LinkedHashMap<String, String> events) {
