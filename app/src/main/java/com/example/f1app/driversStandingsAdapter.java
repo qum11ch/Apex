@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import java.lang.reflect.Field;
@@ -70,6 +71,8 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         Glide.with(context)
                 .load(resourceId_driverTeam)
                 .transition(DrawableTransitionOptions.withCrossFade())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .error(R.drawable.f1)
                 .into(holder.driverTeam_logo);
 
@@ -87,6 +90,10 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 int height = 0;
                 holder.cardView.getLayoutParams().width = width;
                 holder.cardView.getLayoutParams().height = height;
+            }else{
+                holder.driver_placement.setText(datum.getDriverPlacement());
+                String driver_points = datum.getDriverPoints() + " PTS";
+                holder.driver_points.setText(driver_points);
             }
         } else {
             if (datum.getStartSeasonInfo()) {

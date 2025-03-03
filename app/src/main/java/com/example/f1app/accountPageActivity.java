@@ -28,6 +28,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -158,6 +159,8 @@ public class accountPageActivity extends AppCompatActivity {
                                         .load(resourceId_driver)
                                         .transition(DrawableTransitionOptions.withCrossFade())
                                         .error(R.drawable.f1)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
                                         .into(driverImage);
                                 userFavDriverNumber.setText(driverNumber);
                                 userFavDriver.setText(choiceDriver);
@@ -241,6 +244,8 @@ public class accountPageActivity extends AppCompatActivity {
                                     }
                                     Glide.with(getApplicationContext())
                                             .load(resourceId_teamLogo)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .skipMemoryCache(true)
                                             .transition(DrawableTransitionOptions.withCrossFade())
                                             .error(R.drawable.f1)
                                             .into(teamLogo);
@@ -249,6 +254,8 @@ public class accountPageActivity extends AppCompatActivity {
                                             getApplicationContext().getPackageName());
                                     Glide.with(getApplicationContext())
                                             .load(resourceId_teamCar)
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .skipMemoryCache(true)
                                             .transition(DrawableTransitionOptions.withCrossFade())
                                             .error(R.drawable.f1)
                                             .into(teamCar);

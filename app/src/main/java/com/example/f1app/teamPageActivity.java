@@ -36,6 +36,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -102,11 +103,13 @@ public class teamPageActivity extends AppCompatActivity {
 
         teamNameFull.setText(mTeamName);
 
-        int resourceId_carImage = getApplicationContext().getResources().getIdentifier(mTeamId, "drawable",
+        int resourceId_carImage = getResources().getIdentifier(mTeamId, "drawable",
                 getApplicationContext().getPackageName());
 
         Glide.with(getApplicationContext())
                 .load(resourceId_carImage)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
                 .into(team_car);
@@ -114,17 +117,19 @@ public class teamPageActivity extends AppCompatActivity {
         int resourceId_teamLogo;
 
         if (mTeamId.equals("alpine")) {
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
+            resourceId_teamLogo = getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
                     getApplicationContext().getPackageName());
         } else if (mTeamId.equals("williams")) {
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
+            resourceId_teamLogo = getResources().getIdentifier(mTeamId + "_logo_alt", "drawable",
                     getApplicationContext().getPackageName());
         } else{
-            resourceId_teamLogo = getApplicationContext().getResources().getIdentifier(mTeamId + "_logo", "drawable",
+            resourceId_teamLogo = getResources().getIdentifier(mTeamId + "_logo", "drawable",
                     getApplicationContext().getPackageName());
         }
         Glide.with(getApplicationContext())
                 .load(resourceId_teamLogo)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
                 .into(teamLogo);

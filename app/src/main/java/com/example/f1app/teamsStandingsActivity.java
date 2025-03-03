@@ -172,12 +172,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                 rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        ArrayList<String> firstDrivers = new ArrayList<>();
-                                        firstDrivers.add("");
-                                        firstDrivers.add("");
+                                        ArrayList<String> firstTeam = new ArrayList<>();
+                                        firstTeam.add("");
+                                        firstTeam.add("");
                                         teamsList first = new teamsList("","","","", true);
-                                        first.setDrivers(firstDrivers);
+                                        first.setDrivers(firstTeam);
                                         datum.add(first);
+
                                         for (DataSnapshot child: snapshot.getChildren()) {
 
                                             String constructorId = child.child("constructorId").getValue(String.class);

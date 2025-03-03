@@ -106,6 +106,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         datum = new ArrayList<>();
         getStanding(Integer.toString(currentDate.getYear()));
 
+
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);

@@ -5,8 +5,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -56,7 +58,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         holder.teamDriverFirst.setText(teamDrivers.get(0));
         holder.teamDriverSecond.setText(teamDrivers.get(1));
 
-        int resourceId_carImage = context.getResources().getIdentifier(datum.getTeamId(), "drawable",
+        int resourceId_carImage = context.getResources().getIdentifier(datum.getTeamId() + "_left", "drawable",
                 context.getPackageName());
 
         Glide.with(context)
@@ -65,15 +67,52 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                 .error(R.drawable.f1)
                 .into(holder.team_car);
 
+        holder.scrollView.setOnTouchListener(new OnTouch());
+
         if (holder.getItemViewType() == 1){
+            switch (datum.getTeamId()){
+                case "red_bull":
+                case "alpine":
+                    holder.team_car.setScaleX(-1);
+                    holder.team_car.setScrollX(250);
+                    break;
+                default:
+                    holder.team_car.setScrollX(-250);
+                    break;
+            }
             if (datum.getStartSeasonInfo()) {
                 int width = 0;
                 int height = 0;
                 holder.cardView.getLayoutParams().width = width;
                 holder.cardView.getLayoutParams().height = height;
+            }else{
+                holder.teamPosition.setText(datum.getPosition());
+                String teamPoints = datum.getPoints() + " PTS";
+                holder.teamPoints.setText(teamPoints);
             }
         }else{
+            switch (datum.getTeamId()){
+                case "red_bull":
+                case "alpine":
+                    holder.team_car.setScaleX(-1);
+                    holder.team_car.setScrollX(175);
+                    break;
+                default:
+                    holder.team_car.setScrollX(-175);
+                    break;
+            }
             if (datum.getStartSeasonInfo()) {
+                switch (datum.getTeamId()){
+                    case "red_bull":
+                    case "alpine":
+                        holder.team_car.setScaleX(-1);
+                        holder.team_car.setScrollX(125);
+                        break;
+                    default:
+                        holder.team_car.setScrollX(-125);
+                        break;
+                }
+
                 holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3f);
                 layoutParams.setMargins(0, 10,0,20);
@@ -129,6 +168,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         RelativeLayout leftLayout, team_layout;
         View line;
         CardView cardView;
+        HorizontalScrollView scrollView;
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);
             leftLayout = itemView.findViewById(R.id.left_layout);
@@ -142,6 +182,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
             constraintLayout = itemView.findViewById(R.id.main_layout);
             team_car = itemView.findViewById(R.id.team_car);
             line = itemView.findViewById(R.id.line);
+            scrollView= itemView.findViewById(R.id.horizontal_scroll);
         }
     }
 
@@ -158,5 +199,13 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         }
 
         return colorId;
+    }
+
+    private class OnTouch implements View.OnTouchListener
+    {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            return true;
+        }
     }
 }
