@@ -106,31 +106,31 @@ public class futureRaceScheduleFragment extends Fragment {
 
         fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
-        isSaved(fullRaceName_key);
+        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
+
         currentDate = LocalDate.now();
-
-        saveRace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(saveRace.isChecked()){
-                    savedRace(currentDate);
-                }else{
-                    deleteRace(fullRaceName_key);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null){
+            isSaved(fullRaceName_key);
+            saveRace.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(saveRace.isChecked()){
+                        saveRace(currentDate);
+                    }else{
+                        deleteRace(fullRaceName_key);
+                    }
                 }
-            }
-        });
-
-        //saveRace.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-        //    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-        //        if (buttonView.isPressed()) {
-        //            // The toggle is enabled
-        //            deleteRace(fullRaceName_key);
-        //        } else {
-        //            // The toggle is disable
-        //            saveRace(currentDate);
-        //        }
-        //    }
-        //});
+            });
+        }else{
+            saveRace.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveRace.setChecked(false);
+                    Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
         infoSeason.setText(mYear);
         infoRaceName.setText(mRaceName);
@@ -242,7 +242,7 @@ public class futureRaceScheduleFragment extends Fragment {
         });
     }
 
-    private void savedRace(LocalDate currentDate){
+    private void saveRace(LocalDate currentDate){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();

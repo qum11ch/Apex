@@ -80,7 +80,6 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null){
-            Log.i("checkUSer"," " + user.getEmail());
             Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
             startActivity(i);
             finish();

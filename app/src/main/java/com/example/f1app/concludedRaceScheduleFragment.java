@@ -130,20 +130,30 @@ public class concludedRaceScheduleFragment extends Fragment {
 
         fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
-        isSaved(fullRaceName_key);
         currentDate = LocalDate.now();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user!=null){
+            isSaved(fullRaceName_key);
+            saveRace.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if(saveRace.isChecked()){
+                        saveRace(currentDate);
+                    }else{
+                        deleteRace(fullRaceName_key);
+                    }
+                }
+            });
+        }else{
+            saveRace.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    saveRace.setChecked(false);
+                    Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
 
-
-        saveRace.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            if(saveRace.isChecked()){
-                                                saveRace(currentDate);
-                                            }else{
-                                                deleteRace(fullRaceName_key);
-                                            }
-                                        }
-                                    });
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 

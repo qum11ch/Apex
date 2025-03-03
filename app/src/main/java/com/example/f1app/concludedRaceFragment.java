@@ -65,8 +65,8 @@ public class concludedRaceFragment extends Fragment {
                 String raceRound = concludedRaceRoundNumber.get(i);
 
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
-                //rootRef.child("schedule/season/" + "2024").orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                //rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                rootRef.child("schedule/season/" + "2024").orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         datum = new ArrayList<>();

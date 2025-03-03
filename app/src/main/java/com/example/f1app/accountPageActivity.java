@@ -3,6 +3,7 @@ package com.example.f1app;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -14,17 +15,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -33,14 +39,20 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class accountPageActivity extends AppCompatActivity {
-    private TextView username, userFavDriverNumber, userFavDriver, userFavTeam, fanText;
+    private TextView username, userFavDriverNumber, userFavDriver, userFavTeam, fanText,
+            teamName, driverName, driverFamilyName, tabUserName, noDriver, noTeam;
     private Button logout, settings, savedRace;
     Dialog logoutDialog;
     FirebaseAuth auth;
     View line, line2;
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
+    LinearLayout driverName_layout;
+    RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout;
     private ImageButton backButton;
+    AppBarLayout appbar;
     private ImageView teamLogo, teamCar, driverImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,13 +67,28 @@ public class accountPageActivity extends AppCompatActivity {
         userFavDriver = (TextView) findViewById(R.id.userFavDriver);
         userFavTeam = (TextView) findViewById(R.id.userFavTeam);
         fanText = (TextView) findViewById(R.id.fanText);
+        tabUserName = findViewById(R.id.tabUserName);
+        driverName = findViewById(R.id.driverName);
+        driverFamilyName = findViewById(R.id.driverFamilyName);
+        teamName = findViewById(R.id.teamName);
+        userFavTeam_layout = findViewById(R.id.userFavTeam_layout);
+        teamName_layout = findViewById(R.id.teamName_layout);
+        driverName_layout = findViewById(R.id.driverName_layout);
+        noDriver = findViewById(R.id.noDriver);
+        noTeam = findViewById(R.id.noTeam);
 
         teamLogo = (ImageView) findViewById(R.id.team_logo);
-        teamCar = (ImageView) findViewById(R.id.team_car);
+        teamCar = (ImageView) findViewById(R.id.teamCar);
         driverImage = (ImageView) findViewById(R.id.driver_image);
 
         line2 = (View) findViewById(R.id.line2);
         line = (View) findViewById(R.id.line);
+
+        appbar = findViewById(R.id.appbar);
+        teamName_layout = findViewById(R.id.teamName_layout);
+        driverName_layout = findViewById(R.id.driverName_layout);
+        team_layout = findViewById(R.id.team_layout);
+        driver_layout = findViewById(R.id.driver_layout);
 
         auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
@@ -70,6 +97,7 @@ public class accountPageActivity extends AppCompatActivity {
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("users").orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -81,13 +109,49 @@ public class accountPageActivity extends AppCompatActivity {
                     String mUsername = userSnapshot.getKey();
                     username.setText(mUsername);
 
+                    CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+                    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+                    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                        boolean isShow = true;
+                        int scrollRange = -1;
+
+                        @Override
+                        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                            if (scrollRange == -1) {
+                                scrollRange = appBarLayout.getTotalScrollRange();
+                            }
+                            if (scrollRange + verticalOffset == 0) {
+                                tabUserName.setText(mUsername);
+                                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                                isShow = true;
+                            } else if (isShow) {
+                                tabUserName.setText(" ");
+                                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
+                                isShow = false;
+                            }
+                        }
+                    });
+
                     if(!choiceDriver.equals("Nobody")){
+                        driverImage.setVisibility(View.VISIBLE);
+                        noDriver.setVisibility(View.INVISIBLE);
                         fanText.setText("Fan of");
+                        String[] driverFullname = choiceDriver.split(" ");
+                        String mDriverName, mDriverFamilyName;
+                        if(choiceDriver.equals("Andrea Kimi Antonelli")){
+                            mDriverName = driverFullname[0] + " " + driverFullname[1];
+                            mDriverFamilyName = driverFullname[2];
+                        }else{
+                            mDriverName = driverFullname[0];
+                            mDriverFamilyName = driverFullname[1];
+                        }
                         rootRef.child("drivers").child(choiceDriver).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String driverNumber = snapshot.child("permanentNumber").getValue(String.class);
                                 String driversCode = snapshot.child("driversCode").getValue(String.class);
+                                String team = snapshot.child("driversTeam").getValue(String.class);
                                 int resourceId_driver = getApplicationContext().getResources().getIdentifier(driversCode.toLowerCase(), "drawable",
                                         getApplicationContext().getPackageName());
                                 Glide.with(getApplicationContext())
@@ -97,6 +161,23 @@ public class accountPageActivity extends AppCompatActivity {
                                         .into(driverImage);
                                 userFavDriverNumber.setText(driverNumber);
                                 userFavDriver.setText(choiceDriver);
+                                driverName.setText(mDriverName);
+                                driverFamilyName.setText(mDriverFamilyName);
+
+                                String finalTeam = team;
+                                driver_layout.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        Intent intent = new Intent(accountPageActivity.this, driverPageActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("driverName", mDriverName);
+                                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                                        bundle.putString("driverTeam", finalTeam);
+                                        bundle.putString("driverCode", driversCode);
+                                        intent.putExtras(bundle);
+                                        accountPageActivity.this.startActivity(intent);
+                                    }
+                                });
                             }
 
                             @Override
@@ -105,11 +186,14 @@ public class accountPageActivity extends AppCompatActivity {
                             }
                         });
                     }else{
+                        driverImage.setVisibility(View.INVISIBLE);
+                        noDriver.setVisibility(View.VISIBLE);
                         int height = 0;
                         userFavDriverNumber.getLayoutParams().height = height;
                         userFavDriver.getLayoutParams().height = height;
                         line2.getLayoutParams().height = height;
-                        driverImage.getLayoutParams().height = height;
+                        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        driverName_layout.setLayoutParams(layoutParams2);
                         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                         int marginLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics());
                         int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
@@ -122,6 +206,8 @@ public class accountPageActivity extends AppCompatActivity {
                     }
 
                     if(!choiceTeam.equals("Nobody")){
+                        teamCar.setVisibility(View.VISIBLE);
+                        noTeam.setVisibility(View.INVISIBLE);
                         fanText.setText("Fan of");
                         rootRef.child("constructors").orderByChild("name").equalTo(choiceTeam).addValueEventListener(new ValueEventListener() {
                             @Override
@@ -130,8 +216,17 @@ public class accountPageActivity extends AppCompatActivity {
                                     String teamId = teamSnap.child("constructorId").getValue(String.class);
                                     String teamColor = "#" + teamSnap.child("color").getValue(String.class);
 
-                                    username.setTextColor(Color.parseColor(teamColor));
-                                    userFavTeam.setTextColor(Color.parseColor(teamColor));
+                                    GradientDrawable gd = new GradientDrawable();
+                                    gd.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
+                                    gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+                                    gd.setStroke(12, Color.parseColor(teamColor));
+                                    driver_layout.setBackground(gd);
+
+                                    GradientDrawable gd1 = new GradientDrawable();
+                                    gd1.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
+                                    gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+                                    gd1.setStroke(12, Color.parseColor(teamColor));
+                                    team_layout.setBackground(gd1);
 
                                     int resourceId_teamLogo;
                                     if (teamId.equals("alpine")) {
@@ -158,6 +253,35 @@ public class accountPageActivity extends AppCompatActivity {
                                             .error(R.drawable.f1)
                                             .into(teamCar);
                                     userFavTeam.setText(choiceTeam);
+                                    teamName.setText(choiceTeam);
+
+                                    userFavTeam_layout.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                            rootRef.child("driverLineUp/season/" + "2025" + "/" + teamId).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    ArrayList<String> teamDrivers = new ArrayList<>();
+                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                        String driverName = driverDataSnapshot.getKey();
+                                                        teamDrivers.add(driverName);
+                                                    }
+                                                    Intent intent = new Intent(accountPageActivity.this, teamPageActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("teamName", choiceTeam);
+                                                    bundle.putString("teamId", teamId);
+                                                    bundle.putStringArrayList("teamDrivers", teamDrivers);
+                                                    intent.putExtras(bundle);
+                                                    accountPageActivity.this.startActivity(intent);
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
+                                                }
+                                            });
+                                        }
+                                    });
                                 }
                             }
                             @Override
@@ -166,19 +290,28 @@ public class accountPageActivity extends AppCompatActivity {
                             }
                         });
                     }else{
+                        teamCar.setVisibility(View.INVISIBLE);
+                        noTeam.setVisibility(View.VISIBLE);
                         int height = 0;
                         userFavTeam.getLayoutParams().height = height;
-                        teamCar.getLayoutParams().height = height;
+                        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        teamName_layout.setLayoutParams(layoutParams);
                         teamLogo.getLayoutParams().height = height;
                         int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
                         line.getLayoutParams().height = lineHeight;
                     }
                     if(choiceTeam.equals("Nobody")&&choiceDriver.equals("Nobody")){
+                        teamCar.setVisibility(View.INVISIBLE);
+                        noTeam.setVisibility(View.VISIBLE);
+                        driverImage.setVisibility(View.INVISIBLE);
+                        noDriver.setVisibility(View.VISIBLE);
+                        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        driverName_layout.setLayoutParams(layoutParams2);
+                        LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+                        teamName_layout.setLayoutParams(layoutParams3);
                         fanText.setText("Has no favourite driver and team");
                         int height = 0;
                         userFavTeam.getLayoutParams().height = height;
-                        teamCar.getLayoutParams().height = height;
-                        teamLogo.getLayoutParams().height = height;
                         int lineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
                         int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
                         int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
@@ -237,53 +370,6 @@ public class accountPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 logoutDialog.show();
-            }
-        });
-
-
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, driversStandingsActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, schuduleActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
-        });
-
-
-        showHomePage = (Button) findViewById(R.id.showHomePage);
-        showHomePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, MainActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showTeams = (Button) findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, teamsStandingsActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
-        });
-
-        showAccount = (Button) findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(accountPageActivity.this, logInPageActivity.class);
-                accountPageActivity.this.startActivity(intent);
             }
         });
 

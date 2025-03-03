@@ -118,8 +118,8 @@ public class schuduleActivity extends AppCompatActivity {
 
     private void getSchedule(String year, LocalDate currentDate){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
-        //rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
+        //rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> concludedRoundNumber = new ArrayList<>();

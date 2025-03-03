@@ -215,7 +215,7 @@
                                     android:id="@+id/firstDriver_image"
                                     android:layout_width="match_parent"
                                     android:layout_height="168dp"
-                                    android:scaleType="fitCenter" />
+                                    android:scaleType="fitEnd" />
                             </RelativeLayout>
 
                             <LinearLayout
@@ -271,7 +271,7 @@
                                     android:id="@+id/secondDriver_image"
                                     android:layout_width="match_parent"
                                     android:layout_height="168dp"
-                                    android:scaleType="fitCenter" />
+                                    android:scaleType="fitEnd" />
                             </RelativeLayout>
 
                             <LinearLayout
