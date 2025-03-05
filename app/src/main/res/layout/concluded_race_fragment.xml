@@ -1,29 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
-    android:background="@drawable/background_results"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".concludedRaceFragment">
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:overScrollMode="never"
         android:scrollbars="none">
         <LinearLayout
+            android:paddingTop="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/currentTeamsLayout"
+            android:id="@+id/concludedRaceLayout"
             android:orientation="vertical"
             android:layout_marginEnd="10dp"
             android:paddingBottom="5dp">
             <androidx.recyclerview.widget.RecyclerView
+                android:visibility="gone"
                 android:background="@null"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/recyclerview_concludedRaces"/>
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:id="@+id/shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <include layout="@layout/shimmer_concluded_race" />
+                    <include layout="@layout/shimmer_concluded_race" />
+                    <include layout="@layout/shimmer_concluded_race" />
+                    <include layout="@layout/shimmer_concluded_race" />
+                    <include layout="@layout/shimmer_concluded_race" />
+                    <include layout="@layout/shimmer_concluded_race" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </FrameLayout>

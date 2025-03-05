@@ -5,45 +5,53 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".concludedRaceFragment">
-    <RelativeLayout
-        android:id="@+id/team_layout"
-        style="@style/ScheduleEmptyLayout"
+    tools:context=".futureRaceFragment">
+    <com.example.f1app.LockableNestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp">
-        <LinearLayout
-            android:orientation="vertical"
-            android:background="@drawable/background_striped_lines_blue"
-            android:id="@+id/team"
+        android:overScrollMode="never"
+        android:scrollbars="none">
+        <RelativeLayout
+            android:id="@+id/team_layout"
+            style="@style/ScheduleEmptyLayout"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_marginStart="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
-            android:paddingTop="20dp">
-            <TextView
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                android:textColor="@color/white"
-                android:layout_marginStart="10dp"
-                android:textSize="28sp"
-                android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginBottom="1000dp"
+            android:layout_marginEnd="10dp">
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="@drawable/background_striped_lines_blue"
+                android:id="@+id/team"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="CHECK \nBACK HERE"/>
-            <TextView
-                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                android:textStyle="normal"
-                android:textColor="@color/white"
-                android:layout_marginStart="10dp"
+                android:layout_height="200dp"
+                android:layout_marginStart="0dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="100dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Come back in a new season to get a new schedule and all of the results"/>
-        </LinearLayout>
-    </RelativeLayout>
+                android:layout_marginEnd="10dp"
+                android:paddingTop="20dp">
+                <TextView
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="10dp"
+                    android:textSize="28sp"
+                    android:layout_marginEnd="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="CHECK \nBACK HERE"/>
+                <TextView
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textStyle="normal"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="100dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Come back in a new season to get a new schedule and all of the results"/>
+            </LinearLayout>
+        </RelativeLayout>
+    </com.example.f1app.LockableNestedScrollView>
+
 </FrameLayout>

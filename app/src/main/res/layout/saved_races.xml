@@ -15,12 +15,14 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
-            android:layout_marginStart="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:paddingEnd="30dp"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
             android:src="@drawable/back_arrow"
             android:background="@color/red"/>
         <TextView
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:text="@string/saved_race"

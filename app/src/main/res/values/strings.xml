@@ -5,7 +5,7 @@
         <item>First time here? Register there!</item>
     </string-array>
     <string name="app_name">F1 App</string>
-    <string name="login_text">Log In</string>
+    <string name="login_text">Login</string>
     <string name="register_text">Register</string>
     <string name="usernameText">Username:</string>
     <string name="username_hint">Username*</string>

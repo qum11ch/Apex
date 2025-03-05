@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".futureRaceFragment">
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:overScrollMode="never"
@@ -13,15 +13,35 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/currentTeamsLayout"
+            android:id="@+id/futureRaceLayout"
             android:orientation="vertical"
             android:layout_marginEnd="10dp"
             android:paddingBottom="5dp">
             <androidx.recyclerview.widget.RecyclerView
+                android:paddingTop="10dp"
+                android:visibility="gone"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/recyclerview_futureRaces"/>
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:paddingTop="10dp"
+                android:id="@+id/shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <include layout="@layout/shimmer_future_race" />
+                    <include layout="@layout/shimmer_future_race" />
+                    <include layout="@layout/shimmer_future_race" />
+                    <include layout="@layout/shimmer_future_race" />
+                    <include layout="@layout/shimmer_future_race" />
+                    <include layout="@layout/shimmer_future_race" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </FrameLayout>

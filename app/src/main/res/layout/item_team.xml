@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             style="@style/ItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

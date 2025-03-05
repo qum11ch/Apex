@@ -112,18 +112,19 @@
 
                     <ImageButton
                         android:id='@+id/backButton'
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:src="@drawable/back_arrow" />
+                        android:paddingEnd="30dp"
+                        android:layout_width="100dp"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/back_arrow"
+                        android:background="@android:color/transparent"/>
                     <TextView
                         android:id="@+id/driverName"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_toEndOf="@id/backButton"
                         android:gravity="center"
                         android:paddingStart="0dp"
-                        android:paddingEnd="40dp"
+                        android:paddingEnd="100dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
                         android:textSize="24sp"
                         android:textStyle="bold"/>

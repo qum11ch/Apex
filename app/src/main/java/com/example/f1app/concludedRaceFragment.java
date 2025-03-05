@@ -1,17 +1,22 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -21,11 +26,13 @@ import com.google.firebase.database.ValueEventListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class concludedRaceFragment extends Fragment {
     List<concludedRacesData> datum;
     private concludedRacesAdapter adapter;
     private RecyclerView recyclerView;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public concludedRaceFragment() {
 
@@ -50,6 +57,9 @@ public class concludedRaceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (!getArguments().isEmpty()){
+            shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+            shimmerFrameLayout.startShimmer();
+
             datum = new ArrayList<>();
             recyclerView = view.findViewById(R.id.recyclerview_concludedRaces);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
@@ -92,6 +102,12 @@ public class concludedRaceFragment extends Fragment {
                                                 dateEnd, raceName, raceRound, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
                                                 thirdCode);
                                         datum.add(concludedRace);
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(()->{
+                                            recyclerView.setVisibility(View.VISIBLE);
+                                            shimmerFrameLayout.setVisibility(View.GONE);
+                                            shimmerFrameLayout.stopShimmer();
+                                        },500);
                                         adapter = new concludedRacesAdapter(getActivity(), datum);
                                         recyclerView.setAdapter(adapter);
                                     }
@@ -111,6 +127,14 @@ public class concludedRaceFragment extends Fragment {
                 });
             }
         }
+        else{
+            LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+
+            scrollView.setScrollingEnabled(false);
+
+        }
 
     }
+
+
 }

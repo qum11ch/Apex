@@ -17,7 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             style="@style/ItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                 <LinearLayout
                     android:id="@+id/header_layout"
                     android:layout_width="wrap_content"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:layout_centerInParent="true">
 
@@ -164,7 +164,8 @@
                     android:orientation="horizontal"
                     android:weightSum="3">
                     <RelativeLayout
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"
@@ -192,7 +193,8 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"
@@ -222,7 +224,8 @@
                     </RelativeLayout>
 
                     <RelativeLayout
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_weight="1"

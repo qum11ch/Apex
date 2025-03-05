@@ -19,7 +19,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Locale;
 
 public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAdapter.DataHolder>{
     Activity context;
@@ -47,7 +46,7 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
                 view = LayoutInflater.from(context).inflate(R.layout.item_race_first, parent , false);
                 break;
             default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_race, parent , false);
+                view = LayoutInflater.from(context).inflate(R.layout.item_concluded_race, parent , false);
                 break;
         }
         return new DataHolder(view, viewType);

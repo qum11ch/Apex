@@ -69,6 +69,9 @@
     <style name="PtsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/pts_style</item>
     </style>
+    <style name="ShimmerStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/shimmer_style</item>
+    </style>
     <style name="LayoutStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/layout_style</item>
     </style>

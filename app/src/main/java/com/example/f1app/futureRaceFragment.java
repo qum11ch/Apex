@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -26,6 +28,7 @@ public class futureRaceFragment extends Fragment {
     List<futureRaceData> datum;
     private futureRaceAdapter adapter;
     private RecyclerView recyclerView;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public futureRaceFragment() {
         // required empty public constructor.
@@ -50,7 +53,11 @@ public class futureRaceFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (!getArguments().isEmpty()){
+            shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+            shimmerFrameLayout.startShimmer();
+
             recyclerView = view.findViewById(R.id.recyclerview_futureRaces);
+
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
             recyclerView.setLayoutManager(linearLayoutManager);
             LocalDate currentDate = LocalDate.now();
@@ -82,6 +89,12 @@ public class futureRaceFragment extends Fragment {
                                                     circuitName, raceRound, raceCountry, circuitId);
                                             futureRaceData.setLocality(raceLocation);
                                             datum.add(futureRaceData);
+                                            Handler handler = new Handler();
+                                            handler.postDelayed(()->{
+                                                recyclerView.setVisibility(View.VISIBLE);
+                                                shimmerFrameLayout.setVisibility(View.GONE);
+                                                shimmerFrameLayout.stopShimmer();
+                                            },500);
                                             adapter = new futureRaceAdapter(getActivity(), datum);
                                             recyclerView.setAdapter(adapter);
                                         }
@@ -100,6 +113,11 @@ public class futureRaceFragment extends Fragment {
                             }
                         });
             }
+        }else{
+            LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+
+            scrollView.setScrollingEnabled(false);
+
         }
     }
 }

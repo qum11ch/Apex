@@ -2,6 +2,7 @@ package com.example.f1app;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +17,7 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +25,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -45,6 +48,8 @@ public class driversStandingsActivity extends AppCompatActivity {
     private ImageButton backButton;
     private Toolbar toolbar;
     private driversStandingsAdapter adapter;
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private SwipeRefreshLayout swipeLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -52,8 +57,27 @@ public class driversStandingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drivers_standing);
 
+        shimmerFrameLayout = findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
+
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
         recyclerView.setHasFixedSize(true);
+
+        datum = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+
+        swipeLayout = findViewById(R.id.swipe_layout);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+                datum = new ArrayList<>();
+                getStanding(Integer.toString(currentDate.getYear()));
+                swipeLayout.setRefreshing(false);
+            }
+        });
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
@@ -102,8 +126,7 @@ public class driversStandingsActivity extends AppCompatActivity {
             }
         });
 
-        LocalDate currentDate = LocalDate.now();
-        datum = new ArrayList<>();
+
         getStanding(Integer.toString(currentDate.getYear()));
 
 
@@ -148,6 +171,12 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         datum.add(smth);
                                     }
                                 }
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
                                 recyclerView.setAdapter(adapter);
                             //14.02.2025 WORK HERE
@@ -187,6 +216,12 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                         true);
                                                                 datum.add(smth);
                                                                 adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
+                                                                Handler handler = new Handler();
+                                                                handler.postDelayed(()->{
+                                                                    recyclerView.setVisibility(View.VISIBLE);
+                                                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                                                    shimmerFrameLayout.stopShimmer();
+                                                                },500);
                                                                 recyclerView.setAdapter(adapter);
                                                             }
 

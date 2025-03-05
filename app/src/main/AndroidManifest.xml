@@ -35,7 +35,6 @@
         <activity
             android:name=".accountSettingsActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".savedRacePage" />
         <activity
             android:name=".resetPageActivity"
             android:windowSoftInputMode="adjustPan"/>

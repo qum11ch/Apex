@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +34,7 @@ public class driverResultsFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<driverResultsData> datum;
     private CheckBox radioButton_2025, radioButton_2024;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public driverResultsFragment() {
         // required empty public constructor.
@@ -55,6 +58,8 @@ public class driverResultsFragment extends Fragment {
         radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
         radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
 
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+
         recyclerView = view.findViewById(R.id.driver_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -65,6 +70,7 @@ public class driverResultsFragment extends Fragment {
             String mDriverCode = getArguments().getString("driverCode");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
 
+            shimmerFrameLayout.startShimmer();
             radioButton_2025.setChecked(true);
             getResults("2025", mDriverName, mDriverFamilyName);
 
@@ -94,6 +100,9 @@ public class driverResultsFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (radioButton_2025.isChecked()){
+                        recyclerView.setVisibility(View.GONE);
+                        shimmerFrameLayout.setVisibility(View.VISIBLE);
+                        shimmerFrameLayout.startShimmer();
                         getResults("2025", mDriverName, mDriverFamilyName);
                     }
                 }
@@ -103,6 +112,9 @@ public class driverResultsFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (radioButton_2024.isChecked()){
+                        recyclerView.setVisibility(View.GONE);
+                        shimmerFrameLayout.setVisibility(View.VISIBLE);
+                        shimmerFrameLayout.startShimmer();
                         getResults("2024", mDriverName, mDriverFamilyName);
                     }
                 }
@@ -128,6 +140,12 @@ public class driverResultsFragment extends Fragment {
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new driverResultsAdapter(getActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }
@@ -136,6 +154,12 @@ public class driverResultsFragment extends Fragment {
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new driverResultsAdapter(getActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }

@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background_results"
+    android:background="@drawable/blue_gradient"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/header"
@@ -15,12 +15,14 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
-            android:layout_marginStart="10dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:paddingEnd="30dp"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
             android:src="@drawable/back_arrow"
             android:background="@color/red"/>
         <TextView
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
             android:textColor="@color/white"
             android:text="TEAMS STANDING"
             android:id="@+id/teamsHeader"
@@ -29,25 +31,42 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
     </RelativeLayout>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_weight="1"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/currentTeamsLayout"
-            android:orientation="vertical"
-            android:layout_marginEnd="10dp"
-            android:paddingBottom="10dp">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
             <androidx.recyclerview.widget.RecyclerView
+                android:paddingTop="10dp"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recyclerview_currentTeams"/>
+                android:id="@+id/recyclerview_currentTeams"
+                android:visibility="gone"/>
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:paddingTop="10dp"
+                android:id="@+id/shimmer_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                app:duration="1500">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <include layout="@layout/shimmer_team_standings" />
+                    <include layout="@layout/shimmer_team_standings" />
+                    <include layout="@layout/shimmer_team_standings" />
+                    <include layout="@layout/shimmer_team_standings" />
+                    <include layout="@layout/shimmer_team_standings" />
+                    <include layout="@layout/shimmer_team_standings" />
+                </LinearLayout>
+            </com.facebook.shimmer.ShimmerFrameLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <include layout="@layout/footer_teams"/>
 </LinearLayout>

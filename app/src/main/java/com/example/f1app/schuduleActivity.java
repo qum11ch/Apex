@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -26,6 +27,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -36,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 public class schuduleActivity extends AppCompatActivity {
@@ -48,6 +51,8 @@ public class schuduleActivity extends AppCompatActivity {
     private ImageButton backButton;
     private ViewPager2 myViewPager2;
     private viewPagerAdapter raceAdapter ;
+    private CardView cardView;
+    private SwipeRefreshLayout swipeLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,6 +63,25 @@ public class schuduleActivity extends AppCompatActivity {
         setContentView(R.layout.schudule_page);
 
         recyclerView = findViewById(R.id.recyclerview_concludedRaces);
+        cardView = (CardView) findViewById(R.id.cardView);
+
+        datum = new ArrayList<>();
+        LocalDate currentDate = LocalDate.now();
+        String currentYear = Integer.toString(currentDate.getYear());
+
+
+        getSchedule(currentYear, currentDate);
+        myViewPager2 = findViewById(R.id.viewPager2);
+
+
+        swipeLayout = findViewById(R.id.swipe_layout);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                getSchedule(currentYear, currentDate);
+                swipeLayout.setRefreshing(false);
+            }
+        });
 
         setSupportActionBar(toolbar);
 
@@ -105,12 +129,6 @@ public class schuduleActivity extends AppCompatActivity {
             }
         });
 
-        datum = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
-
-        getSchedule(currentYear, currentDate);
-
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);;
@@ -118,8 +136,8 @@ public class schuduleActivity extends AppCompatActivity {
 
     private void getSchedule(String year, LocalDate currentDate){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        //rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
-        rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+        //rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> concludedRoundNumber = new ArrayList<>();
@@ -176,11 +194,7 @@ public class schuduleActivity extends AppCompatActivity {
                         futureRaceRoundNumber.add(round.toString());
                     }
                     if (isOnGoing){
-                        CardView cardView = (CardView) findViewById(R.id.cardView);
-                        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                        params.addRule(RelativeLayout.BELOW, R.id.header);
-                        cardView.setLayoutParams(params);
+                        cardView.setVisibility(View.VISIBLE);
                         TextView roundOngoing = (TextView) findViewById(R.id.round);
                         TextView dayStartOngoing = (TextView) findViewById(R.id.day_start);
                         TextView dayEndOngoing = (TextView) findViewById(R.id.day_end);
@@ -289,7 +303,7 @@ public class schuduleActivity extends AppCompatActivity {
 
 
     private void init(Bundle concludedRaceBundle, Bundle futureRaceBundle) {
-        myViewPager2 = findViewById(R.id.viewPager2);
+        int prevFragment = myViewPager2.getCurrentItem();
         raceAdapter = new viewPagerAdapter(this);
         futureRaceFragment futureRaceFragment = new futureRaceFragment();
         futureRaceFragment.setArguments(futureRaceBundle);
@@ -298,6 +312,11 @@ public class schuduleActivity extends AppCompatActivity {
         concludedRaceFragment.setArguments(concludedRaceBundle);
         raceAdapter.addFragment(concludedRaceFragment);
         myViewPager2.setAdapter(raceAdapter);
+        if (prevFragment==1){
+            myViewPager2.setCurrentItem(myViewPager2.getAdapter().getItemCount() - 1, false);
+        }else{
+            myViewPager2.setCurrentItem(myViewPager2.getCurrentItem(), false);
+        }
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
             @Override
