@@ -1,8 +1,10 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.transition.Explode;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -42,8 +44,11 @@ public class driverPageActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //getWindow().requestFeature(Window.FEATURE_ACTIVITY_TRANSITIONS);
+        //getWindow().setExitTransition(new Explode());
         setContentView(R.layout.driver_page);
         EdgeToEdge.enable(this);
+
 
         Bundle bundle = getIntent().getExtras();
         String mDriverName = bundle.getString("driverName");
@@ -63,8 +68,7 @@ public class driverPageActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
-
+                finishAfterTransition();
             }
         });
 
@@ -112,6 +116,7 @@ public class driverPageActivity extends AppCompatActivity {
 
         CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
         AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.setExpanded(true,true);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
             boolean isShow = true;

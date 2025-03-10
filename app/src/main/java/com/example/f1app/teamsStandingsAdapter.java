@@ -20,6 +20,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 
 import java.lang.reflect.Field;
@@ -63,6 +64,8 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
 
         Glide.with(context)
                 .load(resourceId_carImage)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.f1)
                 .into(holder.team_car);

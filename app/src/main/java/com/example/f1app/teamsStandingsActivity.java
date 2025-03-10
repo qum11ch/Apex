@@ -86,6 +86,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(teamsStandingsActivity.this, driversStandingsActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -95,6 +96,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(teamsStandingsActivity.this, schuduleActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -104,6 +106,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(teamsStandingsActivity.this, MainActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -113,6 +116,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(teamsStandingsActivity.this, logInPageActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
