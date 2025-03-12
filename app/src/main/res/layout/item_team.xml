@@ -61,9 +61,7 @@
                     android:layout_marginEnd="8dp"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/team"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-
                 <TextView
                     android:id="@+id/driverFirst"
                     android:layout_width="match_parent"
@@ -73,7 +71,6 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/first_driver"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
                 <TextView
                     android:id="@+id/driverSecond"
@@ -84,7 +81,6 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/second_driver"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
 
             </RelativeLayout>

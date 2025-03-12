@@ -25,7 +25,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/recyclerview_futureRaces"/>
             <com.facebook.shimmer.ShimmerFrameLayout
-                android:paddingTop="10dp"
                 android:id="@+id/shimmer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"

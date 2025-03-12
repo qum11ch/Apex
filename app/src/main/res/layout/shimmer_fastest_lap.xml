@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/fastestLapDriver_layout"
+    android:layout_below="@id/fastestLap_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <TextView
+        style="@style/ShimmerStyle"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp" />
+    <TextView
+        style="@style/ShimmerStyle"
+        android:layout_width="80dp"
+        android:layout_alignParentEnd="true"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"/>
+</RelativeLayout>

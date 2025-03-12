@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/login_header"
-            android:text="Please login"
+            android:text="@string/dialog_login"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
         <TextView
             android:layout_marginStart="20dp"
@@ -33,7 +33,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="We need to verify that this is your account"
+            android:text="@string/dialog_login_info"
             android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
             android:layout_gravity="center"
             android:textAlignment="center"/>
@@ -91,7 +91,7 @@
                 android:id="@+id/resetPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Forgot password?" />
+                android:text="@string/forgot_password" />
         </com.google.android.material.textfield.TextInputLayout>
         <FrameLayout
             android:layout_below="@id/password_layout"

@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.shimmer.ShimmerFrameLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,6 +34,7 @@ public class raceResultsSprintFragment extends Fragment {
     private raceResultsRaceAdapter adapter;
     private RecyclerView recyclerView;
     private List<raceResultsRaceData> datum;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public raceResultsSprintFragment() {
         // required empty public constructor.
@@ -56,6 +59,9 @@ public class raceResultsSprintFragment extends Fragment {
         recyclerView = view.findViewById(R.id.race_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
 
 
         if (!getArguments().isEmpty()){
@@ -121,7 +127,12 @@ public class raceResultsSprintFragment extends Fragment {
                                             constructorId, driverCode, time, points, season);
                                     datum.add(results);
                                 }
-                                Log.i("raceResults", "" + datum.size());
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new raceResultsRaceAdapter(requireActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }

@@ -35,11 +35,7 @@ import java.util.List;
 
 public class futureRaceActivity extends AppCompatActivity {
 
-    private List<scheduleData> datum;
     private ImageButton backButton;
-    private ImageView imageView;
-    private Runnable runnable;
-    private Handler handler = new Handler();
     private TextView futureRaceTitle;
     private ViewPager2 myViewPager2;
     private viewPagerAdapter adapter ;
@@ -50,45 +46,11 @@ public class futureRaceActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_page);
 
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
+
         futureRaceTitle = findViewById(R.id.raceTitile);
-        Bundle bundle = getIntent().getExtras();
-
-        String mCircuitId = bundle.getString("circuitId");
-        String mRaceName = bundle.getString("raceName");
-        String mFutureRaceStartDay = bundle.getString("futureRaceStartDay");
-        String mFutureRaceEndDay = bundle.getString("futureRaceEndDay");
-        String mFutureRaceStartMonth = bundle.getString("futureRaceStartMonth");
-        String mFutureRaceEndMonth = bundle.getString("futureRaceEndMonth");
-        String mRound = bundle.getString("roundCount");
-        String mCountry = bundle.getString("raceCountry");
-        String mDate = bundle.getString("dateStart");
-
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
-        String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
-
-
-        Bundle scheduleBundle = new Bundle();
-        scheduleBundle.putString("circuitId", mCircuitId);
-        scheduleBundle.putString("raceName", mRaceName);
-        scheduleBundle.putString("futureRaceStartDay", mFutureRaceStartDay);
-        scheduleBundle.putString("futureRaceEndDay", mFutureRaceEndDay);
-        scheduleBundle.putString("futureRaceStartMonth", mFutureRaceStartMonth);
-        scheduleBundle.putString("futureRaceEndMonth", mFutureRaceEndMonth);
-        scheduleBundle.putString("roundCount", mRound);
-        scheduleBundle.putString("raceCountry", mCountry);
-        scheduleBundle.putString("gpYear", gpYear);
-
-        Bundle circuitBundle = new Bundle();
-        circuitBundle.putString("circuitId", mCircuitId);
-        circuitBundle.putString("raceName", mRaceName);
-        circuitBundle.putString("gpYear", gpYear);
-        circuitBundle.putString("raceCountry", mCountry);
-
-        init(scheduleBundle, circuitBundle);
-
-        futureRaceTitle.setText(mRaceName);
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -98,60 +60,48 @@ public class futureRaceActivity extends AppCompatActivity {
             }
         });
 
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
 
+        if (!getIntent().getExtras().isEmpty()){
+            Bundle bundle = getIntent().getExtras();
+
+            String mCircuitId = bundle.getString("circuitId");
+            String mRaceName = bundle.getString("raceName");
+            String mFutureRaceStartDay = bundle.getString("futureRaceStartDay");
+            String mFutureRaceEndDay = bundle.getString("futureRaceEndDay");
+            String mFutureRaceStartMonth = bundle.getString("futureRaceStartMonth");
+            String mFutureRaceEndMonth = bundle.getString("futureRaceEndMonth");
+            String mRound = bundle.getString("roundCount");
+            String mCountry = bundle.getString("raceCountry");
+            String mDate = bundle.getString("dateStart");
+
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+            LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
+            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
+
+
+            Bundle scheduleBundle = new Bundle();
+            scheduleBundle.putString("circuitId", mCircuitId);
+            scheduleBundle.putString("raceName", mRaceName);
+            scheduleBundle.putString("futureRaceStartDay", mFutureRaceStartDay);
+            scheduleBundle.putString("futureRaceEndDay", mFutureRaceEndDay);
+            scheduleBundle.putString("futureRaceStartMonth", mFutureRaceStartMonth);
+            scheduleBundle.putString("futureRaceEndMonth", mFutureRaceEndMonth);
+            scheduleBundle.putString("roundCount", mRound);
+            scheduleBundle.putString("raceCountry", mCountry);
+            scheduleBundle.putString("gpYear", gpYear);
+
+            Bundle circuitBundle = new Bundle();
+            circuitBundle.putString("circuitId", mCircuitId);
+            circuitBundle.putString("raceName", mRaceName);
+            circuitBundle.putString("gpYear", gpYear);
+            circuitBundle.putString("raceCountry", mCountry);
+
+            init(scheduleBundle, circuitBundle);
+
+            futureRaceTitle.setText(mRaceName);
+        }
     }
-
-    protected void onStop() {
-        super.onStop();
-        handler.removeCallbacks(runnable);
-    }
-
-    public void getImage(String raceName) {
-        RequestQueue volleyQueue2 = Volley.newRequestQueue(futureRaceActivity.this);
-        String url2 = "https://en.wikipedia.org/w/api.php?action=query&format=json&formatversion=2&prop=pageimages|pageterms&piprop=thumbnail&pithumbsize=600&titles="
-                + raceName;
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
-                Request.Method.GET,
-                url2,
-                null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response2) {
-                        try {
-                            JSONObject query = response2.getJSONObject("query");
-                            JSONArray pages = query.getJSONArray("pages");
-                            String source;
-                            for (int i = 0; i < pages.length(); i++) {
-                                if (pages.getJSONObject(i).has("thumbnail")) {
-                                    JSONObject thumbnail = pages.getJSONObject(i).
-                                            getJSONObject("thumbnail");
-                                    source = thumbnail.getString("source");
-                                    GlideApp.with(futureRaceActivity.this)
-                                            .load(source)
-                                            .placeholder(R.drawable.f1)
-                                            .into(imageView);
-                                } else {
-                                    GlideApp.with(futureRaceActivity.this)
-                                            .load(R.drawable.f1)
-                                            .into(imageView);
-                                }
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(futureRaceActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        volleyQueue2.add(jsonObjectRequest2);
-    }
-
 
     private void init(Bundle scheduleBundle, Bundle circuitBundle) {
         myViewPager2 = findViewById(R.id.viewPager2);

@@ -1,40 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginBottom="30dp"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
     <RelativeLayout
+        android:id="@+id/fastestLap_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="125dp"
+        android:background="@drawable/striped_background_darkblue">
         <RelativeLayout
-            android:id="@+id/fastestLap_layout"
+            style="@style/PtsStyle"
+            android:layout_centerInParent="true"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_width="match_parent"
-            android:layout_height="125dp"
-            android:background="@drawable/striped_background_darkblue">
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/white">
+            <TextView
+                android:id="@+id/fastestLap_header"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fastest_lap_header"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@color/red"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"/>
             <RelativeLayout
-                style="@style/PtsStyle"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
+                android:visibility="gone"
+                android:id="@+id/fastestLapDriver_layout"
+                android:layout_below="@id/fastestLap_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/white">
+                android:orientation="horizontal">
                 <TextView
-                    android:id="@+id/fastestLap_header"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Fastest Lap"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/red"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"/>
-                <TextView
-                    android:layout_below="@id/fastestLap_header"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/fastestLapDriverName"
@@ -47,87 +50,130 @@
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp" />
                 <TextView
-                    android:text="123"
                     android:id="@+id/fastestLapTime"
                     android:layout_width="wrap_content"
                     android:layout_alignParentEnd="true"
-                    android:layout_below="@id/fastestLap_header"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:layout_marginTop="10dp"
-                    android:layout_marginEnd="15dp"/>
+                    android:layout_marginEnd="15dp"
+                    tools:ignore="RelativeOverlap" />
             </RelativeLayout>
+            <com.facebook.shimmer.ShimmerFrameLayout
+                android:visibility="visible"
+                android:id="@+id/shimmer_layout_driver"
+                android:layout_below="@id/fastestLap_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <include layout="@layout/shimmer_fastest_lap"/>
+            </com.facebook.shimmer.ShimmerFrameLayout>
         </RelativeLayout>
-        <LinearLayout
-            android:layout_below="@id/fastestLap_layout"
-            android:orientation="horizontal"
-            android:paddingTop="5dp"
-            android:paddingBottom="5dp"
-            android:background="@color/dark_blue"
-            android:id="@+id/race_header"
-            android:layout_width="match_parent"
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_below="@id/fastestLap_layout"
+        android:orientation="horizontal"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/dark_blue"
+        android:id="@+id/race_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="5">
+        <TextView
+            android:text="@string/pos_header"
+            android:textAllCaps="true"
+            android:layout_weight="0.5"
+            android:id="@+id/driver_placement"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:weightSum="5">
-            <TextView
-                android:text="POS"
-                android:layout_weight="0.8"
-                android:id="@+id/driver_placement"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_gravity="center_vertical"
-                android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-            <TextView
-                android:text="DRIVER"
-                android:paddingStart="15dp"
-                android:paddingEnd="8dp"
-                android:layout_width="0dp"
-                android:layout_weight="2.2"
-                android:layout_height="wrap_content"
-                android:id="@+id/driverName"
-                android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-            <TextView
-                android:text="TIME/RET"
-                android:paddingStart="3dp"
-                android:paddingEnd="3dp"
-                android:layout_width="0dp"
-                android:layout_weight="1.2"
-                android:layout_gravity="center"
-                android:id="@+id/driver_time"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/white"
-                android:textSize="20sp"/>
-            <TextView
-                android:text="PTS"
-                android:layout_width="0dp"
-                android:layout_weight="0.8"
-                android:gravity="center"
-                android:layout_gravity="center_vertical"
-                android:layout_height="wrap_content"
-                android:id="@+id/driver_pts"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
-        </LinearLayout>
+            android:gravity="center"
+            android:layout_gravity="center_vertical"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="0dp"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+        <TextView
+            android:text="@string/driver_header"
+            android:paddingStart="15dp"
+            android:paddingEnd="8dp"
+            android:layout_width="0dp"
+            android:layout_weight="2.4"
+            android:layout_height="wrap_content"
+            android:id="@+id/driverName"
+            android:textAllCaps="true"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="0dp"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+        <TextView
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:text="@string/race_status_header"
+            android:layout_width="0dp"
+            android:layout_weight="1.3"
+            android:layout_gravity="center"
+            android:id="@+id/driver_time"
+            android:layout_height="match_parent"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+        <TextView
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:text="@string/pts_header"
+            android:textAllCaps="true"
+            android:layout_width="0dp"
+            android:layout_weight="0.8"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"
+            android:id="@+id/driver_pts"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_below="@id/race_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_below="@id/race_header"
-            android:overScrollMode="never"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/race_results"
-            android:layout_marginBottom="30dp"/>
-    </RelativeLayout>
-</ScrollView>
+            android:overScrollMode="never"
+            android:visibility="gone"/>
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:duration="1500">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+    </LinearLayout>
+</RelativeLayout>

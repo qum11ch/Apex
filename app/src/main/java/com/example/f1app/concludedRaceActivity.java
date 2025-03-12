@@ -28,7 +28,6 @@ import java.time.format.DateTimeFormatter;
 public class concludedRaceActivity extends AppCompatActivity {
 
     private ImageButton backButton;
-    private Handler handler = new Handler();
     private TextView raceTitle;
     private ViewPager2 myViewPager2;
     private viewPagerAdapter adapter ;
@@ -40,66 +39,10 @@ public class concludedRaceActivity extends AppCompatActivity {
         setContentView(R.layout.race_page);
 
         raceTitle = findViewById(R.id.raceTitile);
-        Bundle bundle = getIntent().getExtras();
 
-        String mCircuitName = bundle.getString("circuitName");
-        String mRaceName = bundle.getString("raceName");
-        String mRaceStartDay = bundle.getString("raceStartDay");
-        String mRaceEndDay = bundle.getString("raceEndDay");
-        String mRaceStartMonth = bundle.getString("raceStartMonth");
-        String mRaceEndMonth = bundle.getString("raceEndMonth");
-        String mRound = bundle.getString("roundCount");
-        String mCountry = bundle.getString("raceCountry");
-        String mDate = bundle.getString("dateStart");
-        String mFirstPlaceCode = bundle.getString("firstPlaceCode");
-        String mSecondPlaceCode = bundle.getString("secondPlaceCode");
-        String mThirdPlaceCode = bundle.getString("thirdPlaceCode");
-
-
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
-        LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
-        String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("circuits").orderByChild("circuitName").equalTo(mCircuitName)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String mCircuitId = ds.getKey();
-
-                    Bundle scheduleBundle = new Bundle();
-                    scheduleBundle.putString("circuitId", mCircuitId);
-                    scheduleBundle.putString("raceName", mRaceName);
-                    scheduleBundle.putString("raceStartDay", mRaceStartDay);
-                    scheduleBundle.putString("raceEndDay", mRaceEndDay);
-                    scheduleBundle.putString("raceStartMonth", mRaceStartMonth);
-                    scheduleBundle.putString("raceEndMonth", mRaceEndMonth);
-                    scheduleBundle.putString("roundCount", mRound);
-                    scheduleBundle.putString("raceCountry", mCountry);
-                    scheduleBundle.putString("gpYear", gpYear);
-                    scheduleBundle.putString("firstPlaceCode", mFirstPlaceCode);
-                    scheduleBundle.putString("secondPlaceCode", mSecondPlaceCode);
-                    scheduleBundle.putString("thirdPlaceCode", mThirdPlaceCode);
-
-
-                    Bundle circuitBundle = new Bundle();
-                    circuitBundle.putString("circuitId", mCircuitId);
-                    circuitBundle.putString("raceName", mRaceName);
-                    circuitBundle.putString("gpYear", gpYear);
-                    circuitBundle.putString("raceCountry", mCountry);
-
-                    init(scheduleBundle, circuitBundle);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("futureActivityFirebaseError", error.getMessage());
-            }
-        });
-
-        raceTitle.setText(mRaceName);
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -109,10 +52,67 @@ public class concludedRaceActivity extends AppCompatActivity {
             }
         });
 
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
+        if (!getIntent().getExtras().isEmpty()){
+            Bundle bundle = getIntent().getExtras();
+            String mCircuitName = bundle.getString("circuitName");
+            String mRaceName = bundle.getString("raceName");
+            String mRaceStartDay = bundle.getString("raceStartDay");
+            String mRaceEndDay = bundle.getString("raceEndDay");
+            String mRaceStartMonth = bundle.getString("raceStartMonth");
+            String mRaceEndMonth = bundle.getString("raceEndMonth");
+            String mRound = bundle.getString("roundCount");
+            String mCountry = bundle.getString("raceCountry");
+            String mDate = bundle.getString("dateStart");
+            String mFirstPlaceCode = bundle.getString("firstPlaceCode");
+            String mSecondPlaceCode = bundle.getString("secondPlaceCode");
+            String mThirdPlaceCode = bundle.getString("thirdPlaceCode");
 
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+            LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
+            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.child("circuits").orderByChild("circuitName").equalTo(mCircuitName)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot ds: snapshot.getChildren()){
+                                String mCircuitId = ds.getKey();
+
+                                Bundle scheduleBundle = new Bundle();
+                                scheduleBundle.putString("circuitId", mCircuitId);
+                                scheduleBundle.putString("raceName", mRaceName);
+                                scheduleBundle.putString("raceStartDay", mRaceStartDay);
+                                scheduleBundle.putString("raceEndDay", mRaceEndDay);
+                                scheduleBundle.putString("raceStartMonth", mRaceStartMonth);
+                                scheduleBundle.putString("raceEndMonth", mRaceEndMonth);
+                                scheduleBundle.putString("roundCount", mRound);
+                                scheduleBundle.putString("raceCountry", mCountry);
+                                scheduleBundle.putString("gpYear", gpYear);
+                                scheduleBundle.putString("firstPlaceCode", mFirstPlaceCode);
+                                scheduleBundle.putString("secondPlaceCode", mSecondPlaceCode);
+                                scheduleBundle.putString("thirdPlaceCode", mThirdPlaceCode);
+
+
+                                Bundle circuitBundle = new Bundle();
+                                circuitBundle.putString("circuitId", mCircuitId);
+                                circuitBundle.putString("raceName", mRaceName);
+                                circuitBundle.putString("gpYear", gpYear);
+                                circuitBundle.putString("raceCountry", mCountry);
+
+                                init(scheduleBundle, circuitBundle);
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("futureActivityFirebaseError", error.getMessage());
+                        }
+                    });
+
+            raceTitle.setText(mRaceName);
+        }
     }
 
     private void init(Bundle scheduleBundle, Bundle circuitBundle) {

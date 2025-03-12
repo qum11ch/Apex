@@ -1,201 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appbar"
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:visibility="gone"
+        android:id="@+id/main_content"
         android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:fitsSystemWindows="true"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <com.google.android.material.appbar.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/blue_gradient"
-            android:fitsSystemWindows="true"
-            android:paddingTop="40dp"
-            app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
-            <RelativeLayout
-                android:paddingTop="40dp"
-                android:background="@drawable/blue_gradient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <View
-                    android:id="@+id/grid"
-                    android:layout_alignParentBottom="true"
-                    android:layout_width="match_parent"
-                    android:layout_height="130dp"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/background_results_transparent" />
-                <View
-                    android:layout_marginTop="80dp"
-                    android:layout_marginStart="30dp"
-                    android:id="@+id/line"
-                    android:layout_width="3dp"
-                    android:layout_height="160dp"
-                    android:layout_marginBottom="30dp"
-                    android:background="@color/white"/>
-                <TextView
-                    android:text="username"
-                    android:layout_marginTop="80dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_toEndOf="@id/line"
-                    android:textColor="@color/white"
-                    android:id='@+id/username'
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_toEndOf="@id/line"
-                    android:textSize="24sp"
-                    android:layout_below="@id/username"
-                    android:textColor="@color/white"
-                    android:id='@+id/fanText'
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_toEndOf="@id/line"
-                    android:layout_below="@id/fanText"
-                    android:textColor="@color/white"
-                    android:id='@+id/driverNumber'
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                <View
-                    android:id="@+id/line2"
-                    android:layout_width="2dp"
-                    android:layout_toEndOf="@id/driverNumber"
-                    android:layout_below="@id/fanText"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="20dp"
-                    android:background="@color/white_alpha" />
-                <TextView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@id/line2"
-                    android:layout_below="@id/fanText"
-                    android:textColor="@color/white"
-                    android:id='@+id/userFavDriver'
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                <ImageView
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_width="30dp"
-                    android:id="@+id/team_logo"
-                    android:layout_height="30dp"
-                    android:layout_below="@id/userFavDriver"
-                    android:layout_toEndOf="@id/line"/>
-                <TextView
-                    android:layout_toEndOf="@id/team_logo"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_below="@id/userFavDriver"
-                    android:textColor="@color/white"
-                    android:id='@+id/userFavTeam'
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-            </RelativeLayout>
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@android:color/transparent"
-                android:fitsSystemWindows="true"
-                app:layout_collapseMode="pin">
-
-                <RelativeLayout
-                    android:id="@+id/header"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center">
-                    <ImageButton
-                        android:id='@+id/backButton'
-                        android:paddingEnd="30dp"
-                        android:layout_width="100dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/back_arrow"
-                        android:background="@android:color/transparent"/>
-                    <TextView
-                        android:id="@+id/tabUserName"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_toEndOf="@id/backButton"
-                        android:gravity="center"
-                        android:paddingStart="0dp"
-                        android:paddingEnd="100dp"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
-                        android:textSize="24sp"
-                        android:textStyle="bold"/>
-                </RelativeLayout>
-            </androidx.appcompat.widget.Toolbar>
-        </com.google.android.material.appbar.CollapsingToolbarLayout>
-        <com.google.android.material.tabs.TabLayout
-            android:elevation="5dp"
-            app:layout_collapseMode="pin"
-            style="@style/AppTabLayoutPages"
-            android:background="@color/white"
-            android:id="@+id/tab_layout"
+        android:layout_height="match_parent">
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:gravity="bottom" />
-    </com.google.android.material.appbar.AppBarLayout>
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/white"
-        android:overScrollMode="never"
-        app:layout_anchor="@+id/nestedScrollView"
-        app:layout_anchorGravity="center"
-        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-        <RelativeLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
-            <RelativeLayout
-                android:id="@+id/userFavTeam_layout"
-                android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <com.google.android.material.appbar.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginStart="10dp"
-                android:layout_marginBottom="30dp">
-                <TextView
-                    android:id="@+id/favTeam_header"
+                android:background="@drawable/blue_gradient"
+                android:fitsSystemWindows="true"
+                android:paddingTop="40dp"
+                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
+                <RelativeLayout
+                    android:id="@+id/content_header_layout"
+                    android:paddingTop="40dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="favourite team"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-                    android:textStyle="bold" />
-                <LinearLayout
-                    android:id="@+id/driversTeam_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/favTeam_header"
-                    android:baselineAligned="false"
-                    android:orientation="vertical"
-                    android:paddingTop="20dp">
-                    <RelativeLayout
-                        android:id="@+id/team_layout"
-                        style="@style/StatisticLayoutTransparent"
+                    android:layout_height="wrap_content">
+                    <View
+                        android:id="@+id/grid"
+                        android:layout_alignParentBottom="true"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="130dp"
+                        android:background="@drawable/background_results_transparent" />
+                    <View
+                        android:layout_marginTop="30dp"
+                        android:layout_marginStart="30dp"
+                        android:id="@+id/line"
+                        android:layout_width="3dp"
+                        android:layout_height="160dp"
+                        android:layout_marginBottom="30dp"
+                        android:background="@color/white"/>
+                    <TextView
+                        android:layout_marginTop="30dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/line"
+                        android:textColor="@color/white"
+                        android:id='@+id/username'
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/line"
+                        android:textSize="24sp"
+                        android:layout_below="@id/username"
+                        android:textColor="@color/white"
+                        android:id='@+id/fanText'
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_toEndOf="@id/line"
+                        android:layout_below="@id/fanText"
+                        android:textColor="@color/white"
+                        android:id='@+id/driverNumber'
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                    <View
+                        android:id="@+id/line2"
+                        android:layout_width="2dp"
+                        android:layout_toEndOf="@id/driverNumber"
+                        android:layout_below="@id/fanText"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_height="20dp"
+                        android:background="@color/white_alpha" />
+                    <TextView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@id/line2"
+                        android:layout_below="@id/fanText"
+                        android:textColor="@color/white"
+                        android:id='@+id/userFavDriver'
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_width="30dp"
+                        android:id="@+id/team_logo"
+                        android:layout_height="30dp"
+                        android:layout_below="@id/userFavDriver"
+                        android:layout_toEndOf="@id/line"
+                        android:contentDescription="@string/team_logo" />
+                    <TextView
+                        android:layout_toEndOf="@id/team_logo"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_below="@id/userFavDriver"
+                        android:textColor="@color/white"
+                        android:id='@+id/userFavTeam'
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                </RelativeLayout>
+
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@android:color/transparent"
+                    android:fitsSystemWindows="true"
+                    app:layout_collapseMode="pin">
+
+                    <RelativeLayout
+                        android:id="@+id/header"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+                        <ImageButton
+                            android:id='@+id/backButton'
+                            android:contentDescription="@string/back_arrow"
+                            android:paddingEnd="30dp"
+                            android:paddingStart="0dp"
+                            android:layout_width="100dp"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/back_arrow"
+                            android:background="@android:color/transparent"/>
+                        <TextView
+                            android:id="@+id/tabUserName"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_toEndOf="@id/backButton"
+                            android:gravity="center"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="100dp"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
+                            android:textSize="24sp"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+                </androidx.appcompat.widget.Toolbar>
+            </com.google.android.material.appbar.CollapsingToolbarLayout>
+        </com.google.android.material.appbar.AppBarLayout>
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:overScrollMode="never"
+            app:layout_anchor="@+id/nestedScrollView"
+            app:layout_anchorGravity="center"
+            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <RelativeLayout
+                    android:id="@+id/userFavTeam_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginBottom="30dp">
+                    <TextView
+                        android:id="@+id/favTeam_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/favourite_team"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                        android:textStyle="bold" />
+                    <LinearLayout
+                        android:id="@+id/driversTeam_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/favTeam_header"
+                        android:baselineAligned="false"
+                        android:orientation="vertical"
+                        android:paddingTop="20dp">
                         <RelativeLayout
-                            android:id="@+id/team"
+                            android:id="@+id/team_layout"
+                            style="@style/StatisticLayoutTransparent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <RelativeLayout
+                                android:id="@+id/team"
+                                style="@style/StatisticLayoutColored"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="-1dp"
+                                android:layout_marginTop="4dp"
+                                android:layout_marginEnd="4dp"
+                                android:layout_marginBottom="-1dp">
+                                <RelativeLayout
+                                    android:id="@+id/striped_first"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="140dp"
+                                    android:layout_marginTop="5dp"
+                                    android:layout_marginEnd="5dp"
+                                    android:background="@drawable/background_striped_lines_white">
+                                    <ImageView
+                                        android:layout_marginStart="10dp"
+                                        android:layout_marginEnd="10dp"
+                                        android:id="@+id/teamCar"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="160dp"
+                                        android:contentDescription="@string/team_car"
+                                        android:scaleType="fitCenter"
+                                        android:visibility="invisible"
+                                        tools:ignore="TooDeepLayout" />
+                                    <TextView
+                                        android:id="@+id/noTeam"
+                                        android:visibility="invisible"
+                                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                                        android:layout_marginStart="10dp"
+                                        android:textSize="22sp"
+                                        android:layout_centerInParent="true"
+                                        android:gravity="center"
+                                        android:layout_marginEnd="10dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:text="@string/favorite_team_has_not_yet_been_chosen"/>
+                                </RelativeLayout>
+                            </RelativeLayout>
+                        </RelativeLayout>
+                        <RelativeLayout
+                            android:id="@+id/teamName_layout"
+                            android:layout_marginTop="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+                            <TextView
+                                android:layout_centerInParent="true"
+                                android:id='@+id/teamName'
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames"
+                                android:textStyle="bold"/>
+                            <ImageView
+                                android:contentDescription="@string/front_arrow"
+                                android:cropToPadding="true"
+                                android:layout_marginStart="5dp"
+                                android:layout_centerInParent="true"
+                                android:layout_toEndOf="@id/teamName"
+                                android:id='@+id/arrow'
+                                android:layout_width="wrap_content"
+                                android:layout_height="match_parent"
+                                android:src="@drawable/back_arrow_black"
+                                android:scaleX="-1"/>
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/userFavDriver_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/userFavTeam_layout"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="30dp">
+
+                    <TextView
+                        android:id="@+id/favDriver_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:textAllCaps="true"
+                        android:text="@string/favourite_driver"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                        android:textStyle="bold" />
+
+                    <RelativeLayout
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_below="@id/favDriver_header"
+                        android:id="@+id/driver_layout"
+                        style="@style/StatisticLayoutTransparent"
+                        android:layout_width="168dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo">
+                        <RelativeLayout
                             style="@style/StatisticLayoutColored"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -203,23 +296,22 @@
                             android:layout_marginTop="4dp"
                             android:layout_marginEnd="4dp"
                             android:layout_marginBottom="-1dp">
+
                             <RelativeLayout
-                                android:id="@+id/striped_first"
+                                android:id="@+id/striped_second"
                                 android:layout_width="match_parent"
-                                android:layout_height="140dp"
+                                android:layout_height="168dp"
                                 android:layout_marginTop="5dp"
                                 android:layout_marginEnd="5dp"
                                 android:background="@drawable/background_striped_lines_white">
                                 <ImageView
-                                    android:layout_marginStart="10dp"
-                                    android:layout_marginEnd="10dp"
-                                    android:id="@+id/teamCar"
+                                    android:id="@+id/driver_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="160dp"
-                                    android:scaleType="fitCenter"
-                                    android:visibility="invisible"/>
+                                    android:layout_height="168dp"
+                                    android:contentDescription="@string/driverimage"
+                                    android:scaleType="fitEnd" />
                                 <TextView
-                                    android:id="@+id/noTeam"
+                                    android:id="@+id/noDriver"
                                     android:visibility="invisible"
                                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                                     android:layout_marginStart="10dp"
@@ -229,182 +321,102 @@
                                     android:layout_marginEnd="10dp"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:text="Favorite team has not yet been chosen "/>
+                                    android:text="@string/favorite_driver_has_not_yet_been_chosen"/>
                             </RelativeLayout>
-                        </RelativeLayout>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/teamName_layout"
-                        android:layout_marginTop="10dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
-                        <TextView
-                            android:layout_centerInParent="true"
-                            android:id='@+id/teamName'
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames"
-                            android:textStyle="bold"/>
-                        <ImageView
-                            android:cropToPadding="true"
-                            android:layout_marginStart="5dp"
-                            android:layout_centerInParent="true"
-                            android:layout_toEndOf="@id/teamName"
-                            android:id='@+id/arrow'
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:src="@drawable/back_arrow_black"
-                            android:scaleX="-1"/>
-                    </RelativeLayout>
 
-                </LinearLayout>
-            </RelativeLayout>
-            <RelativeLayout
-                android:id="@+id/userFavDriver_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/userFavTeam_layout"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="30dp">
-
-                <TextView
-                    android:id="@+id/favDriver_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:textAllCaps="true"
-                    android:text="Favourite driver"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-                    android:textStyle="bold" />
-
-                <RelativeLayout
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="20dp"
-                    android:layout_below="@id/favDriver_header"
-                    android:id="@+id/driver_layout"
-                    style="@style/StatisticLayoutTransparent"
-                    android:layout_width="168dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo">
-                    <RelativeLayout
-                        style="@style/StatisticLayoutColored"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="-1dp"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginEnd="4dp"
-                        android:layout_marginBottom="-1dp">
-
-                        <RelativeLayout
-                            android:id="@+id/striped_second"
-                            android:layout_width="match_parent"
-                            android:layout_height="168dp"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:background="@drawable/background_striped_lines_white">
-                            <ImageView
-                                android:id="@+id/driver_image"
+                            <LinearLayout
+                                android:id="@+id/driverName_layout"
                                 android:layout_width="match_parent"
-                                android:layout_height="168dp"
-                                android:scaleType="fitEnd" />
-                            <TextView
-                                android:id="@+id/noDriver"
-                                android:visibility="invisible"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                                android:layout_marginStart="10dp"
-                                android:textSize="22sp"
-                                android:layout_centerInParent="true"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/striped_second"
                                 android:gravity="center"
-                                android:layout_marginEnd="10dp"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="Favorite driver has not yet been chosen "/>
+                                android:orientation="vertical">
+
+                                <TextView
+                                    android:id='@+id/driverName'
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
+
+                                <TextView
+                                    android:id='@+id/driverFamilyName'
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
+                            </LinearLayout>
                         </RelativeLayout>
-
-                        <LinearLayout
-                            android:id="@+id/driverName_layout"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_below="@id/striped_second"
-                            android:gravity="center"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:id='@+id/driverName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
-
-                            <TextView
-                                android:id='@+id/driverFamilyName'
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                        </LinearLayout>
                     </RelativeLayout>
                 </RelativeLayout>
+                <LinearLayout
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/userFavDriver_layout"
+                    android:id="@+id/button_layout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:weightSum="2">
+                    <Button
+                        android:id="@+id/profileSettings"
+                        style="@style/ButtonStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp"
+                        android:drawableTop="@drawable/settings"
+                        android:backgroundTint="@color/dark_blue"
+                        android:layout_marginEnd="5dp"
+                        android:text="@string/settings"
+                        android:paddingBottom="10dp"
+                        android:layout_weight="1"/>
+                    <Button
+                        android:id="@+id/savedRace"
+                        style="@style/ButtonStyle"
+                        android:backgroundTint="@color/dark_blue"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="10dp"
+                        android:drawableTop="@drawable/saved"
+                        android:layout_marginStart="5dp"
+                        android:text="@string/saved_race"
+                        android:paddingBottom="10dp"
+                        android:layout_weight="1"/>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_below="@id/button_layout1"
+                    android:id="@+id/button_layout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="0dp"
+                    android:layout_marginEnd="10dp"
+                    android:weightSum="2">
+                    <Button
+                        android:backgroundTint="@color/dark_blue"
+                        android:id="@+id/logout"
+                        style="@style/ButtonStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp"
+                        android:drawableTop="@drawable/logout"
+                        android:layout_marginEnd="5dp"
+                        android:text="@string/logout"
+                        android:layout_weight="1"/>
+                </LinearLayout>
             </RelativeLayout>
-            <LinearLayout
-                android:layout_marginTop="20dp"
-                android:layout_below="@id/userFavDriver_layout"
-                android:id="@+id/button_layout1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:weightSum="2">
-                <Button
-                    android:id="@+id/profileSettings"
-                    style="@style/ButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:drawableTop="@drawable/settings"
-                    android:backgroundTint="@color/dark_blue"
-                    android:layout_marginEnd="5dp"
-                    android:text="@string/settings"
-                    android:paddingBottom="10dp"
-                    android:layout_weight="1"/>
-                <Button
-                    android:id="@+id/savedRace"
-                    style="@style/ButtonStyle"
-                    android:backgroundTint="@color/dark_blue"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:paddingTop="10dp"
-                    android:drawableTop="@drawable/saved"
-                    android:layout_marginStart="5dp"
-                    android:text="@string/saved_race"
-                    android:paddingBottom="10dp"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-            <LinearLayout
-                android:layout_below="@id/button_layout1"
-                android:id="@+id/button_layout2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="0dp"
-                android:layout_marginEnd="10dp"
-                android:weightSum="2">
-                <Button
-                    android:backgroundTint="@color/dark_blue"
-                    android:id="@+id/logout"
-                    style="@style/ButtonStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:paddingTop="10dp"
-                    android:paddingBottom="10dp"
-                    android:drawableTop="@drawable/logout"
-                    android:layout_marginEnd="5dp"
-                    android:text="@string/logout"
-                    android:layout_weight="1"/>
-            </LinearLayout>
-        </RelativeLayout>
-    </androidx.core.widget.NestedScrollView>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ProgressBar
+        android:visibility="visible"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:id="@+id/loadingBar"
+        android:indeterminate="true"
+        android:indeterminateTintMode="src_atop"
+        android:indeterminateTint="@color/red"
+        android:layout_centerInParent="true"/>
+</RelativeLayout>
+

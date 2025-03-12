@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -201,12 +202,16 @@ public class teamResultsFragment extends Fragment {
                         Glide.with(requireContext())
                                 .load(resourceId_driverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                .transition(DrawableTransitionOptions.withCrossFade())
                                 .error(R.drawable.f1)
                                 .into(firstDriver_image);
                     }else{
                         secondDriverFamilyName.setText(mDriverFamilyName);
                         Glide.with(requireContext())
                                 .load(resourceId_driverImage)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .error(R.drawable.f1)
                                 .into(secondDriver_image);

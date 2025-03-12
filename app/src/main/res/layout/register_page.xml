@@ -17,7 +17,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="30dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -27,7 +29,7 @@
             android:paddingEnd="40dp"
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:text="Register"
+            android:text="@string/register_header"
             android:id="@+id/raceHeader"
             android:layout_width="match_parent"
             android:gravity="center"

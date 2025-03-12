@@ -39,7 +39,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="CHECK \nBACK HERE"/>
+                    android:text="@string/empty_race_list_header"/>
                 <TextView
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:textStyle="normal"
@@ -49,9 +49,8 @@
                     android:layout_marginEnd="100dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Come back in a new season to get a new schedule and all of the results"/>
+                    android:text="@string/empty_race_list_future"/>
             </LinearLayout>
         </RelativeLayout>
     </com.example.f1app.LockableNestedScrollView>
-
 </FrameLayout>

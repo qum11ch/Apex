@@ -64,7 +64,6 @@
                     android:includeFontPadding="false"
                     android:layout_marginBottom="10dp"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/team"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.Big"/>
                 <TextView
                     android:textColor="@color/white"
@@ -76,7 +75,6 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/first_driver"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
                 <TextView
                     android:textColor="@color/white"
@@ -88,7 +86,6 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/second_driver"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
 
             </RelativeLayout>

@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
@@ -38,7 +39,7 @@ import java.util.ArrayList;
 public class teamStatsFragment extends Fragment {
     private TextView enterYear, wins, podiums, poles, championships,
             firstDriverName, firstDriverFamilyName, secondDriverName, secondDriverFamilyName,
-            teamBase, powerUnit, teamChief, techChief, chassis;
+            teamBase, powerUnit, teamChief, techChief, chassis, fullTeamName;
     private ImageView firstDriver_image, secondDriver_image;
     private RelativeLayout secondDriver_layout, firstDriver_layout, tech_layout;
 
@@ -81,6 +82,7 @@ public class teamStatsFragment extends Fragment {
         firstDriver_layout = (RelativeLayout) view.findViewById(R.id.firstDriver_layout);
         secondDriver_layout = (RelativeLayout) view.findViewById(R.id.secondDriver_layout);
         tech_layout = (RelativeLayout) view.findViewById(R.id.tech_layout);
+        fullTeamName = (TextView) view.findViewById(R.id.fullTeamName);
 
 
 
@@ -173,6 +175,7 @@ public class teamStatsFragment extends Fragment {
                     String mTechChief = snapshot.child("thechnicalChief").getValue(String.class);
                     String mPowerUnit = snapshot.child("powerUnit").getValue(String.class);
                     String mChassis = snapshot.child("chassis").getValue(String.class);
+                    String mFullTeamName = snapshot.child("fullTeamName").getValue(String.class);
 
 
                     enterYear.setText(String.valueOf(mEnterYear));
@@ -185,6 +188,7 @@ public class teamStatsFragment extends Fragment {
                     techChief.setText(mTechChief);
                     powerUnit.setText(mPowerUnit);
                     chassis.setText(mChassis);
+                    fullTeamName.setText(mFullTeamName);
 
                     GradientDrawable gd = new GradientDrawable();
                     gd.setColor(ContextCompat.getColor(requireContext(),R.color.white));
@@ -229,6 +233,8 @@ public class teamStatsFragment extends Fragment {
                             Glide.with(requireContext())
                                     .load(resourceId_driverImage)
                                     .transition(DrawableTransitionOptions.withCrossFade())
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
                                     .error(R.drawable.f1)
                                     .into(firstDriver_image);
                         }else{
@@ -236,6 +242,8 @@ public class teamStatsFragment extends Fragment {
                             secondDriverFamilyName.setText(mDriverFamilyName);
                             Glide.with(requireContext())
                                     .load(resourceId_driverImage)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .error(R.drawable.f1)
                                     .into(secondDriver_image);

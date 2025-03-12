@@ -16,7 +16,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="30dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -96,7 +98,7 @@
                     android:id="@+id/resetPassword"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Forgot password?" />
+                    android:text="@string/forgot_password" />
             </com.google.android.material.textfield.TextInputLayout>
             <FrameLayout
                 android:layout_below="@id/password_layout"

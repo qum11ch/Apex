@@ -90,7 +90,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             }
         });
 
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
+        showDriverStanding = (Button) findViewById(R.id.showSchedule);
         showDriverStanding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

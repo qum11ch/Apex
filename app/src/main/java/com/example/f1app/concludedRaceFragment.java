@@ -59,7 +59,6 @@ public class concludedRaceFragment extends Fragment {
         if (!getArguments().isEmpty()){
             shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
-
             datum = new ArrayList<>();
             recyclerView = view.findViewById(R.id.recyclerview_concludedRaces);
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());

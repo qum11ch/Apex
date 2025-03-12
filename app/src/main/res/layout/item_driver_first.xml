@@ -97,8 +97,7 @@
                         android:layout_height="match_parent"
                         android:paddingStart="5dp"
                         android:paddingEnd="0dp"
-                        android:textAppearance="@style/TextStyle.Fishmonger.ForInfo"
-                        android:text="@string/team"/>
+                        android:textAppearance="@style/TextStyle.Fishmonger.ForInfo"/>
                 </LinearLayout>
 
             </RelativeLayout>

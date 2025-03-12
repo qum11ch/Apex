@@ -1,10 +1,12 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -13,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,6 +23,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -35,6 +39,9 @@ public class raceResultsRaceFragment extends Fragment {
     private RecyclerView recyclerView;
     private List<raceResultsRaceData> datum;
     private TextView fastestLapDriverName, fastestLapTime;
+    private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout;
+    private SwipeRefreshLayout swipeLayout;
+    private RelativeLayout fastestLapDriverLayout;
 
     public raceResultsRaceFragment() {
         // required empty public constructor.
@@ -60,6 +67,13 @@ public class raceResultsRaceFragment extends Fragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
+        fastestLapDriverLayout = view.findViewById(R.id.fastestLapDriver_layout);
+
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        shimmerDriverLayout = view.findViewById(R.id.shimmer_layout_driver);
+        shimmerDriverLayout.startShimmer();
+        shimmerFrameLayout.startShimmer();
+
         fastestLapDriverName = view.findViewById(R.id.fastestLapDriverName);
         fastestLapTime = view.findViewById(R.id.fastestLapTime);
 
@@ -72,6 +86,8 @@ public class raceResultsRaceFragment extends Fragment {
             datum = new ArrayList<>();
             getRaceData(mCircuitId, mSeason);
         }
+
+
     }
 
     public void getRaceData(String circuitId, String season){
@@ -115,6 +131,12 @@ public class raceResultsRaceFragment extends Fragment {
                                             String driver = driverName.charAt(0) + ". " + driverFamilyName;
                                             fastestLapTime.setText(mFastestLapTime);
                                             fastestLapDriverName.setText(driver);
+                                            Handler handler = new Handler();
+                                            handler.postDelayed(()->{
+                                                fastestLapDriverLayout.setVisibility(View.VISIBLE);
+                                                shimmerDriverLayout.setVisibility(View.GONE);
+                                                shimmerDriverLayout.stopShimmer();
+                                            },500);
                                         }
                                     }
 
@@ -143,7 +165,12 @@ public class raceResultsRaceFragment extends Fragment {
                                             constructorId, driverCode, time, points, season);
                                     datum.add(results);
                                 }
-                                Log.i("raceResults", "" + datum.size());
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new raceResultsRaceAdapter(requireActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }

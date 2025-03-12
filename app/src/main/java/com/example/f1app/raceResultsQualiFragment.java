@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -40,6 +42,7 @@ public class raceResultsQualiFragment extends Fragment {
     private raceResultsQualiAdapter adapter;
     private RecyclerView recyclerView;
     private List<raceResultsQualiData> datum;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public raceResultsQualiFragment() {
         // required empty public constructor.
@@ -64,6 +67,9 @@ public class raceResultsQualiFragment extends Fragment {
         recyclerView = view.findViewById(R.id.quali_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         if (!getArguments().isEmpty()){
@@ -116,7 +122,12 @@ public class raceResultsQualiFragment extends Fragment {
                                             constructorId, driverCode, Q1, Q2, Q3, season);
                                     datum.add(results);
                                 }
-                                Log.i("raceResults", "" + datum.size());
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    recyclerView.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                    shimmerFrameLayout.stopShimmer();
+                                },500);
                                 adapter = new raceResultsQualiAdapter(getActivity(), datum);
                                 recyclerView.setAdapter(adapter);
                             }

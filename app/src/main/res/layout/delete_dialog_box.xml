@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:id="@+id/logout_header"
-            android:text="Confirm Delete"
+            android:text="@string/confirm_delete"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
         <TextView
             android:layout_marginStart="20dp"
@@ -33,7 +33,7 @@
             android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Are you sure you want to delete your account?\nThat`s irretrievable"
+            android:text="@string/confirm_delete_info"
             android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
             android:layout_gravity="center"
             android:textAlignment="center"/>
@@ -59,7 +59,7 @@
                 android:layout_width="0dp"
                 android:layout_height="30dp"
                 android:id="@+id/cancel_button"
-                android:text="Cancel"
+                android:text="@string/cancel"
                 style="@style/declineButtonStyle"/>
             <Button
                 android:layout_weight="1"
@@ -72,7 +72,7 @@
                 android:layout_marginStart="5dp"
                 android:layout_height="30dp"
                 android:id="@+id/confirm_button"
-                android:text="Delete"
+                android:text="@string/delete_button_text"
                 android:textAllCaps="true"
                 android:backgroundTint="@color/red"
                 style="@style/ButtonStyle"/>

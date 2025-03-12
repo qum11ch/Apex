@@ -15,7 +15,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="30dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -84,7 +86,7 @@
                         android:layout_marginEnd="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="CHECK \nBACK HERE"/>
+                        android:text="@string/empty_race_list_header"/>
                     <TextView
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                         android:textStyle="bold"
@@ -94,10 +96,9 @@
                         android:layout_marginEnd="100dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Save the race for pocket access to its results!"/>
+                        android:text="@string/empty_saved_race_info"/>
                 </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
-
     </ScrollView>
 </RelativeLayout>

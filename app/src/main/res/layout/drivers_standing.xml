@@ -15,7 +15,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="30dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -24,7 +26,8 @@
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:textColor="@color/white"
-            android:text="DRIVER STANDING"
+            android:textAllCaps="true"
+            android:text="@string/drivers_header"
             android:id="@+id/teamsHeader"
             android:layout_width="match_parent"
             android:gravity="center"
@@ -36,10 +39,12 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="0dp">
-        <LinearLayout
+        <RelativeLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingStart="0dp"
+            android:paddingEnd="10dp">
             <androidx.recyclerview.widget.RecyclerView
                 android:paddingTop="10dp"
                 android:overScrollMode="never"
@@ -65,7 +70,7 @@
                     <include layout="@layout/shimmer_driver_standings" />
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
-        </LinearLayout>
+        </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     <include layout="@layout/footer_drivers"/>
 </LinearLayout>

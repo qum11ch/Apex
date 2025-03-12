@@ -84,6 +84,8 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         Glide.with(context)
                 .load(resourceId_driverImage)
                 .transition(DrawableTransitionOptions.withCrossFade())
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.f1)
                 .into(holder.driverImage);
         if (holder.getItemViewType() == 1) {

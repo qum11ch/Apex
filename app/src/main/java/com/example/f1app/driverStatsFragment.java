@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 
 import com.blongho.country_data.World;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -185,6 +186,8 @@ public class driverStatsFragment extends Fragment {
 
                                 Glide.with(requireContext())
                                         .load(resourceId_carImage)
+                                        .transition(DrawableTransitionOptions.withCrossFade())
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
                                         .transition(DrawableTransitionOptions.withCrossFade())
                                         .error(R.drawable.f1)
                                         .into(teamCar_image);

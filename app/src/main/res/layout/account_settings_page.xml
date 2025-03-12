@@ -17,7 +17,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="30dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -137,7 +139,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/changePasswordButton"
-                    android:text="Change private data"
+                    android:text="@string/change_private_data"
                     android:textAllCaps="true"
                     style="@style/ButtonStyle"/>
                 <Button
@@ -152,7 +154,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:id="@+id/deleteAccountButton"
-                    android:text="Delete account"
+                    android:text="@string/delete_account"
                     android:textAllCaps="true"
                     style="@style/ButtonStyle"/>
             </LinearLayout>

@@ -8,7 +8,7 @@
     <RelativeLayout
         android:background="@drawable/background_results"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="330dp">
         <LinearLayout
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
@@ -27,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="-"
+                android:text="@string/dash"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
             <TextView
                 android:id="@+id/day_end"
@@ -63,7 +63,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"/>
             <TextView
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:id="@+id/infoSeason"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -78,7 +78,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:layout_marginStart="20dp"
-            android:text="Race Podium"
+            android:text="@string/race_podium_text"
             android:textColor="@color/white"
             android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White"
             android:id="@+id/podium_info"/>
@@ -87,6 +87,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:id="@+id/podiumImage_layout"
+            android:baselineAligned="false"
             android:gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -111,6 +112,7 @@
                     android:id="@+id/secondPlace_image"
                     android:layout_width="match_parent"
                     android:layout_height="105dp"
+                    android:contentDescription="@string/_2nd_place_driver_image"
                     android:scaleType="fitCenter"
                     android:layout_alignParentBottom="true"/>
             </RelativeLayout>
@@ -132,6 +134,7 @@
                     android:id="@+id/firstPlace_image"
                     android:layout_width="match_parent"
                     android:layout_height="126dp"
+                    android:contentDescription="@string/_1st_place_driver_image"
                     android:scaleType="fitCenter"
                     android:layout_alignParentBottom="true"/>
             </RelativeLayout>
@@ -150,6 +153,7 @@
                     android:background="@drawable/background_striped_lines"/>
                 <ImageView
                     android:layout_centerInParent="true"
+                    android:contentDescription="@string/_3rd_place_driver_image"
                     android:scaleType="fitCenter"
                     android:id="@+id/thirdPlace_image"
                     android:layout_width="84dp"
@@ -164,6 +168,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podiumImage_layout"
+            android:baselineAligned="false"
             android:gravity="bottom"
             android:orientation="horizontal"
             android:weightSum="3">
@@ -181,7 +186,7 @@
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="2nd place"
+                    android:text="@string/_2nd_place_header"
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
@@ -217,7 +222,7 @@
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="Winner"
+                    android:text="@string/_1st_place_header"
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
@@ -253,7 +258,7 @@
                     android:gravity="center"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="3rd place"
+                    android:text="@string/_3rd_place_header"
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
@@ -276,6 +281,7 @@
             </RelativeLayout>
         </LinearLayout>
         <TextView
+            android:layout_alignParentBottom="true"
             android:layout_below="@id/podium_text"
             style="@style/StinkyBottomStyle"
             android:id="@+id/show_results"
@@ -286,7 +292,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="Show Full Race Results"
+            android:text="@string/show_full_race_results"
             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
             android:textColor="@color/white"
             android:textSize="20sp"/>
@@ -307,7 +313,7 @@
                 android:paddingStart="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="RACE WEEKEND"
+                android:text="@string/race_weekend_text"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
             <TextView
                 android:paddingEnd="10dp"
@@ -322,7 +328,6 @@
                 android:gravity="bottom"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:text="@string/race_name"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
             <TextView
                 android:paddingEnd="10dp"
@@ -336,7 +341,6 @@
                 android:layout_marginEnd="8dp"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:text="@string/circuit_name"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_marginBottom="5dp"/>
             <RelativeLayout

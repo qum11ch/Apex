@@ -91,6 +91,7 @@ public class schuduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(schuduleActivity.this, driversStandingsActivity.class);
                 schuduleActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -100,6 +101,7 @@ public class schuduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(schuduleActivity.this, MainActivity.class);
                 schuduleActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -109,6 +111,7 @@ public class schuduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(schuduleActivity.this, teamsStandingsActivity.class);
                 schuduleActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -118,6 +121,7 @@ public class schuduleActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(schuduleActivity.this, logInPageActivity.class);
                 schuduleActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 

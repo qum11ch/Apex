@@ -10,7 +10,7 @@ import android.os.Bundle;
 
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.preference.PreferenceManager;
+
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -44,7 +44,7 @@ import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
+    Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
     FirebaseDatabase database;
     private static final String TAG = "FirebaseERROR";
     SharedPreferences prefs;
@@ -68,8 +68,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
+        showSchedule = (Button) findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, schuduleActivity.class);
@@ -77,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
                 overridePendingTransition(0, 0);
             }
         });
-
-        showHomePage = (Button) findViewById(R.id.showHomePage);
 
         showTeams = (Button) findViewById(R.id.showTeams);
         showTeams.setOnClickListener(new View.OnClickListener() {

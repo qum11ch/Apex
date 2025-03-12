@@ -40,14 +40,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="00"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
                         android:textColor="@color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="-"
+                        android:text="@string/dash"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
                         android:textColor="@color/white"
@@ -55,7 +54,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
-                        android:text="00"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                 </LinearLayout>
                 <TextView
@@ -94,6 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp">
                     <TextView
+                        android:textAllCaps="true"
                         android:includeFontPadding="false"
                         android:lineSpacingExtra="0dp"
                         android:id="@+id/round_text"
@@ -115,7 +114,6 @@
                         android:lineSpacingExtra="0dp"
                         android:paddingStart="0dp"
                         android:paddingEnd="10dp"
-                        android:text="0"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                         android:textColor="@color/white"
                         android:textSize="14sp" />
@@ -129,7 +127,6 @@
                     android:layout_marginEnd="8dp"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/race_country"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
                 <TextView
@@ -142,7 +139,6 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/race_name"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
 
                 <TextView
@@ -154,7 +150,6 @@
                     android:layout_marginEnd="8dp"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:text="@string/circuit_name"
                     android:textAppearance="@style/TextStyle.Fishmonger.ForInfo"
                     android:layout_marginBottom="10dp"/>
                 <LinearLayout
@@ -237,7 +232,7 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="1"
+                            android:text="@string/one"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.Audiowide.ForDays"
                             tools:ignore="RtlCompat" />
@@ -249,7 +244,6 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="@string/code"
                             android:textAlignment="center"
                             android:textAllCaps="true"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
@@ -271,7 +265,7 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="2"
+                            android:text="@string/two"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.Audiowide.ForDays"
                             tools:ignore="RtlCompat" />
@@ -283,9 +277,8 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="@string/code"
-                            android:textAllCaps="true"
                             android:textAlignment="center"
+                            android:textAllCaps="true"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
                             android:textColor="@color/white"
                             tools:ignore="RtlCompat" />
@@ -305,7 +298,7 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="3"
+                            android:text="@string/three"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.Audiowide.ForDays"
                             tools:ignore="RtlCompat" />
@@ -317,7 +310,6 @@
                             android:gravity="center"
                             android:includeFontPadding="false"
                             android:lineSpacingExtra="0dp"
-                            android:text="@string/code"
                             android:textAllCaps="true"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"

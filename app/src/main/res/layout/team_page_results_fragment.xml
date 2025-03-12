@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:paddingEnd="0dp"
     android:paddingTop="20dp"
     android:layout_marginBottom="30dp"
     android:background="@color/white"
@@ -17,7 +15,7 @@
             android:id="@+id/resHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Drivers results"
+            android:text="@string/team_results"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/black"
             android:textSize="28sp"
@@ -36,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:text="2025 Season"
+                android:text="@string/_2025_season"
                 android:textColor="@drawable/toggle_text_color"
                 style="@style/ToggleButton"
                 android:checked="false"/>
@@ -47,7 +45,7 @@
                 android:textAllCaps="false"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@drawable/toggle_text_color"
-                android:text="2024 Season"
+                android:text="@string/_2024_season"
                 style="@style/ToggleButton"
                 android:layout_marginEnd="5dp"/>
         </LinearLayout>
@@ -75,7 +73,7 @@
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:gravity="bottom"
-                    android:text="Race name"/>
+                    android:text="@string/race_name_header"/>
                 <RelativeLayout
                     android:layout_weight="1.25"
                     android:layout_width="0dp"
@@ -90,6 +88,7 @@
                             android:id="@+id/firstDriver_image"
                             android:layout_width="match_parent"
                             android:layout_height="84dp"
+                            android:contentDescription="@string/first_driver"
                             android:scaleType="fitCenter" />
                     </RelativeLayout>
                     <TextView
@@ -120,6 +119,7 @@
                             android:id="@+id/secondDriver_image"
                             android:layout_width="match_parent"
                             android:layout_height="84dp"
+                            android:contentDescription="@string/second_driver"
                             android:scaleType="fitCenter" />
                     </RelativeLayout>
                     <TextView
@@ -145,6 +145,7 @@
                 android:layout_marginEnd="10dp"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:paddingEnd="5dp"
+                android:paddingStart="0dp"
                 android:layout_below="@id/line"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"
@@ -169,7 +170,7 @@
                 android:textStyle="bold"
                 android:layout_width="300dp"
                 android:layout_height="wrap_content"
-                android:text="Key Map" />
+                android:text="@string/key_map" />
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
@@ -183,13 +184,13 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Gold"
+                android:text="@string/gold"
                 android:backgroundTint="@color/light_gold"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 android:layout_below="@id/keyMap_header"
-                android:layout_toRightOf="@id/keyMap_gold"
+                android:layout_toEndOf="@id/keyMap_gold"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -197,7 +198,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Winner"
+                android:text="@string/_1st_place_header"
                 android:background="@color/light_gold"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -211,7 +212,7 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Silver"
+                android:text="@string/silver"
                 android:background="@color/light_silver"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -219,13 +220,13 @@
                 android:layout_below="@id/keyMap_gold"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
-                android:layout_toRightOf="@id/keyMap_silver"
+                android:layout_toEndOf="@id/keyMap_silver"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/dark_grey"
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Second place"
+                android:text="@string/_2nd_place_header"
                 android:background="@color/light_silver"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -239,7 +240,7 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Bronze"
+                android:text="@string/bronze"
                 android:background="@color/light_bronze"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -247,13 +248,13 @@
                 android:layout_below="@id/keyMap_silver"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
-                android:layout_toRightOf="@id/keyMap_bronze"
+                android:layout_toEndOf="@id/keyMap_bronze"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/dark_grey"
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Third place"
+                android:text="@string/_3rd_place_header"
                 android:background="@color/light_bronze"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -267,13 +268,13 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Green"
+                android:text="@string/green"
                 android:background="@color/light_green"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 android:layout_below="@id/keyMap_bronze"
-                android:layout_toRightOf="@id/keyMap_green"
+                android:layout_toEndOf="@id/keyMap_green"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -281,7 +282,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Finished in the points"
+                android:text="@string/points_finish"
                 android:background="@color/light_green"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -295,13 +296,13 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Purple"
+                android:text="@string/purple"
                 android:background="@color/light_purple"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 android:layout_below="@id/keyMap_green"
-                android:layout_toRightOf="@id/keyMap_purple"
+                android:layout_toEndOf="@id/keyMap_purple"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -309,7 +310,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Finished out of the points"
+                android:text="@string/out_of_points_finish"
                 android:background="@color/light_purple"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -323,13 +324,13 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Pink"
+                android:text="@string/pink"
                 android:background="@color/pink"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 android:layout_below="@id/keyMap_purple"
-                android:layout_toRightOf="@id/keyMap_ret"
+                android:layout_toEndOf="@id/keyMap_ret"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -337,7 +338,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Retired (Ret)"
+                android:text="@string/retired"
                 android:background="@color/pink"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -352,7 +353,7 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="White"
+                android:text="@string/white"
                 android:backgroundTintMode="screen"
                 android:backgroundTint="@color/white"/>
             <TextView
@@ -360,7 +361,7 @@
                 android:layout_marginEnd="0.5dp"
                 style="@style/Borders"
                 android:layout_below="@id/keyMap_ret"
-                android:layout_toRightOf="@id/keyMap_white"
+                android:layout_toEndOf="@id/keyMap_white"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -368,7 +369,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Did not start (DNS)"
+                android:text="@string/dns"
                 android:background="@color/white"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -383,14 +384,14 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Black"
+                android:text="@string/black"
                 android:backgroundTint="@color/black"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 style="@style/Borders"
                 android:layout_below="@id/keyMap_white"
-                android:layout_toRightOf="@id/keyMap_black"
+                android:layout_toEndOf="@id/keyMap_black"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -398,7 +399,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Disqualified (DSQ)"
+                android:text="@string/dsq"
                 android:background="@color/black"/>
             <TextView
                 android:layout_marginStart="0.5dp"
@@ -413,14 +414,14 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Blank"
+                android:text="@string/blank"
                 android:background="@color/light_grey"/>
             <TextView
                 android:layout_marginStart="0.5dp"
                 android:layout_marginEnd="0.5dp"
                 style="@style/Borders"
                 android:layout_below="@id/keyMap_black"
-                android:layout_toRightOf="@id/keyMap_blank"
+                android:layout_toEndOf="@id/keyMap_blank"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -428,7 +429,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Withdrawn (WD)"
+                android:text="@string/wd"
                 android:background="@color/light_grey"/>
             <TextView
                 style="@style/Borders"
@@ -441,19 +442,19 @@
                 android:gravity="center"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Format" />
+                android:text="@string/format" />
             <TextView
                 style="@style/Borders"
                 android:textStyle="bold"
                 android:layout_below="@id/keyMap_blank"
-                android:layout_toRightOf="@id/keyMap_textHeader"
+                android:layout_toEndOf="@id/keyMap_textHeader"
                 android:gravity="center"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/dark_grey"
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Meaning" />
+                android:text="@string/meaning" />
             <TextView
                 style="@style/Borders"
                 android:layout_below="@id/keyMap_textHeader"
@@ -466,11 +467,11 @@
                 android:textSize="20sp"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:text="Bold purple" />
+                android:text="@string/bold_purple" />
             <TextView
                 style="@style/Borders"
                 android:layout_below="@id/keyMap_textHeader"
-                android:layout_toRightOf="@id/keyMap_pole"
+                android:layout_toEndOf="@id/keyMap_pole"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -478,7 +479,7 @@
                 android:textSize="20sp"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Pole position" />
+                android:text="@string/pole_position" />
         </RelativeLayout>
     </RelativeLayout>
 </ScrollView>

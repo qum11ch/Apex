@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class driversStandingsActivity extends AppCompatActivity {
-    Button showTeamsButton, showDriverStanding, showTeams, showHomePage, showAccount;
+    Button showTeamsButton, showSchedule, showTeams, showHomePage, showAccount;
 
     private List<driversList> datum;
     private RecyclerView recyclerView;
@@ -91,8 +91,8 @@ public class driversStandingsActivity extends AppCompatActivity {
             }
         });
 
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
+        showSchedule = (Button) findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(driversStandingsActivity.this, schuduleActivity.class);

@@ -101,185 +101,185 @@ public class concludedRaceScheduleFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        if(!getArguments().isEmpty()){
+            String mCircuitId = getArguments().getString("circuitId");
+            mRaceName = getArguments().getString("raceName");
+            String mRaceStartDay = getArguments().getString("raceStartDay");
+            String mRaceEndDay = getArguments().getString("raceEndDay");
+            String mRaceStartMonth = getArguments().getString("raceStartMonth");
+            String mRaceEndMonth = getArguments().getString("raceEndMonth");
+            String mRound = getArguments().getString("roundCount");
+            String mCountry = getArguments().getString("raceCountry");
+            mYear = getArguments().getString("gpYear");
+            String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
+            String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
+            String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
 
-        String mCircuitId = getArguments().getString("circuitId");
-        mRaceName = getArguments().getString("raceName");
-        String mRaceStartDay = getArguments().getString("raceStartDay");
-        String mRaceEndDay = getArguments().getString("raceEndDay");
-        String mRaceStartMonth = getArguments().getString("raceStartMonth");
-        String mRaceEndMonth = getArguments().getString("raceEndMonth");
-        String mRound = getArguments().getString("roundCount");
-        String mCountry = getArguments().getString("raceCountry");
-        mYear = getArguments().getString("gpYear");
-        String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
-        String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
-        String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
-
-        show_results.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName", mRaceName);
-                bundle.putString("circuitId", mCircuitId);
-                bundle.putString("season", mYear);
-                intent.putExtras(bundle);
-                requireContext().startActivity(intent);
-            }
-        });
-
-        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
-
-        currentDate = LocalDate.now();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user!=null){
-            isSaved(fullRaceName_key);
-            saveRace.setOnClickListener(new View.OnClickListener() {
+            show_results.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(saveRace.isChecked()){
-                        saveRace(currentDate);
-                    }else{
-                        deleteRace(fullRaceName_key);
-                    }
+                    Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("raceName", mRaceName);
+                    bundle.putString("circuitId", mCircuitId);
+                    bundle.putString("season", mYear);
+                    intent.putExtras(bundle);
+                    requireContext().startActivity(intent);
                 }
             });
-        }else{
-            saveRace.setOnClickListener(new View.OnClickListener() {
+
+            fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
+
+            currentDate = LocalDate.now();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user!=null){
+                isSaved(fullRaceName_key);
+                saveRace.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(saveRace.isChecked()){
+                            saveRace(currentDate);
+                        }else{
+                            deleteRace(fullRaceName_key);
+                        }
+                    }
+                });
+            }else{
+                saveRace.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        saveRace.setChecked(false);
+                        Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            int resourceId_firstDriverImage = requireContext().getResources().getIdentifier(mFirstPlaceCode.toLowerCase(), "drawable",
+                    requireContext().getPackageName());
+            Glide.with(requireContext())
+                    .load(resourceId_firstDriverImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(firstPlace_image);
+
+            int resourceId_secondDriverImage = requireContext().getResources().getIdentifier(mSecondPlaceCode.toLowerCase(), "drawable",
+                    requireContext().getPackageName());
+            Glide.with(requireContext())
+                    .load(resourceId_secondDriverImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(secondPlace_image);
+
+            int resourceId_thirdDriverImage = requireContext().getResources().getIdentifier(mThirdPlaceCode.toLowerCase(), "drawable",
+                    requireContext().getPackageName());
+            Glide.with(requireContext())
+                    .load(resourceId_thirdDriverImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.f1)
+                    .into(thirdPlace_image);
+
+            rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onClick(View view) {
-                    saveRace.setChecked(false);
-                    Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds: snapshot.getChildren()){
+                        String driver = ds.getKey();
+                        String[] driverFullName = driver.split(" ");
+                        String driverFamilyName;
+                        if (driver.equals("Andrea Kimi Antonelli")){
+                            driverFamilyName = driverFullName[2];
+                        }else{
+                            driverFamilyName = driverFullName[1];
+                        }
+                        firstPlace_code.setText(driverFamilyName);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
                 }
             });
-        }
 
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-        int resourceId_firstDriverImage = requireContext().getResources().getIdentifier(mFirstPlaceCode.toLowerCase(), "drawable",
-                requireContext().getPackageName());
-        Glide.with(requireContext())
-                .load(resourceId_firstDriverImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
-                .into(firstPlace_image);
-
-        int resourceId_secondDriverImage = requireContext().getResources().getIdentifier(mSecondPlaceCode.toLowerCase(), "drawable",
-                requireContext().getPackageName());
-        Glide.with(requireContext())
-                .load(resourceId_secondDriverImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
-                .into(secondPlace_image);
-
-        int resourceId_thirdDriverImage = requireContext().getResources().getIdentifier(mThirdPlaceCode.toLowerCase(), "drawable",
-                requireContext().getPackageName());
-        Glide.with(requireContext())
-                .load(resourceId_thirdDriverImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
-                .into(thirdPlace_image);
-
-        rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String driver = ds.getKey();
-                    String[] driverFullName = driver.split(" ");
-                    String driverFamilyName;
-                    if (driver.equals("Andrea Kimi Antonelli")){
-                        driverFamilyName = driverFullName[2];
-                    }else{
-                        driverFamilyName = driverFullName[1];
+            rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds: snapshot.getChildren()){
+                        String driver = ds.getKey();
+                        String[] driverFullName = driver.split(" ");
+                        String driverFamilyName;
+                        if (driver.equals("Andrea Kimi Antonelli")){
+                            driverFamilyName = driverFullName[2];
+                        }else{
+                            driverFamilyName = driverFullName[1];
+                        }
+                        secondPlace_code.setText(driverFamilyName);
                     }
-                    firstPlace_code.setText(driverFamilyName);
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-            }
-        });
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                }
+            });
 
-        rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String driver = ds.getKey();
-                    String[] driverFullName = driver.split(" ");
-                    String driverFamilyName;
-                    if (driver.equals("Andrea Kimi Antonelli")){
-                        driverFamilyName = driverFullName[2];
-                    }else{
-                        driverFamilyName = driverFullName[1];
+            rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    for (DataSnapshot ds: snapshot.getChildren()){
+                        String driver = ds.getKey();
+                        String[] driverFullName = driver.split(" ");
+                        String driverFamilyName;
+                        if (driver.equals("Andrea Kimi Antonelli")){
+                            driverFamilyName = driverFullName[2];
+                        }else{
+                            driverFamilyName = driverFullName[1];
+                        }
+                        thirdPlace_code.setText(driverFamilyName);
                     }
-                    secondPlace_code.setText(driverFamilyName);
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-            }
-        });
-
-        rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot ds: snapshot.getChildren()){
-                    String driver = ds.getKey();
-                    String[] driverFullName = driver.split(" ");
-                    String driverFamilyName;
-                    if (driver.equals("Andrea Kimi Antonelli")){
-                        driverFamilyName = driverFullName[2];
-                    }else{
-                        driverFamilyName = driverFullName[1];
-                    }
-                    thirdPlace_code.setText(driverFamilyName);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
                 }
+            });
+
+
+            infoSeason.setText(mYear);
+            infoRaceName.setText(mRaceName);
+
+            if(mRaceStartMonth.equals(mRaceEndMonth)){
+                month.setText(mRaceStartMonth);
             }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+            else{
+                String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
+                month.setText(monthAll);
             }
-        });
+            raceName.setText(mRaceName);
 
+            rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String mcircuitName = snapshot.child("circuitName").getValue(String.class);
+                    circuitName.setText(mcircuitName);
+                }
 
-        infoSeason.setText(mYear);
-        infoRaceName.setText(mRaceName);
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("futureActivityFirebaseError", error.getMessage());
+                }
+            });
+            day_start.setText(mRaceStartDay);
+            day_end.setText(mRaceEndDay);
 
-        if(mRaceStartMonth.equals(mRaceEndMonth)){
-            month.setText(mRaceStartMonth);
+            String currentYear = Integer.toString(currentDate.getYear());
+
+            datum = new ArrayList<>();
+            getRaceSchedule(mRaceName, currentYear);
         }
-        else{
-            String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
-            month.setText(monthAll);
-        }
-        raceName.setText(mRaceName);
-
-        rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String mcircuitName = snapshot.child("circuitName").getValue(String.class);
-                circuitName.setText(mcircuitName);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("futureActivityFirebaseError", error.getMessage());
-            }
-        });
-        day_start.setText(mRaceStartDay);
-        day_end.setText(mRaceEndDay);
-
-        String currentYear = Integer.toString(currentDate.getYear());
-
-        datum = new ArrayList<>();
-        getRaceSchedule(mRaceName, currentYear);
-
     }
 
     private void saveRace(LocalDate currentDate){

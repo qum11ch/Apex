@@ -87,89 +87,89 @@ public class futureRaceScheduleFragment extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+        if (!getArguments().isEmpty()){
+            String mCircuitId = getArguments().getString("circuitId");
+            mRaceName = getArguments().getString("raceName");
+            String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
+            String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
+            String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
+            String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
+            String mRound = getArguments().getString("roundCount");
+            String mCountry = getArguments().getString("raceCountry");
+            mYear = getArguments().getString("gpYear");
 
-        String mCircuitId = getArguments().getString("circuitId");
-        mRaceName = getArguments().getString("raceName");
-        String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
-        String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
-        String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
-        String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
-        String mRound = getArguments().getString("roundCount");
-        String mCountry = getArguments().getString("raceCountry");
-        mYear = getArguments().getString("gpYear");
+            TextView raceName = (TextView) view.findViewById(R.id.raceName);
+            TextView circuitName = (TextView) view.findViewById(R.id.circuitName);
+            TextView day_start = (TextView) view.findViewById(R.id.day_start);
+            TextView day_end = (TextView) view.findViewById(R.id.day_end);
+            TextView month = (TextView) view.findViewById(R.id.month);
 
-        TextView raceName = (TextView) view.findViewById(R.id.raceName);
-        TextView circuitName = (TextView) view.findViewById(R.id.circuitName);
-        TextView day_start = (TextView) view.findViewById(R.id.day_start);
-        TextView day_end = (TextView) view.findViewById(R.id.day_end);
-        TextView month = (TextView) view.findViewById(R.id.month);
+            fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
-        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
+            fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
-        fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
-
-        currentDate = LocalDate.now();
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user!=null){
-            isSaved(fullRaceName_key);
-            saveRace.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if(saveRace.isChecked()){
-                        saveRace(currentDate);
-                    }else{
-                        deleteRace(fullRaceName_key);
+            currentDate = LocalDate.now();
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            if (user!=null){
+                isSaved(fullRaceName_key);
+                saveRace.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(saveRace.isChecked()){
+                            saveRace(currentDate);
+                        }else{
+                            deleteRace(fullRaceName_key);
+                        }
                     }
-                }
-            });
-        }else{
-            saveRace.setOnClickListener(new View.OnClickListener() {
+                });
+            }else{
+                saveRace.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        saveRace.setChecked(false);
+                        Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                    }
+                });
+            }
+
+            infoSeason.setText(mYear);
+            infoRaceName.setText(mRaceName);
+
+            if(mFutureRaceStartMonth.equals(mFutureRaceEndMonth)){
+                month.setText(mFutureRaceStartMonth);
+            }
+            else{
+                String monthAll = mFutureRaceStartMonth + "-" + mFutureRaceEndMonth;
+                month.setText(monthAll);
+            }
+
+
+            raceName.setText(mRaceName);
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
-                public void onClick(View view) {
-                    saveRace.setChecked(false);
-                    Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String mcircuitName = snapshot.child("circuitName").getValue(String.class);
+                    circuitName.setText(mcircuitName);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("futureActivityFirebaseError", error.getMessage());
                 }
             });
+            day_start.setText(mFutureRaceStartDay);
+            day_end.setText(mFutureRaceEndDay);
+
+
+
+            LocalDate currentDate = LocalDate.now();
+            String currentYear = Integer.toString(currentDate.getYear());
+
+            datum = new ArrayList<>();
+            getRaceSchedule(mRaceName, currentYear);
         }
-
-        infoSeason.setText(mYear);
-        infoRaceName.setText(mRaceName);
-
-        if(mFutureRaceStartMonth.equals(mFutureRaceEndMonth)){
-            month.setText(mFutureRaceStartMonth);
-        }
-        else{
-            String monthAll = mFutureRaceStartMonth + "-" + mFutureRaceEndMonth;
-            month.setText(monthAll);
-        }
-
-
-        raceName.setText(mRaceName);
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String mcircuitName = snapshot.child("circuitName").getValue(String.class);
-                circuitName.setText(mcircuitName);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("futureActivityFirebaseError", error.getMessage());
-            }
-        });
-        day_start.setText(mFutureRaceStartDay);
-        day_end.setText(mFutureRaceEndDay);
-
-
-
-        LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
-
-        datum = new ArrayList<>();
-        getRaceSchedule(mRaceName, currentYear);
-
     }
 
     private void getRaceSchedule(String raceName, String currentYear){

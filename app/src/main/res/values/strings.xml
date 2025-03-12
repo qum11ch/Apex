@@ -1,121 +1,154 @@
 <resources>
-    <string-array name="array">
-        <item>First time here? Register there!</item>
-        <item>F1 App</item>
-        <item>First time here? Register there!</item>
-    </string-array>
-    <string name="app_name">F1 App</string>
+    <string name="app_name" translatable="false">F1 App</string>
     <string name="login_text">Login</string>
-    <string name="register_text">Register</string>
+    <string name="register_header">Register</string>
     <string name="usernameText">Username:</string>
     <string name="username_hint">Username*</string>
     <string name="passwordText">Password</string>
     <string name="password_hint">Password*</string>
-    <string name="fullnameText">Full name</string>
-    <string name="fullname_hint">Full name</string>
     <string name="emailText">Email</string>
     <string name="email_hint">Email*</string>
     <string name="loginButton">LOG IN</string>
     <string name="registerButton">SIGN IN</string>
     <string name="singUpText1">Don`t have account?</string>
     <string name="singUpText2">Sign Up</string>
-    <string name="logInText">Login Here</string>
     <string name="footer_driver">Drivers</string>
     <string name="footer_teams">Teams</string>
     <string name="footer_schedule">Schedule</string>
-    <string name="footer_races">Races</string>
     <string name="footer_homePage">Home</string>
     <string name="footer_account">Account</string>
-    <string name="date">Date:</string>
-    <string name="circuit">Circuit:</string>
-    <string name="race_number">Race number:</string>
     <string name="country">Country:</string>
-    <string name="concluded_header">Concluded Race Page</string>
-    <string name="race_information">Race Information</string>
-    <string name="qualifying_result">Qualifying Result</string>
-    <string name="pole_position">Pole position:</string>
-    <string name="pole_time">Time:</string>
-    <string name="pole_position_team">Pole positions:</string>
-    <string name="race_result">Race Result</string>
-    <string name="place">Pos</string>
-    <string name="driver">Driver</string>
+    <string name="pole_position">Pole position</string>
     <string name="team">Team</string>
-    <string name="previous_gp">Previous years GP results</string>
-    <string name="previous_gp_second">Previous years GP</string>
     <string name="save_race">Save Race</string>
-    <string name="open_saved_race">Open Saved Race</string>
-    <string name="previous_header">Previous years GP</string>
-    <string name="year">Year</string>
-    <string name="prevGP_error">There were no GP in chosen year. Select other the other one.</string>
-    <string name="futurerace_header">Upcoming Race Page</string>
-    <string name="start_date">Start Date:</string>
-    <string name="end_date">End Date:</string>
-    <string name="set_notify">Set notify at this Race</string>
-    <string name="account_page_header">Account Page</string>
-    <string name="account_information">Account Information</string>
-    <string name="full_name">Full name:</string>
     <string name="email">Email:</string>
     <string name="settings">Settings</string>
     <string name="saved_race">Saved Races</string>
     <string name="logout">Logout</string>
-    <string name="log_in_page_header">Log In Page</string>
-    <string name="races">Races</string>
-    <string name="upcoming">Upcoming</string>
-    <string name="ongoing">Ongoing</string>
-    <string name="concluded">Concluded</string>
-    <string name="sign_up_page_header">Sign Up Page</string>
-    <string name="choose_image">Choose image from gallery</string>
     <string name="teams_header">Teams standings</string>
-    <string name="team_list">Team list in 2024 season</string>
-    <string name="drivers_header">Drivers standings</string>
-    <string name="drivers_hint">Enter surname</string>
-    <string name="search">Search</string>
-    <string name="search_error">There were no results matching the query. Сheck if the surname is entered correctly and try again.</string>
-    <string name="driver_information">Driver Information</string>
-    <string name="abbreviations">Abbreviations:</string>
-    <string name="nationality">Nationality:</string>
-    <string name="born">Born:</string>
-    <string name="status">Status:</string>
-    <string name="achievements">Achievements</string>
-    <string name="wins">Wins:</string>
-    <string name="podiums">Podiums:</string>
-    <string name="career_points">Career Points:</string>
-    <string name="world_championships">World Championships:</string>
-    <string name="team_history">Team History</string>
-    <string name="season">Season</string>
-    <string name="fullresult_header">Standings for actual season</string>
-    <string name="points">Points</string>
+    <string name="drivers_header">Driver standings</string>
+    <string name="wins">Wins</string>
+    <string name="podiums">Podiums</string>
     <string name="delete_race">Delete From Saved</string>
-    <string name="saved_races_header">Saved Races</string>
-    <string name="settings_header">Settings</string>
-    <string name="setting_page_info">Choose image from gallery</string>
     <string name="save_button_text">Save changes</string>
-    <string name="team_page_header">Team Page</string>
-    <string name="team_information">Team Information</string>
-    <string name="location">Location:</string>
     <string name="first_entry">First entry:</string>
-    <string name="team_principal">Team principal:</string>
-    <string name="engine">Engine:</string>
-    <string name="pts">PTS</string>
-    <string name="race_country">Race_country</string>
-    <string name="race_name">Race_name</string>
-    <string name="circuit_name">Circuit_name</string>
-    <string name="code">CODE</string>
-    <string name="round">ROUND</string>
-    <string name="concluded_races">Concluded races</string>
-    <string name="future_races">Future races</string>
-    <string name="first_driver">First_driver</string>
-    <string name="second_driver">Second_driver</string>
-    <string name="eventname">EventName</string>
-    <string name="eventtime">eventTime</string>
-    <string name="title_activity_maps">MapsActivity</string>
-    <string name="teamlogo">teamLogo</string>
-    <string name="carimage">carImage</string>
-    <string name="driverimage">driverImage</string>
+    <string name="round">round</string>
+    <string name="first_driver" translatable="false">first_driver</string>
+    <string name="second_driver" translatable="false">second_driver</string>
+    <string name="teamlogo" translatable="false">teamLogo</string>
+    <string name="carimage" translatable="false">carImage</string>
+    <string name="driverimage" translatable="false">driverImage</string>
     <string name="driver_choice_hint">Choose your favourite driver (optional):</string>
     <string name="driver_choice_text">Change your favourite driver:</string>
     <string name="choiceTeam_hint">Choose your favourite team (optional):</string>
     <string name="choiceTeam_text">Change your favourite team:</string>
     <string name="hint_email_new">New email:</string>
     <string name="hint_password_new">New password:</string>
+    <string name="one" translatable="false">1</string>
+    <string name="two" translatable="false">2</string>
+    <string name="three" translatable="false">3</string>
+    <string name="dash" translatable="false">-</string>
+    <string name="is_ongoing">is ongoing</string>
+    <string name="favourite_team">favourite team</string>
+    <string name="favorite_team_has_not_yet_been_chosen">Favorite team has not yet been chosen</string>
+    <string name="favourite_driver">favourite driver</string>
+    <string name="favorite_driver_has_not_yet_been_chosen">Favorite driver has not yet been chosen</string>
+    <string name="front_arrow" translatable="false">front_arrow</string>
+    <string name="team_car" translatable="false">team_car</string>
+    <string name="back_arrow" translatable="false">back_arrow</string>
+    <string name="team_logo" translatable="false">team_logo</string>
+    <string name="change_private_data">Change private data</string>
+    <string name="delete_account">Delete account</string>
+    <string name="home_page">home page</string>
+    <string name="private_logo" translatable="false">private_logo</string>
+    <string name="change_private_data_info">To change private data put your new values into field and login to your account to save changes</string>
+    <string name="back">back</string>
+    <string name="empty_race_list_header">CHECK \nBACK HERE</string>
+    <string name="empty_race_list_concluded">Come back after first race to get all of the results</string>
+    <string name="race_podium_text">Race Podium</string>
+    <string name="_2nd_place_header">2nd place</string>
+    <string name="_1st_place_header">Winner</string>
+    <string name="_3rd_place_header">3rd place</string>
+    <string name="_2nd_place_driver_image" translatable="false">2nd_place_driver_image</string>
+    <string name="_1st_place_driver_image" translatable="false">1st_place_driver_image</string>
+    <string name="_3rd_place_driver_image" translatable="false">3rd_place_driver_image</string>
+    <string name="show_full_race_results">Show Full Race Results</string>
+    <string name="race_weekend_text">RACE WEEKEND</string>
+    <string name="confirm_delete">Confirm Delete</string>
+    <string name="confirm_delete_info">Are you sure you want to delete your account?\nThat`s irretrievable</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_button_text">delete</string>
+    <string name="driver_results">Driver results</string>
+    <string name="_2025_season">2025 Season</string>
+    <string name="_2024_season">2024 Season</string>
+    <string name="race_name_header">Race name</string>
+    <string name="result_header">Result</string>
+    <string name="key_map">Key Map</string>
+    <string name="gold">Gold</string>
+    <string name="silver">Silver</string>
+    <string name="bronze">Bronze</string>
+    <string name="green">Green</string>
+    <string name="points_finish">Finished in the points</string>
+    <string name="purple">Purple</string>
+    <string name="out_of_points_finish">Finished out of the points</string>
+    <string name="pink">Pink</string>
+    <string name="retired">Retired (Ret)</string>
+    <string name="white">White</string>
+    <string name="dns">Did not start (DNS)</string>
+    <string name="black">Black</string>
+    <string name="dsq">Disqualified (DSQ)</string>
+    <string name="blank">Blank</string>
+    <string name="wd">Withdrawn (WD)</string>
+    <string name="format">Format</string>
+    <string name="meaning">Meaning</string>
+    <string name="bold_purple">Bold purple</string>
+    <string name="statistics_since_debut">Statistics since debut</string>
+    <string name="gps_entered">GPs Entered</string>
+    <string name="poles">Poles</string>
+    <string name="fastest_laps">Fastest Laps</string>
+    <string name="points_earned">Points earned</string>
+    <string name="drivers_championships">Drivers` Championships</string>
+    <string name="date_of_birth">Date of birth</string>
+    <string name="empty_race_list_future">Come back in a new season to get a new schedule and all of the results</string>
+    <string name="grand_prix_weekend">grand prix weekend</string>
+    <string name="days">days</string>
+    <string name="hours">hours</string>
+    <string name="minutes">minutes</string>
+    <string name="dialog_login">please login</string>
+    <string name="dialog_login_info">We need to verify that this is your account</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="reset_password_button">reset password</string>
+    <string name="reset_password_info">Provide your account`s email for which you want to reset your password</string>
+    <string name="reset_password_header">forgot password</string>
+    <string name="flag_image" translatable="false">flag_image</string>
+    <string name="circuit_length">Circuit length</string>
+    <string name="kilometres">km</string>
+    <string name="no_of_laps">No. of laps</string>
+    <string name="race_distance">Race distance</string>
+    <string name="first_grand_prix">First Grand Prix</string>
+    <string name="lap_record">Lap record</string>
+    <string name="pos_header">POS</string>
+    <string name="driver_header">DRIVER</string>
+    <string name="q1_header" translatable="false">q1</string>
+    <string name="q3_header" translatable="false">Q3</string>
+    <string name="q2_header" translatable="false">Q2</string>
+    <string name="fastest_lap_header">Fastest Lap</string>
+    <string name="race_status_header">TIME/RET</string>
+    <string name="pts_header">PTS</string>
+    <string name="empty_saved_race_info">Save the race for pocket access to its results!</string>
+    <string name="race_schudule_header">Race schudule</string>
+    <string name="confirm_logout_header">Confirm Logout</string>
+    <string name="confirm_logout_info">Are you sure you want to logout?</string>
+    <string name="confirm_button">confirm</string>
+    <string name="team_results">Team results</string>
+    <string name="full_team_name">Full Team Name</string>
+    <string name="enter_year">Enter year</string>
+    <string name="constructors_championships">Constructors` Championships</string>
+    <string name="team_lineup">team lineup</string>
+    <string name="technical_information">Technical Information</string>
+    <string name="base">Base</string>
+    <string name="team_chief">Team Chief</string>
+    <string name="technical_chief">Technical Chief</string>
+    <string name="chassis">Chassis</string>
+    <string name="power_unit">Power Unit</string>
 </resources>

@@ -17,7 +17,9 @@
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
             android:paddingEnd="40dp"
+            android:paddingStart="0dp"
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
@@ -27,7 +29,7 @@
             android:paddingEnd="40dp"
             android:textAllCaps="true"
             android:textColor="@color/white"
-            android:text="Race schudule"
+            android:text="@string/race_schudule_header"
             android:id="@+id/raceHeader"
             android:layout_width="match_parent"
             android:gravity="center"
@@ -59,6 +61,7 @@
                 tools:ignore="MissingConstraints">
                 <LinearLayout
                     android:paddingEnd="10dp"
+                    android:paddingStart="0dp"
                     android:paddingTop="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -85,14 +88,13 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:text="00"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                                 <TextView
                                     android:textColor="@color/dark_blue"
                                     android:layout_height="match_parent"
                                     android:layout_width="wrap_content"
                                     android:gravity="center"
-                                    android:text="-"
+                                    android:text="@string/dash"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                                 <TextView
                                     android:textColor="@color/dark_blue"
@@ -100,11 +102,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="match_parent"
                                     android:gravity="center"
-                                    android:text="00"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                             </LinearLayout>
                             <TextView
-                                android:text="DEC-nov"
                                 android:textAllCaps="true"
                                 android:id="@+id/raceMonth"
                                 style="@style/PtsStyle"
@@ -133,6 +133,7 @@
                             android:layout_weight="3.9"
                             android:layout_height="wrap_content"
                             android:paddingStart="10dp"
+                            android:paddingEnd="0dp"
                             android:paddingTop="10dp">
                             <LinearLayout
                                 android:id="@+id/roundLayout"
@@ -148,6 +149,7 @@
                                     android:layout_height="wrap_content"
                                     android:gravity="center_vertical"
                                     android:text="@string/round"
+                                    android:textAllCaps="true"
                                     android:paddingEnd="5dp"
                                     android:paddingStart="0dp"
                                     android:textColor="@color/red"
@@ -163,7 +165,6 @@
                                     android:lineSpacingExtra="0dp"
                                     android:paddingStart="0dp"
                                     android:paddingEnd="10dp"
-                                    android:text="0"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                                     android:textColor="@color/red"
                                     android:textSize="14sp" />
@@ -176,7 +177,8 @@
                                     android:lineSpacingExtra="0dp"
                                     android:paddingStart="0dp"
                                     android:paddingEnd="10dp"
-                                    android:text="IS ONGOING"
+                                    android:textAllCaps="true"
+                                    android:text="@string/is_ongoing"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                                     android:textColor="@color/red"
                                     android:textSize="14sp" />
@@ -190,7 +192,6 @@
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
-                                android:text="@string/race_country"
                                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
                             <TextView
@@ -203,7 +204,6 @@
                                 android:gravity="bottom"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
-                                android:text="@string/race_name"
                                 android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
 
                             <TextView
@@ -215,7 +215,6 @@
                                 android:layout_marginEnd="8dp"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
-                                android:text="@string/circuit_name"
                                 android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
                         </RelativeLayout>
                     </LinearLayout>

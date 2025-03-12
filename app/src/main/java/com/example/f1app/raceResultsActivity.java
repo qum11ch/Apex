@@ -54,139 +54,142 @@ public class raceResultsActivity extends AppCompatActivity {
         setContentView(R.layout.race_results_page);
 
         raceTitle = findViewById(R.id.raceTitle);
-        Bundle bundle = getIntent().getExtras();
 
-        String mCircuitId = bundle.getString("circuitId");
-        String mSeason = bundle.getString("season");
-        String mRaceName = bundle.getString("raceName");
+        if(!getIntent().getExtras().isEmpty()){
+            Bundle bundle = getIntent().getExtras();
 
-        Bundle resultsBundle = new Bundle();
-        resultsBundle.putString("circuitId", mCircuitId);
-        resultsBundle.putString("raceName", mRaceName);
-        resultsBundle.putString("season", mSeason);
+            String mCircuitId = bundle.getString("circuitId");
+            String mSeason = bundle.getString("season");
+            String mRaceName = bundle.getString("raceName");
 
-        raceTitle.setText(mRaceName + " " + mSeason);
+            Bundle resultsBundle = new Bundle();
+            resultsBundle.putString("circuitId", mCircuitId);
+            resultsBundle.putString("raceName", mRaceName);
+            resultsBundle.putString("season", mSeason);
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+            raceTitle.setText(mRaceName + " " + mSeason);
 
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-        Integer year = Integer.parseInt(mSeason);
-
-        if (year < 2024){
-            RequestQueue queue = Volley.newRequestQueue(raceResultsActivity.this);
-            String url2 = "https://api.jolpi.ca/ergast/f1/" + mSeason + "/circuits/" + mCircuitId + "/sprint/?format=json";
-            JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
-                    Request.Method.GET,
-                    url2,
-                    null,
-                    new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                JSONObject MRData = response.getJSONObject("MRData");
-                                String total = MRData.getString("total");
-                                if (!total.equals("0")){
-                                    myViewPager2 = findViewById(R.id.viewPager2);
-                                    adapter = new viewPagerAdapter(raceResultsActivity.this);
-                                    raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
-                                    raceFragment.setArguments(resultsBundle);
-                                    adapter.addFragment(raceFragment);
-                                    raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
-                                    qualiFragment.setArguments(resultsBundle);
-                                    adapter.addFragment(qualiFragment);
-                                    raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
-                                    sprintFragment.setArguments(resultsBundle);
-                                    adapter.addFragment(sprintFragment);
-                                    myViewPager2.setAdapter(adapter);
-                                    TabLayout tabLayout = findViewById(R.id.tab_layout);
-                                    TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-                                        @Override
-                                        public void onConfigureTab(TabLayout.Tab tab, int position) {
-                                            switch(position){
-                                                case 0:
-                                                    tab.setText("Race");
-                                                    break;
-                                                case 1:
-                                                    tab.setText("Quali");
-                                                    break;
-                                                case 2:
-                                                    tab.setText("Sprint");
-                                                    break;
-                                            }
-                                        }
-                                    });
-                                    tabLayoutMediator.attach();
-                                }else{
-                                    init(resultsBundle);
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }, new Response.ErrorListener() {
+            backButton = (ImageButton) findViewById(R.id.backButton);
+            backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(raceResultsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                public void onClick(View v) {
+                    finish();
                 }
             });
-            queue.add(jsonObjectRequest2);
-        }else{
-            rootRef.child("schedule/season/" + mSeason).child(mRaceName).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String sprintRaceDate = snapshot.child("Sprint").child("sprintRaceDate").getValue(String.class);
-                    if (!sprintRaceDate.equals("N/A")){
-                        myViewPager2 = findViewById(R.id.viewPager2);
-                        adapter = new viewPagerAdapter(raceResultsActivity.this);
-                        raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
-                        raceFragment.setArguments(resultsBundle);
-                        adapter.addFragment(raceFragment);
-                        raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
-                        qualiFragment.setArguments(resultsBundle);
-                        adapter.addFragment(qualiFragment);
-                        raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
-                        sprintFragment.setArguments(resultsBundle);
-                        adapter.addFragment(sprintFragment);
-                        myViewPager2.setAdapter(adapter);
-                        TabLayout tabLayout = findViewById(R.id.tab_layout);
-                        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
+
+            WindowInsetsControllerCompat windowInsetsController =
+                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+            windowInsetsController.setAppearanceLightStatusBars(false);
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            Integer year = Integer.parseInt(mSeason);
+
+            if (year < 2024){
+                RequestQueue queue = Volley.newRequestQueue(raceResultsActivity.this);
+                String url2 = "https://api.jolpi.ca/ergast/f1/" + mSeason + "/circuits/" + mCircuitId + "/sprint/?format=json";
+                JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+                        Request.Method.GET,
+                        url2,
+                        null,
+                        new Response.Listener<JSONObject>() {
                             @Override
-                            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                                switch(position){
-                                    case 0:
-                                        tab.setText("Race");
-                                        break;
-                                    case 1:
-                                        tab.setText("Quali");
-                                        break;
-                                    case 2:
-                                        tab.setText("Sprint");
-                                        break;
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    JSONObject MRData = response.getJSONObject("MRData");
+                                    String total = MRData.getString("total");
+                                    if (!total.equals("0")){
+                                        myViewPager2 = findViewById(R.id.viewPager2);
+                                        adapter = new viewPagerAdapter(raceResultsActivity.this);
+                                        raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
+                                        raceFragment.setArguments(resultsBundle);
+                                        adapter.addFragment(raceFragment);
+                                        raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
+                                        qualiFragment.setArguments(resultsBundle);
+                                        adapter.addFragment(qualiFragment);
+                                        raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
+                                        sprintFragment.setArguments(resultsBundle);
+                                        adapter.addFragment(sprintFragment);
+                                        myViewPager2.setAdapter(adapter);
+                                        TabLayout tabLayout = findViewById(R.id.tab_layout);
+                                        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
+                                            @Override
+                                            public void onConfigureTab(TabLayout.Tab tab, int position) {
+                                                switch(position){
+                                                    case 0:
+                                                        tab.setText("Race");
+                                                        break;
+                                                    case 1:
+                                                        tab.setText("Quali");
+                                                        break;
+                                                    case 2:
+                                                        tab.setText("Sprint");
+                                                        break;
+                                                }
+                                            }
+                                        });
+                                        tabLayoutMediator.attach();
+                                    }else{
+                                        init(resultsBundle);
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
                                 }
                             }
-                        });
-                        tabLayoutMediator.attach();
-                    }else{
-                        init(resultsBundle);
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Toast.makeText(raceResultsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                }
+                });
+                queue.add(jsonObjectRequest2);
+            }else{
+                rootRef.child("schedule/season/" + mSeason).child(mRaceName).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String sprintRaceDate = snapshot.child("Sprint").child("sprintRaceDate").getValue(String.class);
+                        if (!sprintRaceDate.equals("N/A")){
+                            myViewPager2 = findViewById(R.id.viewPager2);
+                            adapter = new viewPagerAdapter(raceResultsActivity.this);
+                            raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
+                            raceFragment.setArguments(resultsBundle);
+                            adapter.addFragment(raceFragment);
+                            raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
+                            qualiFragment.setArguments(resultsBundle);
+                            adapter.addFragment(qualiFragment);
+                            raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
+                            sprintFragment.setArguments(resultsBundle);
+                            adapter.addFragment(sprintFragment);
+                            myViewPager2.setAdapter(adapter);
+                            TabLayout tabLayout = findViewById(R.id.tab_layout);
+                            TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
+                                @Override
+                                public void onConfigureTab(TabLayout.Tab tab, int position) {
+                                    switch(position){
+                                        case 0:
+                                            tab.setText("Race");
+                                            break;
+                                        case 1:
+                                            tab.setText("Quali");
+                                            break;
+                                        case 2:
+                                            tab.setText("Sprint");
+                                            break;
+                                    }
+                                }
+                            });
+                            tabLayoutMediator.attach();
+                        }else{
+                            init(resultsBundle);
+                        }
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("raceResultsQualiAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("raceResultsQualiAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
+                    }
+                });
+            }
         }
     }
 

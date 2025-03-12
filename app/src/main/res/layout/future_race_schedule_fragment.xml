@@ -22,20 +22,18 @@
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="00"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="-"
+                android:text="@string/dash"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
             <TextView
                 android:id="@+id/day_end"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="00"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
             <TextView
                 android:layout_marginStart="5dp"
@@ -44,7 +42,6 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:textAllCaps="true"
-                android:text="NOV"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
         </LinearLayout>
         <LinearLayout
@@ -66,7 +63,7 @@
                 android:textColor="@color/white"
                 android:textSize="20sp"/>
             <TextView
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:id="@+id/infoSeason"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -86,7 +83,7 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="GRAND PRIX WEEKEND"
+                android:text="@string/grand_prix_weekend"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
@@ -119,13 +116,13 @@
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="00"
                         android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"/>
                     <TextView
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="DAYS"
+                        android:textAllCaps="true"
+                        android:text="@string/days"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"/>
                 </LinearLayout>
                 <View
@@ -146,13 +143,13 @@
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="00"
                         android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"/>
                     <TextView
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="HOURS"
+                        android:textAllCaps="true"
+                        android:text="@string/hours"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"/>
                 </LinearLayout>
                 <View
@@ -173,19 +170,20 @@
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="00"
                         android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"/>
                     <TextView
                         android:textAlignment="center"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="MINUTES"
+                        android:textAllCaps="true"
+                        android:text="@string/minutes"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"/>
                 </LinearLayout>
             </LinearLayout>
         </RelativeLayout>
     </RelativeLayout>
     <ScrollView
+        android:scrollbars="none"
         android:overScrollMode="never"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -201,7 +199,7 @@
                 android:paddingStart="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="RACE WEEKEND"
+                android:text="@string/race_weekend_text"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
             <TextView
                 android:paddingEnd="10dp"
@@ -216,7 +214,6 @@
                 android:gravity="bottom"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:text="@string/race_name"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
             <TextView
                 android:paddingEnd="10dp"
@@ -230,7 +227,6 @@
                 android:layout_marginEnd="8dp"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:text="@string/circuit_name"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_marginBottom="5dp"/>
             <RelativeLayout

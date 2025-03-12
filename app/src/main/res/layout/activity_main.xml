@@ -16,7 +16,8 @@
         android:background="@color/red">
         <TextView
             android:textColor="@color/white"
-            android:text="HOME PAGE"
+            android:textAllCaps="true"
+            android:text="@string/home_page"
             android:id="@+id/teamsHeader"
             android:layout_width="match_parent"
             android:gravity="center"

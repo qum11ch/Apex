@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -46,14 +48,16 @@ public class accountPageActivity extends AppCompatActivity {
     private TextView username, userFavDriverNumber, userFavDriver, userFavTeam, fanText,
             teamName, driverName, driverFamilyName, tabUserName, noDriver, noTeam;
     private Button logout, settings, savedRace;
-    Dialog logoutDialog;
-    FirebaseAuth auth;
-    View line, line2;
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
-    LinearLayout driverName_layout;
-    RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout;
+    private CoordinatorLayout main_content;
+    private ProgressBar loadingProgress;
+    private Dialog logoutDialog;
+    private FirebaseAuth auth;
+    private View line, line2;
+    private Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
+    private LinearLayout driverName_layout;
+    private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout;
     private ImageButton backButton;
-    AppBarLayout appbar;
+    private AppBarLayout appbar;
     private ImageView teamLogo, teamCar, driverImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +95,9 @@ public class accountPageActivity extends AppCompatActivity {
         team_layout = findViewById(R.id.team_layout);
         driver_layout = findViewById(R.id.driver_layout);
 
+        main_content = findViewById(R.id.main_content);
+        loadingProgress = findViewById(R.id.loadingBar);
+
         auth = FirebaseAuth.getInstance();
         FirebaseUser user = auth.getCurrentUser();
         String userId = user.getUid();
@@ -109,6 +116,9 @@ public class accountPageActivity extends AppCompatActivity {
                     String choiceTeam = userSnapshot.child("choiceTeam").getValue(String.class);
                     String mUsername = userSnapshot.getKey();
                     username.setText(mUsername);
+
+                    main_content.setVisibility(View.VISIBLE);
+                    loadingProgress.setVisibility(View.GONE);
 
                     CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
                     AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
@@ -167,6 +177,29 @@ public class accountPageActivity extends AppCompatActivity {
                                 driverName.setText(mDriverName);
                                 driverFamilyName.setText(mDriverFamilyName);
 
+                                rootRef.child("constructors")
+                                        .orderByChild("name")
+                                        .equalTo(team)
+                                        .addValueEventListener(new ValueEventListener() {
+                                                                   @Override
+                                                                   public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                       for (DataSnapshot teamSnap: snapshot.getChildren()){
+                                                                           String teamId = teamSnap.child("constructorId").getValue(String.class);
+                                                                           String teamColor = "#" + teamSnap.child("color").getValue(String.class);
+
+                                                                           GradientDrawable gd = new GradientDrawable();
+                                                                           gd.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
+                                                                           gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+                                                                           gd.setStroke(12, Color.parseColor(teamColor));
+                                                                           driver_layout.setBackground(gd);
+                                                                       }
+                                                                   }
+
+                                                                   @Override
+                                                                   public void onCancelled(@NonNull DatabaseError error) {
+                                                                       Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
+                                                                   }
+                                                               });
                                 String finalTeam = team;
                                 driver_layout.setOnClickListener(new View.OnClickListener() {
                                     @Override
@@ -218,12 +251,6 @@ public class accountPageActivity extends AppCompatActivity {
                                 for (DataSnapshot teamSnap: snapshot.getChildren()){
                                     String teamId = teamSnap.child("constructorId").getValue(String.class);
                                     String teamColor = "#" + teamSnap.child("color").getValue(String.class);
-
-                                    GradientDrawable gd = new GradientDrawable();
-                                    gd.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
-                                    gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                                    gd.setStroke(12, Color.parseColor(teamColor));
-                                    driver_layout.setBackground(gd);
 
                                     GradientDrawable gd1 = new GradientDrawable();
                                     gd1.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
@@ -335,6 +362,9 @@ public class accountPageActivity extends AppCompatActivity {
                         View grid = (View) findViewById(R.id.grid);
                         int gridHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 70, getResources().getDisplayMetrics());
                         grid.getLayoutParams().height = gridHeight;
+                        //RelativeLayout contentHeader = (RelativeLayout) findViewById(R.id.content_header_layout);
+                        //int contentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+                        //contentHeader.getLayoutParams().height = contentHeight;
                     }
                 }
             }
@@ -346,7 +376,7 @@ public class accountPageActivity extends AppCompatActivity {
         });
 
         logoutDialog = new Dialog(accountPageActivity.this);
-        logoutDialog.setContentView(R.layout.signout_dialog_box);
+        logoutDialog.setContentView(R.layout.logout_dialog_box);
         logoutDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         logoutDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
         logoutDialog.setCancelable(false);

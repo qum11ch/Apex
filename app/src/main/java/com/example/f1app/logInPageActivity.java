@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static kotlin.jvm.internal.Reflection.function;
-
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,16 +7,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.preference.PreferenceManager;
+
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -42,7 +37,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class logInPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
+    Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
     EditText editTextUsername, editTextPassword;
     Button loginButton;
     ProgressBar loginProgress;
@@ -109,15 +104,17 @@ public class logInPageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(logInPageActivity.this, driversStandingsActivity.class);
                 logInPageActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
-        showDriverStanding = (Button) findViewById(R.id.showStandingsDriver);
-        showDriverStanding.setOnClickListener(new View.OnClickListener() {
+        showSchedule = (Button) findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(logInPageActivity.this, schuduleActivity.class);
                 logInPageActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -127,6 +124,7 @@ public class logInPageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(logInPageActivity.this, MainActivity.class);
                 logInPageActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
@@ -136,6 +134,7 @@ public class logInPageActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(logInPageActivity.this, teamsStandingsActivity.class);
                 logInPageActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
             }
         });
 
