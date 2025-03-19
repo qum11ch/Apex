@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.transition.Explode;
@@ -16,6 +18,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -43,7 +46,7 @@ public class driverPageActivity extends AppCompatActivity {
     private TextView teamName, driverNumber, driverfullName,
             driverFamilyName, driverName;
     private ProgressBar progressBar;
-    private LinearLayout contentLayout;
+    private CoordinatorLayout contentLayout;
     private ImageView driverImage;
 
 
@@ -55,7 +58,7 @@ public class driverPageActivity extends AppCompatActivity {
         setContentView(R.layout.driver_page);
         EdgeToEdge.enable(this);
 
-        contentLayout = (LinearLayout) findViewById(R.id.content_layout);
+        contentLayout = (CoordinatorLayout) findViewById(R.id.content_layout);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         driverfullName = (TextView) findViewById(R.id.driverfullName);
         driverFamilyName = (TextView) findViewById(R.id.driverFamilyName);
@@ -76,6 +79,12 @@ public class driverPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(driverPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driverPageActivity.this));
+        }
+
 
         if(!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -83,6 +92,7 @@ public class driverPageActivity extends AppCompatActivity {
             String mDriverFamilyName = bundle.getString("driverFamilyName");
             String mDriverTeam = bundle.getString("driverTeam");
             String mDriverCode = bundle.getString("driverCode");
+            String mTeamId = bundle.getString("driverTeamId");
 
             String driver = mDriverName + " " + mDriverFamilyName;
 
@@ -91,6 +101,7 @@ public class driverPageActivity extends AppCompatActivity {
             driverPageBundle.putString("driverFamilyName", mDriverFamilyName);
             driverPageBundle.putString("driverTeam", mDriverTeam);
             driverPageBundle.putString("driverCode", mDriverCode);
+            driverPageBundle.putString("driverTeamId", mTeamId);
 
             int resourceId_driverImage = getApplicationContext().getResources().getIdentifier(mDriverCode.toLowerCase(), "drawable",
                     getApplicationContext().getPackageName());
@@ -166,10 +177,10 @@ public class driverPageActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Stats");
+                    tab.setText(R.string.stats_text);
                 }
                 else{
-                    tab.setText("Results");
+                    tab.setText(R.string.results_text);
                 }
             }
         });

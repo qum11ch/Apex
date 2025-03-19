@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -43,6 +45,12 @@ public class concludedRaceActivity extends AppCompatActivity {
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(concludedRaceActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(concludedRaceActivity.this));
+        }
 
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -130,10 +138,10 @@ public class concludedRaceActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Schedule");
+                    tab.setText(R.string.schedule_text);
                 }
                 else{
-                    tab.setText("Circuit");
+                    tab.setText(R.string.circuit_text);
                 }
             }
         });

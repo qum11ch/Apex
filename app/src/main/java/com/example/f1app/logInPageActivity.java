@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +54,12 @@ public class logInPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
 
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(logInPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(logInPageActivity.this));
+        }
+
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
@@ -78,8 +86,6 @@ public class logInPageActivity extends AppCompatActivity {
             Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
             startActivity(i);
             finish();
-        }else{
-            Log.i("checkUSer", "NO USER");
         }
 
         TextView resetPassword = (TextView) findViewById(R.id.resetPassword);
@@ -160,7 +166,7 @@ public class logInPageActivity extends AppCompatActivity {
             username = editTextUsername.getText().toString().trim();
 
             if(password.length()<6 && !password.isEmpty()){
-                til_password.setError("Password must has at least 6 symbols");
+                til_password.setError(getString(R.string.invalid_password_text));
             }else{
                 til_password.setError(null);
             }
@@ -180,12 +186,12 @@ public class logInPageActivity extends AppCompatActivity {
         String password = editTextPassword.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Please enter credentials", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, getString(R.string.empty_credentials_text), Toast.LENGTH_LONG).show();
             return;
         }
 
         if(til_password.getError() != null || til_username.getError() != null) {
-            Toast.makeText(logInPageActivity.this, "All field must be filled", Toast.LENGTH_LONG).show();
+            Toast.makeText(logInPageActivity.this, getString(R.string.all_fields_text), Toast.LENGTH_LONG).show();
         }else{
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -198,13 +204,13 @@ public class logInPageActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        Toast.makeText(logInPageActivity.this, "Login successful!!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
                                         startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
                                         finish();
                                     } else {
                                         loginProgress.setVisibility(View.INVISIBLE);
                                         loginButton.setVisibility(View.VISIBLE);
-                                        Toast.makeText(logInPageActivity.this, "Login failed!!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(logInPageActivity.this, getString(R.string.login_fail_text), Toast.LENGTH_LONG).show();
                                     }
                                 }
                             });

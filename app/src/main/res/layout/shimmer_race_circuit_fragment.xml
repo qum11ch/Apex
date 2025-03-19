@@ -63,7 +63,7 @@
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Circuit length"/>
+                android:text="@string/circuit_length"/>
             <TextView
                 style="@style/ShimmerStyle"
                 android:layout_marginStart="10dp"
@@ -98,7 +98,7 @@
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No. of laps"/>
+                    android:text="@string/no_of_laps"/>
                 <TextView
                     style="@style/ShimmerStyle"
                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
@@ -120,7 +120,7 @@
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="First Grand Prix"/>
+                    android:text="@string/first_grand_prix"/>
                 <TextView
                     style="@style/ShimmerStyle"
                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
@@ -143,7 +143,7 @@
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Circuit length"/>
+                android:text="@string/race_distance"/>
             <TextView
                 style="@style/ShimmerStyle"
                 android:layout_below="@id/raceDist_info"
@@ -166,7 +166,7 @@
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Lap record"/>
+                android:text="@string/lap_record"/>
             <TextView
                 style="@style/ShimmerStyle"
                 android:id="@+id/lapRecord_time"

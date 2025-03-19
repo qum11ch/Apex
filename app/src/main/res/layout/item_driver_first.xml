@@ -55,11 +55,10 @@
                 android:paddingEnd="0dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="30dp">
-                <LinearLayout
+                <RelativeLayout
                     android:id="@+id/driverName_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content">
                     <TextView
                         android:textColor="@color/white"
                         android:id='@+id/driverName'
@@ -67,12 +66,13 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
                     <TextView
+                        android:layout_below="@id/driverName"
                         android:textColor="@color/white"
                         android:id='@+id/driverFamilyName'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.Big" />
-                </LinearLayout>
+                </RelativeLayout>
                 <LinearLayout
                     android:layout_below="@id/driverName_layout"
                     android:layout_width="match_parent"

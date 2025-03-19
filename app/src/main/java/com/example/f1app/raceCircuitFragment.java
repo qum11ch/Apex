@@ -75,8 +75,15 @@ public class raceCircuitFragment extends Fragment {
             String mRaceName = getArguments().getString("raceName");
             String mCountry = getArguments().getString("raceCountry");
             String mYear = getArguments().getString("gpYear");
+            Log.i("userLang", " " + Locale.getDefault().getLanguage());
 
-            String mPrevGPtext = (Integer.parseInt(mYear) - 1) + " Race Results";
+            String mPrevGPtext = " ";
+            if(Locale.getDefault().getLanguage().equals("ru")){
+                mPrevGPtext = getString(R.string.prev_race_results_text) + " " + (Integer.parseInt(mYear) - 1);
+            }else{
+                mPrevGPtext = (Integer.parseInt(mYear) - 1) + " " + getString(R.string.prev_race_results_text);
+            }
+
             prevGPtext.setText(mPrevGPtext);
 
             String fullRaceName = mRaceName + " " + mYear;
@@ -107,6 +114,8 @@ public class raceCircuitFragment extends Fragment {
 
             World.init(requireContext());
             flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
+
+            //Log.i("CircuitFragment",  " " + getCountryCode(mCountry));
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -146,21 +155,29 @@ public class raceCircuitFragment extends Fragment {
         }
 
     }
+
     public String getCountryCode(String countryName) {
         String[] isoCountryCodes = Locale.getISOCountries();
-        if(countryName.equals("usa")){
-            return "us";
-        } else if (countryName.equals("uk")) {
-            return "gb";
-        } else if (countryName.equals("uae")){
-            return "ae";
+        switch (countryName) {
+            case "usa":
+                return "us";
+            case "uk":
+                return "gb";
+            case "uae":
+                return "ae";
+            default:
+                for (String countryCode : isoCountryCodes) {
+                    Locale locale = new Locale("en", countryCode);
+                    String iso = locale.getISO3Country();
+                    String code = locale.getCountry();
+                    String name = locale.getDisplayCountry(new Locale("en", iso));
+                    if (countryName.equalsIgnoreCase(name)) {
+                        return code;
+                    }
+                }
+                break;
         }
-        for (String code : isoCountryCodes) {
-            Locale locale = new Locale("", code);
-            if (countryName.equalsIgnoreCase(locale.getDisplayCountry())) {
-                return code;
-            }
-        }
-        return "";
+        return " ";
     }
+
 }

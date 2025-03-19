@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -26,6 +28,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -67,7 +70,7 @@ public class teamPageActivity extends AppCompatActivity {
     private TextView teamNameFull, teamName;
     private ImageView teamLogo, team_car;
     private ProgressBar progressBar;
-    private LinearLayout contentLayout;
+    private CoordinatorLayout contentLayout;
 
 
     @Override
@@ -76,7 +79,13 @@ public class teamPageActivity extends AppCompatActivity {
         setContentView(R.layout.team_page);
         EdgeToEdge.enable(this);
 
-        contentLayout = (LinearLayout) findViewById(R.id.content_layout);
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamPageActivity.this));
+        }
+
+        contentLayout = (CoordinatorLayout) findViewById(R.id.content_layout);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         teamNameFull = (TextView) findViewById(R.id.teamNameFull);
         teamLogo = (ImageView) findViewById(R.id.teamLogo);
@@ -141,6 +150,7 @@ public class teamPageActivity extends AppCompatActivity {
                     .into(teamLogo);
 
             CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
             AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
             appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -184,10 +194,10 @@ public class teamPageActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Stats");
+                    tab.setText(getResources().getString(R.string.stats_text));
                 }
                 else{
-                    tab.setText("Results");
+                    tab.setText(getResources().getString(R.string.results_text));
                 }
             }
         });

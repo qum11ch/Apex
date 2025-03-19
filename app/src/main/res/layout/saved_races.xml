@@ -23,8 +23,8 @@
             android:src="@drawable/back_arrow"
             android:background="@color/red"/>
         <TextView
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
+            android:paddingStart="60dp"
+            android:paddingEnd="60dp"
             android:textAllCaps="true"
             android:textColor="@color/white"
             android:text="@string/saved_race"

@@ -16,20 +16,28 @@
             android:layout_height="wrap_content"
             android:background="@color/white"
             android:paddingTop="30dp">
-            <com.google.android.material.imageview.ShapeableImageView
-                app:strokeColor="@color/grey"
-                app:shapeAppearanceOverlay="@style/customRoundedImageView"
-                app:strokeWidth="1dp"
-                android:layout_marginStart="10dp"
-                android:id="@+id/flag"
-                android:layout_width="100dp"
-                android:layout_height="70dp"
-                android:scaleType="centerCrop"/>
             <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                style="@style/ShimmerStyle"
+                android:layout_marginStart="10dp"
+                android:id="@+id/flag_layout">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:padding="1dp"
+                    app:strokeColor="@color/grey"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/customRoundedImageView"
+                    android:id="@+id/flag"
+                    android:layout_width="100dp"
+                    android:layout_height="75dp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/race_info_layout"
                 android:layout_marginEnd="10dp"
                 android:gravity="center"
                 android:layout_marginStart="10dp"
-                android:layout_toEndOf="@id/flag"
+                android:layout_toEndOf="@id/flag_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
@@ -40,24 +48,22 @@
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
                     android:textAllCaps="true"/>
                 <TextView
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:layout_below="@id/raceName"
                     android:id="@+id/circuitName"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text=""/>
+                    android:layout_height="wrap_content"/>
             </RelativeLayout>
             <ImageView
                 android:contentDescription="@string/flag_image"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:id="@+id/circuitImage"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:layout_marginBottom="40dp"
-                android:layout_below="@id/flag"
+                android:layout_below="@id/race_info_layout"
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:scaleType="fitCenter"/>
@@ -244,6 +250,7 @@
             </RelativeLayout>
         </RelativeLayout>
         <com.facebook.shimmer.ShimmerFrameLayout
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/shimmer_layout">

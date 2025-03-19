@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -54,6 +56,12 @@ public class raceResultsActivity extends AppCompatActivity {
         setContentView(R.layout.race_results_page);
 
         raceTitle = findViewById(R.id.raceTitle);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(raceResultsActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(raceResultsActivity.this));
+        }
 
         if(!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -117,13 +125,13 @@ public class raceResultsActivity extends AppCompatActivity {
                                             public void onConfigureTab(TabLayout.Tab tab, int position) {
                                                 switch(position){
                                                     case 0:
-                                                        tab.setText("Race");
+                                                        tab.setText(R.string.race_text);
                                                         break;
                                                     case 1:
-                                                        tab.setText("Quali");
+                                                        tab.setText(R.string.quali_text);
                                                         break;
                                                     case 2:
-                                                        tab.setText("Sprint");
+                                                        tab.setText(R.string.sprint_text);
                                                         break;
                                                 }
                                             }
@@ -167,13 +175,13 @@ public class raceResultsActivity extends AppCompatActivity {
                                 public void onConfigureTab(TabLayout.Tab tab, int position) {
                                     switch(position){
                                         case 0:
-                                            tab.setText("Race");
+                                            tab.setText(R.string.race_text);
                                             break;
                                         case 1:
-                                            tab.setText("Quali");
+                                            tab.setText(R.string.quali_text);
                                             break;
                                         case 2:
-                                            tab.setText("Sprint");
+                                            tab.setText(R.string.sprint_text);
                                             break;
                                     }
                                 }
@@ -209,10 +217,10 @@ public class raceResultsActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Race");
+                    tab.setText(R.string.race_text);
                 }
                 else{
-                    tab.setText("Quali");
+                    tab.setText(R.string.quali_text);
                 }
             }
         });

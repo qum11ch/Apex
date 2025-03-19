@@ -68,7 +68,6 @@
                     <include layout="@layout/shimmer_team_standings" />
                     <include layout="@layout/shimmer_team_standings" />
                     <include layout="@layout/shimmer_team_standings" />
-                    <include layout="@layout/shimmer_team_standings" />
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
         </LinearLayout>

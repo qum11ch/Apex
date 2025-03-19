@@ -4,7 +4,10 @@ import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,15 +60,15 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
                 break;
         }
-        return new driversStandingsAdapter.DataHolder(view, viewType);
+        return new DataHolder(view, viewType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull driversStandingsAdapter.DataHolder holder, int position) {
         driversList datum = dataList.get(position);
         holder.driverName.setText(datum.getDriverName());
-        holder.driverFamilyName.setText(datum.getDriverFamilyName());
         holder.driverTeam.setText(datum.getDriverTeam());
+        holder.driverFamilyName.setText(datum.getDriverFamilyName());
 
         int resourceId_driverTeam = context.getResources().getIdentifier(datum.getConstructorId() + "_logo", "drawable",
                 context.getPackageName());
@@ -88,6 +91,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .error(R.drawable.f1)
                 .into(holder.driverImage);
+
         if (holder.getItemViewType() == 1) {
             if (datum.getStartSeasonInfo()) {
                 int width = 0;
@@ -100,6 +104,22 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 holder.driver_points.setText(driver_points);
             }
         } else {
+            if (datum.getDriverName().equals("Andrea Kimi")){
+                RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.BELOW, R.id.driverName);
+                holder.driverFamilyName.setLayoutParams(params);
+            }else {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.END_OF, R.id.driverName);
+                Resources r = context.getResources();
+                int px = (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        5,
+                        r.getDisplayMetrics()
+                );
+                params.setMargins(px, 0, 0, 0);
+                holder.driverFamilyName.setLayoutParams(params);
+            }
             if (datum.getStartSeasonInfo()) {
                 holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3.3f);
@@ -127,6 +147,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 bundle.putString("driverCode", datum.getDriverCode());
                 bundle.putString("driverTeam", datum.getDriverTeam());
                 bundle.putString("driverFamilyName", datum.getDriverFamilyName());
+                bundle.putString("driverTeamId", datum.getConstructorId());
                 intent.putExtras(bundle);
                 context.startActivity(intent);
             }
@@ -139,7 +160,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder {
+    public static class DataHolder extends RecyclerView.ViewHolder {
         TextView driverName, driverTeam, driver_placement, driver_points,
                 driverFamilyName;
         ImageView driverTeam_logo, driverImage, driverNumber;

@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -56,6 +58,12 @@ public class driversStandingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.drivers_standing);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(driversStandingsActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driversStandingsActivity.this));
+        }
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
@@ -183,7 +191,6 @@ public class driversStandingsActivity extends AppCompatActivity {
                                 },500);
                                 adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
                                 recyclerView.setAdapter(adapter);
-                            //14.02.2025 WORK HERE
                             }else{
                                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                 rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {

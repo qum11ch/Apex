@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -58,6 +60,13 @@ public class schuduleActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(schuduleActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(schuduleActivity.this));
+        }
+
 
         RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.main_layout);
         setContentView(R.layout.schudule_page);
@@ -254,22 +263,28 @@ public class schuduleActivity extends AppCompatActivity {
                         cardView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(schuduleActivity.this , futureRaceActivity.class);
-
-                                Bundle bundle = new Bundle();
-                                bundle.putString("raceName" , raceName);
-                                bundle.putString("futureRaceStartDay" , dayStart);
-                                bundle.putString("futureRaceEndDay" , dayEnd);
-                                bundle.putString("futureRaceStartMonth" , monthStart);
-                                bundle.putString("futureRaceEndMonth" , monthEnd);
-                                bundle.putString("circuitId", circuitId);
                                 rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         String circuitName = snapshot.child("circuitName").getValue(String.class);
                                         String raceCountry = snapshot.child("country").getValue(String.class);
+
+                                        Intent intent = new Intent(schuduleActivity.this , futureRaceActivity.class);
+
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("raceName" , raceName);
+                                        bundle.putString("futureRaceStartDay" , dayStart);
+                                        bundle.putString("futureRaceEndDay" , dayEnd);
+                                        bundle.putString("futureRaceStartMonth" , monthStart);
+                                        bundle.putString("futureRaceEndMonth" , monthEnd);
+                                        bundle.putString("circuitId", circuitId);
                                         bundle.putString("circuitName" , circuitName);
                                         bundle.putString("raceCountry" , raceCountry);
+                                        bundle.putString("roundCount" , round.toString());
+                                        bundle.putString("dateStart", dateStart);
+                                        intent.putExtras(bundle);
+
+                                        schuduleActivity.this.startActivity(intent);
                                     }
 
                                     @Override
@@ -277,12 +292,6 @@ public class schuduleActivity extends AppCompatActivity {
                                         Log.e("scheduleActivityFirebaseError", error.getMessage());
                                     }
                                 });
-
-                                bundle.putString("roundCount" , round.toString());
-                                bundle.putString("dateStart", dateStart);
-                                intent.putExtras(bundle);
-
-                                schuduleActivity.this.startActivity(intent);
                             }
                         });
                     }
@@ -326,10 +335,10 @@ public class schuduleActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Upcoming");
+                    tab.setText(R.string.upcoming_text);
                 }
                 else{
-                    tab.setText("Concluded");
+                    tab.setText(R.string.concluded_text);
                 }
             }
         });

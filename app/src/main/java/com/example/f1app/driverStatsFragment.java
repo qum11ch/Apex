@@ -8,9 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -40,6 +42,7 @@ public class driverStatsFragment extends Fragment {
     private ImageView teamCar_image, flag, arrow;
     private RelativeLayout team_layout, driverInfo_layout;
     private LinearLayout driversTeam_layout;
+    private ScrollView scrollView;
 
 
     public driverStatsFragment() {
@@ -51,6 +54,18 @@ public class driverStatsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public void onResume(){
+        super.onResume();
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                scrollView.smoothScrollTo(0, 0);
+            }
+        });
+        getView().requestLayout();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -60,7 +75,7 @@ public class driverStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
         firstGP = (TextView) view.findViewById(R.id.firstGP);
         GPcount = (TextView) view.findViewById(R.id.GP_count);
         wins = (TextView) view.findViewById(R.id.wins);
@@ -87,6 +102,7 @@ public class driverStatsFragment extends Fragment {
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
             String mDriverTeam = getArguments().getString("driverTeam");
             String mDriverCode = getArguments().getString("driverCode");
+            String mTeamId = getArguments().getString("driverTeamId");
 
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
@@ -121,36 +137,32 @@ public class driverStatsFragment extends Fragment {
                     driversTeam_layout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            rootRef.child("constructors").orderByChild("name")
-                                    .equalTo(mDriverTeam).addValueEventListener(new ValueEventListener() {
+                            rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            for (DataSnapshot postSnapshot: snapshot.getChildren()){
-                                                String mTeamId = postSnapshot.child("constructorId").getValue(String.class);
-                                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                                rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
-                                                    @Override
-                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                        ArrayList<String> teamDrivers = new ArrayList<>();
-                                                        for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                            String driverName = driverDataSnapshot.getKey();
-                                                            teamDrivers.add(driverName);
-                                                        }
-                                                        Intent intent = new Intent(requireContext(), teamPageActivity.class);
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putString("teamName", mDriverTeam);
-                                                        bundle.putString("teamId", mTeamId);
-                                                        bundle.putStringArrayList("teamDrivers", teamDrivers);
-                                                        intent.putExtras(bundle);
-                                                        requireContext().startActivity(intent);
+                                            String mTeamId = snapshot.child("constructorId").getValue(String.class);
+                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    ArrayList<String> teamDrivers = new ArrayList<>();
+                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                        String driverName = driverDataSnapshot.getKey();
+                                                        teamDrivers.add(driverName);
                                                     }
-                                                    @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                        Log.e("driverPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
-                                                    }
-                                                });
-                                            }
-
+                                                    Intent intent = new Intent(requireContext(), teamPageActivity.class);
+                                                    Bundle bundle = new Bundle();
+                                                    bundle.putString("teamName", mDriverTeam);
+                                                    bundle.putString("teamId", mTeamId);
+                                                    bundle.putStringArrayList("teamDrivers", teamDrivers);
+                                                    intent.putExtras(bundle);
+                                                    requireContext().startActivity(intent);
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e("driverPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
+                                                }
+                                            });
                                         }
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
@@ -165,48 +177,57 @@ public class driverStatsFragment extends Fragment {
                     LocalDate currentDate = LocalDate.now();
                     int age = calculateAge(LDbirthdate, currentDate);
 
-                    String driverAge = mBirthdate + " (" + age + " years)";
+                    String driverAge = " ";
+
+                    if(Locale.getDefault().getLanguage().equals("ru")){
+                        if (age%10 < 5){
+                            driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_text) + ")";
+                        }else{
+                            driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_alt_text) + ")";
+                        }
+                    }else{
+                        driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_text) + ")";
+                    }
                     birthdate.setText(driverAge);
 
                     World.init(requireContext());
                     flag.setImageResource(World.getFlagOf(getCountryCode(mDriverCountry)));
 
+                    Log.i("driverAlpine", " " + mDriverTeam);
 
-                    rootRef.child("constructors").orderByChild("name")
-                            .equalTo(mDriverTeam).addValueEventListener(new ValueEventListener() {
+                    rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot postSnapshot: snapshot.getChildren()){
-                                String mTeamId = postSnapshot.child("constructorId").getValue(String.class);
-                                String mTeamColor = "#" + postSnapshot.child("color").getValue(String.class);
+                            String mTeamId = snapshot.child("constructorId").getValue(String.class);
+                            String mTeamColor = "#" + snapshot.child("color").getValue(String.class);
 
-                                int resourceId_carImage = requireContext().getResources()
-                                        .getIdentifier(mTeamId, "drawable",
-                                                requireContext().getPackageName());
+                            int resourceId_carImage = requireContext().getResources()
+                                    .getIdentifier(mTeamId, "drawable",
+                                            requireContext().getPackageName());
 
-                                Glide.with(requireContext())
-                                        .load(resourceId_carImage)
-                                        .transition(DrawableTransitionOptions.withCrossFade())
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                        .transition(DrawableTransitionOptions.withCrossFade())
-                                        .error(R.drawable.f1)
-                                        .into(teamCar_image);
+                            Log.i("driverAlpine", " " + mTeamId);
 
-                                GradientDrawable gd = new GradientDrawable();
-                                gd.setColor(ContextCompat.getColor(requireContext(),R.color.white));
-                                gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                                gd.setStroke(12, Color.parseColor(mTeamColor));
-                                team_layout.setBackground(gd);
+                            Glide.with(requireContext())
+                                    .load(resourceId_carImage)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .error(R.drawable.f1)
+                                    .into(teamCar_image);
 
-                                GradientDrawable gd1 = new GradientDrawable();
-                                gd1.setColor(ContextCompat.getColor(requireContext(),R.color.white));
-                                gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                                gd1.setStroke(12, Color.parseColor(mTeamColor));
-                                driverInfo_layout.setBackground(gd1);
+                            GradientDrawable gd = new GradientDrawable();
+                            gd.setColor(ContextCompat.getColor(requireContext(),R.color.white));
+                            gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+                            gd.setStroke(12, Color.parseColor(mTeamColor));
+                            team_layout.setBackground(gd);
 
-                                arrow.setColorFilter(Color.parseColor(mTeamColor));
-                            }
+                            GradientDrawable gd1 = new GradientDrawable();
+                            gd1.setColor(ContextCompat.getColor(requireContext(),R.color.white));
+                            gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+                            gd1.setStroke(12, Color.parseColor(mTeamColor));
+                            driverInfo_layout.setBackground(gd1);
 
+                            arrow.setColorFilter(Color.parseColor(mTeamColor));
                         }
 
                         @Override
@@ -235,17 +256,25 @@ public class driverStatsFragment extends Fragment {
 
     public String getCountryCode(String countryName) {
         String[] isoCountryCodes = Locale.getISOCountries();
-        if(countryName.equals("USA")){
-            return "us";
-        } else if (countryName.equals("UK")) {
-            return "gb";
+        switch (countryName) {
+            case "usa":
+                return "us";
+            case "uk":
+                return "gb";
+            case "uae":
+                return "ae";
+            default:
+                for (String countryCode : isoCountryCodes) {
+                    Locale locale = new Locale("en", countryCode);
+                    String iso = locale.getISO3Country();
+                    String code = locale.getCountry();
+                    String name = locale.getDisplayCountry(new Locale("en", iso));
+                    if (countryName.equalsIgnoreCase(name)) {
+                        return code;
+                    }
+                }
+                break;
         }
-        for (String code : isoCountryCodes) {
-            Locale locale = new Locale("", code);
-            if (countryName.equalsIgnoreCase(locale.getDisplayCountry())) {
-                return code;
-            }
-        }
-        return "";
+        return " ";
     }
 }

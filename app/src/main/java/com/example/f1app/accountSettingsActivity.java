@@ -1,8 +1,13 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -66,6 +71,12 @@ public class accountSettingsActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountSettingsActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountSettingsActivity.this));
+        }
+
         username = findViewById(R.id.username);
         driverPicker = findViewById(R.id.driver_picker);
         teamPicker = findViewById(R.id.team_picker);
@@ -113,7 +124,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                             driverPicker.setMaxValue(driversList.size());
                             Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
                             Collections.reverse(driversList);
-                            driversList.add("Nobody");
+                            driversList.add(getString(R.string.nobody));
                             driversList.add(choiceDriver);
                             Collections.reverse(driversList);
                             driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
@@ -136,7 +147,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                             teamPicker.setMinValue(1);
                             teamPicker.setMaxValue(teamList.size());
                             Collections.reverse(teamList);
-                            teamList.add("Nobody");
+                            teamList.add(getString(R.string.nobody));
                             teamList.add(choiceTeam);
                             Collections.reverse(teamList);
                             teamPicker.setDisplayedValues(teamList.toArray(new String[teamList.size()]));
@@ -228,8 +239,8 @@ public class accountSettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 updateChoices(driversList, teamList);
-                Intent i = new Intent(accountSettingsActivity.this,
-                        accountPageActivity.class);
+                Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
+                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
             }
         });
@@ -261,7 +272,7 @@ public class accountSettingsActivity extends AppCompatActivity {
             String mLoginPassword = loginPassword.getText().toString().trim();
 
             if(mLoginPassword.length()<6 && !mLoginPassword.isEmpty()){
-                til_password.setError("Password must has at least 6 symbols");
+                til_password.setError(getString(R.string.invalid_password_text));
             }else{
                 til_password.setError(null);
             }
@@ -283,13 +294,13 @@ public class accountSettingsActivity extends AppCompatActivity {
         String password = loginPassword.getText().toString().trim();
 
         if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(accountSettingsActivity.this, "Please enter credentials",
+            Toast.makeText(accountSettingsActivity.this, getString(R.string.empty_credentials_text),
                     Toast.LENGTH_LONG).show();
             return;
         }
 
         if(til_password.getError() != null) {
-            Toast.makeText(accountSettingsActivity.this, "All field must be filled",
+            Toast.makeText(accountSettingsActivity.this,  getString(R.string.all_fields_text),
                     Toast.LENGTH_LONG).show();
         }else{
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -309,11 +320,11 @@ public class accountSettingsActivity extends AppCompatActivity {
                                                     rootRef.child("users").child(username)
                                                             .removeValue();
                                                     Toast.makeText(accountSettingsActivity.this,
-                                                            "Your account has been deleted.",
+                                                            getString(R.string.delete_account_text),
                                                             Toast.LENGTH_LONG).show();
                                                 }else{
                                                     Toast.makeText(accountSettingsActivity.this,
-                                                            "Something went wrong. Please try again later.",
+                                                            getString(R.string.smth_wrong_text),
                                                             Toast.LENGTH_LONG).show();
                                                 }
                                             }
@@ -323,7 +334,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                                 loginProgress.setVisibility(View.INVISIBLE);
                                 loginButton.setVisibility(View.VISIBLE);
                                 Toast.makeText(accountSettingsActivity.this,
-                                        "Authentication Failed. Wrong username or password. Please try again later.",
+                                        getString(R.string.auth_fail_text),
                                         Toast.LENGTH_LONG).show();
                             }
                         }

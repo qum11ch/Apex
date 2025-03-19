@@ -2,8 +2,11 @@ package com.example.f1app;
 
 import static android.app.PendingIntent.getActivity;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -49,6 +52,12 @@ public class futureRaceActivity extends AppCompatActivity {
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(futureRaceActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(futureRaceActivity.this));
+        }
 
         futureRaceTitle = findViewById(R.id.raceTitile);
 
@@ -118,10 +127,10 @@ public class futureRaceActivity extends AppCompatActivity {
             @Override
             public void onConfigureTab(TabLayout.Tab tab, int position) {
                 if (position == 0){
-                    tab.setText("Schedule");
+                    tab.setText(R.string.schedule_text);
                 }
                 else{
-                    tab.setText("Circuit");
+                    tab.setText(R.string.circuit_text);
                 }
             }
         });

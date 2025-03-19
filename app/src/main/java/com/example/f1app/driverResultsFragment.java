@@ -6,9 +6,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -35,6 +37,7 @@ public class driverResultsFragment extends Fragment {
     private List<driverResultsData> datum;
     private CheckBox radioButton_2025, radioButton_2024;
     private ShimmerFrameLayout shimmerFrameLayout;
+    private ScrollView scrollView;
 
     public driverResultsFragment() {
         // required empty public constructor.
@@ -43,6 +46,18 @@ public class driverResultsFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+    }
+
+    public void onResume(){
+        super.onResume();
+        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                scrollView.smoothScrollTo(0, 0);
+            }
+        });
+        getView().requestLayout();
     }
 
     @Nullable
@@ -55,6 +70,7 @@ public class driverResultsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
         radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
         radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
 
@@ -150,7 +166,7 @@ public class driverResultsFragment extends Fragment {
                                 recyclerView.setAdapter(adapter);
                             }
                             else{
-                                String driverResult = "NP";
+                                String driverResult = getResources().getString(R.string.np_text);
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);

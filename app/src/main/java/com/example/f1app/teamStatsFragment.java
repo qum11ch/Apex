@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -23,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.blongho.country_data.World;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -35,12 +37,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class teamStatsFragment extends Fragment {
     private TextView enterYear, wins, podiums, poles, championships,
             firstDriverName, firstDriverFamilyName, secondDriverName, secondDriverFamilyName,
             teamBase, powerUnit, teamChief, techChief, chassis, fullTeamName;
-    private ImageView firstDriver_image, secondDriver_image;
+    private ImageView firstDriver_image, secondDriver_image, flag;
     private RelativeLayout secondDriver_layout, firstDriver_layout, tech_layout;
 
 
@@ -53,16 +56,21 @@ public class teamStatsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public void onResume(){
+        super.onResume();
+        getView().requestLayout();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.team_page_stats_fragment, container, false);
     }
 
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         enterYear = (TextView) view.findViewById(R.id.enterYear);
         wins = (TextView) view.findViewById(R.id.wins);
         podiums = (TextView) view.findViewById(R.id.podiums);
@@ -83,6 +91,7 @@ public class teamStatsFragment extends Fragment {
         secondDriver_layout = (RelativeLayout) view.findViewById(R.id.secondDriver_layout);
         tech_layout = (RelativeLayout) view.findViewById(R.id.tech_layout);
         fullTeamName = (TextView) view.findViewById(R.id.fullTeamName);
+        flag = (ImageView) view.findViewById(R.id.flag);
 
 
 
@@ -114,6 +123,7 @@ public class teamStatsFragment extends Fragment {
                             bundle.putString("driverFamilyName", mDriverFamilyName);
                             bundle.putString("driverTeam", mTeamName);
                             bundle.putString("driverCode", mDriverCode);
+                            bundle.putString("driverTeamId", mTeamId);
                             intent.putExtras(bundle);
                             requireContext().startActivity(intent);
                         }
@@ -148,6 +158,7 @@ public class teamStatsFragment extends Fragment {
                             bundle.putString("driverFamilyName", mDriverFamilyName);
                             bundle.putString("driverTeam", mTeamName);
                             bundle.putString("driverCode", mDriverCode);
+                            bundle.putString("driverTeamId", mTeamId);
                             intent.putExtras(bundle);
                             requireContext().startActivity(intent);
                         }
@@ -189,6 +200,11 @@ public class teamStatsFragment extends Fragment {
                     powerUnit.setText(mPowerUnit);
                     chassis.setText(mChassis);
                     fullTeamName.setText(mFullTeamName);
+                    String[] baseLocation = mTeamBase.split(", ");
+                    String baseCountry = baseLocation[1];
+
+                    World.init(requireContext());
+                    flag.setImageResource(World.getFlagOf(getCountryCode(baseCountry)));
 
                     GradientDrawable gd = new GradientDrawable();
                     gd.setColor(ContextCompat.getColor(requireContext(),R.color.white));
@@ -262,5 +278,29 @@ public class teamStatsFragment extends Fragment {
             Log.e("teamPageActivity", "Error: Bundle from teamsAdapter is empty!");
         }
 
+    }
+
+    public String getCountryCode(String countryName) {
+        String[] isoCountryCodes = Locale.getISOCountries();
+        switch (countryName) {
+            case "united states":
+                return "us";
+            case "united kingdom":
+                return "gb";
+            case "uae":
+                return "ae";
+            default:
+                for (String countryCode : isoCountryCodes) {
+                    Locale locale = new Locale("en", countryCode);
+                    String iso = locale.getISO3Country();
+                    String code = locale.getCountry();
+                    String name = locale.getDisplayCountry(new Locale("en", iso));
+                    if (countryName.equalsIgnoreCase(name)) {
+                        return code;
+                    }
+                }
+                break;
+        }
+        return " ";
     }
 }

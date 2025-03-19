@@ -46,6 +46,7 @@
         <activity android:name=".teamPageActivity" />
         <activity android:name=".driverPageActivity" />
         <activity android:name=".raceResultsActivity"/>
+        <activity android:name=".connectionLostScreen"/>
         <activity
             android:name=".changeUserPrivateDataActivity"
             android:windowSoftInputMode="adjustPan"/>

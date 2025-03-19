@@ -1,9 +1,14 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkCapabilities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -106,6 +111,12 @@ public class accountPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountPageActivity.this));
+        }
+
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("users").orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -144,10 +155,10 @@ public class accountPageActivity extends AppCompatActivity {
                         }
                     });
 
-                    if(!choiceDriver.equals("Nobody")){
+                    if(!choiceDriver.equals(getString(R.string.nobody))){
                         driverImage.setVisibility(View.VISIBLE);
                         noDriver.setVisibility(View.INVISIBLE);
-                        fanText.setText("Fan of");
+                        fanText.setText(getString(R.string.fan_of_text));
                         String[] driverFullname = choiceDriver.split(" ");
                         String mDriverName, mDriverFamilyName;
                         if(choiceDriver.equals("Andrea Kimi Antonelli")){
@@ -241,10 +252,10 @@ public class accountPageActivity extends AppCompatActivity {
                         line.getLayoutParams().height = lineHeight;
                     }
 
-                    if(!choiceTeam.equals("Nobody")){
+                    if(!choiceTeam.equals(getString(R.string.nobody))){
                         teamCar.setVisibility(View.VISIBLE);
                         noTeam.setVisibility(View.INVISIBLE);
-                        fanText.setText("Fan of");
+                        fanText.setText(getString(R.string.fan_of_text));
                         rootRef.child("constructors").orderByChild("name").equalTo(choiceTeam).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -334,7 +345,7 @@ public class accountPageActivity extends AppCompatActivity {
                         int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
                         line.getLayoutParams().height = lineHeight;
                     }
-                    if(choiceTeam.equals("Nobody")&&choiceDriver.equals("Nobody")){
+                    if(choiceTeam.equals(getString(R.string.nobody))&&choiceDriver.equals(getString(R.string.nobody))){
                         teamCar.setVisibility(View.INVISIBLE);
                         noTeam.setVisibility(View.VISIBLE);
                         driverImage.setVisibility(View.INVISIBLE);
@@ -343,7 +354,7 @@ public class accountPageActivity extends AppCompatActivity {
                         driverName_layout.setLayoutParams(layoutParams2);
                         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         teamName_layout.setLayoutParams(layoutParams3);
-                        fanText.setText("Has no favourite driver and team");
+                        fanText.setText(getString(R.string.no_fan_of_text));
                         int height = 0;
                         userFavTeam.getLayoutParams().height = height;
                         int lineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
@@ -395,7 +406,7 @@ public class accountPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 logoutDialog.dismiss();
-                Toast.makeText(accountPageActivity.this, user.getEmail() + " Sign out!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(accountPageActivity.this, user.getEmail() + " " + getString(R.string.logout_text), Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
                 startActivity(i);
                 auth.signOut();
@@ -414,7 +425,9 @@ public class accountPageActivity extends AppCompatActivity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Intent i = new Intent(accountPageActivity.this, MainActivity.class);
+                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
             }
         });
 

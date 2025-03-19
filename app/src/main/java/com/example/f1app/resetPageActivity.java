@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -47,6 +49,12 @@ public class resetPageActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.password_reset_page);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(resetPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(resetPageActivity.this));
+        }
         userEmail = findViewById(R.id.userEmail);
         resetButton = findViewById(R.id.resetPassword);
 
@@ -85,7 +93,7 @@ public class resetPageActivity extends AppCompatActivity {
             email = userEmail.getText().toString().trim();
 
             if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.isEmpty()){
-                til_email.setError("Invalid email");
+                til_email.setError(getString(R.string.invalid_email_text));
             }else{
                 til_email.setError(null);
             }
@@ -107,7 +115,7 @@ public class resetPageActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void unesed) {
-                            Toast.makeText(resetPageActivity.this, "Reset password link has been sent to your registered Email", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(resetPageActivity.this, getString(R.string.reset_password_text), Toast.LENGTH_SHORT).show();
                             Intent intent = new Intent(resetPageActivity.this, logInPageActivity.class);
                             resetPageActivity.this.startActivity(intent);
                             finish();

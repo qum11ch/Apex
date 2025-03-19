@@ -94,35 +94,33 @@ public class raceResultsSprintFragment extends Fragment {
                                 for (int j = 0; j < QualifyingResults.length(); j++) {
                                     JSONObject Result = QualifyingResults.getJSONObject(j);
                                     String positionText = Result.getString("positionText");
-                                    String position;
                                     String driverCode = Result.getJSONObject("Driver")
                                             .getString("code");
                                     String constructorId = Result.getJSONObject("Constructor")
                                             .getString("constructorId");
                                     String time;
                                     String points = Result.getString("points");
-
+                                    String position = positionText;;
                                     if (positionText.equals("R")){
-                                        time = "DNF";
-                                        position = "NC";
+                                        time = getResources().getString(R.string.dnf_text);
+                                        position = getResources().getString(R.string.nc_text);
                                     }else{
                                         if (Result.has("Time")){
                                             time = Result.getJSONObject("Time")
                                                     .getString("time");
                                             if (!positionText.equals("1")) {
-                                                time += "s";
+                                                time += getResources().getString(R.string.seconds_text);
                                             }
                                         }else{
                                             String status = Result.getString("status");
                                             if (status.contains("Lap")){
                                                 time = Result.getString("status");
                                             }else{
-                                                time = "DNF";
+                                                time = getResources().getString(R.string.dnf_text);
+                                                position = getResources().getString(R.string.nc_text);
                                             }
                                         }
-                                        position = positionText;
                                     }
-
                                     raceResultsRaceData results = new raceResultsRaceData(position,
                                             constructorId, driverCode, time, points, season);
                                     datum.add(results);

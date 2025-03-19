@@ -127,7 +127,7 @@ public class futureRaceScheduleFragment extends Fragment {
                     @Override
                     public void onClick(View view) {
                         saveRace.setChecked(false);
-                        Toast.makeText(requireContext(), "You need to login to save races", Toast.LENGTH_LONG).show();
+                        Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
                     }
                 });
             }
@@ -180,15 +180,15 @@ public class futureRaceScheduleFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
                         " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
-                scheduleData firstPracticeEvent = new scheduleData(firstPractice, "Practice 1");
+                scheduleData firstPracticeEvent = new scheduleData(firstPractice, getString(R.string.first_practice_event_text));
 
                 String race = snapshot.child("raceDate").getValue(String.class) +
                         " " + snapshot.child("raceTime").getValue(String.class);
-                scheduleData raceEvent = new scheduleData(race, "Race");
+                scheduleData raceEvent = new scheduleData(race, getString(R.string.race_event_text));
 
                 String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
                         " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
-                scheduleData qualiEvent = new scheduleData(raceQuali, "Qualifying");
+                scheduleData qualiEvent = new scheduleData(raceQuali, getString(R.string.quali_event_text));
 
                 datum.add(firstPracticeEvent);
 
@@ -196,11 +196,11 @@ public class futureRaceScheduleFragment extends Fragment {
                 if (sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
-                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, "Practice 2");
+                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, getString(R.string.second_practice_event_text));
 
                     String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
                             " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
-                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, "Practice 3");
+                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, getString(R.string.third_practice_event_text));
 
                     datum.add(secondPracticeEvent);
                     datum.add(thirdPracticeEvent);
@@ -213,11 +213,11 @@ public class futureRaceScheduleFragment extends Fragment {
                 }else{
                     String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
                             " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
-                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, "Sprint Qualifying");
+                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, getString(R.string.sprint_quali_event_text));
 
                     String sprint = sprintDate +
                             " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
-                    scheduleData sprintEvent = new scheduleData(sprint, "Sprint");
+                    scheduleData sprintEvent = new scheduleData(sprint, getString(R.string.sprint_event_text));
 
                     datum.add(sprintQualiEvent);
                     datum.add(sprintEvent);
@@ -260,10 +260,10 @@ public class futureRaceScheduleFragment extends Fragment {
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if(snapshot.getChildrenCount()<32){
                                         rootRef.child("savedRaces").child(username).child(fullRaceName_key).setValue(savedRacesData);
-                                        Toast.makeText(requireContext(), "This race saved!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(requireContext(), getString(R.string.race_save_succ_text), Toast.LENGTH_LONG).show();
                                         //saveRace.setChecked(true);
                                     }else{
-                                        Toast.makeText(requireContext(), "You can have maximum 32 saved races. Please clear your saved races list!", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(requireContext(), getString(R.string.race_save_error_limit_text), Toast.LENGTH_LONG).show();
                                     }
                                 }
                                 @Override
@@ -291,7 +291,7 @@ public class futureRaceScheduleFragment extends Fragment {
                         for(DataSnapshot userSnap: snapshot.getChildren()){
                             String username = userSnap.getKey();
                             rootRef.child("savedRaces").child(username).child(fullRaceName_key).removeValue();
-                            Toast.makeText(requireContext(), "This race is deleted from saved races list!", Toast.LENGTH_LONG).show();
+                            Toast.makeText(requireContext(), getString(R.string.race_delete_succ_text), Toast.LENGTH_LONG).show();
                             //saveRace.setChecked(false);
                         }
                     }
@@ -377,7 +377,6 @@ public class futureRaceScheduleFragment extends Fragment {
                     @Override
                     public void onFinish() {
                         events.remove(key);
-                        Log.i("countDown", "finished");
                         countDownStart(events);
 
                     }

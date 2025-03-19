@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -52,6 +54,13 @@ public class registerPageActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_page);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(registerPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(registerPageActivity.this));
+        }
+
         editTextUsername = findViewById(R.id.signUpUsername);
         editTextEmail = findViewById(R.id.signUpEmail);
         editTextPassword = findViewById(R.id.signUpPassword);
@@ -82,7 +91,7 @@ public class registerPageActivity extends AppCompatActivity {
                 driverPicker.setMaxValue(driversList.size());
                 Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
                 Collections.reverse(driversList);
-                driversList.add("Nobody");
+                driversList.add(getString(R.string.nobody));
                 Collections.reverse(driversList);
                 driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
             }
@@ -94,7 +103,7 @@ public class registerPageActivity extends AppCompatActivity {
         });
 
         ArrayList<String> teamList = new ArrayList<>();
-        teamList.add("Nobody");
+        teamList.add(getString(R.string.nobody));
         rootRef.child("constructors").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -157,7 +166,7 @@ public class registerPageActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if(snapshot.hasChild(username)){
-                            til_username.setError("This username is already taken");
+                            til_username.setError(getString(R.string.invalid_username_text));
                         }else{
                             til_username.setError(null);
                         }
@@ -170,13 +179,13 @@ public class registerPageActivity extends AppCompatActivity {
             }
 
             if(password.length()<6 && !password.isEmpty()){
-                til_password.setError("Password must has at least 6 symbols");
+                til_password.setError(getString(R.string.invalid_password_text));
             }else{
                 til_password.setError(null);
             }
 
             if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.isEmpty()){
-                til_email.setError("Invalid email");
+                til_email.setError(getString(R.string.invalid_email_text));
             }else{
                 til_email.setError(null);
             }
@@ -200,21 +209,21 @@ public class registerPageActivity extends AppCompatActivity {
         String choiceTeam = teamList.get(teamPicker.getValue() - 1);
 
         if(til_email.getError() != null || til_password.getError() != null || til_username.getError() != null){
-            Toast.makeText(registerPageActivity.this, "All field must be filled", Toast.LENGTH_LONG).show();
+            Toast.makeText(registerPageActivity.this, getString(R.string.all_fields_text), Toast.LENGTH_LONG).show();
         }else{
             auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(registerPageActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                Toast.makeText(registerPageActivity.this, "Registration successful!", Toast.LENGTH_LONG).show();
+                                Toast.makeText(registerPageActivity.this, getString(R.string.reqistration_succ_text), Toast.LENGTH_LONG).show();
                                 createNewUser(task.getResult().getUser(), username, choiceDriver, choiceTeam);
                                 startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
                                 finish();
                             } else {
                                 registerProgress.setVisibility(View.INVISIBLE);
                                 registerButton.setVisibility(View.VISIBLE);
-                                Toast.makeText(registerPageActivity.this, "Registration failed! Please try again later", Toast.LENGTH_LONG).show();
+                                Toast.makeText(registerPageActivity.this, getString(R.string.reqistration_fail_text), Toast.LENGTH_LONG).show();
                             }
                         }
                     });

@@ -51,6 +51,11 @@ public class teamResultsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
+    public void onResume(){
+        super.onResume();
+        getView().requestLayout();
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

@@ -8,7 +8,7 @@
     <RelativeLayout
         android:background="@drawable/background_results"
         android:layout_width="match_parent"
-        android:layout_height="330dp">
+        android:layout_height="wrap_content">
         <LinearLayout
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
@@ -164,125 +164,115 @@
             android:id="@+id/podium_text"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_marginBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/podiumImage_layout"
             android:baselineAligned="false"
-            android:gravity="bottom"
             android:orientation="horizontal"
             android:weightSum="3">
-            <RelativeLayout
+            <TextView
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/secondPlace_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:text="@string/_2nd_place_header"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="14sp"
-                    android:textColor="@color/white" />
-                <TextView
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/secondPlace_info"
-                    android:id="@+id/secondPlace_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="14sp"
-                    android:textColor="@color/silver" />
-            </RelativeLayout>
-
-            <RelativeLayout
+                android:id="@+id/secondPlace_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:text="@string/_2nd_place_header"
+                android:gravity="bottom|center_horizontal"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textSize="14sp"
+                android:textColor="@color/white" />
+            <TextView
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
                 android:layout_weight="1.2"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/firstPlace_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:text="@string/_1st_place_header"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="14sp"
-                    android:textColor="@color/white" />
-                <TextView
-                    android:layout_marginTop="5dp"
-                    android:id="@+id/firstPlace_code"
-                    android:layout_below="@id/firstPlace_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAllCaps="true"
-                    android:textAlignment="center"
-                    android:textSize="14sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textColor="@color/gold"/>
-            </RelativeLayout>
-
-            <RelativeLayout
+                android:id="@+id/firstPlace_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:text="@string/_1st_place_header"
+                android:gravity="bottom|center_horizontal"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textSize="14sp"
+                android:textColor="@color/white" />
+            <TextView
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="0.8"
+                android:id="@+id/thirdPlace_info"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:text="@string/_3rd_place_header"
+                android:gravity="bottom|center_horizontal"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textSize="14sp"
+                android:textColor="@color/white" />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_marginTop="5dp"
+            android:id="@+id/podium_codes"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/podium_text"
+            android:baselineAligned="false"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <TextView
                 android:layout_marginStart="5dp"
                 android:layout_marginEnd="5dp"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:id="@+id/secondPlace_code"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textSize="14sp"
+                android:textColor="@color/silver" />
+            <TextView
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1.2"
+                android:id="@+id/firstPlace_code"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:textAllCaps="true"
+                android:textSize="14sp"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textColor="@color/gold"/>
+            <TextView
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:layout_weight="0.8"
-                android:orientation="horizontal">
-                <TextView
-                    android:id="@+id/thirdPlace_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:text="@string/_3rd_place_header"
-                    android:textAlignment="center"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="14sp"
-                    android:textColor="@color/white" />
-                <TextView
-                    android:layout_marginTop="5dp"
-                    android:layout_below="@id/thirdPlace_info"
-                    android:id="@+id/thirdPlace_code"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textSize="14sp"
-                    android:textAllCaps="true"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textColor="@color/bronze" />
-            </RelativeLayout>
+                android:id="@+id/thirdPlace_code"
+                android:gravity="center"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="0dp"
+                android:textSize="14sp"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                android:textColor="@color/bronze" />
         </LinearLayout>
         <TextView
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/podium_text"
+            android:layout_below="@id/podium_codes"
             style="@style/StinkyBottomStyle"
             android:id="@+id/show_results"
             android:paddingStart="30dp"

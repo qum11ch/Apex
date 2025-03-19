@@ -48,7 +48,7 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
         savedRacesData datum = dataList.get(position);
         String fullRaceName = datum.getRaceSeason() + " " + datum.getRaceName();
         holder.raceName.setText(fullRaceName);
-        String saveDate = "Saved: " + datum.getSaveDate();
+        String saveDate = context.getString(R.string.saved_race_text) + datum.getSaveDate();
         holder.save_date.setText(saveDate);
         holder.number.setText(String.valueOf(position + 1));
 

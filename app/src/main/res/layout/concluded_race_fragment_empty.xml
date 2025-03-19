@@ -18,14 +18,13 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="1000dp"
             android:layout_marginEnd="10dp">
             <LinearLayout
                 android:orientation="vertical"
                 android:background="@drawable/background_striped_lines_blue"
                 android:id="@+id/team"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
@@ -46,6 +45,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="100dp"
+
+
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/empty_race_list_concluded"/>

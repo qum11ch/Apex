@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -55,6 +57,12 @@ public class teamsStandingsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.teams_standing);
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamsStandingsActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamsStandingsActivity.this));
+        }
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();

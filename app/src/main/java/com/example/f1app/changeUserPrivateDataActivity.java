@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getConnectionType;
+
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
@@ -60,6 +62,12 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(true);
 
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(changeUserPrivateDataActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(changeUserPrivateDataActivity.this));
+        }
+
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         mUserId = user.getUid();
@@ -96,7 +104,7 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if(til_password.getError()!=null||til_email.getError()!=null){
-                    Toast.makeText(changeUserPrivateDataActivity.this, "Please enter credentials", Toast.LENGTH_LONG).show();
+                    Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.empty_credentials_text), Toast.LENGTH_LONG).show();
                 }else{
                     loginDialog.show();
                 }
@@ -129,6 +137,7 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
         });
     }
 
+
     private TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -141,19 +150,19 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
             String mLoginPassword = loginPassword.getText().toString().trim();
 
             if(mLoginPassword.length()<6 && !mLoginPassword.isEmpty()){
-                login_til_password.setError("Password must has at least 6 symbols");
+                login_til_password.setError(getString(R.string.invalid_password_text));
             }else{
                 login_til_password.setError(null);
             }
 
             if(mPassword.length()<6 && !mPassword.isEmpty()){
-                til_password.setError("Password must has at least 6 symbols");
+                til_password.setError(getString(R.string.invalid_password_text));
             }else{
                 til_password.setError(null);
             }
 
             if(!Patterns.EMAIL_ADDRESS.matcher(mUserEmail).matches() && !mUserEmail.isEmpty()){
-                til_email.setError("Invalid email");
+                til_email.setError(getString(R.string.invalid_email_text));
             }else{
                 til_email.setError(null);
             }
@@ -173,12 +182,12 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
         String newEmail = userEmail.getText().toString().trim();
         String oldEmail = user.getEmail().toString().trim();
         if (newEmail.isEmpty()) {
-            Toast.makeText(changeUserPrivateDataActivity.this, "Please enter credentials", Toast.LENGTH_LONG).show();
+            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.empty_credentials_text), Toast.LENGTH_LONG).show();
             return;
         }
 
         if(til_password.getError() != null && til_email.getError() != null) {
-            Toast.makeText(changeUserPrivateDataActivity.this, "All field must be filled", Toast.LENGTH_LONG).show();
+            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.all_fields_text), Toast.LENGTH_LONG).show();
         }else{
             if (!newPass.equals(oldPass) || !newEmail.equals(oldEmail)){
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -196,9 +205,9 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(!task.isSuccessful()){
-                                            Toast.makeText(changeUserPrivateDataActivity.this, "Something went wrong. Please try again later", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.smth_wrong_text), Toast.LENGTH_LONG).show();
                                         }else {
-                                            Toast.makeText(changeUserPrivateDataActivity.this, "Password Successfully Modified", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.change_pass_succ_text), Toast.LENGTH_LONG).show();
                                         }
                                     }
                                 });
@@ -209,7 +218,7 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
                                         if(!task.isSuccessful()){
-                                            Toast.makeText(changeUserPrivateDataActivity.this, "Something went wrong. Please try again later", Toast.LENGTH_LONG).show();
+                                            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.smth_wrong_text), Toast.LENGTH_LONG).show();
                                         }else {
                                             rootRef.child("users").orderByChild("userId")
                                                     .equalTo(mUserId).addValueEventListener(new ValueEventListener() {
@@ -218,13 +227,13 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
                                                             for(DataSnapshot userSnap: snapshot.getChildren()){
                                                                 String username = userSnap.getKey();
                                                                 rootRef.child("users").child(username).child("userEmail").setValue(newEmail);
-                                                                Toast.makeText(changeUserPrivateDataActivity.this, "Email Successfully Modified", Toast.LENGTH_LONG).show();
+                                                                Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.change_email_succ_text), Toast.LENGTH_LONG).show();
                                                             }
                                                         }
 
                                                         @Override
                                                         public void onCancelled(@NonNull DatabaseError error) {
-                                                            Toast.makeText(changeUserPrivateDataActivity.this, "" + error.getMessage(), Toast.LENGTH_LONG).show();
+                                                            Toast.makeText(changeUserPrivateDataActivity.this, " " + error.getMessage(), Toast.LENGTH_LONG).show();
                                                         }
                                                     });
                                         }
@@ -232,12 +241,12 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
                                 });
                             }
                         }else {
-                            Toast.makeText(changeUserPrivateDataActivity.this, "Authentication Failed", Toast.LENGTH_LONG).show();
+                            Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.auth_fail_text), Toast.LENGTH_LONG).show();
                         }
                     }
                 });
             }else{
-                Toast.makeText(changeUserPrivateDataActivity.this, "Nothing to change there", Toast.LENGTH_LONG).show();
+                Toast.makeText(changeUserPrivateDataActivity.this, getString(R.string.change_nothing_text), Toast.LENGTH_LONG).show();
             }
         }
     }

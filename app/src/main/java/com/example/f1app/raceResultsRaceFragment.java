@@ -86,8 +86,6 @@ public class raceResultsRaceFragment extends Fragment {
             datum = new ArrayList<>();
             getRaceData(mCircuitId, mSeason);
         }
-
-
     }
 
     public void getRaceData(String circuitId, String season){
@@ -110,12 +108,13 @@ public class raceResultsRaceFragment extends Fragment {
                                 for (int j = 0; j < QualifyingResults.length(); j++) {
                                     JSONObject Result = QualifyingResults.getJSONObject(j);
                                     String positionText = Result.getString("positionText");
-                                    String position;
+
                                     String driverCode = Result.getJSONObject("Driver")
                                             .getString("code");
                                     String constructorId = Result.getJSONObject("Constructor")
                                             .getString("constructorId");
-                                    String time;
+                                    String position = " ";
+                                    String time = " ";
                                     String points = Result.getString("points");
 
                                     if (Result.has("FastestLap")){
@@ -141,21 +140,29 @@ public class raceResultsRaceFragment extends Fragment {
                                     }
 
                                     if (positionText.equals("R")){
-                                        time = "DNF";
-                                        position = "NC";
-                                    } else{
+                                        time = getResources().getString(R.string.dnf_text);
+                                        position = getResources().getString(R.string.nc_text);
+                                    } else if (positionText.equals("W")) {
+                                        time = getResources().getString(R.string.wd);
+                                        position = getResources().getString(R.string.wd_text);
+                                        points = " ";
+                                    } else if (positionText.equals("D")) {
+                                        time = getResources().getString(R.string.dsq_text);
+                                        position = getResources().getString(R.string.dsq_pos_text);
+                                        points = " ";}
+                                    else{
                                         if (Result.has("Time")){
                                             time = Result.getJSONObject("Time")
                                                     .getString("time");
                                             if (!positionText.equals("1")) {
-                                                time += "s";
+                                                time += getResources().getString(R.string.seconds_text);
                                             }
                                         }else{
                                             String status = Result.getString("status");
                                             if (status.contains("Lap")){
                                                 time = Result.getString("status");
                                             }else{
-                                                time = "DNF";
+                                                time = getResources().getString(R.string.dnf_text);
                                             }
                                         }
                                         position = positionText;

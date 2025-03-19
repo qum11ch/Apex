@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/white"
     android:layout_width="match_parent"
@@ -19,7 +20,8 @@
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/black"
             android:textSize="28sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"/>
         <RelativeLayout
             android:id="@+id/firstGP_layout"
             style="@style/StatisticLayout"
@@ -363,19 +365,25 @@
                 android:layout_below="@id/country_info"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
                 android:textColor="@color/black" />
-            <com.google.android.material.imageview.ShapeableImageView
-                app:strokeColor="@color/grey"
-                app:shapeAppearanceOverlay="@style/customRoundedImageView"
-                app:strokeWidth="1dp"
-                android:adjustViewBounds="true"
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                style="@style/ShimmerStyle"
                 android:layout_alignParentEnd="true"
-                android:cropToPadding="true"
-                android:id="@+id/flag"
-                android:layout_width="60dp"
-                android:layout_height="40dp"
-                android:scaleType="centerCrop"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="5dp"/>
+                android:layout_marginStart="10dp"
+                android:id="@+id/flag_layout"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="5dp">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:padding="1dp"
+                    app:strokeColor="@color/grey"
+                    android:scaleType="centerCrop"
+                    app:shapeAppearanceOverlay="@style/customRoundedImageView"
+                    android:id="@+id/flag"
+                    android:layout_width="60dp"
+                    android:layout_height="40dp" />
+            </RelativeLayout>
         </RelativeLayout>
 
         <RelativeLayout

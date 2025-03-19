@@ -52,15 +52,32 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
 
         holder.driverCode.setText(mDriverCode);
         holder.driver_placement.setText(mDriverPosition);
-        holder.Q1_time.setText(mQ1);
-        holder.Q2_time.setText(mQ2);
-        holder.Q3_time.setText(mQ3);
 
-        if(mQ2.equals("--")){
-            holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
+        if(mQ1.isEmpty()){
+            holder.Q1_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q1_time.setText("--");
+        }else{
+            holder.Q1_time.setText(mQ1);
         }
-        if(mQ3.equals("--")){
+
+        if(mQ2.isEmpty()){
+            holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q2_time.setText("--");
+        } else if (mQ2.equals("--")) {
+            holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q2_time.setText(mQ2);
+        }else{
+            holder.Q2_time.setText(mQ2);
+        }
+
+        if(mQ3.isEmpty()){
             holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q3_time.setText("--");
+        } else if (mQ3.equals("--")) {
+            holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q3_time.setText(mQ3);
+        }else{
+            holder.Q3_time.setText(mQ3);
         }
 
         Integer year = Integer.parseInt(mSeason);

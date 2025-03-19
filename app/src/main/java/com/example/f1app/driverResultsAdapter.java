@@ -44,7 +44,7 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
             if (driverResult.equals("NP")) {
                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                 holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
-                holder.driverResults.setText("DNS");
+                holder.driverResults.setText(context.getResources().getString(R.string.dns_text));
             } else {
                 String[] driverRes = driverResult.split("-");
                 String driverFinish = driverRes[1];
@@ -53,15 +53,15 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                 if (driverFinish.equals("R")) {
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.pink));
-                    holder.driverResults.setText("Ret");
+                    holder.driverResults.setText(context.getResources().getString(R.string.ret_text));
                 } else if (driverFinish.equals("W")) {
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-                    holder.driverResults.setText("WD");
+                    holder.driverResults.setText(context.getResources().getString(R.string.wd_text));
                 } else if (driverFinish.equals("D")) {
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.white));
                     holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-                    holder.driverResults.setText("DSQ");
+                    holder.driverResults.setText(context.getResources().getString(R.string.dsq_text));
                 } else {
                     int finishPos = Integer.parseInt(driverFinish);
                     if (finishPos <= 3) {
@@ -96,7 +96,7 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                 }
             }
         }else {
-            holder.driverResults.setText(driverResult);
+            holder.driverResults.setText(context.getResources().getString(R.string.n_c_text));
         }
     }
 

@@ -50,7 +50,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
             if (firstDriverResult.equals("NP")){
                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
                 holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.white));
-                holder.firstDriverResult.setText("DNS");
+                holder.firstDriverResult.setText(context.getResources().getString(R.string.dns_text));
             }else{
                 String[] firstDriver = firstDriverResult.split("-");
                 String firstDriverFinish = firstDriver[1];
@@ -59,15 +59,15 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 if (firstDriverFinish.equals("R")){
                     holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
                     holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
-                    holder.firstDriverResult.setText("Ret");
+                    holder.firstDriverResult.setText(context.getResources().getString(R.string.ret_text));
                 } else if (firstDriverFinish.equals("W")) {
                     holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-                    holder.firstDriverResult.setText("WD");
+                    holder.firstDriverResult.setText(context.getResources().getString(R.string.wd_text));
                 } else if (firstDriverFinish.equals("D")) {
                     holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
                     holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-                    holder.firstDriverResult.setText("DSQ");
+                    holder.firstDriverResult.setText(context.getResources().getString(R.string.dsq_text));
                 } else{
                     int finishPos = Integer.parseInt(firstDriverFinish);
                     if (finishPos <= 3){
@@ -105,7 +105,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
             if (secondDriverResult.equals("NP")) {
                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                 holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
-                holder.secondDriverResult.setText("DNS");
+                holder.secondDriverResult.setText(context.getResources().getString(R.string.dns_text));
             }else{
                 String[] secondDriver = secondDriverResult.split("-");
                 String secondDriverFinish = secondDriver[1];
@@ -113,15 +113,15 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 if (secondDriverFinish.equals("R")){
                     holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
                     holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
-                    holder.secondDriverResult.setText("Ret");
+                    holder.secondDriverResult.setText(context.getResources().getString(R.string.ret_text));
                 } else if (secondDriverFinish.equals("W")) {
                     holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-                    holder.secondDriverResult.setText("WD");
+                    holder.secondDriverResult.setText(context.getResources().getString(R.string.wd_text));
                 } else if (secondDriverFinish.equals("D")) {
                         holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
                         holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-                        holder.secondDriverResult.setText("DSQ");
+                        holder.secondDriverResult.setText(context.getResources().getString(R.string.dsq_text));
                 } else{
                     int finishPos = Integer.parseInt(secondDriverFinish);
                     if (finishPos <= 3){
@@ -156,8 +156,8 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 }
             }
         } else{
-            holder.firstDriverResult.setText(secondDriverResult);
-            holder.secondDriverResult.setText(secondDriverResult);
+            holder.firstDriverResult.setText(context.getResources().getString(R.string.n_c_text));
+            holder.secondDriverResult.setText(context.getResources().getString(R.string.n_c_text));
         }
 
 

@@ -4,8 +4,15 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.view.WindowCompat;
@@ -104,6 +111,31 @@ public class MainActivity extends AppCompatActivity {
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+
+
+        if (getConnectionType(getApplicationContext())==0){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(MainActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(MainActivity.this));
+        }
+    }
+
+    public static int getConnectionType(Context context) {
+        int result = 0; // Returns connection type. 0: none; 1: mobile data; 2: wifi; 3: vpn
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    result = 2;
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    result = 1;
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    result = 3;
+                }
+            }
+        }
+        return result;
     }
 
     private void updateSprintData(LocalDate currentDate){
@@ -259,7 +291,6 @@ public class MainActivity extends AppCompatActivity {
                                             JSONObject RaceTable = MRData.getJSONObject("RaceTable");
                                             JSONArray Races = RaceTable.getJSONArray("Races");
                                             for (int i = 0; i < Races.length(); i++){
-                                                String raceDate = Races.getJSONObject(i).getString("date");
                                                 String gpName = Races.getJSONObject(i).getString("season") + " " +
                                                         Races.getJSONObject(i).getString("raceName");
                                                 String raceName = Races.getJSONObject(i).getString("raceName");
@@ -276,269 +307,268 @@ public class MainActivity extends AppCompatActivity {
                                                         JSONObject Driver = Results.getJSONObject(j).getJSONObject("Driver");
                                                         String driverName = Driver.getString("givenName") + " " + Driver.getString("familyName");
                                                         String driverCode = Driver.getString("code");
-
-                                                        JSONObject FastestLap = Results.getJSONObject(j).getJSONObject("FastestLap");
-                                                        String rank = FastestLap.getString("rank");
-                                                        String time = FastestLap.getJSONObject("Time").getString("time");
-
+                                                        
+                                                        boolean hasFastestLap = false;
+                                                        String rank = "", time = " ";
+                                                        if (Results.getJSONObject(j).has("FastestLap")){
+                                                            JSONObject FastestLap = Results.getJSONObject(j).getJSONObject("FastestLap");
+                                                            rank = FastestLap.getString("rank");
+                                                            time = FastestLap.getJSONObject("Time").getString("time");
+                                                            hasFastestLap = true;
+                                                        }
+                                                        
                                                         JSONObject Constructor = Results.getJSONObject(j).getJSONObject("Constructor");
                                                         String teamName = Constructor.getString("name");
                                                         String constructorId = Constructor.getString("constructorId");
 
-                                                        String currentDateString = currentDate.toString();
-                                                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                                        rootRef.child("status/last_update")
+                                                                .child("last_race")
+                                                                .setValue(gpName);
 
-                                                        try{
-                                                            Date race = formatter.parse(raceDate);
-                                                            Date current = formatter.parse(currentDateString);
+                                                        int finalJ = j;
+                                                        boolean finalHasFastestLap = hasFastestLap;
+                                                        String finalRank = rank;
+                                                        rootRef.child("drivers/").orderByChild("driversCode").equalTo(driverCode)
+                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                        for (DataSnapshot driverSnaps: snapshot.getChildren()){
+                                                                            Log.i("updateDrivers", " " + finalJ + " " + driverCode + " is updating");
 
-                                                            long diff = current.getTime() - race.getTime();
+                                                                            String totalWinsCount = driverSnaps
+                                                                                    .child("totalWins")
+                                                                                    .getValue(String.class);
+                                                                            String totalPodiumsCount = driverSnaps
+                                                                                    .child("totalPodiums")
+                                                                                    .getValue(String.class);
 
-                                                            int days_count = (int) TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-                                                            if (days_count > 1){
+                                                                            if(Integer.parseInt(position) <= 3){
+                                                                                if (position.equals("1")){
+                                                                                    totalWinsCount = Integer.toString(
+                                                                                            Integer.parseInt(totalWinsCount) + 1);
+                                                                                }
+                                                                                totalPodiumsCount = Integer.toString(
+                                                                                        Integer.parseInt(totalPodiumsCount) + 1);
+                                                                            }
 
-                                                                //prefs.edit().putString("lastRaceUpdate", gpName).apply();
-                                                                rootRef.child("status/last_update")
-                                                                        .child("last_race")
-                                                                        .setValue(gpName);
-                                                                rootRef.child("drivers/" + driverName)
-                                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                            @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                            String totalPoles = driverSnaps
+                                                                                    .child("polesCount")
+                                                                                    .getValue(String.class);
+                                                                            
+                                                                            if (gridText.equals("1")){
+                                                                                totalPoles = String.valueOf(Integer.parseInt(totalPoles) + 1);
+                                                                            }
 
+                                                                            String countGPEntered = Integer.toString(
+                                                                                    Integer.parseInt(Objects.requireNonNull(driverSnaps
+                                                                                            .child("gpEntered")
+                                                                                            .getValue(String.class))) + 1);
+                                                                            String totalPointsCount = Double.toString(
+                                                                                    Double.parseDouble(Objects.requireNonNull(driverSnaps
+                                                                                            .child("totalPoints")
+                                                                                            .getValue(String.class))) + Integer.parseInt(points));
+
+                                                                            String fastestLapsTotal = driverSnaps
+                                                                                    .child("fastestLapCount")
+                                                                                    .getValue(String.class);
+
+                                                                            if(finalHasFastestLap){
+                                                                                if(finalRank.equals("1")){
+                                                                                    fastestLapsTotal = String.valueOf(Integer.parseInt(fastestLapsTotal) + 1);
+                                                                                }
+                                                                            }
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("fastestLapCount")
+                                                                                    .setValue(fastestLapsTotal);
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("totalWins")
+                                                                                    .setValue(totalWinsCount);
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("totalPodiums")
+                                                                                    .setValue(totalPodiumsCount);
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("gpEntered")
+                                                                                    .setValue(countGPEntered);
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("totalPoints")
+                                                                                    .setValue(totalPointsCount);
+
+                                                                            rootRef.child("drivers/" + driverName)
+                                                                                    .child("polesCount")
+                                                                                    .setValue(totalPoles);
+                                                                        }
+                                                                    }
+
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                                        Log.e("updateDataError", error.getMessage());
+                                                                    }
+                                                                });
+
+                                                        rootRef.child("drivers/" + driverName)
+                                                                .child("lastEntry")
+                                                                .setValue(gpName);
+                                                        rootRef.child("drivers/" + driverName)
+                                                                .child("driversTeam")
+                                                                .setValue(teamName);
+
+                                                        rootRef.child("constructors/" + constructorId)
+                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                        if(finalHasFastestLap) {
+                                                                            if (finalRank.equals("1")) {
+                                                                                String fastestLapsTotal = snapshot
+                                                                                        .child("totalFastestLaps")
+                                                                                        .getValue(String.class);
+
+                                                                                fastestLapsTotal = Integer.toString(Integer.parseInt(fastestLapsTotal) + 1);
+
+                                                                                rootRef.child("constructors/" + constructorId)
+                                                                                        .child("totalFastestLaps")
+                                                                                        .setValue(fastestLapsTotal);
+                                                                            }
+                                                                        }
+
+                                                                        if(Integer.parseInt(position) <= 3){
+                                                                            if (position.equals("1")){
                                                                                 String totalWinsCount = snapshot
                                                                                         .child("totalWins")
                                                                                         .getValue(String.class);
-                                                                                String totalPodiumsCount = snapshot
-                                                                                        .child("totalPodiums")
-                                                                                        .getValue(String.class);
 
-                                                                                if(Integer.parseInt(position) <= 3){
-                                                                                    if (position.equals("1")){
-                                                                                        totalWinsCount = Integer.toString(
-                                                                                                Integer.parseInt(totalWinsCount) + 1);
-                                                                                    }
-                                                                                    totalPodiumsCount = Integer.toString(
-                                                                                            Integer.parseInt(totalPodiumsCount) + 1);
-                                                                                }
+                                                                                totalWinsCount = Integer.toString(
+                                                                                        Integer.parseInt(totalWinsCount) + 1);
 
-                                                                                String totalPoles = snapshot
-                                                                                        .child("polesCount")
-                                                                                        .getValue(String.class);
-
-                                                                                if (gridText.equals("1")){
-                                                                                    totalPoles = String.valueOf(Integer.parseInt(totalPoles) + 1);
-                                                                                }
-
-                                                                                String countGPEntered = Integer.toString(
-                                                                                        Integer.parseInt(Objects.requireNonNull(snapshot
-                                                                                                .child("gpEntered")
-                                                                                                .getValue(String.class))) + 1);
-                                                                                String totalPointsCount = Double.toString(
-                                                                                        Double.parseDouble(Objects.requireNonNull(snapshot
-                                                                                                .child("totalPoints")
-                                                                                                .getValue(String.class))) + Integer.parseInt(points));
-
-                                                                                String fastestLapsTotal = snapshot
-                                                                                        .child("fastestLapCount")
-                                                                                        .getValue(String.class);
-                                                                                if(rank.equals("1")){
-                                                                                    fastestLapsTotal = String.valueOf(Integer.parseInt(fastestLapsTotal) + 1);
-                                                                                }
-
-
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("fastestLapCount")
-                                                                                        .setValue(fastestLapsTotal);
-                                                                                rootRef.child("drivers/" + driverName)
+                                                                                rootRef.child("constructors/" + constructorId)
                                                                                         .child("totalWins")
                                                                                         .setValue(totalWinsCount);
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("totalPodiums")
-                                                                                        .setValue(totalPodiumsCount);
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("gpEntered")
-                                                                                        .setValue(countGPEntered);
-
-
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("totalPoints")
-                                                                                        .setValue(totalPointsCount);
-
-
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("polesCount")
-                                                                                        .setValue(totalPoles);
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("lastEntry")
-                                                                                        .setValue(gpName);
-                                                                                rootRef.child("drivers/" + driverName)
-                                                                                        .child("driversTeam")
-                                                                                        .setValue(teamName);
                                                                             }
+                                                                            String totalPodiumsCount = snapshot
+                                                                                    .child("totalPodiums")
+                                                                                    .getValue(String.class);
 
-                                                                            @Override
-                                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                                Log.e("updateDataError", error.getMessage());
-                                                                            }
-                                                                        });
+                                                                            totalPodiumsCount = Integer.toString(
+                                                                                    Integer.parseInt(totalPodiumsCount) + 1);
 
-                                                                rootRef.child("constructors/" + constructorId)
-                                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                            @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                if(rank.equals("1")){
-                                                                                    String fastestLapsTotal = snapshot
-                                                                                            .child("totalFastestLaps")
-                                                                                            .getValue(String.class);
+                                                                            rootRef.child("constructors/" + constructorId)
+                                                                                    .child("totalPodiums")
+                                                                                    .setValue(totalPodiumsCount);
+                                                                        }
 
-                                                                                    fastestLapsTotal = Integer.toString(Integer.parseInt(fastestLapsTotal) + 1);
+                                                                        if (gridText.equals("1")){
+                                                                            String totalPoles = snapshot
+                                                                                    .child("totalPoles")
+                                                                                    .getValue(String.class);
 
-                                                                                    rootRef.child("constructors/" + constructorId)
-                                                                                            .child("totalFastestLaps")
-                                                                                            .setValue(fastestLapsTotal);
-                                                                                }
+                                                                            totalPoles = Integer.toString(Integer.parseInt(totalPoles) + 1);
 
+                                                                            rootRef.child("constructors/" + constructorId)
+                                                                                    .child("totalPoles")
+                                                                                    .setValue(totalPoles);
+                                                                        }
+                                                                    }
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                                        Log.e("updateDataError", error.getMessage());
+                                                                    }
+                                                                });
 
-                                                                                if(Integer.parseInt(position) <= 3){
-                                                                                    if (position.equals("1")){
-                                                                                        String totalWinsCount = snapshot
-                                                                                                .child("totalWins")
-                                                                                                .getValue(String.class);
+                                                        String finalTime = time;
+                                                        rootRef.child("circuits/" + circuitId)
+                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                        String currentFastLap = snapshot
+                                                                                .child("lapRecordTime")
+                                                                                .getValue(String.class);
 
-                                                                                        totalWinsCount = Integer.toString(
-                                                                                                Integer.parseInt(totalWinsCount) + 1);
-                                                                                        Log.i("check_team", constructorId + " after " + totalWinsCount);
-
-                                                                                        rootRef.child("constructors/" + constructorId)
-                                                                                                .child("totalWins")
-                                                                                                .setValue(totalWinsCount);
+                                                                        if(finalHasFastestLap) {
+                                                                            if (finalRank.equals("1")) {
+                                                                                SimpleDateFormat formatterFastLap = new SimpleDateFormat("mm:ss.SSS");
+                                                                                try {
+                                                                                    Date fastestLap = formatterFastLap.parse(finalTime);
+                                                                                    Date currentFastestLap = formatterFastLap.parse(currentFastLap);
+                                                                                    if (fastestLap.getTime() < currentFastestLap.getTime()) {
+                                                                                        rootRef.child("circuits/" + circuitId)
+                                                                                                .child("lapRecordDriver")
+                                                                                                .setValue(driverName);
+                                                                                        rootRef.child("circuits/" + circuitId)
+                                                                                                .child("lapRecordTime")
+                                                                                                .setValue(finalTime);
+                                                                                        rootRef.child("circuits/" + circuitId)
+                                                                                                .child("lapRecordYear")
+                                                                                                .setValue(currentYear);
                                                                                     }
-                                                                                    String totalPodiumsCount = snapshot
-                                                                                            .child("totalPodiums")
-                                                                                            .getValue(String.class);
-
-                                                                                    totalPodiumsCount = Integer.toString(
-                                                                                            Integer.parseInt(totalPodiumsCount) + 1);
-
-                                                                                    rootRef.child("constructors/" + constructorId)
-                                                                                            .child("totalPodiums")
-                                                                                            .setValue(totalPodiumsCount);
-                                                                                }
-
-                                                                                if (gridText.equals("1")){
-                                                                                    String totalPoles = snapshot
-                                                                                            .child("totalPoles")
-                                                                                            .getValue(String.class);
-
-                                                                                    totalPoles = Integer.toString(Integer.parseInt(totalPoles) + 1);
-
-                                                                                    rootRef.child("constructors/" + constructorId)
-                                                                                            .child("totalPoles")
-                                                                                            .setValue(totalPoles);
-                                                                                }
-
-                                                                            }
-
-                                                                            @Override
-                                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                                Log.e("updateDataError", error.getMessage());
-                                                                            }
-                                                                        });
-
-                                                                rootRef.child("circuits/" + circuitId)
-                                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                            @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                String currentFastLap = snapshot
-                                                                                        .child("lapRecordTime")
-                                                                                        .getValue(String.class);
-                                                                                if(rank.equals("1")){
-                                                                                    SimpleDateFormat formatterFastLap = new SimpleDateFormat("mm:ss.SSS");
-                                                                                    try{
-                                                                                        Date fastestLap = formatterFastLap.parse(time);
-                                                                                        Date currentFastestLap = formatterFastLap.parse(currentFastLap);
-                                                                                        if (fastestLap.getTime() < currentFastestLap.getTime()){
-                                                                                            rootRef.child("circuits/" + circuitId)
-                                                                                                    .child("lapRecordDriver")
-                                                                                                    .setValue(driverName);
-                                                                                            rootRef.child("circuits/" + circuitId)
-                                                                                                    .child("lapRecordTime")
-                                                                                                    .setValue(time);
-                                                                                            rootRef.child("circuits/" + circuitId)
-                                                                                                    .child("lapRecordYear")
-                                                                                                    .setValue(currentYear);
-                                                                                        }
-                                                                                    }catch (ParseException e) {
-                                                                                        Log.d("ParseExeption", "" + e);
-                                                                                    }
+                                                                                } catch (
+                                                                                        ParseException e) {
+                                                                                    Log.d("ParseExeption", "" + e);
                                                                                 }
                                                                             }
+                                                                        }
+                                                                    }
 
-                                                                            @Override
-                                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                                Log.e("updateDataError", error.getMessage());
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                                        Log.e("updateDataError", error.getMessage());
+                                                                    }
+                                                                });
+
+                                                        rootRef.child("results/season/" + currentYear +
+                                                                        "/" + driverName)
+                                                                .child(raceName)
+                                                                .setValue(result);
+
+                                                        rootRef.child("schedule/season/" + currentYear + "/" + raceName)
+                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                    @Override
+                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                                        if(finalHasFastestLap) {
+                                                                            if (finalRank.equals("1")) {
+                                                                                rootRef.child("schedule/season/"
+                                                                                                + currentYear + "/" + raceName)
+                                                                                        .child("RaceResults/fastestLapDriver")
+                                                                                        .setValue(driverName);
+                                                                                rootRef.child("schedule/season/"
+                                                                                                + currentYear + "/" + raceName)
+                                                                                        .child("RaceResults/fastestLapTime")
+                                                                                        .setValue(finalTime);
                                                                             }
-                                                                        });
+                                                                        }
+                                                                        switch (position){
+                                                                            case "1":
+                                                                                rootRef.child("schedule/season/"
+                                                                                                + currentYear + "/" + raceName)
+                                                                                        .child("RaceResults/raceWinnerCode")
+                                                                                        .setValue(driverCode);
+                                                                                break;
+                                                                            case "2":
+                                                                                rootRef.child("schedule/season/"
+                                                                                                + currentYear + "/" + raceName)
+                                                                                        .child("RaceResults/raceSecondCode")
+                                                                                        .setValue(driverCode);
+                                                                                break;
+                                                                            case "3":
+                                                                                rootRef.child("schedule/season/"
+                                                                                                + currentYear + "/" + raceName)
+                                                                                        .child("RaceResults/raceThirdCode")
+                                                                                        .setValue(driverCode);
+                                                                                break;
+                                                                            default:
+                                                                                break;
+                                                                        }
+                                                                    }
 
-                                                                rootRef.child("results/season/" + currentYear +
-                                                                                "/" + driverName)
-                                                                        .child(raceName)
-                                                                        .setValue(result);
-
-                                                                rootRef.child("schedule/season/" + currentYear + "/" + raceName)
-                                                                        .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                            @Override
-                                                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                                if(rank.equals("1")){
-                                                                                    rootRef.child("schedule/season/"
-                                                                                                    + currentYear + "/" + raceName)
-                                                                                            .child("RaceResults/fastestLapDriver")
-                                                                                            .setValue(driverName);
-                                                                                    rootRef.child("schedule/season/"
-                                                                                                    + currentYear + "/" + raceName)
-                                                                                            .child("RaceResults/fastestLapTime")
-                                                                                            .setValue(time);
-                                                                                }
-                                                                                switch (position){
-                                                                                    case "1":
-                                                                                        rootRef.child("schedule/season/"
-                                                                                                        + currentYear + "/" + raceName)
-                                                                                                .child("RaceResults/raceWinnerCode")
-                                                                                                .setValue(driverCode);
-                                                                                        break;
-                                                                                    case "2":
-                                                                                        rootRef.child("schedule/season/"
-                                                                                                        + currentYear + "/" + raceName)
-                                                                                                .child("RaceResults/raceSecondCode")
-                                                                                                .setValue(driverCode);
-                                                                                        break;
-                                                                                    case "3":
-                                                                                        rootRef.child("schedule/season/"
-                                                                                                        + currentYear + "/" + raceName)
-                                                                                                .child("RaceResults/raceThirdCode")
-                                                                                                .setValue(driverCode);
-                                                                                        break;
-                                                                                    default:
-                                                                                        break;
-                                                                                }
-                                                                            }
-
-                                                                            @Override
-                                                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                                                Log.e("updateDataError", error.getMessage());
-                                                                            }
-                                                                        });
-                                                                DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
-                                                                String updateDate = currentDate.format(formatterUpdate);
-                                                                rootRef.child("status/last_update")
-                                                                        .child("update_date")
-                                                                        .setValue(updateDate);
-                                                                Log.i("updateState", "Race data updated successfully");
-                                                            }
-                                                        } catch (ParseException e){
-                                                            Log.d("ParseExeption", "" + e);
-                                                        }
+                                                                    @Override
+                                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                                        Log.e("updateDataError", error.getMessage());
+                                                                    }
+                                                                });
+                                                        DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
+                                                        String updateDate = currentDate.format(formatterUpdate);
+                                                        rootRef.child("status/last_update")
+                                                                .child("update_date")
+                                                                .setValue(updateDate);
+                                                        Log.i("updateState", "Race data updated successfully");
                                                     }
                                                 }
                                                 else{
