@@ -4,15 +4,16 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Service;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.net.NetworkCapabilities;
-import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.core.view.WindowCompat;
@@ -25,13 +26,17 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
+import java.util.TimeZone;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -53,8 +58,10 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
     Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
     FirebaseDatabase database;
-    private static final String TAG = "FirebaseERROR";
-    SharedPreferences prefs;
+    private final String channelId = "channelID";
+    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    private static final long HOUR = 3600*1000;
+    private static final long SPRINT_QUALI_DIFF = 44*60*1000;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +125,193 @@ public class MainActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(MainActivity.this));
         }
+
+        createNotificationChannel();
+
+        String currentYear = Integer.toString(currentDate.getYear());
+        getSchedule(currentYear, currentDate);
     }
+
+    private void getSchedule(String year, LocalDate currentDate){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
+                    String dateEnd = ds.child("raceDate").getValue(String.class);
+                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+
+                    String currentDateString = currentDate.toString();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    boolean future = false;
+                    boolean isOnGoing = false;
+
+                    try{
+                        Date start = formatter.parse(dateStart);
+                        Date end = formatter.parse(dateEnd);
+                        Date current = formatter.parse(currentDateString);
+                        if(start.after(current) && end.after(current))
+                        {
+                            future = true;
+                            isOnGoing = false;
+                        }
+                        else if (current.equals(start) || current.equals(end)){
+                            isOnGoing = true;
+                        }
+                        else if (current.after(start) && current.before(end)){
+                            isOnGoing = true;
+                        }
+                    } catch (ParseException e){
+                        Log.d("ParseExeption", "" + e);
+                    }
+                    if (isOnGoing || future){
+                        getRaceSchedule(raceName, year, circuitId);
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("scheduleActivityFirebaseError", error.getMessage());
+            }
+        });
+    }
+
+    private void getRaceSchedule(String raceName, String currentYear, String circuitId){
+        LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
+                        " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
+                String race = snapshot.child("raceDate").getValue(String.class) +
+                        " " + snapshot.child("raceTime").getValue(String.class);
+
+                String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
+                        " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
+
+                String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
+                if (sprintDate.equals("N/A")){
+                    String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
+                            " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
+
+                    String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
+                            " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
+
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("second_practice_event", secondPractice);
+                    eventsCountdown.put("third_practice_event", thirdPractice);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
+                }else{
+                    String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
+                            " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
+                    String sprint = sprintDate +
+                            " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
+
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("sprint_quali_event", sprintQuali);
+                    eventsCountdown.put("sprint_event", sprint);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
+                }
+                scheduleNotification(eventsCountdown, circuitId, raceName, currentYear);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("futureActivityFirebaseError", error.getMessage());
+            }
+        });
+    }
+
+    public void createNotificationChannel() {
+        String name = "Daily Alerts";
+        String des = "Channel Description A Brief";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+        channel.setDescription(des);
+        NotificationManager manager = (NotificationManager) this.getSystemService(NOTIFICATION_SERVICE);
+        manager.createNotificationChannel(channel);
+    }
+
+    @SuppressLint("ScheduleExactAlarm")
+    public void scheduleNotification(LinkedHashMap<String, String> events, String circuitId, String raceName, String year) {
+        if (!events.isEmpty()) {
+            int iterator = 0;
+            for(Map.Entry<String, String> entry : events.entrySet()){
+                String key = entry.getKey();
+                String value = entry.getValue();
+                SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                try {
+                    Date eventStart_date = dateFormat.parse(value);
+                    Date endTime = new Date(eventStart_date.getTime() + HOUR);
+                    Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
+                    Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
+                    Date eventEnd_date;
+                    switch (key) {
+                        case "race_event":
+                            eventEnd_date = endTime_race;
+                            break;
+                        case "sprint_quali_event":
+                            eventEnd_date = endTime_sprintQ;
+                            break;
+                        default:
+                            eventEnd_date = endTime;
+                            break;
+                    }
+
+                    Log.i("scheduleMain", " " + raceName + " " + eventStart_date + " " + eventEnd_date + Calendar.getInstance().getTime());
+
+                    Intent intentStart = new Intent(this, NotifyReceiver.class);
+                    intentStart.putExtra("circuitId", circuitId);
+                    intentStart.putExtra("title", raceName + " " + year);
+                    intentStart.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
+                    intentStart.putExtra("channelId", channelId);
+                    intentStart.putExtra("raceName", raceName);
+                    intentStart.putExtra("season", year);
+                    intentStart.putExtra("body", getString(getStringByName(key + "_text")) + " start");
+                    PendingIntent pendingIntentStart = PendingIntent.getBroadcast(this, iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                    AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+                    alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventStart_date.getTime(), pendingIntentStart);
+
+
+                    Intent intentEnd = new Intent(this, NotifyReceiver.class);
+                    intentEnd.putExtra("circuitId", circuitId);
+                    intentEnd.putExtra("title", raceName + " " + year);
+                    intentEnd.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
+                    intentEnd.putExtra("channelId", channelId);
+                    intentEnd.putExtra("body", getString(getStringByName(key + "_text")) + " end");
+                    PendingIntent pendingIntentEnd = PendingIntent.getBroadcast(this, iterator + 1, intentEnd, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+                    AlarmManager alarmManagerEnd = (AlarmManager) this.getSystemService(ALARM_SERVICE);
+                    alarmManagerEnd.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, eventEnd_date.getTime(), pendingIntentEnd);
+                }catch(ParseException e){
+                    e.printStackTrace();
+                }
+                iterator += 2;
+            }
+        }
+    }
+
+    private int getStringByName(String name) {
+        int stringId = 0;
+
+        try {
+            Class res = R.string.class;
+            Field field = res.getField(name);
+            stringId = field.getInt(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stringId;
+    }
+
 
     public static int getConnectionType(Context context) {
         int result = 0; // Returns connection type. 0: none; 1: mobile data; 2: wifi; 3: vpn
@@ -139,7 +332,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateSprintData(LocalDate currentDate){
-        //String lastSprintUpdate = prefs.getString("lastSprintUpdate", "null");
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         DatabaseReference last_sprint = rootRef.child("status/last_update");
         last_sprint.addListenerForSingleValueEvent(new ValueEventListener() {

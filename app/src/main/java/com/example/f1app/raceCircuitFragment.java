@@ -75,7 +75,6 @@ public class raceCircuitFragment extends Fragment {
             String mRaceName = getArguments().getString("raceName");
             String mCountry = getArguments().getString("raceCountry");
             String mYear = getArguments().getString("gpYear");
-            Log.i("userLang", " " + Locale.getDefault().getLanguage());
 
             String mPrevGPtext = " ";
             if(Locale.getDefault().getLanguage().equals("ru")){

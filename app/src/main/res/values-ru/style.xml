@@ -235,7 +235,6 @@
 
     <style name="footerButtonOn" parent="android:Widget.TextView">
         <item name="android:includeFontPadding">false</item>
-
         <item name="android:background">@drawable/buttons_footer</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/red</item>

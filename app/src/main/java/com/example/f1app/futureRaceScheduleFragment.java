@@ -1,15 +1,12 @@
 package com.example.f1app;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -28,6 +25,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -48,10 +46,13 @@ public class futureRaceScheduleFragment extends Fragment {
     private scheduleAdapter adapter;
     private RecyclerView recyclerView;
     private long startTime;
-    private long diff;
+    private long diffStart, diffEnd;
     private ToggleButton saveRace;
     private LocalDate currentDate;
-    private String fullRaceName_key, mRaceName, mYear;
+    private String fullRaceName_key, mRaceName, mYear, mCircuitId;
+    private static final long HOUR = 3600*1000;
+    private static final long SPRINT_QUALI_DIFF = 44*60*1000;
+    private static final String channelId = "notification_raceSchedule";
 
 
     public futureRaceScheduleFragment() {
@@ -88,7 +89,7 @@ public class futureRaceScheduleFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if (!getArguments().isEmpty()){
-            String mCircuitId = getArguments().getString("circuitId");
+            mCircuitId = getArguments().getString("circuitId");
             mRaceName = getArguments().getString("raceName");
             String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
             String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
@@ -180,15 +181,15 @@ public class futureRaceScheduleFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
                         " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
-                scheduleData firstPracticeEvent = new scheduleData(firstPractice, getString(R.string.first_practice_event_text));
+                scheduleData firstPracticeEvent = new scheduleData(firstPractice, "first_practice_event");
 
                 String race = snapshot.child("raceDate").getValue(String.class) +
                         " " + snapshot.child("raceTime").getValue(String.class);
-                scheduleData raceEvent = new scheduleData(race, getString(R.string.race_event_text));
+                scheduleData raceEvent = new scheduleData(race, "race_event");
 
                 String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
                         " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
-                scheduleData qualiEvent = new scheduleData(raceQuali, getString(R.string.quali_event_text));
+                scheduleData qualiEvent = new scheduleData(raceQuali, "quali_event");
 
                 datum.add(firstPracticeEvent);
 
@@ -196,37 +197,37 @@ public class futureRaceScheduleFragment extends Fragment {
                 if (sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
-                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, getString(R.string.second_practice_event_text));
+                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, "second_practice_event");
 
                     String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
                             " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
-                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, getString(R.string.third_practice_event_text));
+                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, "third_practice_event");
 
                     datum.add(secondPracticeEvent);
                     datum.add(thirdPracticeEvent);
 
-                    eventsCountdown.put("Practice 1", firstPractice);
-                    eventsCountdown.put("Practice 2", secondPractice);
-                    eventsCountdown.put("Practice 3", thirdPractice);
-                    eventsCountdown.put("Qualifying", raceQuali);
-                    eventsCountdown.put("Race", race);
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("second_practice_event", secondPractice);
+                    eventsCountdown.put("third_practice_event", thirdPractice);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
                 }else{
                     String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
                             " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
-                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, getString(R.string.sprint_quali_event_text));
+                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, "sprint_quali_event");
 
                     String sprint = sprintDate +
                             " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
-                    scheduleData sprintEvent = new scheduleData(sprint, getString(R.string.sprint_event_text));
+                    scheduleData sprintEvent = new scheduleData(sprint, "sprint_event");
 
                     datum.add(sprintQualiEvent);
                     datum.add(sprintEvent);
 
-                    eventsCountdown.put("Practice 1", firstPractice);
-                    eventsCountdown.put("Sprint Qualifying", sprintQuali);
-                    eventsCountdown.put("Sprint", sprint);
-                    eventsCountdown.put("Qualifying", raceQuali);
-                    eventsCountdown.put("Race", race);
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("sprint_quali_event", sprintQuali);
+                    eventsCountdown.put("sprint_event", sprint);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
                 }
                 datum.add(qualiEvent);
                 datum.add(raceEvent);
@@ -332,6 +333,7 @@ public class futureRaceScheduleFragment extends Fragment {
                 });
     }
 
+    @SuppressLint("SetTextI18n")
     private void countDownStart(LinkedHashMap<String, String> events) {
 
         if (events.isEmpty()){
@@ -346,46 +348,107 @@ public class futureRaceScheduleFragment extends Fragment {
             String key = entry.getKey();
             String value = entry.getValue();
 
-            if(!key.equals("Practice 1")){
-                countdown_header.setText(key);
+            if(!key.equals("first_practice_event")){
+                countdown_header.setText(getString(getStringByName(key + "_text")));
             }
-
-            String EVENT_DATE_TIME = value;
 
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
 
             try {
-                Date event_date = dateFormat.parse(EVENT_DATE_TIME);
-                milliseconds = event_date.getTime();
+                Date eventStart_date = dateFormat.parse(value);
+                milliseconds = eventStart_date.getTime();
                 startTime = System.currentTimeMillis();
 
-                diff = milliseconds - startTime;
+                Date endTime = new Date(eventStart_date.getTime() + HOUR);
+                dateFormat.setTimeZone(TimeZone.getDefault());
+                String endTimeEvent2 = dateFormat.format(endTime);
 
-                CountDownTimer mCountDownTimer = new CountDownTimer(diff, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        long millis = millisUntilFinished;
-                        String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millis));
-                        String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millis) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millis))));
-                        String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millis) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))));
-                        days_countdown.setText(daysLeft);
-                        hrs_countdown.setText(hoursLeft);
-                        mns_countdown.setText(minutesLeft);
-                    }
+                Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
+                dateFormat.setTimeZone(TimeZone.getDefault());
+                String endTimeEvent3 = dateFormat.format(endTime_sprintQ);
 
-                    @Override
-                    public void onFinish() {
-                        events.remove(key);
-                        countDownStart(events);
+                Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
+                dateFormat.setTimeZone(TimeZone.getDefault());
+                String endTimeEvent4 = dateFormat.format(endTime_race);
 
-                    }
-                }.start();
+                Date eventEnd_date;
+                diffStart = milliseconds - startTime;
+
+                switch (key) {
+                    case "race_event":
+                        eventEnd_date = dateFormat.parse(endTimeEvent4);
+                        diffEnd = eventEnd_date.getTime() - startTime;
+                        break;
+                    case "sprint_quali_event":
+                        eventEnd_date = dateFormat.parse(endTimeEvent3);
+                        diffEnd = eventEnd_date.getTime() - startTime;
+                        break;
+                    default:
+                        eventEnd_date = dateFormat.parse(endTimeEvent2);
+                        diffEnd = eventEnd_date.getTime() - startTime;
+                        break;
+                }
+
+                if(diffEnd<0){
+                    events.remove(key);
+                    countDownStart(events);
+                }else{
+                    CountDownTimer mCountDownTimer = new CountDownTimer(diffStart, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            long millisStart = millisUntilFinished;
+                            String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisStart));
+                            String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisStart) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisStart))));
+                            String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisStart) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisStart))));
+                            days_countdown.setText(daysLeft);
+                            hrs_countdown.setText(hoursLeft);
+                            mns_countdown.setText(minutesLeft);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            countdown_header.setText(getString(getStringByName(key + "_text")) + " IS RUNNING");
+                            CountDownTimer mCountDownTimer = new CountDownTimer(diffEnd, 1000) {
+                                @Override
+                                public void onTick(long millisUntilFinished) {
+                                    long millisEnd = millisUntilFinished;
+                                    String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisEnd));
+                                    String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisEnd) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisEnd))));
+                                    String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisEnd) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisEnd))));
+                                    days_countdown.setText(daysLeft);
+                                    hrs_countdown.setText(hoursLeft);
+                                    mns_countdown.setText(minutesLeft);
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    events.remove(key);
+                                    countDownStart(events);
+                                }
+                            }.start();
+                        }
+                    }.start();
+                }
             }catch (ParseException e){
                 e.printStackTrace();
             }
         }
 
+    }
+
+    private int getStringByName(String name) {
+        int stringId = 0;
+
+        try {
+            Class res = R.string.class;
+            Field field = res.getField(name);
+            stringId = field.getInt(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stringId;
     }
 
 

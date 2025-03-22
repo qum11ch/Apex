@@ -376,15 +376,15 @@ public class concludedRaceScheduleFragment extends Fragment {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
                         " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
-                scheduleData firstPracticeEvent = new scheduleData(firstPractice, getString(R.string.first_practice_event_text));
+                scheduleData firstPracticeEvent = new scheduleData(firstPractice, "first_practice_event");
 
                 String race = snapshot.child("raceDate").getValue(String.class) +
                         " " + snapshot.child("raceTime").getValue(String.class);
-                scheduleData raceEvent = new scheduleData(race, getString(R.string.race_event_text));
+                scheduleData raceEvent = new scheduleData(race, "race_event");
 
                 String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
                         " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
-                scheduleData qualiEvent = new scheduleData(raceQuali, getString(R.string.quali_event_text));
+                scheduleData qualiEvent = new scheduleData(raceQuali, "quali_event");
 
                 datum.add(firstPracticeEvent);
 
@@ -392,37 +392,37 @@ public class concludedRaceScheduleFragment extends Fragment {
                 if (sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
-                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, getString(R.string.second_practice_event_text));
+                    scheduleData secondPracticeEvent = new scheduleData(secondPractice, "second_practice_event");
 
                     String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
                             " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
-                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, getString(R.string.third_practice_event_text));
+                    scheduleData thirdPracticeEvent = new scheduleData(thirdPractice, "third_practice_event");
 
                     datum.add(secondPracticeEvent);
                     datum.add(thirdPracticeEvent);
 
-                    eventsCountdown.put("Practice 1", firstPractice);
-                    eventsCountdown.put("Practice 2", secondPractice);
-                    eventsCountdown.put("Practice 3", thirdPractice);
-                    eventsCountdown.put("Qualifying", raceQuali);
-                    eventsCountdown.put("Race", race);
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("second_practice_event", secondPractice);
+                    eventsCountdown.put("third_practice_event", thirdPractice);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
                 }else{
                     String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
                             " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
-                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, getString(R.string.sprint_quali_event_text));
+                    scheduleData sprintQualiEvent = new scheduleData(sprintQuali, "sprint_quali_event");
 
                     String sprint = sprintDate +
                             " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
-                    scheduleData sprintEvent = new scheduleData(sprint, getString(R.string.sprint_event_text));
+                    scheduleData sprintEvent = new scheduleData(sprint, "sprint_event");
 
                     datum.add(sprintQualiEvent);
                     datum.add(sprintEvent);
 
-                    eventsCountdown.put("Practice 1", firstPractice);
-                    eventsCountdown.put("Sprint Qualifying", sprintQuali);
-                    eventsCountdown.put("Sprint", sprint);
-                    eventsCountdown.put("Qualifying", raceQuali);
-                    eventsCountdown.put("Race", race);
+                    eventsCountdown.put("first_practice_event", firstPractice);
+                    eventsCountdown.put("sprint_quali_event", sprintQuali);
+                    eventsCountdown.put("sprint_event", sprint);
+                    eventsCountdown.put("quali_event", raceQuali);
+                    eventsCountdown.put("race_event", race);
                 }
                 datum.add(qualiEvent);
                 datum.add(raceEvent);
@@ -432,10 +432,9 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedActivityFirebaseError", error.getMessage());
+                Log.e("futureActivityFirebaseError", error.getMessage());
             }
         });
     }
-
 
 }

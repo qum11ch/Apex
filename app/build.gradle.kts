@@ -43,7 +43,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-auth")
     implementation ("androidx.preference:preference:1.2.1")
     implementation ("com.android.volley:volley:1.2.1")
-    implementation ("com.github.blongho:worldCountryData:v1.5.4-alpha-1")
+    implementation ("com.github.blongho:worldCountryData:${rootProject.extra["worldcountrydataVersion"]}")
     implementation ("com.qcloud.cos:avif:1.0.0")
     implementation ("com.squareup.retrofit2:converter-jackson:2.7.2")
     implementation ("com.fasterxml.jackson.core:jackson-databind:2.10.3")

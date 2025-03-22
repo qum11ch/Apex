@@ -39,7 +39,7 @@
     <string name="choiceTeam_text">Выберите любимую команду:</string>
     <string name="hint_email_new">Новый email:</string>
     <string name="hint_password_new">Новый пароль:</string>
-    <string name="is_ongoing">is ongoing</string>
+    <string name="is_ongoing">в настоящее время</string>
     <string name="favourite_team">любимая команда</string>
     <string name="favorite_team_has_not_yet_been_chosen">Любимая команда не выбрана</string>
     <string name="favourite_driver">любимый гонщик</string>
