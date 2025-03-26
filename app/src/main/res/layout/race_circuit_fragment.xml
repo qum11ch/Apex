@@ -50,6 +50,7 @@
                     android:layout_height="wrap_content"
                     android:textAllCaps="true"/>
                 <TextView
+                    android:layout_marginTop="3dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:layout_below="@id/raceName"
                     android:id="@+id/circuitName"
@@ -125,7 +126,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginEnd="5dp">
+                        android:layout_marginEnd="5dp"
+                        android:paddingBottom="5dp">
                         <TextView
                             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                             android:layout_width="match_parent"
@@ -139,7 +141,7 @@
                             android:layout_height="wrap_content" />
                     </LinearLayout>
                     <LinearLayout
-
+                        android:paddingBottom="5dp"
                         style="@style/CircuitInfoLayout"
                         android:layout_weight="1"
                         android:layout_width="0dp"
@@ -161,6 +163,7 @@
                     </LinearLayout>
                 </LinearLayout>
                 <RelativeLayout
+                    android:paddingBottom="5dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     style="@style/CircuitInfoLayout"
@@ -168,7 +171,7 @@
                     android:id="@+id/circuitInfo_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="20dp">
                     <TextView
                         android:id="@+id/raceDist_info"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
@@ -196,6 +199,7 @@
                         android:text="@string/kilometres"/>
                 </RelativeLayout>
                 <LinearLayout
+                    android:paddingBottom="5dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="20dp"
                     android:orientation="vertical"
@@ -203,7 +207,7 @@
                     android:layout_below="@id/circuitInfo_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                    android:layout_marginTop="20dp">
                     <TextView
                         android:id="@+id/lapRecord_info"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
@@ -218,6 +222,7 @@
                         android:layout_height="wrap_content"
                         android:text=""/>
                     <TextView
+                        android:layout_marginTop="3dp"
                         android:id="@+id/lapRecord_driver"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                         android:textColor="@color/black"

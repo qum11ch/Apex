@@ -1,6 +1,6 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -58,7 +58,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.teams_standing);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamsStandingsActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamsStandingsActivity.this));

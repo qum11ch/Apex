@@ -19,6 +19,7 @@
             android:layout_marginEnd="10dp"
             android:paddingBottom="5dp">
             <androidx.recyclerview.widget.RecyclerView
+                android:paddingTop="10dp"
                 android:visibility="gone"
                 android:background="@null"
                 android:overScrollMode="never"

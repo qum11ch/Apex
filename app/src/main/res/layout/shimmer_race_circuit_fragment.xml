@@ -4,15 +4,15 @@
     android:layout_height="wrap_content"
     android:background="@color/white"
     android:paddingTop="30dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <View
         style="@style/ShimmerStyle"
         android:layout_marginStart="10dp"
         android:id="@+id/shimmer_flag"
         android:layout_width="100dp"
-        android:layout_height="70dp"/>
+        android:layout_height="75dp"/>
     <LinearLayout
+        android:id="@+id/shimmer_info_layout"
         android:layout_marginEnd="10dp"
         android:layout_marginStart="10dp"
         android:layout_toEndOf="@id/shimmer_flag"
@@ -38,11 +38,11 @@
     <View
         style="@style/ShimmerStyle"
         android:id="@+id/shimmer_circuitImage"
-        android:layout_marginStart="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginTop="40dp"
         android:layout_marginBottom="40dp"
-        android:layout_below="@id/shimmer_flag"
+        android:layout_below="@id/shimmer_info_layout"
         android:layout_width="match_parent"
         android:layout_height="200dp" />
     <RelativeLayout
@@ -76,6 +76,7 @@
         </LinearLayout>
         <LinearLayout
             android:id="@+id/shimmer_circuitInfo_1"
+            android:baselineAligned="false"
             android:paddingStart="10dp"
             android:paddingEnd="20dp"
             android:layout_below="@id/length_layout"
@@ -136,7 +137,7 @@
             android:id="@+id/circuitInfo_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="5dp">
             <TextView
                 android:id="@+id/raceDist_info"
@@ -159,7 +160,7 @@
             android:layout_below="@id/circuitInfo_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="20dp"
             android:paddingBottom="5dp">
             <TextView
                 android:id="@+id/lapRecord_info"

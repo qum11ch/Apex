@@ -1,24 +1,18 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.preference.PreferenceManager;
 
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Patterns;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -35,7 +29,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -71,7 +64,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountSettingsActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountSettingsActivity.this));
@@ -103,19 +96,32 @@ public class accountSettingsActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot userSnap: snapshot.getChildren()){
-                    String choiceTeam = userSnap.child("choiceTeam").getValue(String.class);
-                    String choiceDriver = userSnap.child("choiceDriver").getValue(String.class);
+                    String choiceDriver = " ", choiceTeam = " ";
+                    String choiceTeam_dbData = userSnap.child("choiceTeam").getValue(String.class);
+                    String choiceDriver_dbData = userSnap.child("choiceDriver").getValue(String.class);
+                    if (choiceDriver_dbData.equals("null")){
+                        choiceDriver = getString(R.string.nobody);
+                    }else{
+                        choiceDriver = choiceDriver_dbData;
+                    }
+
+                    if (choiceTeam_dbData.equals("null")){
+                        choiceTeam = getString(R.string.nobody);
+                    }else{
+                        choiceTeam = choiceTeam_dbData;
+                    }
                     String mUsername = userSnap.getKey();
 
                     username.setText(mUsername);
 
                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                    String finalChoiceDriver = choiceDriver;
                     rootRef.child("driverLineUp/season").child(currentYear).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             for(DataSnapshot teamSnapshot: snapshot.getChildren()){
                                 for(DataSnapshot driverSnaphot: teamSnapshot.child("drivers").getChildren()){
-                                    if (!driverSnaphot.getKey().equals(choiceDriver)){
+                                    if (!driverSnaphot.getKey().equals(finalChoiceDriver)){
                                         driversList.add(driverSnaphot.getKey());
                                     }
                                 }
@@ -124,8 +130,10 @@ public class accountSettingsActivity extends AppCompatActivity {
                             driverPicker.setMaxValue(driversList.size());
                             Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
                             Collections.reverse(driversList);
-                            driversList.add(getString(R.string.nobody));
-                            driversList.add(choiceDriver);
+                            if (!finalChoiceDriver.equals(getString(R.string.nobody))){
+                                driversList.add(getString(R.string.nobody));
+                            }
+                            driversList.add(finalChoiceDriver);
                             Collections.reverse(driversList);
                             driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
                         }
@@ -136,19 +144,22 @@ public class accountSettingsActivity extends AppCompatActivity {
                         }
                     });
 
+                    String finalChoiceTeam = choiceTeam;
                     rootRef.child("constructors").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             for(DataSnapshot teamSnapshot: snapshot.getChildren()){
-                                if (!teamSnapshot.child("name").getValue(String.class).equals(choiceTeam)){
+                                if (!teamSnapshot.child("name").getValue(String.class).equals(finalChoiceTeam)){
                                     teamList.add(teamSnapshot.child("name").getValue(String.class));
                                 }
                             }
                             teamPicker.setMinValue(1);
                             teamPicker.setMaxValue(teamList.size());
                             Collections.reverse(teamList);
-                            teamList.add(getString(R.string.nobody));
-                            teamList.add(choiceTeam);
+                            if (!finalChoiceTeam.equals(getString(R.string.nobody))){
+                                teamList.add(getString(R.string.nobody));
+                            }
+                            teamList.add(finalChoiceTeam);
                             Collections.reverse(teamList);
                             teamPicker.setDisplayedValues(teamList.toArray(new String[teamList.size()]));
                         }
@@ -345,12 +356,27 @@ public class accountSettingsActivity extends AppCompatActivity {
     private void updateChoices(ArrayList<String> driversList, ArrayList<String> teamList){
         saveProgress.setVisibility(View.VISIBLE);
         saveButton.setVisibility(View.INVISIBLE);
-        String choiceDriver = driversList.get(driverPicker.getValue() - 1);
-        String choiceTeam = teamList.get(teamPicker.getValue() - 1);
+        String driverPickerValue = driversList.get(driverPicker.getValue() - 1);
+        String choiceDriver = " ";
+        String choiceTeam = " ";
+        String teamPickerValue = teamList.get(teamPicker.getValue() - 1);
+        if (driverPickerValue.equals(getString(R.string.nobody))){
+            choiceDriver = "null";
+        }else{
+            choiceDriver = driverPickerValue;
+        }
+
+        if (teamPickerValue.equals(getString(R.string.nobody))){
+            choiceTeam = "null";
+        }else{
+            choiceTeam = teamPickerValue;
+        }
 
         String userId = auth.getUid();
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        String finalChoiceTeam = choiceTeam;
+        String finalChoiceDriver = choiceDriver;
         rootRef.child("users").orderByChild("userId").equalTo(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -358,9 +384,9 @@ public class accountSettingsActivity extends AppCompatActivity {
                 for(DataSnapshot userSnap: snapshot.getChildren()){
                     String username = userSnap.getKey();
                     rootRef.child("users").child(username)
-                            .child("choiceTeam").setValue(choiceTeam);
+                            .child("choiceTeam").setValue(finalChoiceTeam);
                     rootRef.child("users").child(username)
-                            .child("choiceDriver").setValue(choiceDriver);
+                            .child("choiceDriver").setValue(finalChoiceDriver);
                 }
             }
 

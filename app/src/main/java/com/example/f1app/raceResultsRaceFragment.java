@@ -2,7 +2,6 @@ package com.example.f1app;
 
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +23,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,7 +37,6 @@ public class raceResultsRaceFragment extends Fragment {
     private List<raceResultsRaceData> datum;
     private TextView fastestLapDriverName, fastestLapTime;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout;
-    private SwipeRefreshLayout swipeLayout;
     private RelativeLayout fastestLapDriverLayout;
 
     public raceResultsRaceFragment() {
@@ -80,7 +76,7 @@ public class raceResultsRaceFragment extends Fragment {
 
         if (!getArguments().isEmpty()){
             String mCircuitId = getArguments().getString("circuitId");
-            String mRaceName = getArguments().getString("raceName");
+            //String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
             datum = new ArrayList<>();

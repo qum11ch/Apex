@@ -52,9 +52,9 @@
     <string name="empty_race_list_header">Вернитесь \nПозже</string>
     <string name="empty_race_list_concluded">Вернитесь после первого этапа для просмотра результатов Гран-при</string>
     <string name="race_podium_text">Подиум Гран-При</string>
-    <string name="_2nd_place_header">2-ое место</string>
+    <string name="_2nd_place_header">Второе место</string>
     <string name="_1st_place_header">Победитель</string>
-    <string name="_3rd_place_header">3-ье место</string>
+    <string name="_3rd_place_header">Третье место</string>
     <string name="show_full_race_results">Полные результаты</string>
     <string name="race_weekend_text">Гоночный уикенд</string>
     <string name="confirm_delete">Подтвердить удаление</string>
@@ -148,7 +148,7 @@
     <string name="wd_text">НУ</string>
     <string name="dsq_text">ДСК</string>
     <string name="dsq_pos_text">Д</string>
-    <string name="n_c_text">N/C</string>
+    <string name="n_c_text">Н/З</string>
     <string name="race_event_text">Гонка</string>
     <string name="first_practice_event_text">1-я практика</string>
     <string name="second_practice_event_text">2-я практика</string>
@@ -186,4 +186,6 @@
     <string name="lost_connection">Потеря соединения</string>
     <string name="lost_connection_info">Проверьте ваше интернет соединение и попытайтесь снова</string>
     <string name="try_again_button">Попытаться снова</string>
+    <string name="not_concluded">ГП не завершилось (Н/З)</string>
+    <string name="is_running">идет</string>
 </resources>

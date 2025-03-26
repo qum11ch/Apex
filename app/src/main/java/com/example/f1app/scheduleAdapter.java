@@ -2,7 +2,7 @@ package com.example.f1app;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,16 +10,20 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHolder>{
@@ -82,28 +86,31 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
 
     private String[] getDate(String ourDate, String eventName)
     {
-        String date = ourDate;
+        String date = ourDate.replaceAll("\\s+", "T");
         String dayEvent = " ";
         String timeEvent = " ";
         String monthEvent = " ";
         String isFinished = "";
+        Log.i("fatalErrorSchedule", " " + date);
+        Instant dateInst = Instant.parse(date);
+        ZonedDateTime dateTime = dateInst.atZone(ZoneId.systemDefault());
         LocalDate currentDate = LocalDate.now();
         String currentDateString = currentDate.toString();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
+        String newDate = dateTime.format(fullDateFormatter);
         try
         {
-            Date eventDate = formatter.parse(ourDate);
+            //fullDateFormatter.setTimeZone(TimeZone.getDefault());
+            Date value = newFormatter.parse(newDate);
             Date current = formatter.parse(currentDateString);
 
-            if (current.after(eventDate)){
+            if (current.after(value)){
                 isFinished = "yes";
             }else{
                 isFinished = "no";
             }
-
-            SimpleDateFormat fullDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            fullDateFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
-            Date value = fullDateFormatter.parse(date);
 
             SimpleDateFormat dayFormatter = new SimpleDateFormat("dd");
             dayFormatter.setTimeZone(TimeZone.getDefault());
@@ -146,7 +153,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         return new String[] {dayEvent, timeEvent, monthEvent, isFinished};
     }
 
-    public int getStringByName(String name) {
+    private int getStringByName(String name) {
         int stringId = 0;
 
         try {

@@ -1,17 +1,11 @@
 package com.example.f1app;
 
-import static android.app.PendingIntent.getActivity;
-
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,22 +13,11 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public class futureRaceActivity extends AppCompatActivity {
 
@@ -53,7 +36,7 @@ public class futureRaceActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(futureRaceActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(futureRaceActivity.this));

@@ -1,6 +1,6 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.tabs.TabLayout;
@@ -29,7 +28,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
@@ -61,7 +59,7 @@ public class schuduleActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(schuduleActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(schuduleActivity.this));

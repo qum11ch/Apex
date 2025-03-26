@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
@@ -52,7 +53,6 @@ public class futureRaceScheduleFragment extends Fragment {
     private String fullRaceName_key, mRaceName, mYear, mCircuitId;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-    private static final String channelId = "notification_raceSchedule";
 
 
     public futureRaceScheduleFragment() {
@@ -95,8 +95,8 @@ public class futureRaceScheduleFragment extends Fragment {
             String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
             String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
             String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
-            String mRound = getArguments().getString("roundCount");
-            String mCountry = getArguments().getString("raceCountry");
+            //String mRound = getArguments().getString("roundCount");
+            //String mCountry = getArguments().getString("raceCountry");
             mYear = getArguments().getString("gpYear");
 
             TextView raceName = (TextView) view.findViewById(R.id.raceName);
@@ -354,7 +354,6 @@ public class futureRaceScheduleFragment extends Fragment {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-
             try {
                 Date eventStart_date = dateFormat.parse(value);
                 milliseconds = eventStart_date.getTime();
@@ -408,7 +407,14 @@ public class futureRaceScheduleFragment extends Fragment {
 
                         @Override
                         public void onFinish() {
-                            countdown_header.setText(getString(getStringByName(key + "_text")) + " IS RUNNING");
+                            if (Locale.getDefault().getLanguage().equals("ru")){
+                                String countdownHeader = getString(R.string.is_running) + " " + getString(getStringByName(key + "_text"));
+                                countdown_header.setText(countdownHeader);
+                            }else{
+                                String countdownHeader = getString(getStringByName(key + "_text")) + " " + getString(R.string.is_running);
+                                countdown_header.setText(countdownHeader);
+                            }
+
                             CountDownTimer mCountDownTimer = new CountDownTimer(diffEnd, 1000) {
                                 @Override
                                 public void onTick(long millisUntilFinished) {

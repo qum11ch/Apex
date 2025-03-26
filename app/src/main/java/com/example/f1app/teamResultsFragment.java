@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,14 +8,10 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,8 +32,7 @@ public class teamResultsFragment extends Fragment {
     private teamDriversResultsAdapter adapter;
     private RecyclerView recyclerView;
     private List<teamDriversResultsData> datum;
-    private TextView firstDriverName, firstDriverFamilyName,
-            secondDriverName, secondDriverFamilyName;
+    private TextView firstDriverFamilyName, secondDriverFamilyName;
     private ImageView firstDriver_image, secondDriver_image;
     private CheckBox radioButton_2025, radioButton_2024;
 

@@ -437,6 +437,7 @@
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
 
                 <TextView
+                    android:paddingBottom="5dp"
                     android:id="@+id/techChief"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -462,6 +463,7 @@
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
 
                 <TextView
+                    android:paddingBottom="5dp"
                     android:id="@+id/chassis"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -488,6 +490,7 @@
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
 
                 <TextView
+                    android:paddingBottom="5dp"
                     android:id="@+id/powerUnit"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

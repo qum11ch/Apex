@@ -1,6 +1,6 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -54,7 +54,7 @@ public class logInPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_page);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(logInPageActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(logInPageActivity.this));

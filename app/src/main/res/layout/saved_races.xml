@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:orientation="vertical"
+<RelativeLayout android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey">
+    android:background="@color/light_grey"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
@@ -34,7 +34,8 @@
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
     </RelativeLayout>
-    <ScrollView
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
         android:layout_below="@id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -51,12 +52,30 @@
                 android:orientation="vertical"
                 style="@style/SavedRacesLayout">
                 <androidx.recyclerview.widget.RecyclerView
-                    android:visibility="visible"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/recyclerview_savedRaces"/>
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:duration="1500">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <include layout="@layout/shimmer_saved_race" />
+                        <include layout="@layout/shimmer_saved_race" />
+                        <include layout="@layout/shimmer_saved_race" />
+                        <include layout="@layout/shimmer_saved_race" />
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
                 android:visibility="invisible"
@@ -100,5 +119,5 @@
                 </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
-    </ScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

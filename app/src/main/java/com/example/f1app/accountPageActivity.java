@@ -1,16 +1,14 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import android.util.Log;
@@ -52,17 +50,13 @@ import java.util.ArrayList;
 public class accountPageActivity extends AppCompatActivity {
     private TextView username, userFavDriverNumber, userFavDriver, userFavTeam, fanText,
             teamName, driverName, driverFamilyName, tabUserName, noDriver, noTeam;
-    private Button logout, settings, savedRace;
     private CoordinatorLayout main_content;
     private ProgressBar loadingProgress;
     private Dialog logoutDialog;
     private FirebaseAuth auth;
     private View line, line2;
-    private Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
     private LinearLayout driverName_layout;
     private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout;
-    private ImageButton backButton;
-    private AppBarLayout appbar;
     private ImageView teamLogo, teamCar, driverImage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +64,7 @@ public class accountPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_page);
 
-        logout = (Button) findViewById(R.id.logout);
+        Button logout = (Button) findViewById(R.id.logout);
 
         username = (TextView) findViewById(R.id.username);
         userFavDriverNumber = (TextView) findViewById(R.id.driverNumber);
@@ -94,7 +88,6 @@ public class accountPageActivity extends AppCompatActivity {
         line2 = (View) findViewById(R.id.line2);
         line = (View) findViewById(R.id.line);
 
-        appbar = findViewById(R.id.appbar);
         teamName_layout = findViewById(R.id.teamName_layout);
         driverName_layout = findViewById(R.id.driverName_layout);
         team_layout = findViewById(R.id.team_layout);
@@ -111,7 +104,7 @@ public class accountPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountPageActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountPageActivity.this));
@@ -155,7 +148,7 @@ public class accountPageActivity extends AppCompatActivity {
                         }
                     });
 
-                    if(!choiceDriver.equals(getString(R.string.nobody))){
+                    if(!choiceDriver.equals("null")){
                         driverImage.setVisibility(View.VISIBLE);
                         noDriver.setVisibility(View.INVISIBLE);
                         fanText.setText(getString(R.string.fan_of_text));
@@ -211,7 +204,6 @@ public class accountPageActivity extends AppCompatActivity {
                                                                        Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
                                                                    }
                                                                });
-                                String finalTeam = team;
                                 driver_layout.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
@@ -219,7 +211,7 @@ public class accountPageActivity extends AppCompatActivity {
                                         Bundle bundle = new Bundle();
                                         bundle.putString("driverName", mDriverName);
                                         bundle.putString("driverFamilyName", mDriverFamilyName);
-                                        bundle.putString("driverTeam", finalTeam);
+                                        bundle.putString("driverTeam", team);
                                         bundle.putString("driverCode", driversCode);
                                         intent.putExtras(bundle);
                                         accountPageActivity.this.startActivity(intent);
@@ -252,7 +244,7 @@ public class accountPageActivity extends AppCompatActivity {
                         line.getLayoutParams().height = lineHeight;
                     }
 
-                    if(!choiceTeam.equals(getString(R.string.nobody))){
+                    if(!choiceTeam.equals("null")){
                         teamCar.setVisibility(View.VISIBLE);
                         noTeam.setVisibility(View.INVISIBLE);
                         fanText.setText(getString(R.string.fan_of_text));
@@ -345,7 +337,7 @@ public class accountPageActivity extends AppCompatActivity {
                         int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
                         line.getLayoutParams().height = lineHeight;
                     }
-                    if(choiceTeam.equals(getString(R.string.nobody))&&choiceDriver.equals(getString(R.string.nobody))){
+                    if(choiceTeam.equals("null")&&choiceDriver.equals("null")){
                         teamCar.setVisibility(View.INVISIBLE);
                         noTeam.setVisibility(View.VISIBLE);
                         driverImage.setVisibility(View.INVISIBLE);
@@ -355,8 +347,7 @@ public class accountPageActivity extends AppCompatActivity {
                         LinearLayout.LayoutParams layoutParams3 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         teamName_layout.setLayoutParams(layoutParams3);
                         fanText.setText(getString(R.string.no_fan_of_text));
-                        int height = 0;
-                        userFavTeam.getLayoutParams().height = height;
+                        userFavTeam.getLayoutParams().height = 0;
                         int lineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
                         int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
                         int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
@@ -421,7 +412,7 @@ public class accountPageActivity extends AppCompatActivity {
             }
         });
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,7 +422,16 @@ public class accountPageActivity extends AppCompatActivity {
             }
         });
 
-        savedRace = (Button) findViewById(R.id.savedRace);
+        getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                Intent i = new Intent(accountPageActivity.this, MainActivity.class);
+                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                startActivity(i);
+            }
+        });
+
+        Button savedRace = (Button) findViewById(R.id.savedRace);
         savedRace.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -441,7 +441,7 @@ public class accountPageActivity extends AppCompatActivity {
             }
         });
 
-        settings = (Button) findViewById(R.id.profileSettings);
+        Button settings = (Button) findViewById(R.id.profileSettings);
         settings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

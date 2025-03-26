@@ -31,7 +31,6 @@
             android:layout_marginEnd="20dp"
             android:orientation="vertical"
             android:paddingTop="20dp">
-
             <TextView
                 android:id="@+id/firstGP_info"
                 android:layout_width="match_parent"
@@ -359,6 +358,7 @@
                 android:text="@string/country"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
             <TextView
+                android:paddingBottom="5dp"
                 android:id="@+id/country"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -405,6 +405,7 @@
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
 
             <TextView
+                android:paddingBottom="5dp"
                 android:id="@+id/birthdate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

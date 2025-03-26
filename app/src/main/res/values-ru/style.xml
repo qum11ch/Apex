@@ -45,8 +45,11 @@
     <style name="FooterStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/footer_style</item>
     </style>
-    <style name="Borders" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/simple_borders</item>
+    <style name="TopKeyMapStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/top_keymap_style</item>
+    </style>
+    <style name="BottomKeyMapStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/bottom_keymap_style</item>
     </style>
     <style name="ToggleButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_toggle</item>

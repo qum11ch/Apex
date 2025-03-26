@@ -1,19 +1,13 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -22,7 +16,9 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,11 +27,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,28 +36,46 @@ public class savedRacesActivity extends AppCompatActivity {
     List<savedRacesData> datum;
     savedRacesAdapter adapter;
     private RelativeLayout emptySavedRaceLayout;
+    SwipeRefreshLayout swipeLayout;
+    ShimmerFrameLayout shimmerFrameLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.saved_races);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(savedRacesActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(savedRacesActivity.this));
         }
+
+        shimmerFrameLayout = findViewById(R.id.shimmer_layout);
+        shimmerFrameLayout.startShimmer();
 
         recyclerView = findViewById(R.id.recyclerview_savedRaces);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
+        swipeLayout = findViewById(R.id.swipe_layout);
+        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                emptySavedRaceLayout.setVisibility(View.GONE);
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+                putRaces();
+                swipeLayout.setRefreshing(false);
+            }
+        });
+
+        putRaces();
+
         emptySavedRaceLayout = findViewById(R.id.emptySavedRace_layout);
 
         //putRaces();
-
-        savedRacesAdapter adapter;
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -81,11 +90,11 @@ public class savedRacesActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        putRaces();
-    }
+    //@Override
+    //public void onResume() {
+    //    super.onResume();
+    //    putRaces();
+    //}
 
     private void putRaces(){
         datum = new ArrayList<>();
@@ -97,16 +106,25 @@ public class savedRacesActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for(DataSnapshot userSnap: snapshot.getChildren()){
                             String username = userSnap.getKey();
-                            DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
                             rootRef.child("savedRaces").addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if(!snapshot.hasChild(username)) {
-                                        emptySavedRaceLayout.setVisibility(View.VISIBLE);
-                                        recyclerView.setVisibility(View.INVISIBLE);
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(()->{
+                                            recyclerView.setVisibility(View.GONE);
+                                            shimmerFrameLayout.setVisibility(View.GONE);
+                                            shimmerFrameLayout.stopShimmer();
+                                            emptySavedRaceLayout.setVisibility(View.VISIBLE);
+                                        },500);
                                     }else {
-                                        emptySavedRaceLayout.setVisibility(View.INVISIBLE);
-                                        recyclerView.setVisibility(View.VISIBLE);
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(()->{
+                                            shimmerFrameLayout.setVisibility(View.GONE);
+                                            shimmerFrameLayout.stopShimmer();
+                                            emptySavedRaceLayout.setVisibility(View.GONE);
+                                            recyclerView.setVisibility(View.VISIBLE);
+                                        },500);
                                     }
                                     for (DataSnapshot savedRaceSnap: snapshot.child(username).getChildren()){
                                             String raceName = savedRaceSnap.child("raceName").getValue(String.class);

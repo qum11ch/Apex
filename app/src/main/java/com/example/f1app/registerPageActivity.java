@@ -1,6 +1,6 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getConnectionType;
+import static com.example.f1app.MainActivity.checkConnection;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -55,7 +55,7 @@ public class registerPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_page);
 
-        if (getConnectionType(getApplicationContext())==0){
+        if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(registerPageActivity.this));
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(registerPageActivity.this));
@@ -205,19 +205,35 @@ public class registerPageActivity extends AppCompatActivity {
         password = editTextPassword.getText().toString().trim();
         username = editTextUsername.getText().toString().trim();
 
-        String choiceDriver = driversList.get(driverPicker.getValue() - 1);
-        String choiceTeam = teamList.get(teamPicker.getValue() - 1);
+
+        String driverPickerValue = driversList.get(driverPicker.getValue() - 1);
+        String choiceDriver = " ";
+        String choiceTeam = " ";
+        String teamPickerValue = teamList.get(teamPicker.getValue() - 1);
+        if (driverPickerValue.equals(getString(R.string.nobody))){
+            choiceDriver = "null";
+        }else{
+            choiceDriver = driverPickerValue;
+        }
+
+        if (teamPickerValue.equals(getString(R.string.nobody))){
+            choiceTeam = "null";
+        }else{
+            choiceTeam = teamPickerValue;
+        }
 
         if(til_email.getError() != null || til_password.getError() != null || til_username.getError() != null){
             Toast.makeText(registerPageActivity.this, getString(R.string.all_fields_text), Toast.LENGTH_LONG).show();
         }else{
+            String finalChoiceDriver = choiceDriver;
+            String finalChoiceTeam = choiceTeam;
             auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(registerPageActivity.this, new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 Toast.makeText(registerPageActivity.this, getString(R.string.reqistration_succ_text), Toast.LENGTH_LONG).show();
-                                createNewUser(task.getResult().getUser(), username, choiceDriver, choiceTeam);
+                                createNewUser(task.getResult().getUser(), username, finalChoiceDriver, finalChoiceTeam);
                                 startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
                                 finish();
                             } else {

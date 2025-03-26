@@ -49,7 +49,7 @@
         app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
         app:hintTextColor="@color/black"
         android:id="@+id/email_layout"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:errorEnabled="true"

@@ -23,6 +23,7 @@
             android:src="@drawable/back_arrow"
             android:background="@color/red"/>
         <TextView
+            android:textAllCaps="true"
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:textColor="@color/white"

@@ -7,18 +7,24 @@
     <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/icon"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/icon_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="34" >
+
+        <service
+            android:name=".BootService"
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:exported="true"/>
 
         <receiver android:name=".NotifyReceiver"
             android:permission="TAKE_THIS_NOTIFICATION_RIGHT_NOW"
@@ -27,6 +33,7 @@
             android:process=":remote">
             <intent-filter>
                 <action android:name="android.intent.action.TAKE_THIS_NOTIFICATION_RIGHT_NOW" />
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
 
@@ -37,7 +44,7 @@
             android:name=".resetPageActivity"
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".concludedRaceActivity" />
-        <activity android:name=".futureRaceActivity" />
+        <activity android:name=".futureRaceActivity"/>
         <activity android:name=".schuduleActivity" />
         <activity android:name=".driversStandingsActivity" />
         <activity android:name=".teamsStandingsActivity" />

@@ -207,4 +207,6 @@
     <string name="lost_connection">lost connection</string>
     <string name="lost_connection_info">Check your internet connection and try again</string>
     <string name="try_again_button">try again</string>
+    <string name="not_concluded">GP not concluded (N/C)</string>
+    <string name="is_running">is running</string>
 </resources>

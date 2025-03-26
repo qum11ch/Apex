@@ -6,17 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
-        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
             style="@style/ItemStyleAlt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +28,6 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1.1"
                 android:gravity="center">
-
                 <LinearLayout
                     android:id="@+id/header_layout"
                     android:layout_width="wrap_content"
@@ -84,6 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="3.9"
                 android:paddingStart="10dp"
+                android:paddingEnd="0dp"
                 android:paddingTop="10dp">
                 <LinearLayout
                     android:id="@+id/roundLayout"
@@ -154,6 +155,7 @@
                     android:layout_marginBottom="10dp"/>
                 <LinearLayout
                     android:id="@+id/podiumImage_layout"
+                    android:baselineAligned="false"
                     android:gravity="bottom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -216,6 +218,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/podiumImage_layout"
                     android:layout_marginBottom="10dp"
+                    android:baselineAligned="false"
                     android:gravity="bottom"
                     android:orientation="horizontal"
                     android:weightSum="3">
