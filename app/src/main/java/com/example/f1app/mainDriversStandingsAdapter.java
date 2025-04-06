@@ -45,7 +45,7 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
     public mainDriversStandingsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         view = LayoutInflater.from(context).inflate(R.layout.item_main_driver, parent, false);
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @Override
@@ -119,7 +119,7 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         View line, bottomLine;
         CardView cardView;
 
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             leftLayout = itemView.findViewById(R.id.leftLayout);

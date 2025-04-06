@@ -56,7 +56,7 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
                 view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
                 break;
         }
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -127,7 +127,7 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         View line;
         CardView cardView;
         HorizontalScrollView scrollView;
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             leftLayout = itemView.findViewById(R.id.left_layout);
             team_layout = itemView.findViewById(R.id.team_layout);

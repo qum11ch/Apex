@@ -42,6 +42,7 @@ public class NotifyReceiver extends BroadcastReceiver {
             intentStart.putExtra("channelId", channelId1);
             context.startService(intentStart);
             Bundle bundle = intent.getExtras();
+            assert bundle != null;
             if(bundle.getString("channelId") != null) {
                 String channelId = bundle.getString("channelId");
                 String season = bundle.getString("season");
@@ -54,6 +55,7 @@ public class NotifyReceiver extends BroadcastReceiver {
             }
         } else{
             Bundle bundle = intent.getExtras();
+            assert bundle != null;
             if(bundle.getString("channelId") != null) {
                 String channelId = bundle.getString("channelId");
                 String season = bundle.getString("season");
@@ -84,13 +86,13 @@ public class NotifyReceiver extends BroadcastReceiver {
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
                 LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-                String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
+                String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd"));
 
                 LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-                String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
+                String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd"));
 
-                String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-                String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
+                String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
+                String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
                 rootRef.child("circuits/" + circuitId)
                         .addListenerForSingleValueEvent(new ValueEventListener() {

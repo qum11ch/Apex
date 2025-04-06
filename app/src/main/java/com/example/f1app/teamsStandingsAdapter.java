@@ -48,7 +48,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
         }
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -135,17 +135,14 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
             holder.line.setBackgroundResource(resourceId_teamColor);
         }
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , teamPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("teamName", datum.getTeam());
-                bundle.putString("teamId", datum.getTeamId());
-                bundle.putStringArrayList("teamDrivers", teamDrivers);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , teamPageActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("teamName", datum.getTeam());
+            bundle.putString("teamId", datum.getTeamId());
+            bundle.putStringArrayList("teamDrivers", teamDrivers);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
 
@@ -174,7 +171,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         View line;
         CardView cardView;
         HorizontalScrollView scrollView;
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             leftLayout = itemView.findViewById(R.id.left_layout);
             team_layout = itemView.findViewById(R.id.team_layout);

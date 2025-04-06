@@ -445,7 +445,6 @@ public class MainActivity extends AppCompatActivity {
                         {
                             concluded = false;
                             future = true;
-                            isOnGoing = false;
                         }
                         else if (current.equals(start) || current.equals(end)){
                             concluded = false;
@@ -454,11 +453,6 @@ public class MainActivity extends AppCompatActivity {
                         else if (current.after(start) && current.before(end)){
                             concluded = false;
                             isOnGoing = true;
-                        }
-                        else{
-                            concluded = true;
-                            future = false;
-                            isOnGoing = false;
                         }
                     } catch (ParseException e){
                         Log.d("ParseExeption", "" + e);
@@ -476,7 +470,6 @@ public class MainActivity extends AppCompatActivity {
                         futureRaceRoundNumber.add(newRound.toUpperCase());
                     }
                 }
-                Log.i("mainTest", " " + concludedRoundNumber.size() + " " + futureRaceRoundNumber.size());
                 if(!concludedRoundNumber.isEmpty()){
                     pastLayout.setVisibility(View.VISIBLE);
                     getPastRace(year, concludedRoundNumber.get(concludedRoundNumber.size()-1));
@@ -552,7 +545,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getFutureRace(String currentYear, String round){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        String newRound = " ";
+        String newRound;
         if (round.contains(getString(R.string.is_ongoing).toUpperCase())){
             String[] roundArray = round.split("\\s+");
             newRound = roundArray[0];

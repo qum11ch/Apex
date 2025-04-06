@@ -185,7 +185,7 @@ public class scheduleActivity extends AppCompatActivity {
                                 String raceCountry = snapshot.child("country").getValue(String.class);
                                 String raceLocation = snapshot.child("location").getValue(String.class);
                                 circuitNameOngoing.setText(getString(getStringByName(circuitId + "_text")));
-                                String locale = " ";
+                                String locale;
                                 if (Locale.getDefault().getLanguage().equals("ru")){
                                     ArrayList<String> localizedData = localizeLocality(raceLocation, raceCountry, scheduleActivity.this);
                                     //String country = localizedData.get(0);

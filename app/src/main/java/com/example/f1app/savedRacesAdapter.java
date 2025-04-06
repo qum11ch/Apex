@@ -93,13 +93,13 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 
                 LocalDate startDateOngoing = LocalDate.parse(dateStart, dateFormatter);
-                String dayStart = startDateOngoing.format(DateTimeFormatter.ofPattern("dd")).toString();
+                String dayStart = startDateOngoing.format(DateTimeFormatter.ofPattern("dd"));
 
                 LocalDate endDateOngoing = LocalDate.parse(dateEnd, dateFormatter);
-                String dayEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("dd")).toString();
+                String dayEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("dd"));
 
-                String monthStart = startDateOngoing.format(DateTimeFormatter.ofPattern("MMM")).toString();
-                String monthEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("MMM")).toString();
+                String monthStart = startDateOngoing.format(DateTimeFormatter.ofPattern("MMM"));
+                String monthEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("MMM"));
 
                 Bundle bundle = new Bundle();
                 rootRef.child("circuits").child(mCircuitId)

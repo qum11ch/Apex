@@ -267,15 +267,12 @@ public class teamPageActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setTag("sticky");
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(getResources().getString(R.string.stats_text));
-                }
-                else{
-                    tab.setText(getResources().getString(R.string.results_text));
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(getResources().getString(R.string.stats_text));
+            }
+            else{
+                tab.setText(getResources().getString(R.string.results_text));
             }
         });
         tabLayoutMediator.attach();

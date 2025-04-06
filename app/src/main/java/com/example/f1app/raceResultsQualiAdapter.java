@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -105,7 +104,6 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView driver_placement, driverCode, Q1_time, Q2_time, Q3_time;
         View line;
-        ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             driver_placement = itemView.findViewById(R.id.driver_placement);

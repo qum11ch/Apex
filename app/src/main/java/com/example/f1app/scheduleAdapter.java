@@ -93,14 +93,14 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
     private String[] getDate(String ourDate, String eventName)
     {
         String date = ourDate.replaceAll("\\s+", "T");
-        String dayEvent = " ";
-        String timeEvent = " ";
-        String monthEvent = " ";
+        String dayEvent;
+        String timeEvent;
+        String monthEvent;
         String isFinished = "";
         Instant dateInst = Instant.parse(date);
         ZonedDateTime dateTime = dateInst.atZone(ZoneId.systemDefault());
         Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
         String newDate = dateTime.format(fullDateFormatter);
         try
@@ -119,11 +119,11 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
                 isFinished = "no";
             }
 
-            SimpleDateFormat dayFormatter = new SimpleDateFormat("dd");
+            SimpleDateFormat dayFormatter = new SimpleDateFormat("dd", Locale.getDefault());
             dayFormatter.setTimeZone(TimeZone.getDefault());
             dayEvent = dayFormatter.format(value);
 
-            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm");
+            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
             timeFormatter.setTimeZone(TimeZone.getDefault());
             String timeEvent1 = timeFormatter.format(value);
 
@@ -138,7 +138,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
 
             timeEvent = timeEvent1 + "-" + timeEvent2;
 
-            SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM");
+            SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM", Locale.getDefault());
             monthFormatter.setTimeZone(TimeZone.getDefault());
             monthEvent = monthFormatter.format(value);
 

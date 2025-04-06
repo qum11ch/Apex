@@ -55,7 +55,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         } else {
             view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
         }
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @Override
@@ -167,13 +167,13 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
     public static class DataHolder extends RecyclerView.ViewHolder {
         TextView driverName, driverTeam, driver_placement, driver_points,
                 driverFamilyName;
-        ImageView driverTeam_logo, driverImage, driverNumber;
+        ImageView driverTeam_logo, driverImage;
         ConstraintLayout constraintLayout;
         RelativeLayout leftLayout, driver_layout;
         View line;
         CardView cardView;
 
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             leftLayout = itemView.findViewById(R.id.leftLayout);

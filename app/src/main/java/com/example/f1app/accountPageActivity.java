@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
@@ -113,7 +114,7 @@ public class accountPageActivity extends AppCompatActivity {
         logoutDialog = new Dialog(accountPageActivity.this);
         logoutDialog.setContentView(R.layout.logout_dialog_box);
         logoutDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        logoutDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+        logoutDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(accountPageActivity.this, R.drawable.custom_dialog_bg));
         logoutDialog.setCancelable(false);
 
         Button cancelButton = logoutDialog.findViewById(R.id.cancel_button);
@@ -326,8 +327,7 @@ public class accountPageActivity extends AppCompatActivity {
                         layoutParams.addRule(RelativeLayout.BELOW, R.id.userFavDriver);
                         layoutParams.addRule(RelativeLayout.END_OF, R.id.team_logo);
                         userFavTeam.setLayoutParams(layoutParams);
-                        int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 130, getResources().getDisplayMetrics());
-                        line.getLayoutParams().height = lineHeight;
+                        line.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 130, getResources().getDisplayMetrics());
                     }
 
                     if(!choiceTeam.equals("null")){
@@ -374,32 +374,29 @@ public class accountPageActivity extends AppCompatActivity {
                                     userFavTeam.setText(choiceTeam);
                                     teamName.setText(choiceTeam);
 
-                                    userFavTeam_layout.setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View view) {
-                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                            rootRef.child("driverLineUp/season/" + "2025" + "/" + teamId).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    ArrayList<String> teamDrivers = new ArrayList<>();
-                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                        String driverName = driverDataSnapshot.getKey();
-                                                        teamDrivers.add(driverName);
-                                                    }
-                                                    Intent intent = new Intent(accountPageActivity.this, teamPageActivity.class);
-                                                    Bundle bundle = new Bundle();
-                                                    bundle.putString("teamName", choiceTeam);
-                                                    bundle.putString("teamId", teamId);
-                                                    bundle.putStringArrayList("teamDrivers", teamDrivers);
-                                                    intent.putExtras(bundle);
-                                                    accountPageActivity.this.startActivity(intent);
+                                    userFavTeam_layout.setOnClickListener(view -> {
+                                        DatabaseReference rootRef1 = FirebaseDatabase.getInstance().getReference();
+                                        rootRef1.child("driverLineUp/season/" + "2025" + "/" + teamId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                                ArrayList<String> teamDrivers = new ArrayList<>();
+                                                for (DataSnapshot driverDataSnapshot : snapshot1.child("drivers").getChildren()) {
+                                                    String driverName = driverDataSnapshot.getKey();
+                                                    teamDrivers.add(driverName);
                                                 }
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
-                                                }
-                                            });
-                                        }
+                                                Intent intent = new Intent(accountPageActivity.this, teamPageActivity.class);
+                                                Bundle bundle = new Bundle();
+                                                bundle.putString("teamName", choiceTeam);
+                                                bundle.putString("teamId", teamId);
+                                                bundle.putStringArrayList("teamDrivers", teamDrivers);
+                                                intent.putExtras(bundle);
+                                                accountPageActivity.this.startActivity(intent);
+                                            }
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
+                                            }
+                                        });
                                     });
                                 }
                             }
@@ -416,8 +413,7 @@ public class accountPageActivity extends AppCompatActivity {
                         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
                         teamName_layout.setLayoutParams(layoutParams);
                         teamLogo.getLayoutParams().height = height;
-                        int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
-                        line.getLayoutParams().height = lineHeight;
+                        line.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
                     }
                     if(choiceTeam.equals("null")&&choiceDriver.equals("null")){
                         teamCar.setVisibility(View.INVISIBLE);

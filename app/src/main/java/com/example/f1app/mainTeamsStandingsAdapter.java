@@ -35,7 +35,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         view = LayoutInflater.from(context).inflate(R.layout.item_main_team, parent , false);
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         RelativeLayout leftLayout, team_layout;
         View line, bottomLine;
         CardView cardView;
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             leftLayout = itemView.findViewById(R.id.left_layout);
             team_layout = itemView.findViewById(R.id.team_layout);

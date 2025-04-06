@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,7 +50,7 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         view = LayoutInflater.from(context).inflate(R.layout.item_main_concluded_race, parent , false);
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @Override
@@ -171,7 +170,7 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ConstraintLayout constraintLayout;
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             round = itemView.findViewById(R.id.round);
             day_start = itemView.findViewById(R.id.day_start);

@@ -265,8 +265,8 @@ public class concludedRaceScheduleFragment extends Fragment {
             datum = new ArrayList<>();
             getRaceSchedule(mRaceName, currentYear);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
-            AppBarLayout appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
+            AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
         }
     }

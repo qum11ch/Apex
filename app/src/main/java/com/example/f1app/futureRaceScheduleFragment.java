@@ -94,7 +94,7 @@ public class futureRaceScheduleFragment extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if (!getArguments().isEmpty()){
-            String mCircuitId = getArguments().getString("circuitId");
+            //String mCircuitId = getArguments().getString("circuitId");
             mRaceName = getArguments().getString("raceName");
 
             String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
@@ -108,9 +108,9 @@ public class futureRaceScheduleFragment extends Fragment {
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
             String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
 
-            TextView day_start = (TextView) view.findViewById(R.id.day_start);
-            TextView day_end = (TextView) view.findViewById(R.id.day_end);
-            TextView month = (TextView) view.findViewById(R.id.month);
+            TextView day_start = view.findViewById(R.id.day_start);
+            TextView day_end = view.findViewById(R.id.day_end);
+            TextView month = view.findViewById(R.id.month);
 
             fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
@@ -154,8 +154,8 @@ public class futureRaceScheduleFragment extends Fragment {
             datum = new ArrayList<>();
             getRaceSchedule(mRaceName, currentYear);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
-            AppBarLayout appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
+            AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
         }
     }
@@ -341,7 +341,7 @@ public class futureRaceScheduleFragment extends Fragment {
             }
 
             String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             try {
                 Date eventStart_date = dateFormat.parse(value);
@@ -385,10 +385,9 @@ public class futureRaceScheduleFragment extends Fragment {
                     CountDownTimer mCountDownTimer = new CountDownTimer(diffStart, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
-                            long millisStart = millisUntilFinished;
-                            String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisStart));
-                            String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisStart) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisStart))));
-                            String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisStart) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisStart))));
+                            String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisUntilFinished));
+                            String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))));
+                            String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))));
                             days_countdown.setText(daysLeft);
                             hrs_countdown.setText(hoursLeft);
                             mns_countdown.setText(minutesLeft);
@@ -407,10 +406,9 @@ public class futureRaceScheduleFragment extends Fragment {
                             CountDownTimer mCountDownTimer = new CountDownTimer(diffEnd, 1000) {
                                 @Override
                                 public void onTick(long millisUntilFinished) {
-                                    long millisEnd = millisUntilFinished;
-                                    String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisEnd));
-                                    String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisEnd) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisEnd))));
-                                    String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisEnd) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisEnd))));
+                                    String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisUntilFinished));
+                                    String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))));
+                                    String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))));
                                     days_countdown.setText(daysLeft);
                                     hrs_countdown.setText(hoursLeft);
                                     mns_countdown.setText(minutesLeft);
