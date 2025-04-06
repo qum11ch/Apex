@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private List<concludedRacesData> datumPast;
     private List<futureRaceData> datumFuture;
     private RecyclerView rvFuture, rvPast, rvDrivers, rvTeams;
-    private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams;
+    private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams, sfProgressBar;
     private ProgressBar raceProgress;
     private TextView raceProgressText;
 
@@ -111,7 +111,10 @@ public class MainActivity extends AppCompatActivity {
         sfPast = findViewById(R.id.shimmerPast_layout);
         sfDrivers = findViewById(R.id.shimmerDrivers_layout);
         sfTeams = findViewById(R.id.shimmerTeams_layout);
+        sfProgressBar = findViewById(R.id.shimmerProgress_layout);
 
+
+        sfProgressBar.startShimmer();
         sfFuture.startShimmer();
         sfPast.startShimmer();
         sfDrivers.startShimmer();
@@ -190,12 +193,15 @@ public class MainActivity extends AppCompatActivity {
         } else if (progress>13) {
             raceProgressText.setTextColor(getColor(R.color.white));
         }
-        raceProgress.setProgress(progress);
-        raceProgressText.setText(strProgress);
-        ObjectAnimator animator = ObjectAnimator.ofInt(raceProgress, "progress", 0, progress);
-        animator.setInterpolator(GAUGE_ANIMATION_INTERPOLATOR);
-        animator.setDuration(GAUGE_ANIMATION_DURATION);
-        animator.start();
+        Handler handler = new Handler();
+        handler.postDelayed(()->{
+            raceProgress.setVisibility(View.VISIBLE);
+            sfProgressBar.setVisibility(View.GONE);
+            sfProgressBar.stopShimmer();
+
+            raceProgress.setProgress(progress);
+            raceProgressText.setText(strProgress);
+        },500);
     }
 
     private void getDriversStanding(String currentYear){

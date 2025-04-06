@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">F1 App</string>
+    <string name="app_name" translatable="false">Apex</string>
     <string name="login_text">Login</string>
     <string name="register_header">Register</string>
     <string name="usernameText">Username</string>
