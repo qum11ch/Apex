@@ -34,7 +34,7 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
     @Override
     public futureRaceAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_future_race, parent , false);
-        return new futureRaceAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -53,13 +53,13 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
         LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd"));
 
         LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd"));
 
-        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
+        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
+        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
@@ -132,7 +132,7 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName;
         ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView) {

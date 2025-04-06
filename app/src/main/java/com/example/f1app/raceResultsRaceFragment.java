@@ -104,8 +104,8 @@ public class raceResultsRaceFragment extends Fragment {
                                         .getString("code");
                                 String constructorId = Result.getJSONObject("Constructor")
                                         .getString("constructorId");
-                                String position = " ";
-                                String time = " ";
+                                String position;
+                                String time;
                                 String points = Result.getString("points");
 
                                 if (Result.has("FastestLap")){

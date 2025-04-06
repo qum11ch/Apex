@@ -23,7 +23,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -46,7 +45,7 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
 
         TextView pageHeader = findViewById(R.id.pageHeader);
 
-        String headerText = " ";
+        String headerText;
         if (Locale.getDefault().getLanguage().equals("ru")){
             headerText = getString(R.string.past_season_result) + " 2024";
         }else{
@@ -54,32 +53,22 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         }
         pageHeader.setText(headerText);
 
-        LocalDate currentDate = LocalDate.now();
-
 
         getSchedule();
 
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getSchedule();
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            getSchedule();
+            swipeLayout.setRefreshing(false);
         });
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);;
+        windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
     private void getSchedule(){

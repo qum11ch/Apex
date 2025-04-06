@@ -113,7 +113,7 @@ public class scheduleActivity extends AppCompatActivity {
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);;
+        windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
     private void getSchedule(String year, LocalDate currentDate){
@@ -150,7 +150,6 @@ public class scheduleActivity extends AppCompatActivity {
                         {
                             concluded = false;
                             future = true;
-                            isOnGoing = false;
                         }
                         else if (current.equals(start) || current.equals(end)){
                             concluded = false;
@@ -159,11 +158,6 @@ public class scheduleActivity extends AppCompatActivity {
                         else if (current.after(start) && current.before(end)){
                             concluded = false;
                             isOnGoing = true;
-                        }
-                        else{
-                            concluded = true;
-                            future = false;
-                            isOnGoing = false;
                         }
                     } catch (ParseException e){
                         Log.d("ParseExeption", "" + e);
@@ -194,8 +188,8 @@ public class scheduleActivity extends AppCompatActivity {
                                 String locale = " ";
                                 if (Locale.getDefault().getLanguage().equals("ru")){
                                     ArrayList<String> localizedData = localizeLocality(raceLocation, raceCountry, scheduleActivity.this);
-                                    String country = localizedData.get(0);
-                                    String cityName = localizedData.get(1);
+                                    //String country = localizedData.get(0);
+                                    //String cityName = localizedData.get(1);
                                     locale = localizedData.get(2);
                                 }else{
                                     String cityName = raceLocation;
@@ -228,13 +222,13 @@ public class scheduleActivity extends AppCompatActivity {
 
                         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
                         LocalDate startDateOngoing = LocalDate.parse(dateStart, dateFormatter);
-                        String dayStart = startDateOngoing.format(DateTimeFormatter.ofPattern("dd")).toString();
+                        String dayStart = startDateOngoing.format(DateTimeFormatter.ofPattern("dd"));
 
                         LocalDate endDateOngoing = LocalDate.parse(dateEnd, dateFormatter);
-                        String dayEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("dd")).toString();
+                        String dayEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("dd"));
 
-                        String monthStart = startDateOngoing.format(DateTimeFormatter.ofPattern("MMM")).toString();
-                        String monthEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("MMM")).toString();
+                        String monthStart = startDateOngoing.format(DateTimeFormatter.ofPattern("MMM"));
+                        String monthEnd = endDateOngoing.format(DateTimeFormatter.ofPattern("MMM"));
 
                         if(monthStart.equals(monthEnd)){
                             raceMonthOngoing.setText(monthStart);

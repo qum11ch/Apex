@@ -52,7 +52,7 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
     @Override
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_past_seasons_race, parent, false);
-        return new DataHolder(view, viewType);
+        return new DataHolder(view);
     }
 
     @Override
@@ -69,13 +69,13 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
         LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd"));
 
         LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd"));
 
-        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
+        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
+        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
@@ -210,7 +210,7 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
-        public DataHolder(@NonNull View itemView, int viewType) {
+        public DataHolder(@NonNull View itemView) {
             super(itemView);
             round = itemView.findViewById(R.id.round);
             day_start = itemView.findViewById(R.id.day_start);

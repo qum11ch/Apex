@@ -185,7 +185,7 @@ public class teamStatsFragment extends Fragment {
                     poles.setText(mPoles);
                     championships.setText(mChampionships);
 
-                    String mChampionshipsText = " ";
+                    String mChampionshipsText;
 
                     if(Locale.getDefault().getLanguage().equals("ru")){
                         assert mChampionships != null;

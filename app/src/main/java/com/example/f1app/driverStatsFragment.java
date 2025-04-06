@@ -208,8 +208,8 @@ public class driverStatsFragment extends Fragment {
                     LocalDate currentDate = LocalDate.now();
                     int age = calculateAge(LDbirthdate, currentDate);
 
-                    String mDriverAge = " ";
-                    String mChampionshipsText = " ";
+                    String mDriverAge;
+                    String mChampionshipsText;
 
                     if(Locale.getDefault().getLanguage().equals("ru")){
                         if (age%10 < 5 && age%10!=0){

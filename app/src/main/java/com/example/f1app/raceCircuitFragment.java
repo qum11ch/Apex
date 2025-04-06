@@ -84,7 +84,7 @@ public class raceCircuitFragment extends Fragment {
             String mCountry = getArguments().getString("raceCountry");
             String mYear = getArguments().getString("gpYear");
 
-            String mPrevGPtext = " ";
+            String mPrevGPtext;
             assert mYear != null;
             if(Locale.getDefault().getLanguage().equals("ru")){
                 mPrevGPtext = getString(R.string.prev_race_results_text) + " " + (Integer.parseInt(mYear) - 1);
@@ -98,17 +98,14 @@ public class raceCircuitFragment extends Fragment {
             String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
             raceName.setText(futureRaceName);
 
-            previousGP.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("raceName", mRaceName);
-                    bundle.putString("circuitId", mCircuitId);
-                    bundle.putString("season", String.valueOf(Integer.parseInt(mYear) - 1));
-                    intent.putExtras(bundle);
-                    requireContext().startActivity(intent);
-                }
+            previousGP.setOnClickListener(view1 -> {
+                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("raceName", mRaceName);
+                bundle.putString("circuitId", mCircuitId);
+                bundle.putString("season", String.valueOf(Integer.parseInt(mYear) - 1));
+                intent.putExtras(bundle);
+                requireContext().startActivity(intent);
             });
 
             FirebaseStorage storage = FirebaseStorage.getInstance();

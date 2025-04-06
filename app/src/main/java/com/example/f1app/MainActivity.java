@@ -4,7 +4,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -20,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -34,11 +32,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -431,11 +428,11 @@ public class MainActivity extends AppCompatActivity {
                     Integer round = ds.child("round").getValue(Integer.class);
                     String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                     String dateEnd = ds.child("raceDate").getValue(String.class);
-                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
-                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                    //String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                    //String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
 
                     String currentDateString = currentDate.toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     boolean future = false;
                     boolean isOnGoing = false;
                     boolean concluded = true;

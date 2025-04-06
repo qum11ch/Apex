@@ -26,8 +26,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -280,7 +278,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         }
 
         List<Address> addresses;
-        String cityName = " ";
+        String cityName;
 
         String address = locality + ", " + country;
         addresses = geocodeWithRetry(address, 10, context);

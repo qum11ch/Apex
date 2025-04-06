@@ -157,7 +157,7 @@ public class NotifyReceiver extends BroadcastReceiver {
         NotificationChannel channel = new NotificationChannel(mChannelId, name, importance);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         channel.setDescription(des);
-        NotificationManager manager = (NotificationManager) context.getSystemService(NotificationManager.class);
+        NotificationManager manager = context.getSystemService(NotificationManager.class);
         manager.createNotificationChannel(channel);
     }
 }

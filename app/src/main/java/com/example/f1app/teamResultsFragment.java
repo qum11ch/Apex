@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -80,7 +79,7 @@ public class teamResultsFragment extends Fragment {
 
         if (!getArguments().isEmpty()){
             String mTeamId = getArguments().getString("teamId");
-            String mTeamName = getArguments().getString("teamName");
+            //String mTeamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
 
             shimmerFrameLayout.startShimmer();
@@ -192,12 +191,10 @@ public class teamResultsFragment extends Fragment {
 
         for (int i = 0; i < drivers.size(); i++){
             String[] driverFullname = drivers.get(i).split(" ");
-            String mDriverName, mDriverFamilyName;
+            String mDriverFamilyName;
             if(drivers.get(i).equals("Andrea Kimi Antonelli")){
-                mDriverName = driverFullname[0] + " " + driverFullname[1];
                 mDriverFamilyName = driverFullname[2];
             }else{
-                mDriverName = driverFullname[0];
                 mDriverFamilyName = driverFullname[1];
             }
             int finalI = i;

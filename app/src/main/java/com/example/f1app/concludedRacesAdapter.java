@@ -76,13 +76,13 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
 
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
         LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
-        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayStart = dateStart.format(DateTimeFormatter.ofPattern("dd"));
 
         LocalDate dateEnd = LocalDate.parse(dateEnd_string, dateFormatter);
-        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd")).toString();
+        String dayEnd = dateEnd.format(DateTimeFormatter.ofPattern("dd"));
 
-        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM")).toString();
-        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM")).toString();
+        String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
+        String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
@@ -214,7 +214,7 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;

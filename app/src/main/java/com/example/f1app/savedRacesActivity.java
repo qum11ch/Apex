@@ -72,16 +72,13 @@ public class savedRacesActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager3);
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                emptySavedRaceLayout.setVisibility(View.GONE);
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                putRaces();
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            emptySavedRaceLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            putRaces();
+            swipeLayout.setRefreshing(false);
         });
 
         putRaces();
@@ -95,12 +92,7 @@ public class savedRacesActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
 
         backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void putRaces(){
@@ -163,28 +155,22 @@ public class savedRacesActivity extends AppCompatActivity {
                                                 Button cancelButton = deleteRaceDialog.findViewById(R.id.cancel_button);
                                                 Button confirmButton = deleteRaceDialog.findViewById(R.id.confirm_button);
 
-                                                cancelButton.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        adapter.notifyItemRemoved(position + 1);
-                                                        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
-                                                        putRaces();
-                                                        deleteRaceDialog.dismiss();
-                                                    }
+                                                cancelButton.setOnClickListener(view -> {
+                                                    adapter.notifyItemRemoved(position + 1);
+                                                    adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+                                                    putRaces();
+                                                    deleteRaceDialog.dismiss();
                                                 });
 
-                                                confirmButton.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View view) {
-                                                        deleteRaceDialog.dismiss();
-                                                        adapter.notifyItemRemoved(position);
-                                                        String modifiedRaceName = datum.get(position).getRaceName().replaceAll("\\s+","");
-                                                        String root = datum.get(position).getRaceSeason() + "_" + modifiedRaceName;
-                                                        rootRef.child("savedRaces").child(username).child(root)
-                                                                .removeValue();
-                                                        putRaces();
-                                                        Toast.makeText(savedRacesActivity.this, getString(R.string.race_delete_succ_text), Toast.LENGTH_SHORT).show();
-                                                    }
+                                                confirmButton.setOnClickListener(view -> {
+                                                    deleteRaceDialog.dismiss();
+                                                    adapter.notifyItemRemoved(position);
+                                                    String modifiedRaceName = datum.get(position).getRaceName().replaceAll("\\s+","");
+                                                    String root = datum.get(position).getRaceSeason() + "_" + modifiedRaceName;
+                                                    rootRef.child("savedRaces").child(username).child(root)
+                                                            .removeValue();
+                                                    putRaces();
+                                                    Toast.makeText(savedRacesActivity.this, getString(R.string.race_delete_succ_text), Toast.LENGTH_SHORT).show();
                                                 });
 
                                                 deleteRaceDialog.show();
@@ -201,7 +187,7 @@ public class savedRacesActivity extends AppCompatActivity {
                                             int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
                                             int iconBottom = iconTop + icon.getIntrinsicHeight();
 
-                                            if (dX < 0) { // Swiping to the left
+                                            if (dX < 0) {
                                                 int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
                                                 int iconRight = itemView.getRight() - iconMargin;
                                                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);

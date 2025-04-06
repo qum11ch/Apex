@@ -43,7 +43,7 @@ public class concludedRaceFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         if (!getArguments().isEmpty()){
             return inflater.inflate(R.layout.concluded_race_fragment, container, false);
@@ -66,7 +66,7 @@ public class concludedRaceFragment extends Fragment {
             recyclerView.setLayoutManager(linearLayoutManager);
             //LocalDate currentDate = LocalDate.now();
 
-            Button pastSeasonsResults = (Button) view.findViewById(R.id.pastSeasonResults);
+            Button pastSeasonsResults = view.findViewById(R.id.pastSeasonResults);
             String buttonText;
             if (Locale.getDefault().getLanguage().equals("ru")){
                 buttonText = getText(R.string.past_season_result) + " 2024";
@@ -92,7 +92,7 @@ public class concludedRaceFragment extends Fragment {
                 String raceRound = concludedRaceRoundNumber.get(i);
 
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                rootRef.child("schedule/season/" + season).orderByChild("round").equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                rootRef.child("schedule/season/" + season).orderByChild("round").equalTo(Integer.parseInt(raceRound)).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         datum = new ArrayList<>();
@@ -149,7 +149,7 @@ public class concludedRaceFragment extends Fragment {
         }
         else{
             LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-            Button pastSeasonsResults = (Button) view.findViewById(R.id.pastSeasonResults);
+            Button pastSeasonsResults = view.findViewById(R.id.pastSeasonResults);
             String buttonText = getText(R.string.past_season_result) + " 2024";
             pastSeasonsResults.setText(buttonText);
             pastSeasonsResults.setOnClickListener(v -> {
