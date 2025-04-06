@@ -164,7 +164,7 @@ public class savedRacesActivity extends AppCompatActivity {
                                             final int position = viewHolder.getAdapterPosition();
                                             if (swipeDir == ItemTouchHelper.LEFT) {
                                                 deleteRaceDialog = new Dialog(savedRacesActivity.this);
-                                                deleteRaceDialog.setContentView(R.layout.logout_dialog_box);
+                                                deleteRaceDialog.setContentView(R.layout.delete_race_dialog_box);
                                                 deleteRaceDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
                                                 deleteRaceDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
                                                 deleteRaceDialog.setCancelable(false);

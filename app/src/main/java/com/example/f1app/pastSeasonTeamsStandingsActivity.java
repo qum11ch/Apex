@@ -77,9 +77,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         teamsHeader = (TextView) findViewById(R.id.teamsHeader);
         String headerText = " ";
         if (Locale.getDefault().getLanguage().equals("ru")){
-            headerText = getString(R.string.past_season_drivers) + " 2024";
+            headerText = getString(R.string.past_season_teams) + " 2024";
         }else{
-            headerText = "2024 " + getString(R.string.past_season_drivers);
+            headerText = "2024 " + getString(R.string.past_season_teams);
         }
         teamsHeader.setText(headerText);
 
