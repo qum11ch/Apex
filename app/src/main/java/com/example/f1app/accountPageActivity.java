@@ -6,7 +6,6 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -34,8 +33,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -67,13 +64,13 @@ public class accountPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_page);
 
-        Button logout = (Button) findViewById(R.id.logout);
+        Button logout = findViewById(R.id.logout);
 
-        username = (TextView) findViewById(R.id.username);
-        userFavDriverNumber = (TextView) findViewById(R.id.driverNumber);
-        userFavDriver = (TextView) findViewById(R.id.userFavDriver);
-        userFavTeam = (TextView) findViewById(R.id.userFavTeam);
-        fanText = (TextView) findViewById(R.id.fanText);
+        username = findViewById(R.id.username);
+        userFavDriverNumber = findViewById(R.id.driverNumber);
+        userFavDriver = findViewById(R.id.userFavDriver);
+        userFavTeam = findViewById(R.id.userFavTeam);
+        fanText = findViewById(R.id.fanText);
         tabUserName = findViewById(R.id.tabUserName);
         driverName = findViewById(R.id.driverName);
         driverFamilyName = findViewById(R.id.driverFamilyName);
@@ -84,12 +81,12 @@ public class accountPageActivity extends AppCompatActivity {
         noDriver = findViewById(R.id.noDriver);
         noTeam = findViewById(R.id.noTeam);
 
-        teamLogo = (ImageView) findViewById(R.id.team_logo);
-        teamCar = (ImageView) findViewById(R.id.teamCar);
-        driverImage = (ImageView) findViewById(R.id.driver_image);
+        teamLogo = findViewById(R.id.team_logo);
+        teamCar = findViewById(R.id.teamCar);
+        driverImage = findViewById(R.id.driver_image);
 
-        line2 = (View) findViewById(R.id.line2);
-        line = (View) findViewById(R.id.line);
+        line2 = findViewById(R.id.line2);
+        line = findViewById(R.id.line);
 
         teamName_layout = findViewById(R.id.teamName_layout);
         team_layout = findViewById(R.id.team_layout);
@@ -122,40 +119,24 @@ public class accountPageActivity extends AppCompatActivity {
         Button cancelButton = logoutDialog.findViewById(R.id.cancel_button);
         Button confirmButton = logoutDialog.findViewById(R.id.confirm_button);
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logoutDialog.dismiss();
-            }
+        cancelButton.setOnClickListener(view -> logoutDialog.dismiss());
+
+        confirmButton.setOnClickListener(view -> {
+            logoutDialog.dismiss();
+            Toast.makeText(accountPageActivity.this, user.getEmail() + " " + getString(R.string.logout_text), Toast.LENGTH_SHORT).show();
+            Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
+            startActivity(i);
+            auth.signOut();
+            finish();
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                logoutDialog.dismiss();
-                Toast.makeText(accountPageActivity.this, user.getEmail() + " " + getString(R.string.logout_text), Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
-                startActivity(i);
-                auth.signOut();
-                finish();
-            }
-        });
+        logout.setOnClickListener(v -> logoutDialog.show());
 
-        logout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logoutDialog.show();
-            }
-        });
-
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(accountPageActivity.this, MainActivity.class);
-                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-            }
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> {
+            Intent i = new Intent(accountPageActivity.this, MainActivity.class);
+            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            startActivity(i);
         });
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
@@ -167,23 +148,16 @@ public class accountPageActivity extends AppCompatActivity {
             }
         });
 
-        Button savedRace = (Button) findViewById(R.id.savedRace);
-        savedRace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //getText2(username);
-                Intent intent = new Intent(accountPageActivity.this, savedRacesActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
+        Button savedRace = findViewById(R.id.savedRace);
+        savedRace.setOnClickListener(v -> {
+            Intent intent = new Intent(accountPageActivity.this, savedRacesActivity.class);
+            accountPageActivity.this.startActivity(intent);
         });
 
-        Button settings = (Button) findViewById(R.id.profileSettings);
-        settings.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(accountPageActivity.this, accountSettingsActivity.class);
-                accountPageActivity.this.startActivity(intent);
-            }
+        Button settings = findViewById(R.id.profileSettings);
+        settings.setOnClickListener(view -> {
+            Intent intent = new Intent(accountPageActivity.this, accountSettingsActivity.class);
+            accountPageActivity.this.startActivity(intent);
         });
     }
 
@@ -221,9 +195,9 @@ public class accountPageActivity extends AppCompatActivity {
                     main_content.setVisibility(View.VISIBLE);
                     loadingProgress.setVisibility(View.GONE);
 
-                    CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-                    AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-                    Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+                    CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+                    AppBarLayout appBarLayout = findViewById(R.id.appbar);
+                    Toolbar toolbar = findViewById(R.id.toolbar);
                     appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
                         boolean isShow = true;
                         int scrollRange = -1;
@@ -264,39 +238,27 @@ public class accountPageActivity extends AppCompatActivity {
                                 String driverNumber = snapshot.child("permanentNumber").getValue(String.class);
                                 String driversCode = snapshot.child("driversCode").getValue(String.class);
                                 String team = snapshot.child("driversTeam").getValue(String.class);
-                                storageRef.child("drivers/" + driversCode.toLowerCase() + ".png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                    @Override
-                                    public void onSuccess(Uri uri) {
-                                        GlideApp.with(getApplicationContext())
-                                                .load(uri)
-                                                .transition(DrawableTransitionOptions.withCrossFade())
-                                                .error(R.drawable.f1)
-                                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                                .skipMemoryCache(true)
-                                                .into(driverImage);
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception exception) {
-                                        storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png").getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                GlideApp.with(getApplicationContext())
-                                                        .load(uri)
-                                                        .transition(DrawableTransitionOptions.withCrossFade())
-                                                        .error(R.drawable.f1)
-                                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                                        .skipMemoryCache(true)
-                                                        .into(driverImage);
-                                            }
-                                        }).addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-                                                Toast.makeText(accountPageActivity.this, R.string.smth_wrong_text, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                });
+                                storageRef.child("drivers/" + driversCode.toLowerCase() + ".png").getDownloadUrl().addOnSuccessListener(
+                                        uri -> GlideApp.with(getApplicationContext())
+                                        .load(uri)
+                                        .transition(DrawableTransitionOptions.withCrossFade())
+                                        .error(R.drawable.f1)
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+                                        .into(driverImage)).addOnFailureListener(
+                                                exception ->
+                                                        storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png")
+                                                                .getDownloadUrl()
+                                                                .addOnSuccessListener(uri ->
+                                                                        GlideApp.with(getApplicationContext())
+                                                                            .load(uri)
+                                                                            .transition(DrawableTransitionOptions.withCrossFade())
+                                                                            .error(R.drawable.f1)
+                                                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                                                            .skipMemoryCache(true)
+                                                                            .into(driverImage)).addOnFailureListener(
+                                                                                exception1 ->
+                                                                                        Toast.makeText(accountPageActivity.this, R.string.smth_wrong_text, Toast.LENGTH_SHORT).show()));
                                 userFavDriverNumber.setText(driverNumber);
                                 userFavDriver.setText(choiceDriver);
                                 driverName.setText(mDriverName);
@@ -322,19 +284,16 @@ public class accountPageActivity extends AppCompatActivity {
                                                     gd.setStroke(12, Color.parseColor(teamColor));
                                                     driver_layout.setBackground(gd);
 
-                                                    driver_layout.setOnClickListener(new View.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(View view) {
-                                                            Intent intent = new Intent(accountPageActivity.this, driverPageActivity.class);
-                                                            Bundle bundle = new Bundle();
-                                                            bundle.putString("driverName", mDriverName);
-                                                            bundle.putString("driverFamilyName", mDriverFamilyName);
-                                                            bundle.putString("driverTeam", finalTeam);
-                                                            bundle.putString("driverCode", driversCode);
-                                                            bundle.putString("driverTeamId", teamId);
-                                                            intent.putExtras(bundle);
-                                                            accountPageActivity.this.startActivity(intent);
-                                                        }
+                                                    driver_layout.setOnClickListener(view -> {
+                                                        Intent intent = new Intent(accountPageActivity.this, driverPageActivity.class);
+                                                        Bundle bundle = new Bundle();
+                                                        bundle.putString("driverName", mDriverName);
+                                                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                                                        bundle.putString("driverTeam", finalTeam);
+                                                        bundle.putString("driverCode", driversCode);
+                                                        bundle.putString("driverTeamId", teamId);
+                                                        intent.putExtras(bundle);
+                                                        accountPageActivity.this.startActivity(intent);
                                                     });
                                                 }
                                             }

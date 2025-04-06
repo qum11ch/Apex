@@ -65,13 +65,13 @@ public class teamResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         //firstDriverName = (TextView) view.findViewById(R.id.firstDriverName);
-        firstDriverFamilyName = (TextView) view.findViewById(R.id.firstDriverFamilyName);
+        firstDriverFamilyName = view.findViewById(R.id.firstDriverFamilyName);
         //secondDriverName = (TextView) view.findViewById(R.id.secondDriverName);
-        secondDriverFamilyName = (TextView) view.findViewById(R.id.secondDriverFamilyName);
-        firstDriver_image = (ImageView) view.findViewById(R.id.firstDriver_image);
-        secondDriver_image = (ImageView) view.findViewById(R.id.secondDriver_image);
-        radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
-        radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
+        secondDriverFamilyName = view.findViewById(R.id.secondDriverFamilyName);
+        firstDriver_image = view.findViewById(R.id.firstDriver_image);
+        secondDriver_image = view.findViewById(R.id.secondDriver_image);
+        radioButton_2025 = view.findViewById(R.id.radioButton_2025);
+        radioButton_2024 = view.findViewById(R.id.radioButton_2024);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
 
         recyclerView = view.findViewById(R.id.drivers_results);
@@ -90,66 +90,54 @@ public class teamResultsFragment extends Fragment {
             assert driversList != null;
             getResults("2025", driversList);
 
-            radioButton_2025.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!radioButton_2025.isChecked()){
-                        radioButton_2025.setChecked(true);
-                        radioButton_2024.setChecked(false);
-                    }
+            radioButton_2025.setOnClickListener(view1 -> {
+                if (!radioButton_2025.isChecked()){
+                    radioButton_2025.setChecked(true);
                     radioButton_2024.setChecked(false);
                 }
+                radioButton_2024.setChecked(false);
             });
 
-            radioButton_2024.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!radioButton_2024.isChecked()){
-                        radioButton_2025.setChecked(false);
-                        radioButton_2024.setChecked(true);
-                    }
+            radioButton_2024.setOnClickListener(view2 -> {
+                if (!radioButton_2024.isChecked()){
                     radioButton_2025.setChecked(false);
+                    radioButton_2024.setChecked(true);
+                }
+                radioButton_2025.setChecked(false);
+            });
+
+            radioButton_2025.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2025.isChecked()){
+                    recyclerView.setVisibility(View.GONE);
+                    shimmerFrameLayout.setVisibility(View.VISIBLE);
+                    shimmerFrameLayout.startShimmer();
+                    getResults("2025", driversList);
                 }
             });
 
-            radioButton_2025.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (radioButton_2025.isChecked()){
-                        recyclerView.setVisibility(View.GONE);
-                        shimmerFrameLayout.setVisibility(View.VISIBLE);
-                        shimmerFrameLayout.startShimmer();
-                        getResults("2025", driversList);
-                    }
-                }
-            });
-
-            radioButton_2024.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (radioButton_2024.isChecked()){
-                        ArrayList<String> driversLineUp = new ArrayList<>();
-                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                        rootRef.child("driverLineUp/season/2024").child(mTeamId).child("drivers")
-                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for (DataSnapshot driverSnapshot: snapshot.getChildren()){
-                                            String driverName = driverSnapshot.getKey();
-                                            driversLineUp.add(driverName);
-                                        }
-                                        recyclerView.setVisibility(View.GONE);
-                                        shimmerFrameLayout.setVisibility(View.VISIBLE);
-                                        shimmerFrameLayout.startShimmer();
-                                        getResults("2024", driversLineUp);
+            radioButton_2024.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2024.isChecked()){
+                    ArrayList<String> driversLineUp = new ArrayList<>();
+                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                    rootRef.child("driverLineUp/season/2024").child(mTeamId).child("drivers")
+                            .addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot driverSnapshot: snapshot.getChildren()){
+                                        String driverName = driverSnapshot.getKey();
+                                        driversLineUp.add(driverName);
                                     }
+                                    recyclerView.setVisibility(View.GONE);
+                                    shimmerFrameLayout.setVisibility(View.VISIBLE);
+                                    shimmerFrameLayout.startShimmer();
+                                    getResults("2024", driversLineUp);
+                                }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("error", "" + error);
-                                    }
-                                });
-                    }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("error", "" + error);
+                                }
+                            });
                 }
             });
         }

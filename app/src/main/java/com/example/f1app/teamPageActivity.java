@@ -46,7 +46,6 @@ import java.util.ArrayList;
 
 public class teamPageActivity extends AppCompatActivity {
     private TextView teamName;
-    private ImageView team_car;
     private ProgressBar progressBar;
     private CoordinatorLayout contentLayout;
     private ToggleButton likeButton;
@@ -63,21 +62,16 @@ public class teamPageActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamPageActivity.this));
         }
 
-        contentLayout = (CoordinatorLayout) findViewById(R.id.content_layout);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        TextView teamNameFull = (TextView) findViewById(R.id.teamNameFull);
-        ImageView teamLogo = (ImageView) findViewById(R.id.teamLogo);
-        team_car = (ImageView) findViewById(R.id.team_car);
-        teamName = (TextView) findViewById(R.id.teamName);
-        likeButton = (ToggleButton) findViewById(R.id.like_button);
+        contentLayout = findViewById(R.id.content_layout);
+        progressBar = findViewById(R.id.progressBar);
+        TextView teamNameFull = findViewById(R.id.teamNameFull);
+        ImageView teamLogo = findViewById(R.id.teamLogo);
+        ImageView team_car = findViewById(R.id.team_car);
+        teamName = findViewById(R.id.teamName);
+        likeButton = findViewById(R.id.like_button);
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -94,23 +88,17 @@ public class teamPageActivity extends AppCompatActivity {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user!=null){
                 isFavourite(mTeamName);
-                likeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(likeButton.isChecked()){
-                            saveTeam(mTeamName);
-                        }else{
-                            deleteTeam(mTeamName);
-                        }
+                likeButton.setOnClickListener(view -> {
+                    if(likeButton.isChecked()){
+                        saveTeam(mTeamName);
+                    }else{
+                        deleteTeam(mTeamName);
                     }
                 });
             }else{
-                likeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        likeButton.setChecked(false);
-                        Toast.makeText(teamPageActivity.this, getString(R.string.team_save_error_login_text), Toast.LENGTH_LONG).show();
-                    }
+                likeButton.setOnClickListener(view -> {
+                    likeButton.setChecked(false);
+                    Toast.makeText(teamPageActivity.this, getString(R.string.team_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
 
@@ -170,10 +158,10 @@ public class teamPageActivity extends AppCompatActivity {
                     .error(R.drawable.f1)
                     .into(teamLogo);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
 
-            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            AppBarLayout appBarLayout = findViewById(R.id.appbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
                 boolean isShow = true;
                 int scrollRange = -1;

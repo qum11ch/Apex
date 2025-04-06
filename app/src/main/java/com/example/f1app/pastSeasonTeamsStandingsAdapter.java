@@ -26,7 +26,6 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,17 +91,14 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         int resourceId_teamColor = getColorByName(datum.getTeamId());
         holder.line.setBackgroundResource(resourceId_teamColor);
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , teamPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("teamName", datum.getTeam());
-                bundle.putString("teamId", datum.getTeamId());
-                bundle.putStringArrayList("teamDrivers", teamDrivers);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , teamPageActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("teamName", datum.getTeam());
+            bundle.putString("teamId", datum.getTeamId());
+            bundle.putStringArrayList("teamDrivers", teamDrivers);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
 

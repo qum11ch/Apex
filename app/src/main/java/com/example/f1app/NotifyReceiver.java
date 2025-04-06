@@ -32,14 +32,14 @@ import java.time.format.DateTimeFormatter;
 
 
 public class NotifyReceiver extends BroadcastReceiver {
-    private final String channelId = "channelId";
 
     @SuppressLint("UnsafeProtectedBroadcastReceiver")
     @Override
     public void onReceive(Context context, Intent intent) {
         if(intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)){
             Intent intentStart = new Intent(context, BootService.class);
-            intentStart.putExtra("channelId", channelId);
+            String channelId1 = "channelId";
+            intentStart.putExtra("channelId", channelId1);
             context.startService(intentStart);
             Bundle bundle = intent.getExtras();
             if(bundle.getString("channelId") != null) {

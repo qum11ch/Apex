@@ -33,7 +33,7 @@ public class connectionLostScreen extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.lost_connection_screen);
 
-        Button tryAgainButton = (Button) findViewById(R.id.tryAgainButton);
+        Button tryAgainButton = findViewById(R.id.tryAgainButton);
 
         if (getIntent() != null) handleIntent(getIntent());
 

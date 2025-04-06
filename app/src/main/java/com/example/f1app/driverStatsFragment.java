@@ -79,31 +79,31 @@ public class driverStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
-        firstGP = (TextView) view.findViewById(R.id.firstGP);
-        GPcount = (TextView) view.findViewById(R.id.GP_count);
-        lastEntry = (TextView) view.findViewById(R.id.lastEntry);
-        wins = (TextView) view.findViewById(R.id.wins);
-        podiums = (TextView) view.findViewById(R.id.podiums);
-        poles = (TextView) view.findViewById(R.id.poles);
-        totalPoints = (TextView) view.findViewById(R.id.totalPoints);
-        championships = (TextView) view.findViewById(R.id.championships);
-        championshipsText = (TextView) view.findViewById(R.id.championshipsText);
-        teamName = (TextView) view.findViewById(R.id.teamName);
-        driverCountry = (TextView) view.findViewById(R.id.country);
-        birthdate = (TextView) view.findViewById(R.id.birthdate);
-        totalFastestLaps = (TextView) view.findViewById(R.id.totalFastestLaps);
-        driverAge = (TextView) view.findViewById(R.id.driverAge);
-        lineupHeader = (TextView) view.findViewById(R.id.lineup_header);
+        scrollView = view.findViewById(R.id.scrollView);
+        firstGP = view.findViewById(R.id.firstGP);
+        GPcount = view.findViewById(R.id.GP_count);
+        lastEntry = view.findViewById(R.id.lastEntry);
+        wins = view.findViewById(R.id.wins);
+        podiums = view.findViewById(R.id.podiums);
+        poles = view.findViewById(R.id.poles);
+        totalPoints = view.findViewById(R.id.totalPoints);
+        championships = view.findViewById(R.id.championships);
+        championshipsText = view.findViewById(R.id.championshipsText);
+        teamName = view.findViewById(R.id.teamName);
+        driverCountry = view.findViewById(R.id.country);
+        birthdate = view.findViewById(R.id.birthdate);
+        totalFastestLaps = view.findViewById(R.id.totalFastestLaps);
+        driverAge = view.findViewById(R.id.driverAge);
+        lineupHeader = view.findViewById(R.id.lineup_header);
 
 
-        teamCar_image = (ImageView) view.findViewById(R.id.teamCar);
-        flag = (ImageView) view.findViewById(R.id.flag);
-        arrow = (ImageView) view.findViewById(R.id.arrow);
+        teamCar_image = view.findViewById(R.id.teamCar);
+        flag = view.findViewById(R.id.flag);
+        arrow = view.findViewById(R.id.arrow);
 
-        team_layout = (RelativeLayout) view.findViewById(R.id.team_layout);
-        driverInfo_layout = (RelativeLayout) view.findViewById(R.id.driverInfo_layout);
-        driversTeam_layout = (LinearLayout) view.findViewById(R.id.driversTeam_layout);
+        team_layout = view.findViewById(R.id.team_layout);
+        driverInfo_layout = view.findViewById(R.id.driverInfo_layout);
+        driversTeam_layout = view.findViewById(R.id.driversTeam_layout);
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -112,7 +112,7 @@ public class driverStatsFragment extends Fragment {
             String mDriverName = getArguments().getString("driverName");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
             String mDriverTeam = getArguments().getString("driverTeam");
-            String mDriverCode = getArguments().getString("driverCode");
+            //String mDriverCode = getArguments().getString("driverCode");
             String mTeamId = getArguments().getString("driverTeamId");
 
             LocalDate currentDate = LocalDate.now();
@@ -170,43 +170,38 @@ public class driverStatsFragment extends Fragment {
                     totalFastestLaps.setText(mTotalFastestLaps);
 
                     teamName.setText(mDriverTeam);
-                    driversTeam_layout.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    driversTeam_layout.setOnClickListener(view1 -> rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                    String mTeamId1 = snapshot1.child("constructorId").getValue(String.class);
+                                    DatabaseReference rootRef1 = FirebaseDatabase.getInstance().getReference();
+                                    rootRef1.child("driverLineUp/season/" + currentYear + "/" + mTeamId1).addValueEventListener(new ValueEventListener() {
                                         @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String mTeamId = snapshot.child("constructorId").getValue(String.class);
-                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    ArrayList<String> teamDrivers = new ArrayList<>();
-                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                        String driverName = driverDataSnapshot.getKey();
-                                                        teamDrivers.add(driverName);
-                                                    }
-                                                    Intent intent = new Intent(requireContext(), teamPageActivity.class);
-                                                    Bundle bundle = new Bundle();
-                                                    bundle.putString("teamName", mDriverTeam);
-                                                    bundle.putString("teamId", mTeamId);
-                                                    bundle.putStringArrayList("teamDrivers", teamDrivers);
-                                                    intent.putExtras(bundle);
-                                                    requireContext().startActivity(intent);
-                                                }
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("driverPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
-                                                }
-                                            });
+                                        public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                            ArrayList<String> teamDrivers = new ArrayList<>();
+                                            for (DataSnapshot driverDataSnapshot : snapshot1.child("drivers").getChildren()) {
+                                                String driverName1 = driverDataSnapshot.getKey();
+                                                teamDrivers.add(driverName1);
+                                            }
+                                            Intent intent = new Intent(requireContext(), teamPageActivity.class);
+                                            Bundle bundle = new Bundle();
+                                            bundle.putString("teamName", mDriverTeam);
+                                            bundle.putString("teamId", mTeamId1);
+                                            bundle.putStringArrayList("teamDrivers", teamDrivers);
+                                            intent.putExtras(bundle);
+                                            requireContext().startActivity(intent);
                                         }
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
-                                            Log.e("driverPageActivity", "Driver`s team information getting error: " + error.getMessage());
+                                            Log.e("driverPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
                                         }
                                     });
-                        }
-                    });
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("driverPageActivity", "Driver`s team information getting error: " + error.getMessage());
+                                }
+                            }));
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                     LocalDate LDbirthdate = LocalDate.parse(mBirthdate, formatter);

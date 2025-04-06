@@ -19,8 +19,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -29,7 +27,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -60,8 +57,8 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
         recyclerView.setHasFixedSize(true);
 
-        TextView driversHeader = (TextView) findViewById(R.id.driversHeader);
-        String headerText = " ";
+        TextView driversHeader = findViewById(R.id.driversHeader);
+        String headerText;
         if (Locale.getDefault().getLanguage().equals("ru")){
             headerText = getString(R.string.past_season_drivers) + " 2024";
         }else{
@@ -70,30 +67,21 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         driversHeader.setText(headerText);
 
         datum = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                datum = new ArrayList<>();
-                getStanding("2024");
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            recyclerView.setVisibility(View.GONE);
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            datum = new ArrayList<>();
+            getStanding("2024");
+            swipeLayout.setRefreshing(false);
         });
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
 
         getStanding("2024");
@@ -112,53 +100,45 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            String total = MRData.getString("total");
-                            if (!total.equals("0")){
-                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                for(int i = 0; i < StandingsLists.length(); i++){
-                                    JSONArray DriverStandings = StandingsLists.getJSONObject(i)
-                                            .getJSONArray("DriverStandings");
-                                    for(int j = 0; j < DriverStandings.length(); j++) {
-                                        String placement = DriverStandings.getJSONObject(j).getString("positionText");
-                                        String points = DriverStandings.getJSONObject(j).getString("points");
-                                        String driverName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("givenName");
-                                        String driverFamilyName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("familyName");
-                                        String driverCode = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("code");
-                                        JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                        String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                        String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-                                        driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
-                                        datum.add(smth);
-                                    }
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        String total = MRData.getString("total");
+                        if (!total.equals("0")){
+                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                            for(int i = 0; i < StandingsLists.length(); i++){
+                                JSONArray DriverStandings = StandingsLists.getJSONObject(i)
+                                        .getJSONArray("DriverStandings");
+                                for(int j = 0; j < DriverStandings.length(); j++) {
+                                    String placement = DriverStandings.getJSONObject(j).getString("positionText");
+                                    String points = DriverStandings.getJSONObject(j).getString("points");
+                                    String driverName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("givenName");
+                                    String driverFamilyName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("familyName");
+                                    String driverCode = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("code");
+                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
+                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
+                                    String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                    datum.add(smth);
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
-                                recyclerView.setAdapter(adapter);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            Handler handler = new Handler();
+                            handler.postDelayed(()->{
+                                recyclerView.setVisibility(View.VISIBLE);
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                shimmerFrameLayout.stopShimmer();
+                            },500);
+                            adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
+                            recyclerView.setAdapter(adapter);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(pastSeasonDriversStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(pastSeasonDriversStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }

@@ -30,7 +30,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -46,16 +45,18 @@ import java.util.concurrent.TimeUnit;
 
 public class futureRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
-    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private TextView days_countdown, hrs_countdown, mns_countdown,  countdown_header,
-            infoRaceName;
+    private TextView days_countdown;
+    private TextView hrs_countdown;
+    private TextView mns_countdown;
+    private TextView countdown_header;
     private scheduleAdapter adapter;
     private RecyclerView recyclerView;
-    private long startTime;
     private long diffStart, diffEnd;
     private ToggleButton saveRace;
     private LocalDate currentDate;
-    private String fullRaceName_key, mRaceName, mYear, mCircuitId;
+    private String fullRaceName_key;
+    private String mRaceName;
+    private String mYear;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
 
@@ -81,19 +82,19 @@ public class futureRaceScheduleFragment extends Fragment {
         hrs_countdown = view.findViewById(R.id.hrs_countdown);
         mns_countdown = view.findViewById(R.id.mns_countdown);
         countdown_header = view.findViewById(R.id.countdown_header);
-        infoRaceName = view.findViewById(R.id.infoRaceName);
+        TextView infoRaceName = view.findViewById(R.id.infoRaceName);
 
         saveRace = view.findViewById(R.id.saveRace);
 
         recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if (!getArguments().isEmpty()){
-            mCircuitId = getArguments().getString("circuitId");
+            String mCircuitId = getArguments().getString("circuitId");
             mRaceName = getArguments().getString("raceName");
 
             String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
@@ -119,23 +120,17 @@ public class futureRaceScheduleFragment extends Fragment {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user!=null){
                 isSaved(fullRaceName_key);
-                saveRace.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(saveRace.isChecked()){
-                            saveRace(currentDate);
-                        }else{
-                            deleteRace(fullRaceName_key);
-                        }
+                saveRace.setOnClickListener(view2 -> {
+                    if(saveRace.isChecked()){
+                        saveRace(currentDate);
+                    }else{
+                        deleteRace(fullRaceName_key);
                     }
                 });
             }else{
-                saveRace.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        saveRace.setChecked(false);
-                        Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
-                    }
+                saveRace.setOnClickListener(view1 -> {
+                    saveRace.setChecked(false);
+                    Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
             infoRaceName.setText(futureRaceName);
@@ -345,12 +340,13 @@ public class futureRaceScheduleFragment extends Fragment {
                 countdown_header.setText(getString(getStringByName(key + "_text")));
             }
 
+            String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
             SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
             dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
             try {
                 Date eventStart_date = dateFormat.parse(value);
                 milliseconds = eventStart_date.getTime();
-                startTime = System.currentTimeMillis();
+                long startTime = System.currentTimeMillis();
 
                 Date endTime = new Date(eventStart_date.getTime() + HOUR);
                 dateFormat.setTimeZone(TimeZone.getDefault());

@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -43,10 +42,9 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         }
 
 
-        RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.main_layout);
         setContentView(R.layout.past_season_schedule_page);
 
-        TextView pageHeader = (TextView) findViewById(R.id.pageHeader);
+        TextView pageHeader = findViewById(R.id.pageHeader);
 
         String headerText = " ";
         if (Locale.getDefault().getLanguage().equals("ru")){
@@ -57,7 +55,6 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         pageHeader.setText(headerText);
 
         LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
 
 
         getSchedule();

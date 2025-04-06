@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -43,7 +42,6 @@ public class registerPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
     EditText editTextUsername, editTextEmail, editTextPassword;
     Button registerButton;
-    TextView logInTextView;
     ProgressBar registerProgress;
     TextInputLayout til_username, til_email, til_password;
     String email, password, username;
@@ -120,27 +118,17 @@ public class registerPageActivity extends AppCompatActivity {
             }
         });
 
-        til_username = (TextInputLayout) findViewById(R.id.username_layout);
-        til_email = (TextInputLayout) findViewById(R.id.email_layout);
-        til_password = (TextInputLayout) findViewById(R.id.password_layout);
+        til_username = findViewById(R.id.username_layout);
+        til_email = findViewById(R.id.email_layout);
+        til_password = findViewById(R.id.password_layout);
 
         auth = FirebaseAuth.getInstance();
 
 
-        registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                registerNewUser(driversList, teamList);
-            }
-        });
+        registerButton.setOnClickListener(v -> registerNewUser(driversList, teamList));
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         editTextEmail.addTextChangedListener(textWatcher);
         editTextPassword.addTextChangedListener(textWatcher);

@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,8 +61,7 @@ public class scheduleActivity extends AppCompatActivity {
         setContentView(R.layout.schudule_page);
 
 
-        RelativeLayout main_layout = (RelativeLayout) findViewById(R.id.main_layout);
-        cardView = (CardView) findViewById(R.id.cardView);
+        cardView = findViewById(R.id.cardView);
 
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
@@ -75,63 +73,43 @@ public class scheduleActivity extends AppCompatActivity {
 
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                getSchedule(currentYear, currentDate);
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            getSchedule(currentYear, currentDate);
+            swipeLayout.setRefreshing(false);
         });
 
         setSupportActionBar(toolbar);
 
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(scheduleActivity.this, driversStandingsActivity.class);
-                scheduleActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showDriverButton = findViewById(R.id.showDriver);
+        showDriverButton.setOnClickListener(v -> {
+            Intent intent = new Intent(scheduleActivity.this, driversStandingsActivity.class);
+            scheduleActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showHomePage = (Button) findViewById(R.id.showHomePage);
-        showHomePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(scheduleActivity.this, MainActivity.class);
-                scheduleActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showHomePage = findViewById(R.id.showHomePage);
+        showHomePage.setOnClickListener(v -> {
+            Intent intent = new Intent(scheduleActivity.this, MainActivity.class);
+            scheduleActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showTeams = (Button) findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(scheduleActivity.this, teamsStandingsActivity.class);
-                scheduleActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showTeams = findViewById(R.id.showTeams);
+        showTeams.setOnClickListener(v -> {
+            Intent intent = new Intent(scheduleActivity.this, teamsStandingsActivity.class);
+            scheduleActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showAccount = (Button) findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(scheduleActivity.this, logInPageActivity.class);
-                scheduleActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showAccount = findViewById(R.id.showAccount);
+        showAccount.setOnClickListener(v -> {
+            Intent intent = new Intent(scheduleActivity.this, logInPageActivity.class);
+            scheduleActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -159,7 +137,7 @@ public class scheduleActivity extends AppCompatActivity {
 
 
                     String currentDateString = currentDate.toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     boolean future = false;
                     boolean isOnGoing = false;
                     boolean concluded = true;
@@ -199,13 +177,13 @@ public class scheduleActivity extends AppCompatActivity {
                     }
                     if (isOnGoing){
                         cardView.setVisibility(View.VISIBLE);
-                        TextView roundOngoing = (TextView) findViewById(R.id.round);
-                        TextView dayStartOngoing = (TextView) findViewById(R.id.day_start);
-                        TextView dayEndOngoing = (TextView) findViewById(R.id.day_end);
-                        TextView raceMonthOngoing = (TextView) findViewById(R.id.raceMonth);
-                        TextView raceCountryOngoing = (TextView) findViewById(R.id.raceCountry);
-                        TextView raceNameOngoing = (TextView) findViewById(R.id.raceName);
-                        TextView circuitNameOngoing = (TextView) findViewById(R.id.circuitName);
+                        TextView roundOngoing = findViewById(R.id.round);
+                        TextView dayStartOngoing = findViewById(R.id.day_start);
+                        TextView dayEndOngoing = findViewById(R.id.day_end);
+                        TextView raceMonthOngoing = findViewById(R.id.raceMonth);
+                        TextView raceCountryOngoing = findViewById(R.id.raceCountry);
+                        TextView raceNameOngoing = findViewById(R.id.raceName);
+                        TextView circuitNameOngoing = findViewById(R.id.circuitName);
 
                         rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -273,40 +251,35 @@ public class scheduleActivity extends AppCompatActivity {
 
                         dayStartOngoing.setText(dayStart);
                         dayEndOngoing.setText(dayEnd);
-                        cardView.setOnClickListener(new View.OnClickListener() {
+                        cardView.setOnClickListener(v -> rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onClick(View v) {
-                                rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        String circuitName = snapshot.child("circuitName").getValue(String.class);
-                                        String raceCountry = snapshot.child("country").getValue(String.class);
+                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
+                                String circuitName = snapshot1.child("circuitName").getValue(String.class);
+                                String raceCountry = snapshot1.child("country").getValue(String.class);
 
-                                        Intent intent = new Intent(scheduleActivity.this , futureRaceActivity.class);
+                                Intent intent = new Intent(scheduleActivity.this , futureRaceActivity.class);
 
-                                        Bundle bundle = new Bundle();
-                                        bundle.putString("raceName" , raceName);
-                                        bundle.putString("futureRaceStartDay" , dayStart);
-                                        bundle.putString("futureRaceEndDay" , dayEnd);
-                                        bundle.putString("futureRaceStartMonth" , monthStart);
-                                        bundle.putString("futureRaceEndMonth" , monthEnd);
-                                        bundle.putString("circuitId", circuitId);
-                                        bundle.putString("circuitName" , circuitName);
-                                        bundle.putString("raceCountry" , raceCountry);
-                                        bundle.putString("roundCount" , String.valueOf(round));
-                                        bundle.putString("dateStart", dateStart);
-                                        intent.putExtras(bundle);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("raceName" , raceName);
+                                bundle.putString("futureRaceStartDay" , dayStart);
+                                bundle.putString("futureRaceEndDay" , dayEnd);
+                                bundle.putString("futureRaceStartMonth" , monthStart);
+                                bundle.putString("futureRaceEndMonth" , monthEnd);
+                                bundle.putString("circuitId", circuitId);
+                                bundle.putString("circuitName" , circuitName);
+                                bundle.putString("raceCountry" , raceCountry);
+                                bundle.putString("roundCount" , String.valueOf(round));
+                                bundle.putString("dateStart", dateStart);
+                                intent.putExtras(bundle);
 
-                                        scheduleActivity.this.startActivity(intent);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("scheduleActivityFirebaseError", error.getMessage());
-                                    }
-                                });
+                                scheduleActivity.this.startActivity(intent);
                             }
-                        });
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("scheduleActivityFirebaseError", error.getMessage());
+                            }
+                        }));
                     }
                 }
 
@@ -352,15 +325,12 @@ public class scheduleActivity extends AppCompatActivity {
             myViewPager2.setCurrentItem(myViewPager2.getCurrentItem(), false);
         }
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(R.string.upcoming_text);
-                }
-                else{
-                    tab.setText(R.string.concluded_text);
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(R.string.upcoming_text);
+            }
+            else{
+                tab.setText(R.string.concluded_text);
             }
         });
         tabLayoutMediator.attach();

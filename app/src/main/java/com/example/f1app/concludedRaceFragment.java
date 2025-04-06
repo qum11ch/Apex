@@ -79,13 +79,10 @@ public class concludedRaceFragment extends Fragment {
 
             if (parent.equals("schedule")){
                 pastSeasonsResults.setText(buttonText);
-                pastSeasonsResults.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(requireContext(), pastSeasonScheduleActivity.class);
-                        requireContext().startActivity(intent);
-                        requireActivity().overridePendingTransition(0, 0);
-                    }
+                pastSeasonsResults.setOnClickListener(v -> {
+                    Intent intent = new Intent(requireContext(), pastSeasonScheduleActivity.class);
+                    requireContext().startActivity(intent);
+                    requireActivity().overridePendingTransition(0, 0);
                 });
             }else{
                 pastSeasonsResults.setVisibility(View.GONE);
@@ -155,13 +152,10 @@ public class concludedRaceFragment extends Fragment {
             Button pastSeasonsResults = (Button) view.findViewById(R.id.pastSeasonResults);
             String buttonText = getText(R.string.past_season_result) + " 2024";
             pastSeasonsResults.setText(buttonText);
-            pastSeasonsResults.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(requireContext(), pastSeasonScheduleActivity.class);
-                    requireContext().startActivity(intent);
-                    requireActivity().overridePendingTransition(0, 0);
-                }
+            pastSeasonsResults.setOnClickListener(v -> {
+                Intent intent = new Intent(requireContext(), pastSeasonScheduleActivity.class);
+                requireContext().startActivity(intent);
+                requireActivity().overridePendingTransition(0, 0);
             });
             scrollView.setScrollingEnabled(false);
 

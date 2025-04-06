@@ -65,28 +65,28 @@ public class teamStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        enterYear = (TextView) view.findViewById(R.id.enterYear);
-        wins = (TextView) view.findViewById(R.id.wins);
-        podiums = (TextView) view.findViewById(R.id.podiums);
-        poles = (TextView) view.findViewById(R.id.poles);
-        championships = (TextView) view.findViewById(R.id.championships);
-        firstDriverName = (TextView) view.findViewById(R.id.firstDriverName);
-        firstDriverFamilyName = (TextView) view.findViewById(R.id.firstDriverFamilyName);
-        secondDriverName = (TextView) view.findViewById(R.id.secondDriverName);
-        championshipsText = (TextView) view.findViewById(R.id.championshipsText);
-        secondDriverFamilyName = (TextView) view.findViewById(R.id.secondDriverFamilyName);
-        teamBase = (TextView) view.findViewById(R.id.teamBase);
-        teamChief = (TextView) view.findViewById(R.id.teamChief);
-        techChief = (TextView) view.findViewById(R.id.techChief);
-        chassis = (TextView) view.findViewById(R.id.chassis);
-        powerUnit = (TextView) view.findViewById(R.id.powerUnit);
-        firstDriver_image = (ImageView) view.findViewById(R.id.firstDriver_image);
-        secondDriver_image = (ImageView) view.findViewById(R.id.secondDriver_image);
-        firstDriver_layout = (RelativeLayout) view.findViewById(R.id.firstDriver_layout);
-        secondDriver_layout = (RelativeLayout) view.findViewById(R.id.secondDriver_layout);
-        tech_layout = (RelativeLayout) view.findViewById(R.id.tech_layout);
-        fullTeamName = (TextView) view.findViewById(R.id.fullTeamName);
-        flag = (ImageView) view.findViewById(R.id.flag);
+        enterYear = view.findViewById(R.id.enterYear);
+        wins = view.findViewById(R.id.wins);
+        podiums = view.findViewById(R.id.podiums);
+        poles = view.findViewById(R.id.poles);
+        championships = view.findViewById(R.id.championships);
+        firstDriverName = view.findViewById(R.id.firstDriverName);
+        firstDriverFamilyName = view.findViewById(R.id.firstDriverFamilyName);
+        secondDriverName = view.findViewById(R.id.secondDriverName);
+        championshipsText = view.findViewById(R.id.championshipsText);
+        secondDriverFamilyName = view.findViewById(R.id.secondDriverFamilyName);
+        teamBase = view.findViewById(R.id.teamBase);
+        teamChief = view.findViewById(R.id.teamChief);
+        techChief = view.findViewById(R.id.techChief);
+        chassis = view.findViewById(R.id.chassis);
+        powerUnit = view.findViewById(R.id.powerUnit);
+        firstDriver_image = view.findViewById(R.id.firstDriver_image);
+        secondDriver_image = view.findViewById(R.id.secondDriver_image);
+        firstDriver_layout = view.findViewById(R.id.firstDriver_layout);
+        secondDriver_layout = view.findViewById(R.id.secondDriver_layout);
+        tech_layout = view.findViewById(R.id.tech_layout);
+        fullTeamName = view.findViewById(R.id.fullTeamName);
+        flag = view.findViewById(R.id.flag);
 
 
 
@@ -98,77 +98,70 @@ public class teamStatsFragment extends Fragment {
             String mTeamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
 
-            firstDriver_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String[] driverFullname = driversList.get(0).split(" ");
-                    String mDriverName, mDriverFamilyName;
-                    if(driversList.get(0).equals("Andrea Kimi Antonelli")){
-                        mDriverName = driverFullname[0] + " " + driverFullname[1];
-                        mDriverFamilyName = driverFullname[2];
-                    }else{
-                        mDriverName = driverFullname[0];
-                        mDriverFamilyName = driverFullname[1];
-                    }
-                    rootRef.child("drivers").child(driversList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String mDriverCode = snapshot.child("driversCode").getValue(String.class);
-                            Intent intent = new Intent(requireContext(), driverPageActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("driverName", mDriverName);
-                            bundle.putString("driverFamilyName", mDriverFamilyName);
-                            bundle.putString("driverTeam", mTeamName);
-                            bundle.putString("driverCode", mDriverCode);
-                            bundle.putString("driverTeamId", mTeamId);
-                            intent.putExtras(bundle);
-                            requireContext().startActivity(intent);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                        }
-                    });
+            firstDriver_layout.setOnClickListener(view2 -> {
+                String[] driverFullname = driversList.get(0).split(" ");
+                String mDriverName, mDriverFamilyName;
+                if(driversList.get(0).equals("Andrea Kimi Antonelli")){
+                    mDriverName = driverFullname[0] + " " + driverFullname[1];
+                    mDriverFamilyName = driverFullname[2];
+                }else{
+                    mDriverName = driverFullname[0];
+                    mDriverFamilyName = driverFullname[1];
                 }
+                rootRef.child("drivers").child(driversList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("driverName", mDriverName);
+                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                        bundle.putString("driverTeam", mTeamName);
+                        bundle.putString("driverCode", mDriverCode);
+                        bundle.putString("driverTeamId", mTeamId);
+                        intent.putExtras(bundle);
+                        requireContext().startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                    }
+                });
             });
 
-            secondDriver_layout.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    String[] driverFullname = driversList.get(1).split(" ");
-                    String mDriverName, mDriverFamilyName;
-                    if(driversList.get(1).equals("Andrea Kimi Antonelli")){
-                        mDriverName = driverFullname[0] + " " + driverFullname[1];
-                        mDriverFamilyName = driverFullname[2];
-                    }else{
-                        mDriverName = driverFullname[0];
-                        mDriverFamilyName = driverFullname[1];
-                    }
-                    rootRef.child("drivers").child(driversList.get(1)).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String mDriverCode = snapshot.child("driversCode").getValue(String.class);
-                            Intent intent = new Intent(requireContext(), driverPageActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("driverName", mDriverName);
-                            bundle.putString("driverFamilyName", mDriverFamilyName);
-                            bundle.putString("driverTeam", mTeamName);
-                            bundle.putString("driverCode", mDriverCode);
-                            bundle.putString("driverTeamId", mTeamId);
-                            intent.putExtras(bundle);
-                            requireContext().startActivity(intent);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                        }
-                    });
+            secondDriver_layout.setOnClickListener(view1 -> {
+                String[] driverFullname = driversList.get(1).split(" ");
+                String mDriverName, mDriverFamilyName;
+                if(driversList.get(1).equals("Andrea Kimi Antonelli")){
+                    mDriverName = driverFullname[0] + " " + driverFullname[1];
+                    mDriverFamilyName = driverFullname[2];
+                }else{
+                    mDriverName = driverFullname[0];
+                    mDriverFamilyName = driverFullname[1];
                 }
+                rootRef.child("drivers").child(driversList.get(1)).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("driverName", mDriverName);
+                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                        bundle.putString("driverTeam", mTeamName);
+                        bundle.putString("driverCode", mDriverCode);
+                        bundle.putString("driverTeamId", mTeamId);
+                        intent.putExtras(bundle);
+                        requireContext().startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                    }
+                });
             });
 
-            int resourceId_teamLogo;
             rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -215,8 +208,8 @@ public class teamStatsFragment extends Fragment {
                     String baseCountry = baseLocation[1];
 
                     ArrayList<String> localizedData = localizeLocality(baseLocation[0], baseCountry, requireContext());
-                    String country = localizedData.get(0);
-                    String cityName = localizedData.get(1);
+                    //String country = localizedData.get(0);
+                    //String cityName = localizedData.get(1);
                     String locale = localizedData.get(2);
                     teamBase.setText(locale);
 

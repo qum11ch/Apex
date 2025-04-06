@@ -57,8 +57,6 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
 
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
-        LocalDate currentDate = LocalDate.now();
-
         concludedRacesData datum = dataList.get(position);
 
         String round = datum.getRoundNumber();
@@ -110,11 +108,11 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
             }
         });
 
-        String locale = " ";
+        String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){
             ArrayList<String> localizedData = localizeLocality(datum.getLocality(), datum.getCountry(), context);
-            String country = localizedData.get(0);
-            String cityName = localizedData.get(1);
+            //String country = localizedData.get(0);
+            //String cityName = localizedData.get(1);
             locale = localizedData.get(2);
         }else{
             String cityName = datum.getLocality();
@@ -181,26 +179,23 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
                 .error(R.drawable.f1)
                 .into(holder.thirdPlace_image);
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, concludedRaceActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName" , datum.getRaceName());
-                bundle.putString("raceStartDay" , dayStart);
-                bundle.putString("raceEndDay" , dayEnd);
-                bundle.putString("raceStartMonth" , monthStart);
-                bundle.putString("raceEndMonth" , monthEnd);
-                bundle.putString("circuitName" , datum.getCircuitName());
-                bundle.putString("roundCount" , datum.getRoundNumber());
-                bundle.putString("raceCountry" , datum.getCountry());
-                bundle.putString("dateStart", datum.getDateStart());
-                bundle.putString("firstPlaceCode", firstPlace_code);
-                bundle.putString("secondPlaceCode", secondPlace_code);
-                bundle.putString("thirdPlaceCode", thirdPlace_code);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context, concludedRaceActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("raceName" , datum.getRaceName());
+            bundle.putString("raceStartDay" , dayStart);
+            bundle.putString("raceEndDay" , dayEnd);
+            bundle.putString("raceStartMonth" , monthStart);
+            bundle.putString("raceEndMonth" , monthEnd);
+            bundle.putString("circuitName" , datum.getCircuitName());
+            bundle.putString("roundCount" , datum.getRoundNumber());
+            bundle.putString("raceCountry" , datum.getCountry());
+            bundle.putString("dateStart", datum.getDateStart());
+            bundle.putString("firstPlaceCode", firstPlace_code);
+            bundle.putString("secondPlaceCode", secondPlace_code);
+            bundle.putString("thirdPlaceCode", thirdPlace_code);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
     }
@@ -213,7 +208,7 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code;
-        ImageView countryImage, secondPlace_image, firstPlace_image, thirdPlace_image;
+        ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);

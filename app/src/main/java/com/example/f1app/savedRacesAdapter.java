@@ -37,7 +37,7 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
     @Override
     public savedRacesAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_saved_race, parent , false);
-        return new savedRacesAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -50,12 +50,7 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
         holder.save_date.setText(saveDate);
         holder.number.setText(String.valueOf(position + 1));
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openRace(datum.getRaceName(), datum.getRaceSeason());
-            }
-        });
+        holder.constraintLayout.setOnClickListener(view -> openRace(datum.getRaceName(), datum.getRaceSeason()));
     }
 
     @Override
@@ -63,7 +58,7 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView raceName, number, save_date;
         ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView) {
@@ -90,7 +85,7 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
                         .child("raceThirdCode").getValue(String.class);
 
                 String mCircuitId = snapshot.child("Circuit/circuitId").getValue(String.class);
-                String mRaceDate = snapshot.child("raceDate").getValue(String.class);
+                //String mRaceDate = snapshot.child("raceDate").getValue(String.class);
                 Integer mRound = snapshot.child("round").getValue(Integer.class);
                 String dateStart = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class);
                 String dateEnd = snapshot.child("raceDate").getValue(String.class);

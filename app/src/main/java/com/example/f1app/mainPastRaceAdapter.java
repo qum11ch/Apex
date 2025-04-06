@@ -86,7 +86,6 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         }
 
         String localeRaceName = datum.getRaceName().toLowerCase().replaceAll("\\s+", "_");
-        //Log.i("futureRaceName", " " + localeRaceName);
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + currentYear;
         holder.raceName.setText(pastRaceName);
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -104,11 +103,11 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
             }
         });
 
-        String locale = " ";
+        String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){
             ArrayList<String> localizedData = localizeLocality(datum.getLocality(), datum.getCountry(), context);
-            String country = localizedData.get(0);
-            String cityName = localizedData.get(1);
+            //String country = localizedData.get(0);
+            //String cityName = localizedData.get(1);
             locale = localizedData.get(2);
         }else{
             String cityName = datum.getLocality();
@@ -141,26 +140,23 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         holder.secondPlace_code.setText(secondPlace_code);
         holder.thirdPlace_code.setText(thirdPlace_code);
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context, concludedRaceActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName" , datum.getRaceName());
-                bundle.putString("raceStartDay" , dayStart);
-                bundle.putString("raceEndDay" , dayEnd);
-                bundle.putString("raceStartMonth" , monthStart);
-                bundle.putString("raceEndMonth" , monthEnd);
-                bundle.putString("circuitName" , datum.getCircuitName());
-                bundle.putString("roundCount" , datum.getRoundNumber());
-                bundle.putString("raceCountry" , datum.getCountry());
-                bundle.putString("dateStart", datum.getDateStart());
-                bundle.putString("firstPlaceCode", firstPlace_code);
-                bundle.putString("secondPlaceCode", secondPlace_code);
-                bundle.putString("thirdPlaceCode", thirdPlace_code);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context, concludedRaceActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("raceName" , datum.getRaceName());
+            bundle.putString("raceStartDay" , dayStart);
+            bundle.putString("raceEndDay" , dayEnd);
+            bundle.putString("raceStartMonth" , monthStart);
+            bundle.putString("raceEndMonth" , monthEnd);
+            bundle.putString("circuitName" , datum.getCircuitName());
+            bundle.putString("roundCount" , datum.getRoundNumber());
+            bundle.putString("raceCountry" , datum.getCountry());
+            bundle.putString("dateStart", datum.getDateStart());
+            bundle.putString("firstPlaceCode", firstPlace_code);
+            bundle.putString("secondPlaceCode", secondPlace_code);
+            bundle.putString("thirdPlaceCode", thirdPlace_code);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
     }

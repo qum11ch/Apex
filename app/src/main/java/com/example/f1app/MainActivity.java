@@ -54,7 +54,7 @@ import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
-    Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
+    Button showDriverButton, showSchedule, showTeams, showAccount;
     FirebaseDatabase database;
     //private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     //private static final long HOUR = 3600*1000;
@@ -70,9 +70,6 @@ public class MainActivity extends AppCompatActivity {
     private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams, sfProgressBar;
     private ProgressBar raceProgress;
     private TextView raceProgressText;
-
-    private static final TimeInterpolator GAUGE_ANIMATION_INTERPOLATOR = new DecelerateInterpolator(2);
-    private static final long GAUGE_ANIMATION_DURATION = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,12 +95,12 @@ public class MainActivity extends AppCompatActivity {
         futureLayout = findViewById(R.id.main_future);
         pastLayout = findViewById(R.id.main_past);
 
-        rvFuture = (RecyclerView) findViewById(R.id.recyclerView_future);
-        rvPast = (RecyclerView) findViewById(R.id.recyclerView_past);
-        rvDrivers = (RecyclerView) findViewById(R.id.recyclerView_drivers);
-        rvTeams = (RecyclerView) findViewById(R.id.recyclerView_teams);
-        raceProgress = (ProgressBar) findViewById(R.id.race_progress);
-        raceProgressText = (TextView) findViewById(R.id.race_progress_text);
+        rvFuture = findViewById(R.id.recyclerView_future);
+        rvPast = findViewById(R.id.recyclerView_past);
+        rvDrivers = findViewById(R.id.recyclerView_drivers);
+        rvTeams = findViewById(R.id.recyclerView_teams);
+        raceProgress = findViewById(R.id.race_progress);
+        raceProgressText = findViewById(R.id.race_progress_text);
 
         sfFuture = findViewById(R.id.shimmerFuture_layout);
         sfPast = findViewById(R.id.shimmerPast_layout);
@@ -132,44 +129,32 @@ public class MainActivity extends AppCompatActivity {
         rvTeams.setLayoutManager(linearLayoutManager4);
 
 
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, driversStandingsActivity.class);
-                MainActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showDriverButton = findViewById(R.id.showDriver);
+        showDriverButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, driversStandingsActivity.class);
+            MainActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showSchedule = (Button) findViewById(R.id.showSchedule);
-        showSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, scheduleActivity.class);
-                MainActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showSchedule = findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, scheduleActivity.class);
+            MainActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showTeams = (Button) findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, teamsStandingsActivity.class);
-                MainActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showTeams = findViewById(R.id.showTeams);
+        showTeams.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, teamsStandingsActivity.class);
+            MainActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        showAccount = (Button) findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, logInPageActivity.class);
-                MainActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+        showAccount = findViewById(R.id.showAccount);
+        showAccount.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, logInPageActivity.class);
+            MainActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
         //updateData(currentDate);
@@ -210,119 +195,111 @@ public class MainActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            String total = MRData.getString("total");
-                            if (!total.equals("0")){
-                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                for(int i = 0; i < StandingsLists.length(); i++){
-                                    JSONArray DriverStandings = StandingsLists.getJSONObject(i)
-                                            .getJSONArray("DriverStandings");
-                                    for(int j = 0; j < 3; j++) {
-                                        String placement = DriverStandings.getJSONObject(j).getString("positionText");
-                                        String points = DriverStandings.getJSONObject(j).getString("points");
-                                        String driverName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("givenName");
-                                        String driverFamilyName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("familyName");
-                                        String driverCode = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("code");
-                                        JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                        String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                        String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-                                        driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
-                                        datumDrivers.add(smth);
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        String total = MRData.getString("total");
+                        if (!total.equals("0")){
+                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                            for(int i = 0; i < StandingsLists.length(); i++){
+                                JSONArray DriverStandings = StandingsLists.getJSONObject(i)
+                                        .getJSONArray("DriverStandings");
+                                for(int j = 0; j < 3; j++) {
+                                    String placement = DriverStandings.getJSONObject(j).getString("positionText");
+                                    String points = DriverStandings.getJSONObject(j).getString("points");
+                                    String driverName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("givenName");
+                                    String driverFamilyName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("familyName");
+                                    String driverCode = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("code");
+                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
+                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
+                                    String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                    datumDrivers.add(smth);
+                                }
+                            }
+                            Handler handler = new Handler();
+                            handler.postDelayed(()->{
+                                rvDrivers.setVisibility(View.VISIBLE);
+                                sfDrivers.setVisibility(View.GONE);
+                                sfDrivers.stopShimmer();
+                            },500);
+                            mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
+                            rvDrivers.setAdapter(adapter);
+                        }else{
+                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    datumDrivers.add(new driversList("","","","","","","",
+                                            true, currentYear));
+                                    for (DataSnapshot child: snapshot.getChildren()) {
+                                        String constructorId = child.child("constructorId").getValue(String.class);
+                                        String constructorsName = child.child("name").getValue(String.class);
+
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                    String driverFullname = driverDataSnapshot.getKey();
+                                                    DatabaseReference driversRef = rootRef.child("drivers");
+                                                    DatabaseReference driverRef = driversRef.child(driverFullname);
+
+                                                    ValueEventListener driversValueEventListener = new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                            String[] parts = driverFullname.split(" ");
+                                                            String driverName, driverFamilyName;
+                                                            if(driverFullname.equals("Andrea Kimi Antonelli")){
+                                                                driverName = parts[0] + " " + parts[1];
+                                                                driverFamilyName = parts[2];
+                                                            }else{
+                                                                driverName = parts[0];
+                                                                driverFamilyName = parts[1];
+                                                            }
+                                                            String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
+                                                            driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
+                                                                    true, currentYear);
+                                                            datumDrivers.add(smth);
+                                                            mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
+                                                            Handler handler = new Handler();
+                                                            handler.postDelayed(()->{
+                                                                rvDrivers.setVisibility(View.VISIBLE);
+                                                                sfDrivers.setVisibility(View.GONE);
+                                                                sfDrivers.stopShimmer();
+                                                            },500);
+                                                            rvDrivers.setAdapter(adapter);
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                            Log.e("driverStandingsError", databaseError.getMessage()); //Don't ignore errors!
+                                                        }
+                                                    };
+                                                    driverRef.addListenerForSingleValueEvent(driversValueEventListener);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                            }
+                                        });
                                     }
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    rvDrivers.setVisibility(View.VISIBLE);
-                                    sfDrivers.setVisibility(View.GONE);
-                                    sfDrivers.stopShimmer();
-                                },500);
-                                mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
-                                rvDrivers.setAdapter(adapter);
-                            }else{
-                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        datumDrivers.add(new driversList("","","","","","","",
-                                                true, currentYear));
-                                        for (DataSnapshot child: snapshot.getChildren()) {
-                                            String constructorId = child.child("constructorId").getValue(String.class);
-                                            String constructorsName = child.child("name").getValue(String.class);
-
-                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                        String driverFullname = driverDataSnapshot.getKey();
-                                                        DatabaseReference driversRef = rootRef.child("drivers");
-                                                        DatabaseReference driverRef = driversRef.child(driverFullname);
-
-                                                        ValueEventListener driversValueEventListener = new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                String[] parts = driverFullname.split(" ");
-                                                                String driverName, driverFamilyName;
-                                                                if(driverFullname.equals("Andrea Kimi Antonelli")){
-                                                                    driverName = parts[0] + " " + parts[1];
-                                                                    driverFamilyName = parts[2];
-                                                                }else{
-                                                                    driverName = parts[0];
-                                                                    driverFamilyName = parts[1];
-                                                                }
-                                                                String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
-                                                                driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
-                                                                        true, currentYear);
-                                                                datumDrivers.add(smth);
-                                                                mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
-                                                                Handler handler = new Handler();
-                                                                handler.postDelayed(()->{
-                                                                    rvDrivers.setVisibility(View.VISIBLE);
-                                                                    sfDrivers.setVisibility(View.GONE);
-                                                                    sfDrivers.stopShimmer();
-                                                                },500);
-                                                                rvDrivers.setAdapter(adapter);
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                                Log.e("driverStandingsError", databaseError.getMessage()); //Don't ignore errors!
-                                                            }
-                                                        };
-                                                        driverRef.addListenerForSingleValueEvent(driversValueEventListener);
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
-                                                }
-                                            });
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
-                                    }
-                                });
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                }
+                            });
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 
@@ -333,25 +310,72 @@ public class MainActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            String total = MRData.getString("total");
-                            if (!total.equals("0")){
-                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                for(int i = 0; i < StandingsLists.length(); i++){
-                                    JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
-                                            .getJSONArray("ConstructorStandings");
-                                    for(int j = 0; j < 3; j++){
-                                        String constructorName = ConstructorStandings.getJSONObject(j)
-                                                .getJSONObject("Constructor").getString("name");
-                                        String position = ConstructorStandings.getJSONObject(j).getString("positionText");
-                                        String points = ConstructorStandings.getJSONObject(j).getString("points");
-                                        String constructorId = ConstructorStandings.getJSONObject(j)
-                                                .getJSONObject("Constructor").getString("constructorId");
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        String total = MRData.getString("total");
+                        if (!total.equals("0")){
+                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                            for(int i = 0; i < StandingsLists.length(); i++){
+                                JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
+                                        .getJSONArray("ConstructorStandings");
+                                for(int j = 0; j < 3; j++){
+                                    String constructorName = ConstructorStandings.getJSONObject(j)
+                                            .getJSONObject("Constructor").getString("name");
+                                    String position = ConstructorStandings.getJSONObject(j).getString("positionText");
+                                    String points = ConstructorStandings.getJSONObject(j).getString("points");
+                                    String constructorId = ConstructorStandings.getJSONObject(j)
+                                            .getJSONObject("Constructor").getString("constructorId");
+                                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                    rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            ArrayList<String> teamDrivers = new ArrayList<>();
+                                            for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                String driverFullname = driverDataSnapshot.getKey();
+                                                teamDrivers.add(driverFullname);
+                                            }
+
+                                            teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                            smth.setDrivers(teamDrivers);
+                                            datumTeams.add(smth);
+                                            Handler handler = new Handler();
+                                            handler.postDelayed(()->{
+                                                rvTeams.setVisibility(View.VISIBLE);
+                                                sfTeams.setVisibility(View.GONE);
+                                                sfTeams.stopShimmer();
+                                            },500);
+                                            mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
+                                            rvTeams.setAdapter(adapter);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Log.e("MainActivityTeams", error.getMessage());
+                                        }
+                                    });
+                                }
+                            }
+
+                        }
+                        else{
+                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    ArrayList<String> firstTeam = new ArrayList<>();
+                                    firstTeam.add("");
+                                    firstTeam.add("");
+                                    teamsList first = new teamsList("","","","", true);
+                                    first.setDrivers(firstTeam);
+                                    datumTeams.add(first);
+
+                                    for (DataSnapshot child: snapshot.getChildren()) {
+
+                                        String constructorId = child.child("constructorId").getValue(String.class);
+                                        String constructorsName = child.child("name").getValue(String.class);
+
                                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                         rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                             @Override
@@ -361,93 +385,38 @@ public class MainActivity extends AppCompatActivity {
                                                     String driverFullname = driverDataSnapshot.getKey();
                                                     teamDrivers.add(driverFullname);
                                                 }
-
-                                                teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
-                                                datumTeams.add(smth);
                                                 Handler handler = new Handler();
                                                 handler.postDelayed(()->{
                                                     rvTeams.setVisibility(View.VISIBLE);
                                                     sfTeams.setVisibility(View.GONE);
                                                     sfTeams.stopShimmer();
                                                 },500);
+                                                datumTeams.add(smth);
                                                 mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
                                                 rvTeams.setAdapter(adapter);
                                             }
-
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
                                                 Log.e("MainActivityTeams", error.getMessage());
                                             }
                                         });
                                     }
+
                                 }
 
-                            }
-                            else{
-                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        ArrayList<String> firstTeam = new ArrayList<>();
-                                        firstTeam.add("");
-                                        firstTeam.add("");
-                                        teamsList first = new teamsList("","","","", true);
-                                        first.setDrivers(firstTeam);
-                                        datumTeams.add(first);
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("MainActivityTeams", error.getMessage());
+                                }
+                            });
 
-                                        for (DataSnapshot child: snapshot.getChildren()) {
-
-                                            String constructorId = child.child("constructorId").getValue(String.class);
-                                            String constructorsName = child.child("name").getValue(String.class);
-
-                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    ArrayList<String> teamDrivers = new ArrayList<>();
-                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                        String driverFullname = driverDataSnapshot.getKey();
-                                                        teamDrivers.add(driverFullname);
-                                                    }
-                                                    teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
-                                                    smth.setDrivers(teamDrivers);
-                                                    Handler handler = new Handler();
-                                                    handler.postDelayed(()->{
-                                                        rvTeams.setVisibility(View.VISIBLE);
-                                                        sfTeams.setVisibility(View.GONE);
-                                                        sfTeams.stopShimmer();
-                                                    },500);
-                                                    datumTeams.add(smth);
-                                                    mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
-                                                    rvTeams.setAdapter(adapter);
-                                                }
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("MainActivityTeams", error.getMessage());
-                                                }
-                                            });
-                                        }
-
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("MainActivityTeams", error.getMessage());
-                                    }
-                                });
-
-                            }
-                        } catch (JSONException e) {
-                            Log.e("MainActivityTeams", " " + e.getMessage());
                         }
+                    } catch (JSONException e) {
+                        Log.e("MainActivityTeams", " " + e.getMessage());
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 

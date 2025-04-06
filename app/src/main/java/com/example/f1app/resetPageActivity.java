@@ -45,26 +45,16 @@ public class resetPageActivity extends AppCompatActivity {
         userEmail = findViewById(R.id.userEmail);
         resetButton = findViewById(R.id.resetPassword);
 
-        til_email = (TextInputLayout) findViewById(R.id.email_layout);
+        til_email = findViewById(R.id.email_layout);
 
         resetProgress = findViewById(R.id.resetProgress);
 
-        resetButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUserAccount();
-            }
-        });
+        resetButton.setOnClickListener(v -> loginUserAccount());
 
         userEmail.addTextChangedListener(textWatcher);
 
-        backButton = (Button) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -107,22 +97,16 @@ public class resetPageActivity extends AppCompatActivity {
             auth = FirebaseAuth.getInstance();
 
             auth.sendPasswordResetEmail(emailAddress)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unesed) {
-                            Toast.makeText(resetPageActivity.this, getString(R.string.reset_password_text), Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(resetPageActivity.this, logInPageActivity.class);
-                            resetPageActivity.this.startActivity(intent);
-                            finish();
-                        }
+                    .addOnSuccessListener(unesed -> {
+                        Toast.makeText(resetPageActivity.this, getString(R.string.reset_password_text), Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(resetPageActivity.this, logInPageActivity.class);
+                        resetPageActivity.this.startActivity(intent);
+                        finish();
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(resetPageActivity.this, getString(R.string.wrong_email), Toast.LENGTH_LONG).show();
-                            resetButton.setVisibility(View.VISIBLE);
-                            resetProgress.setVisibility(View.INVISIBLE);
-                        }
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(resetPageActivity.this, getString(R.string.wrong_email), Toast.LENGTH_LONG).show();
+                        resetButton.setVisibility(View.VISIBLE);
+                        resetProgress.setVisibility(View.INVISIBLE);
                     });
         }
     }

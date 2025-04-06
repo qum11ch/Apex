@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -79,11 +78,11 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
 
         holder.circuitName.setText(context.getString(getStringByName(datum.getCircuitId() + "_text")));
 
-        String locale = " ";
+        String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){
             ArrayList<String> localizedData = localizeLocality(datum.getLocale(), datum.getFutureRaceCountry(), context);
-            String country = localizedData.get(0);
-            String cityName = localizedData.get(1);
+            //String country = localizedData.get(0);
+            //String cityName = localizedData.get(1);
             locale = localizedData.get(2);
         }else{
             String cityName = datum.getLocale();
@@ -108,26 +107,23 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
         holder.day_end.setText(dayEnd);
 
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , futureRaceActivity.class);
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , futureRaceActivity.class);
 
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName" , datum.getFutureRaceName());
-                bundle.putString("futureRaceStartDay" , dayStart);
-                bundle.putString("futureRaceEndDay" , dayEnd);
-                bundle.putString("futureRaceStartMonth" , monthStart);
-                bundle.putString("futureRaceEndMonth" , monthEnd);
-                bundle.putString("circuitName" , datum.getFutureCircuitName());
-                bundle.putString("roundCount" , datum.getFutureRaceRound());
-                bundle.putString("raceCountry" , datum.getFutureRaceCountry());
-                bundle.putString("circuitId", datum.getCircuitId());
-                bundle.putString("dateStart", datum.getFutureRaceStartDate());
-                intent.putExtras(bundle);
+            Bundle bundle = new Bundle();
+            bundle.putString("raceName" , datum.getFutureRaceName());
+            bundle.putString("futureRaceStartDay" , dayStart);
+            bundle.putString("futureRaceEndDay" , dayEnd);
+            bundle.putString("futureRaceStartMonth" , monthStart);
+            bundle.putString("futureRaceEndMonth" , monthEnd);
+            bundle.putString("circuitName" , datum.getFutureCircuitName());
+            bundle.putString("roundCount" , datum.getFutureRaceRound());
+            bundle.putString("raceCountry" , datum.getFutureRaceCountry());
+            bundle.putString("circuitId", datum.getCircuitId());
+            bundle.putString("dateStart", datum.getFutureRaceStartDate());
+            intent.putExtras(bundle);
 
-                context.startActivity(intent);
-            }
+            context.startActivity(intent);
         });
     }
 
@@ -138,7 +134,6 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
 
     public class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName;
-        ImageView countryImage;
         ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,7 +144,6 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
             raceCountry = itemView.findViewById(R.id.raceCountry);
             raceName = itemView.findViewById(R.id.raceName);
             circuitName = itemView.findViewById(R.id.circuitName);
-            //countryImage = itemView.findViewById(R.id.countryImage);
             constraintLayout = itemView.findViewById(R.id.main_layout);
         }
     }

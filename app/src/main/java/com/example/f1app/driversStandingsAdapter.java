@@ -3,7 +3,6 @@ package com.example.f1app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -21,8 +20,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -53,13 +50,10 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
     public driversStandingsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view;
-        switch (viewType) {
-            case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver_first, parent, false);
-                break;
-            default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
-                break;
+        if (viewType == 1) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_driver_first, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
         }
         return new DataHolder(view, viewType);
     }
@@ -83,47 +77,27 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         }
 
         StorageReference mDriverTeamLogo = storageRef.child("teams/" + datum.getConstructorId().toLowerCase() + "_logo.png");
-        mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                GlideApp.with(context)
-                        .load(uri)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .skipMemoryCache(true)
-                        .error(R.drawable.f1)
-                        .into(holder.driverTeam_logo);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                GlideApp.with(context)
+        mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(true)
+                .error(R.drawable.f1)
+                .into(holder.driverTeam_logo)).addOnFailureListener(e -> GlideApp.with(context)
                         .load(R.drawable.f1)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .skipMemoryCache(true)
-                        .into(holder.driverTeam_logo);
-            }
-        });
+                        .into(holder.driverTeam_logo));
 
-        mDriverImage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-            @Override
-            public void onSuccess(Uri uri) {
-                GlideApp.with(context)
-                        .load(uri)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .skipMemoryCache(true)
-                        .error(R.drawable.f1)
-                        .into(holder.driverImage);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                GlideApp.with(context)
+        mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(true)
+                .error(R.drawable.f1)
+                .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
                         .load(R.drawable.f1)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .skipMemoryCache(true)
-                        .into(holder.driverImage);
-            }
-        });
+                        .into(holder.driverImage));
 
         if (holder.getItemViewType() == 1) {
             if (datum.isStartSeason()) {
@@ -171,19 +145,16 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
             holder.line.setBackgroundResource(resourceId_teamColor);
         }
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , driverPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("driverName", datum.getDriverName());
-                bundle.putString("driverCode", datum.getDriverCode());
-                bundle.putString("driverTeam", datum.getDriverTeam());
-                bundle.putString("driverFamilyName", datum.getDriverFamilyName());
-                bundle.putString("driverTeamId", datum.getConstructorId());
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , driverPageActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("driverName", datum.getDriverName());
+            bundle.putString("driverCode", datum.getDriverCode());
+            bundle.putString("driverTeam", datum.getDriverTeam());
+            bundle.putString("driverFamilyName", datum.getDriverFamilyName());
+            bundle.putString("driverTeamId", datum.getConstructorId());
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
     }
 

@@ -39,10 +39,9 @@ import java.util.List;
 
 public class concludedRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
-    private TextView secondPlace_code, firstPlace_code, thirdPlace_code,
-            infoRaceName, day_start, day_end, month,
-            show_results;
-    private ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
+    private TextView secondPlace_code;
+    private TextView firstPlace_code;
+    private TextView thirdPlace_code;
     private scheduleAdapter adapter;
     private RecyclerView recyclerView;
     private ToggleButton saveRace;
@@ -70,14 +69,14 @@ public class concludedRaceScheduleFragment extends Fragment {
         secondPlace_code = view.findViewById(R.id.secondPlace_code);
         firstPlace_code = view.findViewById(R.id.firstPlace_code);
         thirdPlace_code = view.findViewById(R.id.thirdPlace_code);
-        infoRaceName = view.findViewById(R.id.infoRaceName);
-        secondPlace_image = view.findViewById(R.id.secondPlace_image);
-        firstPlace_image = view.findViewById(R.id.firstPlace_image);
-        thirdPlace_image = view.findViewById(R.id.thirdPlace_image);
-        day_start = view.findViewById(R.id.day_start);
-        day_end = view.findViewById(R.id.day_end);
-        month = view.findViewById(R.id.month);
-        show_results = view.findViewById(R.id.show_results);
+        TextView infoRaceName = view.findViewById(R.id.infoRaceName);
+        ImageView secondPlace_image = view.findViewById(R.id.secondPlace_image);
+        ImageView firstPlace_image = view.findViewById(R.id.firstPlace_image);
+        ImageView thirdPlace_image = view.findViewById(R.id.thirdPlace_image);
+        TextView day_start = view.findViewById(R.id.day_start);
+        TextView day_end = view.findViewById(R.id.day_end);
+        TextView month = view.findViewById(R.id.month);
+        TextView show_results = view.findViewById(R.id.show_results);
         saveRace = view.findViewById(R.id.saveRace);
 
         recyclerView = view.findViewById(R.id.recyclerview_schedule);
@@ -101,17 +100,14 @@ public class concludedRaceScheduleFragment extends Fragment {
             String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
             String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
 
-            show_results.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                    Bundle bundle = new Bundle();
-                    bundle.putString("raceName", mRaceName);
-                    bundle.putString("circuitId", mCircuitId);
-                    bundle.putString("season", mYear);
-                    intent.putExtras(bundle);
-                    requireContext().startActivity(intent);
-                }
+            show_results.setOnClickListener(view1 -> {
+                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("raceName", mRaceName);
+                bundle.putString("circuitId", mCircuitId);
+                bundle.putString("season", mYear);
+                intent.putExtras(bundle);
+                requireContext().startActivity(intent);
             });
 
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
@@ -123,23 +119,17 @@ public class concludedRaceScheduleFragment extends Fragment {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user!=null){
                 isSaved(fullRaceName_key);
-                saveRace.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(saveRace.isChecked()){
-                            saveRace(currentDate);
-                        }else{
-                            deleteRace(fullRaceName_key);
-                        }
+                saveRace.setOnClickListener(view2 -> {
+                    if(saveRace.isChecked()){
+                        saveRace(currentDate);
+                    }else{
+                        deleteRace(fullRaceName_key);
                     }
                 });
             }else{
-                saveRace.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        saveRace.setChecked(false);
-                        Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
-                    }
+                saveRace.setOnClickListener(view3 -> {
+                    saveRace.setChecked(false);
+                    Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
 

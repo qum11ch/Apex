@@ -35,7 +35,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
         view = LayoutInflater.from(context).inflate(R.layout.item_main_team, parent , false);
-        return new mainTeamsStandingsAdapter.DataHolder(view, viewType);
+        return new DataHolder(view, viewType);
     }
 
     @Override
@@ -65,17 +65,14 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         int resourceId_teamColor = getColorByName(datum.getTeamId());
         holder.line.setBackgroundResource(resourceId_teamColor);
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , teamPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("teamName", datum.getTeam());
-                bundle.putString("teamId", datum.getTeamId());
-                bundle.putStringArrayList("teamDrivers", teamDrivers);
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , teamPageActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("teamName", datum.getTeam());
+            bundle.putString("teamId", datum.getTeamId());
+            bundle.putStringArrayList("teamDrivers", teamDrivers);
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
 
 
@@ -95,7 +92,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView teamName, teamPoints, teamPosition;
         ConstraintLayout constraintLayout;
         RelativeLayout leftLayout, team_layout;

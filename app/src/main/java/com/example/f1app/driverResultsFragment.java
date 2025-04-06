@@ -66,9 +66,9 @@ public class driverResultsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        scrollView = (ScrollView) view.findViewById(R.id.scrollView);
-        radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
-        radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
+        scrollView = view.findViewById(R.id.scrollView);
+        radioButton_2025 = view.findViewById(R.id.radioButton_2025);
+        radioButton_2024 = view.findViewById(R.id.radioButton_2024);
 
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
 
@@ -77,9 +77,9 @@ public class driverResultsFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
 
         if (!getArguments().isEmpty()) {
-            String mDriverTeam = getArguments().getString("driverTeam");
+            //String mDriverTeam = getArguments().getString("driverTeam");
             String mDriverName = getArguments().getString("driverName");
-            String mDriverCode = getArguments().getString("driverCode");
+            //String mDriverCode = getArguments().getString("driverCode");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
 
             shimmerFrameLayout.startShimmer();
@@ -94,11 +94,11 @@ public class driverResultsFragment extends Fragment {
 
                     String[] mLastGPparse = mLastEntry.split("\\s+");
                     String mLastSeason = mLastGPparse[0];
-                    String mLastRaceName = mLastEntry.substring(5);
+                    //String mLastRaceName = mLastEntry.substring(5);
 
                     String[] mFirstGPparse = mFirstEntry.split("\\s+");
                     String mFirstSeason = mFirstGPparse[0];
-                    String mFirstRaceName = mFirstEntry.substring(5);
+                    //String mFirstRaceName = mFirstEntry.substring(5);
 
                     if (mLastSeason.equals("2024")){
                         radioButton_2025.setVisibility(View.GONE);
@@ -119,49 +119,37 @@ public class driverResultsFragment extends Fragment {
             });
 
 
-            radioButton_2025.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!radioButton_2025.isChecked()){
-                        radioButton_2025.setChecked(true);
-                        radioButton_2024.setChecked(false);
-                    }
+            radioButton_2025.setOnClickListener(view1 -> {
+                if (!radioButton_2025.isChecked()){
+                    radioButton_2025.setChecked(true);
                     radioButton_2024.setChecked(false);
                 }
+                radioButton_2024.setChecked(false);
             });
 
-            radioButton_2024.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    if (!radioButton_2024.isChecked()){
-                        radioButton_2025.setChecked(false);
-                        radioButton_2024.setChecked(true);
-                    }
+            radioButton_2024.setOnClickListener(view2 -> {
+                if (!radioButton_2024.isChecked()){
                     radioButton_2025.setChecked(false);
+                    radioButton_2024.setChecked(true);
+                }
+                radioButton_2025.setChecked(false);
+            });
+
+            radioButton_2025.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2025.isChecked()){
+                    recyclerView.setVisibility(View.GONE);
+                    shimmerFrameLayout.setVisibility(View.VISIBLE);
+                    shimmerFrameLayout.startShimmer();
+                    getResults("2025", mDriverName, mDriverFamilyName);
                 }
             });
 
-            radioButton_2025.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (radioButton_2025.isChecked()){
-                        recyclerView.setVisibility(View.GONE);
-                        shimmerFrameLayout.setVisibility(View.VISIBLE);
-                        shimmerFrameLayout.startShimmer();
-                        getResults("2025", mDriverName, mDriverFamilyName);
-                    }
-                }
-            });
-
-            radioButton_2024.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    if (radioButton_2024.isChecked()){
-                        recyclerView.setVisibility(View.GONE);
-                        shimmerFrameLayout.setVisibility(View.VISIBLE);
-                        shimmerFrameLayout.startShimmer();
-                        getResults("2024", mDriverName, mDriverFamilyName);
-                    }
+            radioButton_2024.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2024.isChecked()){
+                    recyclerView.setVisibility(View.GONE);
+                    shimmerFrameLayout.setVisibility(View.VISIBLE);
+                    shimmerFrameLayout.startShimmer();
+                    getResults("2024", mDriverName, mDriverFamilyName);
                 }
             });
         }

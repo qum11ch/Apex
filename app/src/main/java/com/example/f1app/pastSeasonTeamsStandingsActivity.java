@@ -21,8 +21,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -36,7 +34,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -63,8 +60,8 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 
-        TextView teamsHeader = (TextView) findViewById(R.id.teamsHeader);
-        String headerText = " ";
+        TextView teamsHeader = findViewById(R.id.teamsHeader);
+        String headerText;
         if (Locale.getDefault().getLanguage().equals("ru")){
             headerText = getString(R.string.past_season_teams) + " 2024";
         }else{
@@ -78,29 +75,20 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager3);
 
         datum = new ArrayList<>();
-        LocalDate currentDate = LocalDate.now();
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                datum = new ArrayList<>();
-                getTeamStanding();
-                swipeLayout.setRefreshing(false);
-            }
+        swipeLayout.setOnRefreshListener(() -> {
+            recyclerView.setVisibility(View.GONE);
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            datum = new ArrayList<>();
+            getTeamStanding();
+            swipeLayout.setRefreshing(false);
         });
 
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         getTeamStanding();
 
@@ -117,70 +105,62 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            String total = MRData.getString("total");
-                            if (!total.equals("0")){
-                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                for(int i = 0; i < StandingsLists.length(); i++){
-                                    JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
-                                            .getJSONArray("ConstructorStandings");
-                                    for(int j = 0; j < ConstructorStandings.length(); j++){
-                                        String constructorName = ConstructorStandings.getJSONObject(j)
-                                                .getJSONObject("Constructor").getString("name");
-                                        String position = ConstructorStandings.getJSONObject(j).getString("positionText");
-                                        String points = ConstructorStandings.getJSONObject(j).getString("points");
-                                        String constructorId = ConstructorStandings.getJSONObject(j)
-                                                .getJSONObject("Constructor").getString("constructorId");
-                                        if (constructorName.equals("Sauber")){
-                                                constructorName = "Kick Sauber";
-                                        }
-                                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                        String finalConstructorName = constructorName;
-                                        rootRef.child("driverLineUp/season/" + "2024" + "/" + constructorId).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                ArrayList<String> teamDrivers = new ArrayList<>();
-                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                    String driverFullname = driverDataSnapshot.getKey();
-                                                    teamDrivers.add(driverFullname);
-                                                }
-                                                teamsList smth = new teamsList(finalConstructorName, position, points, constructorId, false);
-                                                smth.setDrivers(teamDrivers);
-                                                datum.add(smth);
-                                                Handler handler = new Handler();
-                                                handler.postDelayed(()->{
-                                                    recyclerView.setVisibility(View.VISIBLE);
-                                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                                    shimmerFrameLayout.stopShimmer();
-                                                },500);
-                                                adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
-                                                recyclerView.setAdapter(adapter);
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("teamStandingsError", error.getMessage());
-                                            }
-                                        });
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        String total = MRData.getString("total");
+                        if (!total.equals("0")){
+                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                            for(int i = 0; i < StandingsLists.length(); i++){
+                                JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
+                                        .getJSONArray("ConstructorStandings");
+                                for(int j = 0; j < ConstructorStandings.length(); j++){
+                                    String constructorName = ConstructorStandings.getJSONObject(j)
+                                            .getJSONObject("Constructor").getString("name");
+                                    String position = ConstructorStandings.getJSONObject(j).getString("positionText");
+                                    String points = ConstructorStandings.getJSONObject(j).getString("points");
+                                    String constructorId = ConstructorStandings.getJSONObject(j)
+                                            .getJSONObject("Constructor").getString("constructorId");
+                                    if (constructorName.equals("Sauber")){
+                                            constructorName = "Kick Sauber";
                                     }
-                                }
+                                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                    String finalConstructorName = constructorName;
+                                    rootRef.child("driverLineUp/season/" + "2024" + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            ArrayList<String> teamDrivers = new ArrayList<>();
+                                            for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                String driverFullname = driverDataSnapshot.getKey();
+                                                teamDrivers.add(driverFullname);
+                                            }
+                                            teamsList smth = new teamsList(finalConstructorName, position, points, constructorId, false);
+                                            smth.setDrivers(teamDrivers);
+                                            datum.add(smth);
+                                            Handler handler = new Handler();
+                                            handler.postDelayed(()->{
+                                                recyclerView.setVisibility(View.VISIBLE);
+                                                shimmerFrameLayout.setVisibility(View.GONE);
+                                                shimmerFrameLayout.stopShimmer();
+                                            },500);
+                                            adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
+                                            recyclerView.setAdapter(adapter);
+                                        }
 
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            Log.e("teamStandingsError", error.getMessage());
+                                        }
+                                    });
+                                }
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(pastSeasonTeamsStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(pastSeasonTeamsStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }

@@ -17,8 +17,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -90,107 +88,99 @@ public class raceResultsRaceFragment extends Fragment {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            JSONObject RaceTable = MRData.getJSONObject("RaceTable");
-                            JSONArray Races = RaceTable.getJSONArray("Races");
-                            for(int i = 0; i < Races.length(); i++) {
-                                JSONArray QualifyingResults = Races.getJSONObject(i)
-                                        .getJSONArray("Results");
-                                for (int j = 0; j < QualifyingResults.length(); j++) {
-                                    JSONObject Result = QualifyingResults.getJSONObject(j);
-                                    String positionText = Result.getString("positionText");
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        JSONObject RaceTable = MRData.getJSONObject("RaceTable");
+                        JSONArray Races = RaceTable.getJSONArray("Races");
+                        for(int i = 0; i < Races.length(); i++) {
+                            JSONArray QualifyingResults = Races.getJSONObject(i)
+                                    .getJSONArray("Results");
+                            for (int j = 0; j < QualifyingResults.length(); j++) {
+                                JSONObject Result = QualifyingResults.getJSONObject(j);
+                                String positionText = Result.getString("positionText");
 
-                                    String driverCode = Result.getJSONObject("Driver")
-                                            .getString("code");
-                                    String constructorId = Result.getJSONObject("Constructor")
-                                            .getString("constructorId");
-                                    String position = " ";
-                                    String time = " ";
-                                    String points = Result.getString("points");
+                                String driverCode = Result.getJSONObject("Driver")
+                                        .getString("code");
+                                String constructorId = Result.getJSONObject("Constructor")
+                                        .getString("constructorId");
+                                String position = " ";
+                                String time = " ";
+                                String points = Result.getString("points");
 
-                                    if (Result.has("FastestLap")){
-                                        String fastestLapRank = Result.getJSONObject("FastestLap")
-                                                .getString("rank");
-                                        if (fastestLapRank.equals("1")){
-                                            String mFastestLapTime = Result.getJSONObject("FastestLap")
-                                                    .getJSONObject("Time").getString("time");
-                                            String driverName = Result.getJSONObject("Driver")
-                                                    .getString("givenName");
-                                            String driverFamilyName = Result.getJSONObject("Driver")
-                                                    .getString("familyName");
-                                            String driver = driverName.charAt(0) + ". " + driverFamilyName;
-                                            fastestLapTime.setText(mFastestLapTime);
-                                            fastestLapDriverName.setText(driver);
-                                            Handler handler = new Handler();
-                                            handler.postDelayed(()->{
-                                                fastestLapDriverLayout.setVisibility(View.VISIBLE);
-                                                shimmerDriverLayout.setVisibility(View.GONE);
-                                                shimmerDriverLayout.stopShimmer();
-                                            },500);
-                                        }
+                                if (Result.has("FastestLap")){
+                                    String fastestLapRank = Result.getJSONObject("FastestLap")
+                                            .getString("rank");
+                                    if (fastestLapRank.equals("1")){
+                                        String mFastestLapTime = Result.getJSONObject("FastestLap")
+                                                .getJSONObject("Time").getString("time");
+                                        String driverName = Result.getJSONObject("Driver")
+                                                .getString("givenName");
+                                        String driverFamilyName = Result.getJSONObject("Driver")
+                                                .getString("familyName");
+                                        String driver = driverName.charAt(0) + ". " + driverFamilyName;
+                                        fastestLapTime.setText(mFastestLapTime);
+                                        fastestLapDriverName.setText(driver);
+                                        Handler handler = new Handler();
+                                        handler.postDelayed(()->{
+                                            fastestLapDriverLayout.setVisibility(View.VISIBLE);
+                                            shimmerDriverLayout.setVisibility(View.GONE);
+                                            shimmerDriverLayout.stopShimmer();
+                                        },500);
                                     }
-
-                                    switch (positionText) {
-                                        case "R":
-                                            time = getResources().getString(R.string.dnf_text);
-                                            position = getResources().getString(R.string.nc_text);
-                                            break;
-                                        case "W":
-                                            time = getResources().getString(R.string.wd);
-                                            position = getResources().getString(R.string.wd_text);
-                                            points = " ";
-                                            break;
-                                        case "D":
-                                            time = getResources().getString(R.string.dsq_text);
-                                            position = getResources().getString(R.string.dsq_pos_text);
-                                            points = " ";
-                                            break;
-                                        default:
-                                            if (Result.has("Time")) {
-                                                time = Result.getJSONObject("Time")
-                                                        .getString("time");
-                                                if (!positionText.equals("1")) {
-                                                    time += getResources().getString(R.string.seconds_text);
-                                                }
-                                            } else {
-                                                String status = Result.getString("status");
-                                                if (status.contains("Lap")) {
-                                                    time = Result.getString("status");
-                                                } else {
-                                                    time = getResources().getString(R.string.dnf_text);
-                                                }
-                                            }
-                                            position = positionText;
-                                            break;
-                                    }
-
-                                    raceResultsRaceData results = new raceResultsRaceData(position,
-                                            constructorId, driverCode, time, points, season);
-                                    datum.add(results);
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new raceResultsRaceAdapter(requireActivity(), datum);
-                                recyclerView.setAdapter(adapter);
+
+                                switch (positionText) {
+                                    case "R":
+                                        time = getResources().getString(R.string.dnf_text);
+                                        position = getResources().getString(R.string.nc_text);
+                                        break;
+                                    case "W":
+                                        time = getResources().getString(R.string.wd);
+                                        position = getResources().getString(R.string.wd_text);
+                                        points = " ";
+                                        break;
+                                    case "D":
+                                        time = getResources().getString(R.string.dsq_text);
+                                        position = getResources().getString(R.string.dsq_pos_text);
+                                        points = " ";
+                                        break;
+                                    default:
+                                        if (Result.has("Time")) {
+                                            time = Result.getJSONObject("Time")
+                                                    .getString("time");
+                                            if (!positionText.equals("1")) {
+                                                time += getResources().getString(R.string.seconds_text);
+                                            }
+                                        } else {
+                                            String status = Result.getString("status");
+                                            if (status.contains("Lap")) {
+                                                time = Result.getString("status");
+                                            } else {
+                                                time = getResources().getString(R.string.dnf_text);
+                                            }
+                                        }
+                                        position = positionText;
+                                        break;
+                                }
+
+                                raceResultsRaceData results = new raceResultsRaceData(position,
+                                        constructorId, driverCode, time, points, season);
+                                datum.add(results);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            Handler handler = new Handler();
+                            handler.postDelayed(()->{
+                                recyclerView.setVisibility(View.VISIBLE);
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                shimmerFrameLayout.stopShimmer();
+                            },500);
+                            adapter = new raceResultsRaceAdapter(requireActivity(), datum);
+                            recyclerView.setAdapter(adapter);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }
