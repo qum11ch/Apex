@@ -1,7 +1,13 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.driverStatsFragment.getCountryCode;
+import static com.example.f1app.teamsStandingsActivity.localizeLocality;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,10 +21,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAdapter.DataHolder>{
     Activity context;
@@ -41,26 +57,26 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
     @Override
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        switch (viewType){
-            case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_race_first, parent , false);
-                break;
-            default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_concluded_race, parent , false);
-                break;
+        if (viewType == 1) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_race_first, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.item_concluded_race, parent, false);
         }
+
+
         return new DataHolder(view, viewType);
     }
 
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
 
         concludedRacesData datum = dataList.get(position);
 
         String round = datum.getRoundNumber();
         holder.round.setText(round);
+
+        String mSeason = datum.getSeason();
 
         String dateStart_string = datum.getDateStart();
         String dateEnd_string = datum.getDateEnd();
@@ -83,10 +99,53 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             holder.raceMonth.setText(month);
         }
 
-        holder.raceName.setText(datum.getRaceName() + " " + currentYear);
-        holder.circuitName.setText(datum.getCircuitName());
+        String localeRaceName = datum.getRaceName().toLowerCase().replaceAll("\\s+", "_");
+        String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + mSeason;
+        holder.raceName.setText(pastRaceName);
 
-        String locale = datum.getLocality() + ", " + datum.getCountry();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("circuits").orderByChild("circuitName").equalTo(datum.getCircuitName()).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for(DataSnapshot circtuitSnap: snapshot.getChildren()){
+                    String circuitId = circtuitSnap.child("circuitId").getValue(String.class);
+                    holder.circuitName.setText(context.getString(getStringByName(circuitId + "_text")));
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+
+        String locale = " ";
+        if (Locale.getDefault().getLanguage().equals("ru")){
+            ArrayList<String> localizedData = localizeLocality(datum.getLocality(), datum.getCountry(), context);
+            String country = localizedData.get(0);
+            String cityName = localizedData.get(1);
+            locale = localizedData.get(2);
+        }else{
+            String cityName = datum.getLocality();
+            switch (cityName){
+                case "Monaco":
+                case "Singapore":
+                    cityName = null;
+                    break;
+                default:
+                    break;
+            }
+            if (cityName!=null){
+                locale = cityName + ", " + datum.getCountry();
+            }else{
+                locale = datum.getCountry();
+            }
+
+        }
+
         holder.raceCountry.setText(locale);
         holder.day_start.setText(dayStart);
         holder.day_end.setText(dayEnd);
@@ -100,29 +159,37 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         holder.thirdPlace_code.setText(thirdPlace_code);
 
         if (holder.getItemViewType() == 1){
-            int firstPlace_imageId = context.getResources().getIdentifier(firstPlace_code.toLowerCase(), "drawable",
-                    context.getPackageName());
+            StorageReference mWinnerImage;
+            StorageReference mSecondImage;
+            StorageReference mThirdImage;
+            if (mSeason.equals("2024")){
+                mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_2024.png");
+                mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_2024.png");
+                mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_2024.png");
+            }else {
+                mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + ".png");
+                mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + ".png");
+                mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + ".png");
+            }
 
-            Glide.with(context)
-                    .load(firstPlace_imageId)
+
+            GlideApp.with(context)
+                    .load(mWinnerImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(holder.firstPlace_image);
 
-            int secondPlace_imageId = context.getResources().getIdentifier(secondPlace_code.toLowerCase(), "drawable",
-                    context.getPackageName());
 
-            Glide.with(context)
-                    .load(secondPlace_imageId)
+            GlideApp.with(context)
+                    .load(mSecondImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(holder.secondPlace_image);
 
-            int thirdPlace_imageId = context.getResources().getIdentifier(thirdPlace_code.toLowerCase(), "drawable",
-                    context.getPackageName());
 
-            Glide.with(context)
-                    .load(thirdPlace_imageId)
+
+            GlideApp.with(context)
+                    .load(mThirdImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(holder.thirdPlace_image);
@@ -158,7 +225,6 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
     }
 
     public class DataHolder extends RecyclerView.ViewHolder{
-
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ImageView countryImage, secondPlace_image, firstPlace_image, thirdPlace_image;

@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +30,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -36,7 +42,7 @@ import java.util.List;
 public class concludedRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
     private TextView secondPlace_code, firstPlace_code, thirdPlace_code,
-            infoRaceName, infoSeason, raceName, circuitName, day_start, day_end, month,
+            infoRaceName, day_start, day_end, month,
             show_results;
     private ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
     private scheduleAdapter adapter;
@@ -66,13 +72,10 @@ public class concludedRaceScheduleFragment extends Fragment {
         secondPlace_code = view.findViewById(R.id.secondPlace_code);
         firstPlace_code = view.findViewById(R.id.firstPlace_code);
         thirdPlace_code = view.findViewById(R.id.thirdPlace_code);
-        infoSeason = view.findViewById(R.id.infoSeason);
         infoRaceName = view.findViewById(R.id.infoRaceName);
         secondPlace_image = view.findViewById(R.id.secondPlace_image);
         firstPlace_image = view.findViewById(R.id.firstPlace_image);
         thirdPlace_image = view.findViewById(R.id.thirdPlace_image);
-        raceName = view.findViewById(R.id.raceName);
-        circuitName = view.findViewById(R.id.circuitName);
         day_start = view.findViewById(R.id.day_start);
         day_end = view.findViewById(R.id.day_end);
         month = view.findViewById(R.id.month);
@@ -113,6 +116,9 @@ public class concludedRaceScheduleFragment extends Fragment {
                 }
             });
 
+            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+            String pastRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
+
             fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
             currentDate = LocalDate.now();
@@ -139,29 +145,39 @@ public class concludedRaceScheduleFragment extends Fragment {
                 });
             }
 
-
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-            int resourceId_firstDriverImage = requireContext().getResources().getIdentifier(mFirstPlaceCode.toLowerCase(), "drawable",
-                    requireContext().getPackageName());
-            Glide.with(requireContext())
-                    .load(resourceId_firstDriverImage)
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            StorageReference storageRef = storage.getReference();
+
+
+            StorageReference mWinnerImage;
+            StorageReference mSecondImage;
+            StorageReference mThirdImage;
+            if (mYear.equals("2024")){
+                mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_2024.png");
+                mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_2024.png");
+                mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_2024.png");
+            }else{
+                mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + ".png");
+                mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + ".png");
+                mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + ".png");
+            }
+
+            GlideApp.with(requireContext())
+                    .load(mWinnerImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(firstPlace_image);
 
-            int resourceId_secondDriverImage = requireContext().getResources().getIdentifier(mSecondPlaceCode.toLowerCase(), "drawable",
-                    requireContext().getPackageName());
-            Glide.with(requireContext())
-                    .load(resourceId_secondDriverImage)
+            GlideApp.with(requireContext())
+                    .load(mSecondImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(secondPlace_image);
 
-            int resourceId_thirdDriverImage = requireContext().getResources().getIdentifier(mThirdPlaceCode.toLowerCase(), "drawable",
-                    requireContext().getPackageName());
-            Glide.with(requireContext())
-                    .load(resourceId_thirdDriverImage)
+            GlideApp.with(requireContext())
+                    .load(mThirdImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.f1)
                     .into(thirdPlace_image);
@@ -243,10 +259,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                     Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
                 }
             });
-
-
-            infoSeason.setText(mYear);
-            infoRaceName.setText(mRaceName);
+            infoRaceName.setText(pastRaceName);
 
             if(mRaceStartMonth.equals(mRaceEndMonth)){
                 month.setText(mRaceStartMonth);
@@ -255,20 +268,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                 String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
                 month.setText(monthAll);
             }
-            raceName.setText(mRaceName);
 
-            rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String mcircuitName = snapshot.child("circuitName").getValue(String.class);
-                    circuitName.setText(mcircuitName);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("futureActivityFirebaseError", error.getMessage());
-                }
-            });
             day_start.setText(mRaceStartDay);
             day_end.setText(mRaceEndDay);
 
@@ -276,6 +276,10 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             datum = new ArrayList<>();
             getRaceSchedule(mRaceName, currentYear);
+
+            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
+            AppBarLayout appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+            appBarLayout.setExpanded(true,true);
         }
     }
 
@@ -316,7 +320,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                 });
     }
 
-    public void deleteRace(String fullRaceName_key){
+    private void deleteRace(String fullRaceName_key){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -369,7 +373,6 @@ public class concludedRaceScheduleFragment extends Fragment {
     }
 
     private void getRaceSchedule(String raceName, String currentYear){
-        LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -400,12 +403,6 @@ public class concludedRaceScheduleFragment extends Fragment {
 
                     datum.add(secondPracticeEvent);
                     datum.add(thirdPracticeEvent);
-
-                    eventsCountdown.put("first_practice_event", firstPractice);
-                    eventsCountdown.put("second_practice_event", secondPractice);
-                    eventsCountdown.put("third_practice_event", thirdPractice);
-                    eventsCountdown.put("quali_event", raceQuali);
-                    eventsCountdown.put("race_event", race);
                 }else{
                     String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
                             " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
@@ -417,16 +414,10 @@ public class concludedRaceScheduleFragment extends Fragment {
 
                     datum.add(sprintQualiEvent);
                     datum.add(sprintEvent);
-
-                    eventsCountdown.put("first_practice_event", firstPractice);
-                    eventsCountdown.put("sprint_quali_event", sprintQuali);
-                    eventsCountdown.put("sprint_event", sprint);
-                    eventsCountdown.put("quali_event", raceQuali);
-                    eventsCountdown.put("race_event", race);
                 }
                 datum.add(qualiEvent);
                 datum.add(raceEvent);
-                adapter = new scheduleAdapter(getActivity(), datum);
+                adapter = new scheduleAdapter(getActivity(), datum, true);
                 recyclerView.setAdapter(adapter);
             }
 

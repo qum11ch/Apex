@@ -95,9 +95,17 @@ public class resetPageActivity extends AppCompatActivity {
         resetButton.setVisibility(View.INVISIBLE);
         resetProgress.setVisibility(View.VISIBLE);
 
+        String emailAddress = userEmail.getText().toString().trim();
+
+        if (emailAddress.isEmpty()) {
+            resetProgress.setVisibility(View.INVISIBLE);
+            resetButton.setVisibility(View.VISIBLE);
+            Toast.makeText(this, getString(R.string.empty_credentials_text), Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if(til_email.getError()==null){
             auth = FirebaseAuth.getInstance();
-            String emailAddress = userEmail.getText().toString().trim();
 
             auth.sendPasswordResetEmail(emailAddress)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -112,8 +120,7 @@ public class resetPageActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(resetPageActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            Log.e("resetPageActivityError", " " + e.getMessage());
+                            Toast.makeText(resetPageActivity.this, getString(R.string.wrong_email), Toast.LENGTH_LONG).show();
                             resetButton.setVisibility(View.VISIBLE);
                             resetProgress.setVisibility(View.INVISIBLE);
                         }

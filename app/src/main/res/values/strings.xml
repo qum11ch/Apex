@@ -31,7 +31,7 @@
     <string name="podiums">Podiums</string>
     <string name="delete_race">Delete From Saved</string>
     <string name="save_button_text">Save changes</string>
-    <string name="first_entry">First entry:</string>
+    <string name="first_entry">First entry</string>
     <string name="round">round</string>
     <string name="first_driver" translatable="false">first_driver</string>
     <string name="second_driver" translatable="false">second_driver</string>
@@ -72,7 +72,7 @@
     <string name="_2nd_place_driver_image" translatable="false">2nd_place_driver_image</string>
     <string name="_1st_place_driver_image" translatable="false">1st_place_driver_image</string>
     <string name="_3rd_place_driver_image" translatable="false">3rd_place_driver_image</string>
-    <string name="show_full_race_results">Show Full Race Results</string>
+    <string name="view_results">View Results</string>
     <string name="race_weekend_text">RACE WEEKEND</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="confirm_delete_info">Are you sure you want to delete your account?\nThat`s irretrievable</string>
@@ -189,11 +189,10 @@
     <string name="invalid_password_text">Password must has at least 6 symbols</string>
     <string name="invalid_username_text">This username is already taken</string>
     <string name="login_succ_text">Login successful!</string>
-    <string name="login_fail_text">Login failed!</string>
     <string name="empty_credentials_text">Please enter credentials</string>
     <string name="delete_account_text">Your account has been deleted.</string>
     <string name="smth_wrong_text">Something went wrong. Please try again later.</string>
-    <string name="auth_fail_text">Authentication Failed. Wrong username or password. Please try again later.</string>
+    <string name="auth_fail_text">Authentication Failed. Wrong username or password</string>
     <string name="change_pass_succ_text">Password Successfully Modified</string>
     <string name="change_email_succ_text">Email Successfully Modified</string>
     <string name="change_nothing_text">Nothing to change there</string>
@@ -202,11 +201,86 @@
     <string name="age_alt_text">Years</string>
     <string name="race_delete_succ_text">This race is deleted from saved races list!</string>
     <string name="race_save_succ_text">This race saved!</string>
+    <string name="driver_delete_succ_text">is not longer your favourite driver!</string>
+    <string name="driver_save_succ_text">is your new favourite driver!</string>
+    <string name="team_delete_succ_text">is not longer your favourite team!</string>
+    <string name="team_save_succ_text">is your new favourite team!</string>
     <string name="race_save_error_limit_text">You can have maximum 32 saved races. Please clear your saved races list!</string>
     <string name="race_save_error_login_text">You need to login to save races</string>
+    <string name="driver_save_error_login_text">You need to login to set your favourite driver</string>
+    <string name="team_save_error_login_text">You need to login to set your favourite team</string>
     <string name="lost_connection">lost connection</string>
     <string name="lost_connection_info">Check your internet connection and try again</string>
     <string name="try_again_button">try again</string>
     <string name="not_concluded">GP not concluded (N/C)</string>
     <string name="is_running">is running</string>
+    <string name="abu_dhabi_grand_prix_text">Abu Dhabi Grand Prix</string>
+    <string name="australian_grand_prix_text">Australian Grand Prix</string>
+    <string name="austrian_grand_prix_text">Austrian Grand Prix</string>
+    <string name="azerbaijan_grand_prix_text">Azerbaijan Grand Prix</string>
+    <string name="bahrain_grand_prix_text">Bahrain Grand Prix</string>
+    <string name="belgian_grand_prix_text">Belgian Grand Prix</string>
+    <string name="british_grand_prix_text">British Grand Prix</string>
+    <string name="canadian_grand_prix_text">Canadian Grand Prix</string>
+    <string name="chinese_grand_prix_text">Chinese Grand Prix</string>
+    <string name="dutch_grand_prix_text">Dutch Grand Prix</string>
+    <string name="emilia_romagna_grand_prix_text">Emilia Romagna Grand Prix</string>
+    <string name="hungarian_grand_prix_text">Hungarian Grand Prix</string>
+    <string name="italian_grand_prix_text">Italian Grand Prix</string>
+    <string name="japanese_grand_prix_text">Japanese Grand Prix</string>
+    <string name="las_vegas_grand_prix_text">Las Vegas Grand Prix</string>
+    <string name="mexico_city_grand_prix_text">Mexico City Grand Prix</string>
+    <string name="miami_grand_prix_text">Miami Grand Prix</string>
+    <string name="monaco_grand_prix_text">Monaco Grand Prix</string>
+    <string name="qatar_grand_prix_text">Qatar Grand Prix</string>
+    <string name="saudi_arabian_grand_prix_text">Saudi Arabian Grand Prix</string>
+    <string name="singapore_grand_prix_text">Singapore Grand Prix</string>
+    <string name="spanish_grand_prix_text">Spanish Grand Prix</string>
+    <string name="são_paulo_grand_prix_text">São Paulo Grand Prix</string>
+    <string name="united_states_grand_prix_text">United States Grand Prix</string>
+    <string name="malaysian_grand_prix_text">Malaysian Grand Prix</string>
+    <string name="times"> </string>
+    <string name="yas_marina_text">Yas Marina Circuit</string>
+    <string name="albert_park_text">Albert Park Grand Prix Circuit</string>
+    <string name="red_bull_ring_text">Red Bull Ring</string>
+    <string name="baku_text">Baku City Circuit</string>
+    <string name="bahrain_text">Bahrain International Circuit</string>
+    <string name="spa_text">Circuit de Spa-Francorchamps</string>
+    <string name="silverstone_text">Silverstone Circuit</string>
+    <string name="villeneuve_text">Circuit Gilles-Villeneuve</string>
+    <string name="shanghai_text">Shanghai International Circuit</string>
+    <string name="zandvoort_text">Circuit Zandvoort</string>
+    <string name="imola_text">Autodromo Internazionale Enzo e Dino Ferrari</string>
+    <string name="hungaroring_text">Hungaroring</string>
+    <string name="monza_text">Autodromo Nazionale Monza</string>
+    <string name="suzuka_text">Suzuka Circuit</string>
+    <string name="vegas_text">Las Vegas Strip Circuit</string>
+    <string name="rodriguez_text">Autódromo Hermanos Rodríguez</string>
+    <string name="miami_text">Miami International Autodrome</string>
+    <string name="monaco_text">Circuit de Monaco</string>
+    <string name="losail_text">Losail International Circuit</string>
+    <string name="jeddah_text">Jeddah Corniche Circuit</string>
+    <string name="marina_bay_text">Marina Bay Street Circuit</string>
+    <string name="catalunya_text">Circuit de Barcelona-Catalunya</string>
+    <string name="interlagos_text">Autódromo José Carlos Pace</string>
+    <string name="americas_text">Circuit of The Americas</string>
+    <string name="delete_race_text">Are you sure you want to delete this race from saved races list?</string>
+    <string name="race_finished_text">Grand-Prix finished</string>
+    <string name="notify_start_text">is start</string>
+    <string name="notify_end_text">is ended</string>
+    <string name="past_season_result">Race Results</string>
+    <string name="last_entry_text">Last Entry</string>
+    <string name="past_season_drivers">Drivers Standings</string>
+    <string name="past_season_teams">Drivers Standings</string>
+    <string name="race_completed_text">Rounds completed</string>
+    <string name="upcoming_race">Upcoming race</string>
+    <string name="last_concluded_race">Last concluded race</string>
+    <string name="top_drivers">Drivers Standings Leaders</string>
+    <string name="top_3_teams">Teams Standings Leaders</string>
+    <string name="weekend_ends_text">Weekend Finished</string>
+    <string name="last_text">Last</string>
+    <string name="retired_text">Retired</string>
+    <string name="wrong_email">There is no user with that email! Wrong Email!</string>
+    <string name="login_fail_text">Login Failed. Wrong username or password</string>
+    <string name="footer_splash_screen" translatable="false">This application is unofficial and is not associated in any way with the Formula 1 companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.</string>
 </resources>

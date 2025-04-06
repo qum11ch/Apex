@@ -22,11 +22,9 @@
             android:gravity="center"
             android:textAllCaps="true"
             android:layout_gravity="center_vertical"
-            android:includeFontPadding="false"
-            android:lineSpacingExtra="0dp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:text="@string/driver_header"
             android:paddingStart="15dp"
@@ -37,11 +35,9 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:id="@+id/driverName"
-            android:includeFontPadding="false"
-            android:lineSpacingExtra="0dp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:text="@string/q1_header"
             android:layout_marginStart="2dp"
@@ -57,7 +53,7 @@
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:text="@string/q2_header"
             android:layout_marginStart="2dp"
@@ -73,7 +69,7 @@
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:text="@string/q3_header"
             android:layout_marginStart="2dp"
@@ -89,7 +85,7 @@
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
     </LinearLayout>
     <RelativeLayout
         android:layout_width="match_parent"

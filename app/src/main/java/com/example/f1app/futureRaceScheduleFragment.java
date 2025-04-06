@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -13,10 +15,14 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -43,7 +49,7 @@ public class futureRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
     private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     private TextView days_countdown, hrs_countdown, mns_countdown,  countdown_header,
-            infoRaceName, infoSeason;
+            infoRaceName;
     private scheduleAdapter adapter;
     private RecyclerView recyclerView;
     private long startTime;
@@ -76,7 +82,6 @@ public class futureRaceScheduleFragment extends Fragment {
         hrs_countdown = view.findViewById(R.id.hrs_countdown);
         mns_countdown = view.findViewById(R.id.mns_countdown);
         countdown_header = view.findViewById(R.id.countdown_header);
-        infoSeason = view.findViewById(R.id.infoSeason);
         infoRaceName = view.findViewById(R.id.infoRaceName);
 
         saveRace = view.findViewById(R.id.saveRace);
@@ -91,6 +96,7 @@ public class futureRaceScheduleFragment extends Fragment {
         if (!getArguments().isEmpty()){
             mCircuitId = getArguments().getString("circuitId");
             mRaceName = getArguments().getString("raceName");
+
             String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
             String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
             String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
@@ -99,8 +105,9 @@ public class futureRaceScheduleFragment extends Fragment {
             //String mCountry = getArguments().getString("raceCountry");
             mYear = getArguments().getString("gpYear");
 
-            TextView raceName = (TextView) view.findViewById(R.id.raceName);
-            TextView circuitName = (TextView) view.findViewById(R.id.circuitName);
+            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+            String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
+
             TextView day_start = (TextView) view.findViewById(R.id.day_start);
             TextView day_end = (TextView) view.findViewById(R.id.day_end);
             TextView month = (TextView) view.findViewById(R.id.month);
@@ -132,9 +139,7 @@ public class futureRaceScheduleFragment extends Fragment {
                     }
                 });
             }
-
-            infoSeason.setText(mYear);
-            infoRaceName.setText(mRaceName);
+            infoRaceName.setText(futureRaceName);
 
             if(mFutureRaceStartMonth.equals(mFutureRaceEndMonth)){
                 month.setText(mFutureRaceStartMonth);
@@ -144,22 +149,6 @@ public class futureRaceScheduleFragment extends Fragment {
                 month.setText(monthAll);
             }
 
-
-            raceName.setText(mRaceName);
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String mcircuitName = snapshot.child("circuitName").getValue(String.class);
-                    circuitName.setText(mcircuitName);
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("futureActivityFirebaseError", error.getMessage());
-                }
-            });
             day_start.setText(mFutureRaceStartDay);
             day_end.setText(mFutureRaceEndDay);
 
@@ -170,6 +159,10 @@ public class futureRaceScheduleFragment extends Fragment {
 
             datum = new ArrayList<>();
             getRaceSchedule(mRaceName, currentYear);
+
+            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) view.findViewById(R.id.collapsing_toolbar);
+            AppBarLayout appBarLayout = (AppBarLayout) view.findViewById(R.id.appbar);
+            appBarLayout.setExpanded(true,true);
         }
     }
 
@@ -232,7 +225,7 @@ public class futureRaceScheduleFragment extends Fragment {
                 datum.add(qualiEvent);
                 datum.add(raceEvent);
                 countDownStart(eventsCountdown);
-                adapter = new scheduleAdapter(getActivity(), datum);
+                adapter = new scheduleAdapter(getActivity(), datum, false);
                 recyclerView.setAdapter(adapter);
             }
 
@@ -337,6 +330,7 @@ public class futureRaceScheduleFragment extends Fragment {
     private void countDownStart(LinkedHashMap<String, String> events) {
 
         if (events.isEmpty()){
+            countdown_header.setText(getString(R.string.weekend_ends_text));
             days_countdown.setText("00");
             hrs_countdown.setText("00");
             mns_countdown.setText("00");

@@ -36,6 +36,8 @@ android {
 }
 
 dependencies {
+    implementation ("com.firebaseui:firebase-ui-storage:9.0.0")
+    implementation("com.google.firebase:firebase-storage")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0-beta01")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
     implementation ("com.google.android.material:material:1.12.0")
@@ -58,13 +60,13 @@ dependencies {
     implementation("androidx.credentials:credentials-play-services-auth:1.5.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
     annotationProcessor ("androidx.annotation:annotation:1.9.1")
-    implementation ("com.github.bumptech.glide:glide:4.9.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.9.0")
+    implementation ("com.github.bumptech.glide:glide:4.11.0")
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     annotationProcessor ("androidx.room:room-compiler:2.6.1")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
-    implementation(platform("com.google.firebase:firebase-bom:33.10.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.12.0"))
     implementation("com.google.firebase:firebase-analytics")
 }

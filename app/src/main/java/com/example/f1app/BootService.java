@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.APP_PREFERENCES;
+import static com.example.f1app.MainActivity.getStringByName;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -11,6 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 
 import org.json.JSONArray;
@@ -54,8 +56,8 @@ public class BootService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        Bundle bundle = intent.getExtras();
-        if (bundle.getString("channelId") != null){
+        if (intent!=null){
+            Bundle bundle = intent.getExtras();
             mPrefs = getApplicationContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
             JSONArray jsonArrayEvents = null;
             JSONArray jsonArrayCircuits = null;
@@ -72,7 +74,8 @@ public class BootService extends Service {
                     String[] raceValue = raceFullName.split("\\$");
                     String season = raceValue[0];
                     String raceName = raceValue[1];
-                    String title = raceName + " " + season;
+                    String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
+                    String title = this.getString(getStringByName(localeRaceName + "_text")) + " " + season;
                     for(int j = 0; j < value.length - 1; j++){
                         String event = value[j + 1];
                         String[] eventValue = event.split("\\$");
@@ -89,8 +92,8 @@ public class BootService extends Service {
                         String newDateEnd = dateTimeEnd.format(fullDateFormatter);
 
                         String body = getApplicationContext().getString(getStringByName(eventName + "_text"));
-                        String bodyStart = body + " start";
-                        String bodyEnd = body + " end";
+                        String bodyStart = body + " " + getString(R.string.notify_start_text);
+                        String bodyEnd = body + " " + getString(R.string.notify_end_text);
                         Date current = Calendar.getInstance().getTime();
                         SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
                         dateFormat.setTimeZone(TimeZone.getDefault());
@@ -99,10 +102,10 @@ public class BootService extends Service {
                             Date eventEnd_date = dateFormat.parse(newDateEnd);
                             long diffStart = eventStart_date.getTime() - current.getTime();
                             long diffEnd = eventEnd_date.getTime() - current.getTime();
-                            if (diffStart >= 0){
+                            if (diffStart >= -100){
                                 pushNotification(season, raceName, circuitId, mChannelId, eventStart_date, title, bodyStart, iterator);
                             }
-                            if (diffEnd >= 0){
+                            if (diffEnd >= -100){
                                 pushNotification(season, raceName, circuitId, mChannelId, eventEnd_date, title, bodyEnd, iterator + 1);
                             }
                         }catch(ParseException e){
@@ -120,7 +123,7 @@ public class BootService extends Service {
         return START_STICKY;
     }
 
-    public void pushNotification(String season, String raceName, String circuitId, String channelId, Date date, String title, String body, Integer iterator){
+    public void pushNotification(String season, String raceName, String circuitId, String channelId, Date date, String title, String body, Integer iterator) {
         Intent intentStart = new Intent(getApplicationContext(), NotifyReceiver.class);
         intentStart.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
         intentStart.putExtra("channelId", channelId);
@@ -133,20 +136,6 @@ public class BootService extends Service {
         PendingIntent pendingIntentStart = PendingIntent.getBroadcast(getApplicationContext(), iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date.getTime(), pendingIntentStart);
-    }
-
-    private int getStringByName(String name) {
-        int stringId = 0;
-
-        try {
-            Class res = R.string.class;
-            Field field = res.getField(name);
-            stringId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return stringId;
     }
 
     @Override

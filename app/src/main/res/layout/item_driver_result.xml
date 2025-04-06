@@ -17,17 +17,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:paddingTop="10dp"
-            style="@style/ItemStyle"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2">
             <TextView
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingEnd="5dp"
+                android:layout_marginEnd="10dp"
                 android:id="@+id/raceName"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_gravity="center"
+                android:textAlignment="textEnd"
                 android:layout_height="wrap_content"
                 android:paddingStart="0dp"
                 android:includeFontPadding="false"
@@ -37,18 +41,24 @@
                 android:textSize="20sp"
                 tools:ignore="RtlSymmetry" />
             <TextView
-                android:layout_marginEnd="1dp"
+                android:layout_marginEnd="5dp"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:id="@+id/driverResults"
                 style="@style/PtsStyle"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:gravity="center"
                 android:textAllCaps="true"
                 android:textColor="@color/grey"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                 android:textSize="12sp"/>
         </LinearLayout>
+        <View
+            android:id="@+id/bottomLine"
+            android:background="@color/light_grey"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

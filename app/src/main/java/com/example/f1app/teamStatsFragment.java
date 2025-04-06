@@ -1,6 +1,11 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.APP_PREFERENCES;
+import static com.example.f1app.teamsStandingsActivity.localizeLocality;
+
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -26,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.Locale;
@@ -33,7 +40,7 @@ import java.util.Locale;
 public class teamStatsFragment extends Fragment {
     private TextView enterYear, wins, podiums, poles, championships,
             firstDriverName, firstDriverFamilyName, secondDriverName, secondDriverFamilyName,
-            teamBase, powerUnit, teamChief, techChief, chassis, fullTeamName;
+            teamBase, powerUnit, teamChief, techChief, chassis, fullTeamName, championshipsText;
     private ImageView firstDriver_image, secondDriver_image, flag;
     private RelativeLayout secondDriver_layout, firstDriver_layout, tech_layout;
 
@@ -70,6 +77,7 @@ public class teamStatsFragment extends Fragment {
         firstDriverName = (TextView) view.findViewById(R.id.firstDriverName);
         firstDriverFamilyName = (TextView) view.findViewById(R.id.firstDriverFamilyName);
         secondDriverName = (TextView) view.findViewById(R.id.secondDriverName);
+        championshipsText = (TextView) view.findViewById(R.id.championshipsText);
         secondDriverFamilyName = (TextView) view.findViewById(R.id.secondDriverFamilyName);
         teamBase = (TextView) view.findViewById(R.id.teamBase);
         teamChief = (TextView) view.findViewById(R.id.teamChief);
@@ -87,6 +95,8 @@ public class teamStatsFragment extends Fragment {
 
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
         if (!getArguments().isEmpty()){
             String mTeamId = getArguments().getString("teamId");
             String mTeamName = getArguments().getString("teamName");
@@ -185,7 +195,20 @@ public class teamStatsFragment extends Fragment {
                     podiums.setText(mPodiums);
                     poles.setText(mPoles);
                     championships.setText(mChampionships);
-                    teamBase.setText(mTeamBase);
+
+                    String mChampionshipsText = " ";
+
+                    if(Locale.getDefault().getLanguage().equals("ru")){
+                        assert mChampionships != null;
+                        int champCount = Integer.parseInt(mChampionships);
+                        if (champCount % 10 < 5 && champCount % 10!= 0){
+                            mChampionshipsText = getString(R.string.times) + "a";
+                        }else{
+                            mChampionshipsText = getString(R.string.times);
+                        }
+                        championshipsText.setText(mChampionshipsText);
+                    }
+
                     teamChief.setText(mTeamChief);
                     techChief.setText(mTechChief);
                     powerUnit.setText(mPowerUnit);
@@ -193,6 +216,12 @@ public class teamStatsFragment extends Fragment {
                     fullTeamName.setText(mFullTeamName);
                     String[] baseLocation = mTeamBase.split(", ");
                     String baseCountry = baseLocation[1];
+
+                    ArrayList<String> localizedData = localizeLocality(baseLocation[0], baseCountry, requireContext());
+                    String country = localizedData.get(0);
+                    String cityName = localizedData.get(1);
+                    String locale = localizedData.get(2);
+                    teamBase.setText(locale);
 
                     World.init(requireContext());
                     flag.setImageResource(World.getFlagOf(getCountryCode(baseCountry)));
@@ -232,13 +261,13 @@ public class teamStatsFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         String driversCode = snapshot.child("driversCode").getValue(String.class);
-                        int resourceId_driverImage = requireContext().getResources().getIdentifier(driversCode.toLowerCase(), "drawable",
-                                requireContext().getPackageName());
+                        StorageReference storageRef = storage.getReference();
+                        StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase().toLowerCase() + ".png");
                         if (finalI == 0){
                             firstDriverName.setText(mDriverName);
                             firstDriverFamilyName.setText(mDriverFamilyName);
-                            Glide.with(requireContext())
-                                    .load(resourceId_driverImage)
+                            GlideApp.with(requireContext())
+                                    .load(mDriverImage)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .transition(DrawableTransitionOptions.withCrossFade())
@@ -247,8 +276,8 @@ public class teamStatsFragment extends Fragment {
                         }else{
                             secondDriverName.setText(mDriverName);
                             secondDriverFamilyName.setText(mDriverFamilyName);
-                            Glide.with(requireContext())
-                                    .load(resourceId_driverImage)
+                            GlideApp.with(requireContext())
+                                    .load(mDriverImage)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .transition(DrawableTransitionOptions.withCrossFade())

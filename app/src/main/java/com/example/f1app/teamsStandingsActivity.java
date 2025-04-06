@@ -1,8 +1,12 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.driverStatsFragment.getCountryCode;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -37,9 +41,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class teamsStandingsActivity extends AppCompatActivity {
     Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
@@ -47,7 +53,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
     private List<teamsList> datum;
     private RecyclerView recyclerView;
     private ImageButton backButton;
-
+    private Button pastSeasonTeamsStandings;
     private teamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
@@ -56,7 +62,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.teams_standing);
+        setContentView(R.layout.teams_standing_page);
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamsStandingsActivity.this));
@@ -66,6 +72,23 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+
+        pastSeasonTeamsStandings = (Button) findViewById(R.id.pastSeasonTeamsStandings);
+        String buttonText;
+        if (Locale.getDefault().getLanguage().equals("ru")){
+            buttonText = getText(R.string.past_season_teams) + " 2024";
+        }else{
+            buttonText = "2024 " + getText(R.string.past_season_teams);
+        }
+        pastSeasonTeamsStandings.setText(buttonText);
+        pastSeasonTeamsStandings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(teamsStandingsActivity.this, pastSeasonTeamsStandingsActivity.class);
+                teamsStandingsActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
+            }
+        });
 
         recyclerView = findViewById(R.id.recyclerview_currentTeams);
         recyclerView.setHasFixedSize(true);
@@ -80,6 +103,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             @Override
             public void onRefresh() {
                 recyclerView.setVisibility(View.GONE);
+                pastSeasonTeamsStandings.setVisibility(View.GONE);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
                 datum = new ArrayList<>();
@@ -102,7 +126,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         showDriverStanding.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(teamsStandingsActivity.this, schuduleActivity.class);
+                Intent intent = new Intent(teamsStandingsActivity.this, scheduleActivity.class);
                 teamsStandingsActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
             }
@@ -145,7 +169,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
     }
 
-    public void getTeamStanding(String currentYear){
+    private void getTeamStanding(String currentYear){
         RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
@@ -191,6 +215,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 Handler handler = new Handler();
                                                 handler.postDelayed(()->{
                                                     recyclerView.setVisibility(View.VISIBLE);
+                                                    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
                                                     shimmerFrameLayout.setVisibility(View.GONE);
                                                     shimmerFrameLayout.stopShimmer();
                                                 },500);
@@ -238,6 +263,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     Handler handler = new Handler();
                                                     handler.postDelayed(()->{
                                                         recyclerView.setVisibility(View.VISIBLE);
+                                                        pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
                                                         shimmerFrameLayout.setVisibility(View.GONE);
                                                         shimmerFrameLayout.stopShimmer();
                                                     },500);
@@ -274,4 +300,76 @@ public class teamsStandingsActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
+    public static ArrayList<String> localizeLocality(String locality, String country, Context context){
+        ArrayList<String> results = new ArrayList<>();
+        String locale = " ";
+        Locale driverCountryLocale = new Locale(Locale.getDefault().getLanguage(), getCountryCode(country));
+        String localeCountry = " ";
+        if (driverCountryLocale.getDisplayCountry().equals("Соединенные Штаты")){
+            localeCountry = "США";
+        }else{
+            localeCountry = driverCountryLocale.getDisplayCountry();
+        }
+
+        List<Address> addresses = new ArrayList<>();
+        String cityName = " ";
+
+        String address = locality + ", " + country;
+        addresses = geocodeWithRetry(address, 10, context);
+        cityName = addresses.get(0).getLocality();
+
+
+        if (cityName!=null){
+            switch (cityName){
+                case "Шпильберг-Книттельфельд":
+                    cityName = "Шпильберг";
+                    break;
+                case  "Stavelot":
+                    cityName = "Спа";
+                    break;
+                case "Abu Dhabi":
+                    cityName = "Абу-Даби";
+                    break;
+                default:
+                    break;
+            }
+            locale =  cityName + ", " + localeCountry;
+        }else{
+            if (localeCountry.equals("Бахрейн")){
+                cityName = "Сахир";
+                locale =  cityName + ", " + localeCountry;
+            }else{
+                locale = localeCountry;
+            }
+        }
+
+        results.add(localeCountry);
+        results.add(cityName);
+        results.add(locale);
+        return results;
+    }
+
+    public static List<Address> geocodeWithRetry(String address, int maxRetries, Context context) {
+        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+        int retryCount = 0;
+
+        while (retryCount < maxRetries) {
+            try {
+                List<Address> addresses = geocoder.getFromLocationName(address, 1);
+                if (addresses != null && !addresses.isEmpty()) {
+                    return addresses;
+                }
+            } catch (IOException e) {
+                if (e.getMessage().contains("DEADLINE_EXCEEDED")) {
+                    retryCount++;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {}
+                } else {
+                    break;
+                }
+            }
+        }
+        return null;
+    }
 }

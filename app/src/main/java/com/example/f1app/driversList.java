@@ -4,43 +4,31 @@ public class driversList {
     private String driverName;
     private String driverFamilyName;
     private String driverTeam;
+    private String constructorId;
     private String driverPoints;
     private String driverPlacement;
     private String driverCode;
     private boolean startSeason;
+    private String season;
 
-    public String getConstructorId() {
-        return constructorId;
-    }
-
-    public void setConstructorId(String constructorId) {
-        this.constructorId = constructorId;
-    }
-
-    @Override
-    public String toString() {
-        return "driversList{" +
-                "driverName='" + driverName + '\'' +
-                ", driverTeam='" + driverTeam + '\'' +
-                ", driverPoints='" + driverPoints + '\'' +
-                ", driverPlacement='" + driverPlacement + '\'' +
-                ", driverCode='" + driverCode + '\'' +
-                ", constructorId='" + constructorId + '\'' +
-                '}';
-    }
-
-    private String constructorId;
-
-    public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode,
-                       boolean startSeason) {
-        this.driverFamilyName = driverFamilyName;
+    public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode, boolean startSeason, String season) {
         this.driverName = driverName;
+        this.driverFamilyName = driverFamilyName;
         this.driverTeam = driverTeam;
+        this.constructorId = constructorId;
         this.driverPoints = driverPoints;
         this.driverPlacement = driverPlacement;
         this.driverCode = driverCode;
-        this.constructorId = constructorId;
         this.startSeason = startSeason;
+        this.season = season;
+    }
+
+    public String getDriverName() {
+        return driverName;
+    }
+
+    public void setDriverName(String driverName) {
+        this.driverName = driverName;
     }
 
     public String getDriverFamilyName() {
@@ -51,23 +39,20 @@ public class driversList {
         this.driverFamilyName = driverFamilyName;
     }
 
-    public boolean getStartSeasonInfo(){return startSeason;}
-    public void setStartSeasonInfo(boolean startSeason){this.startSeason = startSeason;}
-
-    public String getDriverName() {
-        return driverName;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
     public String getDriverTeam() {
         return driverTeam;
     }
 
     public void setDriverTeam(String driverTeam) {
         this.driverTeam = driverTeam;
+    }
+
+    public String getConstructorId() {
+        return constructorId;
+    }
+
+    public void setConstructorId(String constructorId) {
+        this.constructorId = constructorId;
     }
 
     public String getDriverPoints() {
@@ -92,5 +77,21 @@ public class driversList {
 
     public void setDriverCode(String driverCode) {
         this.driverCode = driverCode;
+    }
+
+    public boolean isStartSeason() {
+        return startSeason;
+    }
+
+    public void setStartSeason(boolean startSeason) {
+        this.startSeason = startSeason;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
     }
 }

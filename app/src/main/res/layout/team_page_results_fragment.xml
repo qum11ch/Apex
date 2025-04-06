@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:id="@+id/scrollView"
+<FrameLayout android:id="@+id/scrollView"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:background="@color/white"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.core.widget.NestedScrollView
         android:layout_marginTop="20dp"
         android:layout_marginStart="10dp"
@@ -78,7 +78,10 @@
                         android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
-                        android:gravity="bottom"
+                        android:gravity="bottom|end"
+                        android:layout_marginEnd="10dp"
+                        android:paddingEnd="5dp"
+                        android:paddingStart="0dp"
                         android:text="@string/race_name_header"/>
                     <RelativeLayout
                         android:layout_weight="1.25"
@@ -103,8 +106,6 @@
                             android:id='@+id/firstDriverFamilyName'
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                             android:textColor="@color/black"
                             android:textSize="20sp"
@@ -134,8 +135,6 @@
                             android:id='@+id/secondDriverFamilyName'
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                             android:textColor="@color/black"
                             android:textSize="20sp"
@@ -150,6 +149,7 @@
                     android:layout_below="@id/results_header"
                     android:layout_marginEnd="10dp"/>
                 <androidx.recyclerview.widget.RecyclerView
+                    android:visibility="gone"
                     android:paddingEnd="5dp"
                     android:paddingStart="0dp"
                     android:layout_below="@id/line"
@@ -157,6 +157,33 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/drivers_results"/>
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_below="@id/line"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="0dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:duration="1000">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                        <include layout="@layout/shimmer_team_result"/>
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
                 style="@style/PtsStyle"

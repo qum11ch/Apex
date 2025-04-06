@@ -88,28 +88,26 @@
             android:id="@+id/driver_placement"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:gravity="center"
-            android:layout_gravity="center_vertical"
-            android:includeFontPadding="false"
+            android:gravity="center_vertical|center"
             android:lineSpacingExtra="0dp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
             android:text="@string/driver_header"
             android:paddingStart="15dp"
             android:paddingEnd="8dp"
             android:layout_width="0dp"
             android:layout_weight="2.4"
             android:layout_height="match_parent"
-            android:gravity="center_vertical"
             android:id="@+id/driverName"
             android:textAllCaps="true"
-            android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:paddingStart="10dp"
             android:paddingEnd="0dp"
@@ -125,21 +123,21 @@
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp"/>
+            android:textSize="18sp"/>
         <TextView
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
             android:paddingStart="10dp"
             android:paddingEnd="0dp"
             android:text="@string/pts_header"
             android:textAllCaps="true"
             android:layout_width="0dp"
             android:layout_weight="0.8"
-            android:layout_gravity="center_vertical"
-            android:gravity="center_vertical"
             android:layout_height="match_parent"
             android:id="@+id/driver_pts"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="20sp" />
+            android:textSize="18sp" />
     </LinearLayout>
     <LinearLayout
         android:layout_below="@id/race_header"

@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -34,11 +36,17 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
     public void onBindViewHolder(@NonNull driverResultsAdapter.DataHolder holder, int position) {
         driverResultsData datum = dataList.get(position);
 
+        if (position==dataList.size()-1){
+            holder.bottomLine.setVisibility(View.GONE);
+        }
+
         String raceName = datum.getRaceName();
         String driverResult = datum.getDriverResult();
         String driverName = datum.getDriverName();
 
-        holder.raceName.setText(raceName);
+        String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
+        String resultsRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + datum.getSeason();
+        holder.raceName.setText(resultsRaceName);
 
         if (!driverResult.equals("N/C")) {
             if (driverResult.equals("NP")) {
@@ -108,11 +116,13 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
     public class DataHolder extends RecyclerView.ViewHolder{
         TextView raceName, driverResults;
         ConstraintLayout constraintLayout;
+        View bottomLine;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             raceName = itemView.findViewById(R.id.raceName);
             driverResults = itemView.findViewById(R.id.driverResults);
             constraintLayout = itemView.findViewById(R.id.main_layout);
+            bottomLine = itemView.findViewById(R.id.bottomLine);
         }
     }
 

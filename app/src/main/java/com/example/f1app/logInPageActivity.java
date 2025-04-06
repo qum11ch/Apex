@@ -118,7 +118,7 @@ public class logInPageActivity extends AppCompatActivity {
         showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(logInPageActivity.this, schuduleActivity.class);
+                Intent intent = new Intent(logInPageActivity.this, scheduleActivity.class);
                 logInPageActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
             }
@@ -197,23 +197,29 @@ public class logInPageActivity extends AppCompatActivity {
             rootRef.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String email = snapshot.child("userEmail").getValue(String.class);
-                    auth = FirebaseAuth.getInstance();
-                    auth.signInWithEmailAndPassword(email, password)
-                            .addOnCompleteListener(logInPageActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    if (task.isSuccessful()) {
-                                        Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
-                                        startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
-                                        finish();
-                                    } else {
-                                        loginProgress.setVisibility(View.INVISIBLE);
-                                        loginButton.setVisibility(View.VISIBLE);
-                                        Toast.makeText(logInPageActivity.this, getString(R.string.login_fail_text), Toast.LENGTH_LONG).show();
+                    if (!snapshot.hasChild("userEmail")){
+                        loginProgress.setVisibility(View.INVISIBLE);
+                        loginButton.setVisibility(View.VISIBLE);
+                        Toast.makeText(logInPageActivity.this, getString(R.string.auth_fail_text), Toast.LENGTH_LONG).show();
+                    }else{
+                        String email = snapshot.child("userEmail").getValue(String.class);
+                        auth = FirebaseAuth.getInstance();
+                        auth.signInWithEmailAndPassword(email, password)
+                                .addOnCompleteListener(logInPageActivity.this, new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
+                                            startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
+                                            finish();
+                                        } else {
+                                            loginProgress.setVisibility(View.INVISIBLE);
+                                            loginButton.setVisibility(View.VISIBLE);
+                                            Toast.makeText(logInPageActivity.this, getString(R.string.auth_fail_text), Toast.LENGTH_LONG).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
+                    }
                 }
 
                 @Override

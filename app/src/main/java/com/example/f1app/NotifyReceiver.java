@@ -8,21 +8,37 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.ImageDecoder;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.ExecutionException;
 
 
 public class NotifyReceiver extends BroadcastReceiver {
@@ -46,7 +62,7 @@ public class NotifyReceiver extends BroadcastReceiver {
                 createNotificationChannel(context, channelId);
                 showNotification(context, season, raceName, circuitId, channelId, title, body);
             }
-        }else{
+        } else{
             Bundle bundle = intent.getExtras();
             if(bundle.getString("channelId") != null) {
                 String channelId = bundle.getString("channelId");
@@ -62,17 +78,19 @@ public class NotifyReceiver extends BroadcastReceiver {
     }
 
     private void showNotification(Context context, String season, String raceName, String circuitId, String channelId, String title, String body){
-        Intent notificationIntent = new Intent(context, futureRaceActivity.class);
+        Intent notificationIntent = new Intent(context, splashNotificationActivity.class);
         Bundle bundle = new Bundle();
-
         FirebaseApp.initializeApp(context);
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
         rootRef.child("/schedule/season/" + season + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 String dateStart_string = snapshot.child("FirstPractice").child("firstPracticeDate").getValue(String.class);
                 String dateEnd_string = snapshot.child("raceDate").getValue(String.class);
                 Integer round = snapshot.child("round").getValue(Integer.class);
+
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
                 LocalDate dateStart = LocalDate.parse(dateStart_string, dateFormatter);
@@ -99,25 +117,34 @@ public class NotifyReceiver extends BroadcastReceiver {
                                 bundle.putString("raceCountry" , raceCountry);
                                 bundle.putString("circuitId", circuitId);
                                 bundle.putString("dateStart", dateStart_string);
+                                bundle.putBoolean("fromNotify", true);
                                 notificationIntent.putExtras(bundle);
 
                                 notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                 PendingIntent intent2 = PendingIntent.getActivity(context, 1, notificationIntent, PendingIntent.FLAG_IMMUTABLE);
 
-                                int resourceId_driverTeam = context.getResources().getIdentifier(circuitId, "drawable",
-                                        context.getPackageName());
+                                StorageReference mCircuits = storageRef.child("circuits/" + circuitId + ".png");
 
-                                NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
-                                        .setSmallIcon(R.mipmap.ic_launcher)
-                                        .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),resourceId_driverTeam))
-                                        .setContentTitle(title)
-                                        .setContentIntent(intent2)
-                                        .setContentText(body)
-                                        .setAutoCancel(true)
-                                        .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+                                GlideApp.with(context).asBitmap().load(mCircuits).into(new CustomTarget<Bitmap>() {
+                                    @Override
+                                    public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+                                        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, channelId)
+                                                .setSmallIcon(R.mipmap.ic_launcher)
+                                                .setLargeIcon(resource)
+                                                .setContentTitle(title)
+                                                .setContentIntent(intent2)
+                                                .setContentText(body)
+                                                .setAutoCancel(true)
+                                                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
-                                NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-                                notificationManager.notify(1, builder.build());
+                                        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+                                        notificationManager.notify(1, builder.build());
+                                    }
+
+                                    @Override
+                                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                                    }
+                                });
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {

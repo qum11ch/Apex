@@ -65,16 +65,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/teamName"
-                    android:layout_marginEnd="5dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:layout_marginEnd="5dp" />
                 <TextView
                     android:layout_marginTop="2dp"
                     style="@style/ShimmerStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/driverFirst"
-                    android:layout_marginEnd="5dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:layout_marginEnd="5dp" />
 
             </RelativeLayout>
             <View

@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -84,7 +86,40 @@ public class driverResultsFragment extends Fragment {
 
             shimmerFrameLayout.startShimmer();
             radioButton_2025.setChecked(true);
-            getResults("2025", mDriverName, mDriverFamilyName);
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.child("drivers").child(mDriverName + " " + mDriverFamilyName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String mLastEntry = snapshot.child("lastEntry").getValue(String.class);
+                    String mFirstEntry = snapshot.child("firstEntry").getValue(String.class);
+
+                    String[] mLastGPparse = mLastEntry.split("\\s+");
+                    String mLastSeason = mLastGPparse[0];
+                    String mLastRaceName = mLastEntry.substring(5);
+
+                    String[] mFirstGPparse = mFirstEntry.split("\\s+");
+                    String mFirstSeason = mFirstGPparse[0];
+                    String mFirstRaceName = mFirstEntry.substring(5);
+
+                    if (mLastSeason.equals("2024")){
+                        radioButton_2025.setVisibility(View.GONE);
+                        radioButton_2024.setVisibility(View.GONE);
+                        getResults("2024", mDriverName, mDriverFamilyName);
+                    }else if (Integer.parseInt(mFirstSeason) > 2024){
+                        radioButton_2025.setVisibility(View.GONE);
+                        radioButton_2024.setVisibility(View.GONE);
+                        getResults("2025", mDriverName, mDriverFamilyName);
+                    }else{
+                        getResults("2025", mDriverName, mDriverFamilyName);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("driverPageActivity", "Driver information getting error:" + error.getMessage());
+                }
+            });
+
 
             radioButton_2025.setOnClickListener(new View.OnClickListener() {
                 @Override

@@ -35,16 +35,11 @@
                 android:fitsSystemWindows="true"
                 android:paddingTop="40dp"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_gravity="bottom"
-                    android:background="@drawable/background_results_transparent" />
                 <RelativeLayout
                     android:id="@+id/driver_layout"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_marginTop="100dp"
+                    android:layout_marginTop="85dp"
                     android:layout_marginBottom="60dp"
                     android:paddingStart="30dp"
                     android:paddingEnd="0dp">
@@ -92,7 +87,9 @@
                     android:layout_height="70dp"
                     android:background="@android:color/transparent"
                     android:fitsSystemWindows="true"
-                    app:layout_collapseMode="pin">
+                    app:layout_collapseMode="pin"
+                    app:contentInsetLeft="0dp"
+                    app:contentInsetStart="0dp">
                     <RelativeLayout
                         android:id="@+id/header"
                         android:layout_width="match_parent"
@@ -101,9 +98,9 @@
                         <ImageButton
                             android:id='@+id/backButton'
                             android:contentDescription="@string/back_arrow"
-                            android:paddingEnd="30dp"
-                            android:paddingStart="0dp"
-                            android:layout_width="100dp"
+                            android:paddingEnd="15dp"
+                            android:paddingStart="15dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:src="@drawable/back_arrow"
                             android:background="@android:color/transparent"/>
@@ -113,11 +110,24 @@
                             android:layout_height="match_parent"
                             android:layout_toEndOf="@id/backButton"
                             android:gravity="center"
+                            android:paddingEnd="10dp"
                             android:paddingStart="0dp"
-                            android:paddingEnd="100dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
                             android:textSize="24sp"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold"
+                            android:layout_marginEnd="45dp"/>
+                        <ToggleButton
+                            android:checked="false"
+                            android:layout_centerVertical="true"
+                            android:layout_alignParentEnd="true"
+                            android:id="@+id/like_button"
+                            android:layout_width="30dp"
+                            android:layout_height="30dp"
+                            android:layout_marginEnd="15dp"
+                            android:textOn=""
+                            android:textOff=""
+                            style="@style/LikeToggleButton"
+                            android:background="@drawable/like_toggle_bg"/>
                     </RelativeLayout>
                 </androidx.appcompat.widget.Toolbar>
             </com.google.android.material.appbar.CollapsingToolbarLayout>

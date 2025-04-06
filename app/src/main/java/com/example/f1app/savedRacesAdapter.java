@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,9 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -41,9 +45,10 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
     @Override
     public void onBindViewHolder(@NonNull savedRacesAdapter.DataHolder holder, int position) {
         savedRacesData datum = dataList.get(position);
-        String fullRaceName = datum.getRaceSeason() + " " + datum.getRaceName();
+        String localeRaceName = datum.getRaceName().toLowerCase().replaceAll("\\s+", "_");
+        String fullRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + datum.getRaceSeason();
         holder.raceName.setText(fullRaceName);
-        String saveDate = context.getString(R.string.saved_race_text) + datum.getSaveDate();
+        String saveDate = context.getString(R.string.saved_race_text) + " " +  datum.getSaveDate();
         holder.save_date.setText(saveDate);
         holder.number.setText(String.valueOf(position + 1));
 

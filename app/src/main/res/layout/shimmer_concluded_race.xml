@@ -6,18 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
+        app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
         app:cardElevation="0dp"
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:cardBackgroundColor="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             style="@style/ItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,9 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/raceCountry"
                     android:gravity="bottom"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:lineSpacingExtra="0dp" />
 
                 <TextView
                     style="@style/ShimmerStyle"
@@ -113,9 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/raceName"
                     android:layout_marginTop="2dp"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:lineSpacingExtra="0dp" />
 
                 <LinearLayout
                     android:layout_width="match_parent"

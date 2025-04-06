@@ -19,7 +19,9 @@
             android:layout_marginEnd="10dp"
             android:paddingBottom="5dp">
             <androidx.recyclerview.widget.RecyclerView
+                android:clipToPadding = "false"
                 android:paddingTop="10dp"
+                android:paddingBottom="5dp"
                 android:visibility="gone"
                 android:background="@null"
                 android:overScrollMode="never"
@@ -27,7 +29,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/recyclerview_concludedRaces"/>
             <com.facebook.shimmer.ShimmerFrameLayout
-                android:paddingTop="10dp"
                 android:id="@+id/shimmer_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -41,9 +42,20 @@
                     <include layout="@layout/shimmer_concluded_race" />
                     <include layout="@layout/shimmer_concluded_race" />
                     <include layout="@layout/shimmer_concluded_race" />
-                    <include layout="@layout/shimmer_concluded_race" />
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
+            <Button
+                style="@style/ItemStyle"
+                android:backgroundTint="@color/white"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:textAppearance="@style/TextStyle.Gram.Bold"
+                android:id="@+id/pastSeasonResults"
+                android:textSize="18sp"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textAlignment="textStart"/>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

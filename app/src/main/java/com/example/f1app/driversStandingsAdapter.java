@@ -3,6 +3,7 @@ package com.example.f1app;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -21,6 +22,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -67,37 +72,69 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         holder.driverTeam.setText(datum.getDriverTeam());
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
 
-        int resourceId_driverTeam = context.getResources().getIdentifier(datum.getConstructorId() + "_logo", "drawable",
-                context.getPackageName());
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+        String season = datum.getSeason();
 
-        Glide.with(context)
-                .load(resourceId_driverTeam)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .skipMemoryCache(true)
-                .error(R.drawable.f1)
-                .into(holder.driverTeam_logo);
+        StorageReference mDriverImage;
+        if (season.equals("2024")){
+            mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_2024.png");
+        }else{
+            mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + ".png");
+        }
 
-        int resourceId_driverImage = context.getResources().getIdentifier(datum.getDriverCode().toLowerCase(), "drawable",
-                context.getPackageName());
+        StorageReference mDriverTeamLogo = storageRef.child("teams/" + datum.getConstructorId().toLowerCase() + "_logo.png");
+        mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                GlideApp.with(context)
+                        .load(uri)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
+                        .error(R.drawable.f1)
+                        .into(holder.driverTeam_logo);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                GlideApp.with(context)
+                        .load(R.drawable.f1)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
+                        .into(holder.driverTeam_logo);
+            }
+        });
 
-        Glide.with(context)
-                .load(resourceId_driverImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                .error(R.drawable.f1)
-                .into(holder.driverImage);
+        mDriverImage.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+            @Override
+            public void onSuccess(Uri uri) {
+                GlideApp.with(context)
+                        .load(uri)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
+                        .error(R.drawable.f1)
+                        .into(holder.driverImage);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                GlideApp.with(context)
+                        .load(R.drawable.f1)
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .skipMemoryCache(true)
+                        .into(holder.driverImage);
+            }
+        });
 
         if (holder.getItemViewType() == 1) {
-            if (datum.getStartSeasonInfo()) {
+            if (datum.isStartSeason()) {
                 int width = 0;
                 int height = 0;
                 holder.cardView.getLayoutParams().width = width;
                 holder.cardView.getLayoutParams().height = height;
             }else{
                 holder.driver_placement.setText(datum.getDriverPlacement());
-                String driver_points = datum.getDriverPoints() + " PTS";
+                String driver_points = datum.getDriverPoints()  + " " + context.getString(R.string.pts_header);
                 holder.driver_points.setText(driver_points);
             }
         } else {
@@ -117,7 +154,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 params.setMargins(px, 0, 0, 0);
                 holder.driverFamilyName.setLayoutParams(params);
             }
-            if (datum.getStartSeasonInfo()) {
+            if (datum.isStartSeason()) {
                 holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3.3f);
                 layoutParams.setMargins(0, 10,0,80);
@@ -127,7 +164,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 holder.driver_points.getLayoutParams().width = width;
             } else {
                 holder.driver_placement.setText(datum.getDriverPlacement());
-                String driver_points = datum.getDriverPoints() + " PTS";
+                String driver_points = datum.getDriverPoints()  + " " + context.getString(R.string.pts_header);
                 holder.driver_points.setText(driver_points);
             }
 

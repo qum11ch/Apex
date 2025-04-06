@@ -5,7 +5,6 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-
     <androidx.cardview.widget.CardView
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
@@ -100,10 +99,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/raceCountry"
-                    android:gravity="bottom"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:gravity="bottom" />
 
                 <TextView
                     style="@style/ShimmerStyle"
@@ -111,10 +107,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/raceName"
-                    android:layout_marginTop="2dp"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:layout_marginTop="2dp" />
             </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

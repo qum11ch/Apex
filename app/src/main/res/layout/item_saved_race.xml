@@ -4,7 +4,7 @@
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/light_grey">
+    android:background="@android:color/transparent">
     <androidx.cardview.widget.CardView
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
@@ -18,53 +18,49 @@
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
             android:paddingTop="5dp"
+            android:paddingBottom="5dp"
             android:layout_marginBottom="1dp"
             style="@style/ItemStyle"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="5">
             <TextView
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:id="@+id/number"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:layout_gravity="center_vertical"
-                android:includeFontPadding="false"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:lineSpacingExtra="0dp"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPlacement" />
             <View
-                android:layout_marginBottom="5dp"
                 android:id="@+id/line"
                 android:layout_width="3dp"
                 android:layout_height="match_parent"
                 android:background="@color/dark_grey"/>
             <TextView
-                android:textSize="14sp"
+                android:layout_gravity="center"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
-                android:paddingStart="18sp"
+                android:paddingStart="8sp"
                 android:paddingEnd="8dp"
                 android:layout_width="0dp"
-                android:layout_weight="3.1"
-                android:layout_height="match_parent"
+                android:layout_weight="3.35"
+                android:layout_height="wrap_content"
                 android:id="@+id/raceName"
-                android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
             <TextView
-                android:paddingStart="0dp"
                 android:hyphenationFrequency="none"
-                android:paddingEnd="10dp"
                 android:layout_width="0dp"
-                android:layout_weight="1.4"
-                android:layout_gravity="center"
+                android:layout_weight="1.25"
                 android:id="@+id/save_date"
-                android:layout_height="match_parent"
-                android:gravity="end"
-                android:textSize="16sp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:textColor="@color/dark_grey"
                 android:textAppearance="@style/TextStyle.Gram.Regular" />
         </LinearLayout>

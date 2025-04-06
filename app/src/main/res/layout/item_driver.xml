@@ -92,9 +92,9 @@
                         android:layout_width="0dp"
                         android:layout_weight="7"
                         android:layout_height="match_parent"
-                        android:paddingStart="5dp"
+                        android:paddingStart="2dp"
                         android:paddingEnd="0dp"
-                        android:textAppearance="@style/TextStyle.Fishmonger.ForInfo"/>
+                        android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"/>
                 </LinearLayout>
 
             </RelativeLayout>

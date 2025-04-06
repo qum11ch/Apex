@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.getStringByName;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -117,8 +119,9 @@ public class concludedRaceActivity extends AppCompatActivity {
                             Log.e("futureActivityFirebaseError", error.getMessage());
                         }
                     });
-
-            raceTitle.setText(mRaceName);
+            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+            String pastRaceName = this.getString(getStringByName(localeRaceName + "_text"));
+            raceTitle.setText(pastRaceName);
         }
     }
 
@@ -132,6 +135,12 @@ public class concludedRaceActivity extends AppCompatActivity {
         circuitFragment.setArguments(circuitBundle);
         adapter.addFragment(circuitFragment);
         myViewPager2.setAdapter(adapter);
+
+        View child = myViewPager2.getChildAt(0);
+        if (child instanceof RecyclerView) {
+            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
+
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
             @Override

@@ -4,9 +4,9 @@
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <corners
                 android:bottomLeftRadius="0dp"
-                android:bottomRightRadius="8dp"
+                android:bottomRightRadius="20dp"
                 android:topLeftRadius="0dp"
-                android:topRightRadius="8dp" />
+                android:topRightRadius="20dp" />
         </shape>
     </item>
     <item
@@ -18,9 +18,9 @@
             <solid android:color="@color/dark_grey"/>
             <corners
                 android:bottomLeftRadius="0dp"
-                android:bottomRightRadius="10dp"
+                android:bottomRightRadius="20dp"
                 android:topLeftRadius="0dp"
-                android:topRightRadius="10dp"/>
+                android:topRightRadius="20dp"/>
         </shape>
     </item>
 </layer-list>

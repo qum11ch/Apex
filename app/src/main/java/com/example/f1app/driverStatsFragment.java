@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
@@ -29,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.Period;
@@ -38,7 +42,8 @@ import java.util.Locale;
 
 public class driverStatsFragment extends Fragment {
     private TextView firstGP, GPcount, wins, podiums, poles, totalPoints,
-            championships, teamName, driverCountry, birthdate, totalFastestLaps;
+            championships, championshipsText, teamName, driverCountry, birthdate, totalFastestLaps,
+            driverAge,lastEntry, lineupHeader;
     private ImageView teamCar_image, flag, arrow;
     private RelativeLayout team_layout, driverInfo_layout;
     private LinearLayout driversTeam_layout;
@@ -78,15 +83,20 @@ public class driverStatsFragment extends Fragment {
         scrollView = (ScrollView) view.findViewById(R.id.scrollView);
         firstGP = (TextView) view.findViewById(R.id.firstGP);
         GPcount = (TextView) view.findViewById(R.id.GP_count);
+        lastEntry = (TextView) view.findViewById(R.id.lastEntry);
         wins = (TextView) view.findViewById(R.id.wins);
         podiums = (TextView) view.findViewById(R.id.podiums);
         poles = (TextView) view.findViewById(R.id.poles);
         totalPoints = (TextView) view.findViewById(R.id.totalPoints);
         championships = (TextView) view.findViewById(R.id.championships);
+        championshipsText = (TextView) view.findViewById(R.id.championshipsText);
         teamName = (TextView) view.findViewById(R.id.teamName);
         driverCountry = (TextView) view.findViewById(R.id.country);
         birthdate = (TextView) view.findViewById(R.id.birthdate);
         totalFastestLaps = (TextView) view.findViewById(R.id.totalFastestLaps);
+        driverAge = (TextView) view.findViewById(R.id.driverAge);
+        lineupHeader = (TextView) view.findViewById(R.id.lineup_header);
+
 
         teamCar_image = (ImageView) view.findViewById(R.id.teamCar);
         flag = (ImageView) view.findViewById(R.id.flag);
@@ -97,6 +107,8 @@ public class driverStatsFragment extends Fragment {
         driversTeam_layout = (LinearLayout) view.findViewById(R.id.driversTeam_layout);
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
         if (!getArguments().isEmpty()){
             String mDriverName = getArguments().getString("driverName");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
@@ -111,7 +123,6 @@ public class driverStatsFragment extends Fragment {
             rootRef.child("drivers").child(driverName).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                     String mFirstGP = snapshot.child("firstEntry").getValue(String.class);
                     String mGPcount = snapshot.child("gpEntered").getValue(String.class);
                     String mWins = snapshot.child("totalWins").getValue(String.class);
@@ -122,15 +133,40 @@ public class driverStatsFragment extends Fragment {
                     String mDriverCountry = snapshot.child("driverCountry").getValue(String.class);
                     String mBirthdate = snapshot.child("birthdayDate").getValue(String.class);
                     String mTotalFastestLaps = snapshot.child("fastestLapCount").getValue(String.class);
+                    String mLastEntry = snapshot.child("lastEntry").getValue(String.class);
 
-                    firstGP.setText(mFirstGP);
+                    String[] mFirstGPparse = mFirstGP.split("\\s+");
+                    String mFirstSeason = mFirstGPparse[0];
+                    String mFirstRaceName = mFirstGP.substring(5);
+
+                    String localeRaceName = mFirstRaceName.toLowerCase().replaceAll("\\s+", "_");
+                    String firstRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mFirstSeason;
+
+                    String[] mLastGPparse = mLastEntry.split("\\s+");
+                    String mLastSeason = mLastGPparse[0];
+                    String mLastRaceName = mLastEntry.substring(5);
+
+                    String localeLastRaceName = mLastRaceName.toLowerCase().replaceAll("\\s+", "_");
+                    String lastRaceName = requireContext().getString(getStringByName(localeLastRaceName + "_text")) + " " + mLastSeason;
+
+                    firstGP.setText(firstRaceName);
+                    //firstGPseason.setText(mFirstSeason);
                     GPcount.setText(mGPcount);
                     wins.setText(mWins);
                     podiums.setText(mPodiums);
                     poles.setText(mPoles);
                     totalPoints.setText(mTotalPoints);
-                    championships.setText(mChampionships);
-                    driverCountry.setText(mDriverCountry);
+                    lastEntry.setText(lastRaceName);
+
+                    if (!mLastSeason.equals(currentYear)){
+                        String mLineUpHeader = getString(R.string.last_text) + " " + getString(R.string.team);
+                        lineupHeader.setText(mLineUpHeader);
+                    }
+                    //driverCountry.setText(mDriverCountry);
+
+                    Locale driverCountryLocale = new Locale(Locale.getDefault().getLanguage(), getCountryCode(mDriverCountry));
+                    //Locale currentC = ConfigurationCompat.getLocales(getResources().getConfiguration()).get(0);
+                    driverCountry.setText(driverCountryLocale.getDisplayCountry());
                     totalFastestLaps.setText(mTotalFastestLaps);
 
                     teamName.setText(mDriverTeam);
@@ -177,23 +213,39 @@ public class driverStatsFragment extends Fragment {
                     LocalDate currentDate = LocalDate.now();
                     int age = calculateAge(LDbirthdate, currentDate);
 
-                    String driverAge = " ";
+                    String mDriverAge = " ";
+                    String mChampionshipsText = " ";
 
                     if(Locale.getDefault().getLanguage().equals("ru")){
-                        if (age%10 < 5){
-                            driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_text) + ")";
+                        if (age%10 < 5 && age%10!=0){
+                            if (age % 10 == 1){
+                                mDriverAge = " (" + age + " " + getString(R.string.age_text) + ")";
+                            }else{
+                                mDriverAge = " (" + age + " " + getString(R.string.age_text) + "a)";
+                            }
+
                         }else{
-                            driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_alt_text) + ")";
+                            mDriverAge =  " (" + age + " " + getString(R.string.age_alt_text) + ")";
                         }
+                        assert mChampionships != null;
+                        int champCount = Integer.parseInt(mChampionships);
+                        if (champCount % 10 < 5 && champCount % 10!= 0){
+                            mChampionshipsText = getString(R.string.times) + "a";
+                        }else{
+                            mChampionshipsText = getString(R.string.times);
+                        }
+                        championshipsText.setText(mChampionshipsText);
                     }else{
-                        driverAge = mBirthdate + " (" + age + " " + getString(R.string.age_text) + ")";
+                        mDriverAge = " (" + age + " " + getString(R.string.age_text) + ")";
                     }
-                    birthdate.setText(driverAge);
+                    birthdate.setText(mBirthdate);
+                    driverAge.setText(mDriverAge);
+
+                    championships.setText(mChampionships);
 
                     World.init(requireContext());
                     flag.setImageResource(World.getFlagOf(getCountryCode(mDriverCountry)));
 
-                    Log.i("driverAlpine", " " + mDriverTeam);
 
                     rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -201,14 +253,10 @@ public class driverStatsFragment extends Fragment {
                             String mTeamId = snapshot.child("constructorId").getValue(String.class);
                             String mTeamColor = "#" + snapshot.child("color").getValue(String.class);
 
-                            int resourceId_carImage = requireContext().getResources()
-                                    .getIdentifier(mTeamId, "drawable",
-                                            requireContext().getPackageName());
+                            StorageReference mWinnerImage = storageRef.child("teams/" + mTeamId.toLowerCase() + ".png");
 
-                            Log.i("driverAlpine", " " + mTeamId);
-
-                            Glide.with(requireContext())
-                                    .load(resourceId_carImage)
+                            GlideApp.with(requireContext())
+                                    .load(mWinnerImage)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .transition(DrawableTransitionOptions.withCrossFade())
@@ -254,15 +302,25 @@ public class driverStatsFragment extends Fragment {
         return period.getYears();
     }
 
-    public String getCountryCode(String countryName) {
+    private String localeToEmoji(Locale locale) {
+        String countryCode = locale.getCountry();
+        int firstLetter = Character.codePointAt(countryCode, 0) - 0x41 + 0x1F1E6;
+        int secondLetter = Character.codePointAt(countryCode, 1) - 0x41 + 0x1F1E6;
+        return new String(Character.toChars(firstLetter)) + new String(Character.toChars(secondLetter));
+
+    }
+
+    public static String getCountryCode(String countryName) {
         String[] isoCountryCodes = Locale.getISOCountries();
-        switch (countryName) {
+        switch (countryName.toLowerCase()) {
             case "usa":
                 return "us";
             case "uk":
                 return "gb";
             case "uae":
                 return "ae";
+            case "german":
+                return "de";
             default:
                 for (String countryCode : isoCountryCodes) {
                     Locale locale = new Locale("en", countryCode);

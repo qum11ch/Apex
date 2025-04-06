@@ -46,21 +46,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/currentTeamsLayout"
-                android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="20dp"
                 android:orientation="vertical"
                 style="@style/SavedRacesLayout">
                 <androidx.recyclerview.widget.RecyclerView
+                    android:overScrollMode="never"
                     android:visibility="gone"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/recyclerview_savedRaces"/>
                 <com.facebook.shimmer.ShimmerFrameLayout
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
                     android:id="@+id/shimmer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -78,13 +79,12 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
-                android:visibility="invisible"
+                android:visibility="gone"
                 android:id="@+id/emptySavedRace_layout"
                 style="@style/SavedRacesLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginStart="10dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp">
                 <LinearLayout
@@ -93,14 +93,15 @@
                     android:id="@+id/team"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:layout_marginStart="0dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="5dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="0dp"
                     android:paddingTop="20dp">
                     <TextView
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                         android:textColor="@color/black"
-                        android:layout_marginStart="10dp"
                         android:textSize="28sp"
                         android:layout_marginEnd="10dp"
                         android:layout_width="match_parent"
@@ -110,7 +111,6 @@
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                         android:textStyle="bold"
                         android:textColor="@color/black"
-                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="100dp"
                         android:layout_width="match_parent"

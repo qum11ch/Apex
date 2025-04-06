@@ -2,6 +2,7 @@ package com.example.f1app;
 
 import android.app.Activity;
 import android.content.res.ColorStateList;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -29,12 +31,14 @@ import java.util.TimeZone;
 public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHolder>{
     Activity context;
     List<scheduleData> dataList;
+    boolean isPast;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
 
-    public scheduleAdapter(Activity context , List<scheduleData> datum){
+    public scheduleAdapter(Activity context , List<scheduleData> datum, boolean isPast){
         this.context = context;
         dataList = datum;
+        this.isPast = isPast;
     }
 
     @NonNull
@@ -57,10 +61,14 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         holder.eventTime.setText(eventDateData[1]);
         holder.eventMonth.setText(eventDateData[2]);
 
-        if (eventDateData[3].equals("yes")){
-            holder.content_layout.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_silver)));
-            holder.eventMonth.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white)));
+        if (!isPast){
+            if (eventDateData[3].equals("yes")){
+                holder.content_layout.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_silver)));
+                holder.eventMonth.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white)));
+            }
         }
+
+
         holder.eventName.setText(context.getString(getStringByName(eventName + "_text")));
     }
 
@@ -91,22 +99,23 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         String timeEvent = " ";
         String monthEvent = " ";
         String isFinished = "";
-        Log.i("fatalErrorSchedule", " " + date);
         Instant dateInst = Instant.parse(date);
         ZonedDateTime dateTime = dateInst.atZone(ZoneId.systemDefault());
-        LocalDate currentDate = LocalDate.now();
-        String currentDateString = currentDate.toString();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        SimpleDateFormat newFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date currentDate = Calendar.getInstance().getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
         String newDate = dateTime.format(fullDateFormatter);
         try
         {
-            //fullDateFormatter.setTimeZone(TimeZone.getDefault());
-            Date value = newFormatter.parse(newDate);
-            Date current = formatter.parse(currentDateString);
+            Date value = formatter.parse(newDate);
+            Date compareValue;
+            if (eventName.equals("race_event")){
+                compareValue = new Date(value.getTime() + 2 * HOUR);
+            }else{
+                compareValue = value;
+            }
 
-            if (current.after(value)){
+            if (currentDate.after(compareValue)){
                 isFinished = "yes";
             }else{
                 isFinished = "no";
@@ -137,9 +146,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
 
             if (eventName.equals("race_event")){
                 timeEvent = timeEvent1;
-            }
-
-            if (eventName.equals("sprint_quali_event")){
+            } else if (eventName.equals("sprint_quali_event")) {
                 timeEvent = timeEvent1 + "-" + timeEvent3;
             }
 

@@ -26,7 +26,8 @@
             android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:gravity="center"
-            android:paddingEnd="3dp">
+            android:paddingEnd="3dp"
+            android:paddingStart="0dp">
             <TextView
                 android:layout_marginStart="5dp"
                 style="@style/ShimmerStyle"

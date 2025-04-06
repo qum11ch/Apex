@@ -45,12 +45,15 @@
             android:windowSoftInputMode="adjustPan"/>
         <activity android:name=".concludedRaceActivity" />
         <activity android:name=".futureRaceActivity"/>
-        <activity android:name=".schuduleActivity" />
+        <activity android:name=".scheduleActivity" />
         <activity android:name=".driversStandingsActivity" />
         <activity android:name=".teamsStandingsActivity" />
         <activity android:name=".teamPageActivity" />
         <activity android:name=".driverPageActivity" />
         <activity android:name=".raceResultsActivity"/>
+        <activity android:name=".pastSeasonDriversStandingsActivity"/>
+        <activity android:name=".pastSeasonTeamsStandingsActivity"/>
+        <activity android:name=".pastSeasonScheduleActivity"/>
         <activity android:name=".connectionLostScreen"/>
         <activity
             android:name=".changeUserPrivateDataActivity"
@@ -63,15 +66,20 @@
             android:windowSoftInputMode="adjustPan" />
         <activity android:name=".accountPageActivity" />
         <activity android:name=".savedRacesActivity" />
+        <activity android:name=".splashNotificationActivity"/>
         <activity
-            android:name=".MainActivity"
-            android:exported="true" >
+            android:theme="@style/RemoveAppSplashTheme"
+            android:name=".splashActivity"
+            android:exported="true"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"/>
     </application>
 
 </manifest>

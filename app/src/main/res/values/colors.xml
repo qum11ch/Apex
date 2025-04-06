@@ -23,6 +23,7 @@
     <color name="light_dark_blue">#EAECF0</color>
     <color name="grey">#8c8c8c</color>
     <color name="dark_grey">#38393e</color>
+    <color name="darkest_grey">#222222</color>
     <color name="dark_blue">#090e27</color>
     <color name="red">#ee0000</color>
     <color name="brown">#71423C</color>

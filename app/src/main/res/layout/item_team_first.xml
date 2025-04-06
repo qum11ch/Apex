@@ -75,7 +75,7 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
                 <TextView
                     android:textColor="@color/white"
                     android:id="@+id/driverSecond"
@@ -86,7 +86,7 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
 
             </RelativeLayout>
             <RelativeLayout

@@ -2,11 +2,9 @@ package com.example.f1app;
 
 public class concludedRacesData {
     String dateStart, dateEnd, raceName, roundNumber, circuitName, country, locality,
-            winnerDriverCode, secondPlaceCode, thirdPlaceCode;
+            winnerDriverCode, secondPlaceCode, thirdPlaceCode, season;
 
-    public concludedRacesData(String dateStart, String dateEnd, String raceName, String roundNumber,
-                              String circuitName, String country, String locality, String winnerDriverCode,
-                              String secondPlaceCode, String thirdPlaceCode) {
+    public concludedRacesData(String dateStart, String dateEnd, String raceName, String roundNumber, String circuitName, String country, String locality, String winnerDriverCode, String secondPlaceCode, String thirdPlaceCode, String season) {
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
         this.raceName = raceName;
@@ -17,6 +15,7 @@ public class concludedRacesData {
         this.winnerDriverCode = winnerDriverCode;
         this.secondPlaceCode = secondPlaceCode;
         this.thirdPlaceCode = thirdPlaceCode;
+        this.season = season;
     }
 
     public String getDateStart() {
@@ -97,5 +96,13 @@ public class concludedRacesData {
 
     public void setThirdPlaceCode(String thirdPlaceCode) {
         this.thirdPlaceCode = thirdPlaceCode;
+    }
+
+    public String getSeason() {
+        return season;
+    }
+
+    public void setSeason(String season) {
+        this.season = season;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +20,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +39,7 @@ public class teamResultsFragment extends Fragment {
     private TextView firstDriverFamilyName, secondDriverFamilyName;
     private ImageView firstDriver_image, secondDriver_image;
     private CheckBox radioButton_2025, radioButton_2024;
+    private ShimmerFrameLayout shimmerFrameLayout;
 
     public teamResultsFragment() {
         // required empty public constructor.
@@ -68,6 +73,7 @@ public class teamResultsFragment extends Fragment {
         secondDriver_image = (ImageView) view.findViewById(R.id.secondDriver_image);
         radioButton_2025 = (CheckBox) view.findViewById(R.id.radioButton_2025);
         radioButton_2024 = (CheckBox) view.findViewById(R.id.radioButton_2024);
+        shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
 
         recyclerView = view.findViewById(R.id.drivers_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
@@ -77,6 +83,9 @@ public class teamResultsFragment extends Fragment {
             String mTeamId = getArguments().getString("teamId");
             String mTeamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
+
+            shimmerFrameLayout.startShimmer();
+            radioButton_2025.setChecked(true);
 
             radioButton_2025.setChecked(true);
             getResults("2025", driversList);
@@ -107,6 +116,9 @@ public class teamResultsFragment extends Fragment {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (radioButton_2025.isChecked()){
+                        recyclerView.setVisibility(View.GONE);
+                        shimmerFrameLayout.setVisibility(View.VISIBLE);
+                        shimmerFrameLayout.startShimmer();
                         getResults("2025", driversList);
                     }
                 }
@@ -126,6 +138,9 @@ public class teamResultsFragment extends Fragment {
                                             String driverName = driverSnapshot.getKey();
                                             driversLineUp.add(driverName);
                                         }
+                                        recyclerView.setVisibility(View.GONE);
+                                        shimmerFrameLayout.setVisibility(View.VISIBLE);
+                                        shimmerFrameLayout.startShimmer();
                                         getResults("2024", driversLineUp);
                                     }
 
@@ -143,6 +158,9 @@ public class teamResultsFragment extends Fragment {
         String mSeason = season;
         datum = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
         rootRef.child("schedule/season/" + mSeason + "/").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -161,6 +179,12 @@ public class teamResultsFragment extends Fragment {
                             teamDriversResultsData results = new teamDriversResultsData(raceName,
                                     firstDriverResult, firstDriverName, secondDriverResult,
                                     secondDriverName, Integer.parseInt(season));
+                            Handler handler = new Handler();
+                            handler.postDelayed(()->{
+                                recyclerView.setVisibility(View.VISIBLE);
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                shimmerFrameLayout.stopShimmer();
+                            },500);
                             datum.add(results);
                             adapter = new teamDriversResultsAdapter(getActivity(), datum);
                             recyclerView.setAdapter(adapter);
@@ -194,12 +218,16 @@ public class teamResultsFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String driversCode = snapshot.child("driversCode").getValue(String.class);
-                    int resourceId_driverImage = requireContext().getResources().getIdentifier(driversCode.toLowerCase(), "drawable",
-                            requireContext().getPackageName());
+                    StorageReference mDriverImage;
+                    if (season.equals("2024")){
+                        mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png");
+                    }else{
+                        mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + ".png");
+                    }
                     if (finalI == 0){
                         firstDriverFamilyName.setText(mDriverFamilyName);
-                        Glide.with(requireContext())
-                                .load(resourceId_driverImage)
+                        GlideApp.with(requireContext())
+                                .load(mDriverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -207,8 +235,8 @@ public class teamResultsFragment extends Fragment {
                                 .into(firstDriver_image);
                     }else{
                         secondDriverFamilyName.setText(mDriverFamilyName);
-                        Glide.with(requireContext())
-                                .load(resourceId_driverImage)
+                        GlideApp.with(requireContext())
+                                .load(mDriverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .transition(DrawableTransitionOptions.withCrossFade())

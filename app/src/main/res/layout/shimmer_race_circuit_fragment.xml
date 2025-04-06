@@ -2,8 +2,8 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white"
-    android:paddingTop="30dp"
+    android:background="@color/light_grey"
+    android:paddingTop="20dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <View
         style="@style/ShimmerStyle"
@@ -85,11 +85,11 @@
             android:weightSum="2"
             android:orientation="horizontal"
             android:layout_marginTop="10dp">
-            <LinearLayout
+            <RelativeLayout
                 style="@style/CircuitInfoLayout"
                 android:layout_weight="1"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:layout_marginEnd="5dp"
                 android:paddingBottom="5dp"
@@ -101,12 +101,13 @@
                     android:layout_height="wrap_content"
                     android:text="@string/no_of_laps"/>
                 <TextView
+                    android:layout_alignParentBottom="true"
                     style="@style/ShimmerStyle"
                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
                     android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
+            </RelativeLayout>
             <LinearLayout
                 style="@style/CircuitInfoLayout"
                 android:layout_weight="1"

@@ -2,18 +2,33 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 
+import android.annotation.SuppressLint;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -38,6 +53,7 @@ public class savedRacesActivity extends AppCompatActivity {
     private RelativeLayout emptySavedRaceLayout;
     SwipeRefreshLayout swipeLayout;
     ShimmerFrameLayout shimmerFrameLayout;
+    private Dialog deleteRaceDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -135,17 +151,95 @@ public class savedRacesActivity extends AppCompatActivity {
                                     }
                                     adapter = new savedRacesAdapter(savedRacesActivity.this, datum);
                                     recyclerView.setAdapter(adapter);
+
+                                    ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                                        @Override
+                                        public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
+                                            return false;
+                                        }
+
+                                        @SuppressLint("NotifyDataSetChanged")
+                                        @Override
+                                        public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                                            final int position = viewHolder.getAdapterPosition();
+                                            if (swipeDir == ItemTouchHelper.LEFT) {
+                                                deleteRaceDialog = new Dialog(savedRacesActivity.this);
+                                                deleteRaceDialog.setContentView(R.layout.logout_dialog_box);
+                                                deleteRaceDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                                                deleteRaceDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+                                                deleteRaceDialog.setCancelable(false);
+
+                                                Button cancelButton = deleteRaceDialog.findViewById(R.id.cancel_button);
+                                                Button confirmButton = deleteRaceDialog.findViewById(R.id.confirm_button);
+
+                                                cancelButton.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        adapter.notifyItemRemoved(position + 1);
+                                                        adapter.notifyItemRangeChanged(position, adapter.getItemCount());
+                                                        putRaces();
+                                                        deleteRaceDialog.dismiss();
+                                                    }
+                                                });
+
+                                                confirmButton.setOnClickListener(new View.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(View view) {
+                                                        deleteRaceDialog.dismiss();
+                                                        adapter.notifyItemRemoved(position);
+                                                        String modifiedRaceName = datum.get(position).getRaceName().replaceAll("\\s+","");
+                                                        String root = datum.get(position).getRaceSeason() + "_" + modifiedRaceName;
+                                                        rootRef.child("savedRaces").child(username).child(root)
+                                                                .removeValue();
+                                                        putRaces();
+                                                        Toast.makeText(savedRacesActivity.this, getString(R.string.race_delete_succ_text), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+
+                                                deleteRaceDialog.show();
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                                            super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
+
+                                            View itemView = viewHolder.itemView;
+                                            Drawable icon = AppCompatResources.getDrawable(savedRacesActivity.this, R.drawable.delete_white);
+                                            int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                                            int iconTop = itemView.getTop() + (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                                            int iconBottom = iconTop + icon.getIntrinsicHeight();
+
+                                            if (dX < 0) { // Swiping to the left
+                                                int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
+                                                int iconRight = itemView.getRight() - iconMargin;
+                                                icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                                                int backgroundCornerOffset = 100;
+                                                int marginBottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+                                                RectF bg = new RectF(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
+                                                        itemView.getTop(), itemView.getRight(), itemView.getBottom() - marginBottom);
+                                                Paint p = new Paint();
+                                                p.setColor(getColor(R.color.red));
+                                                int rounded = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
+                                                c.drawRoundRect(bg, rounded, rounded, p);
+                                            }
+                                            icon.draw(c);
+                                        }
+                                    };
+
+                                    ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
+                                    itemTouchHelper.attachToRecyclerView(recyclerView);
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                                    Log.e("savedRacesPage", "Drivers error:" + error.getMessage());
                                 }
                             });
                         }
                     }
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                        Log.e("savedRacesPage", "Drivers error:" + error.getMessage());
                     }
                 });
     }

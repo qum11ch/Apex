@@ -22,7 +22,7 @@
             <LinearLayout
                 android:orientation="vertical"
                 android:background="@drawable/background_striped_lines_blue"
-                android:id="@+id/team"
+                android:id="@+id/emptySavedRace_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
@@ -45,12 +45,25 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="100dp"
-
-
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/empty_race_list_concluded"/>
             </LinearLayout>
+            <Button
+                android:layout_marginBottom="10dp"
+                android:layout_below="@id/emptySavedRace_layout"
+                style="@style/EmptyButton"
+                android:backgroundTint="@color/white"
+                android:textSize="18sp"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:textColor="@color/dark_blue"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:textAppearance="@style/TextStyle.Gram.Bold"
+                android:id="@+id/pastSeasonResults"
+                android:layout_marginEnd="10dp"/>
         </RelativeLayout>
     </com.example.f1app.LockableNestedScrollView>
 

@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.getStringByName;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.android.volley.Request;
@@ -66,7 +68,10 @@ public class raceResultsActivity extends AppCompatActivity {
             resultsBundle.putString("raceName", mRaceName);
             resultsBundle.putString("season", mSeason);
 
-            raceTitle.setText(mRaceName + " " + mSeason);
+            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+            String pastRaceName = this.getString(getStringByName(localeRaceName + "_text")) + " " + mSeason;
+
+            raceTitle.setText(pastRaceName);
 
             backButton = (ImageButton) findViewById(R.id.backButton);
             backButton.setOnClickListener(new View.OnClickListener() {
@@ -203,6 +208,12 @@ public class raceResultsActivity extends AppCompatActivity {
         qualiFragment.setArguments(raceBundle);
         adapter.addFragment(qualiFragment);
         myViewPager2.setAdapter(adapter);
+
+        View child = myViewPager2.getChildAt(0);
+        if (child instanceof RecyclerView) {
+            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
+
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
             @Override

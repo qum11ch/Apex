@@ -1,7 +1,9 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.getStringByName;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
@@ -11,6 +13,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
@@ -44,14 +47,6 @@ public class futureRaceActivity extends AppCompatActivity {
 
         futureRaceTitle = findViewById(R.id.raceTitile);
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
 
         if (!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -65,6 +60,26 @@ public class futureRaceActivity extends AppCompatActivity {
             String mRound = bundle.getString("roundCount");
             String mCountry = bundle.getString("raceCountry");
             String mDate = bundle.getString("dateStart");
+
+            if (getIntent().hasExtra("fromNotify")){
+                backButton = (ImageButton) findViewById(R.id.backButton);
+                backButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(futureRaceActivity.this, MainActivity.class);
+                        futureRaceActivity.this.startActivity(intent);
+                        overridePendingTransition(0, 0);
+                    }
+                });
+            }else{
+                backButton = (ImageButton) findViewById(R.id.backButton);
+                backButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        finish();
+                    }
+                });
+            }
 
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
@@ -91,7 +106,10 @@ public class futureRaceActivity extends AppCompatActivity {
 
             init(scheduleBundle, circuitBundle);
 
-            futureRaceTitle.setText(mRaceName);
+            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+            String futureRaceName = this.getString(getStringByName(localeRaceName + "_text"));
+
+            futureRaceTitle.setText(futureRaceName);
         }
     }
 
@@ -118,5 +136,10 @@ public class futureRaceActivity extends AppCompatActivity {
             }
         });
         tabLayoutMediator.attach();
+
+        View child = myViewPager2.getChildAt(0);
+        if (child instanceof RecyclerView) {
+            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        }
     }
 }

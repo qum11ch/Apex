@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="RemoveAppSplashTheme" parent="AppTheme">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+    </style>
+
     <style name="ButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded</item>
         <item name="android:textColor">@color/white</item>
@@ -39,6 +44,11 @@
         <item name="android:paddingRight">8dp</item>
     </style>
 
+    <style name="LikeToggleButton" parent="android:Widget">
+        <item name="android:background">@drawable/like_toggle_bg</item>
+        <item name="android:disabledAlpha">?android:attr/disabledAlpha</item>
+    </style>
+
     <style name="CountdownStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_countdown</item>
     </style>
@@ -60,6 +70,12 @@
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
     </style>
+    <style name="EmptyButton" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/empty_button_style</item>
+    </style>
+    <style name="ItemStyleInverted" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_inverted</item>
+    </style>
     <style name="ItemStyleAlt" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_alt</item>
     </style>
@@ -72,17 +88,29 @@
     <style name="PtsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/pts_style</item>
     </style>
+    <style name="RacePodiumStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_podium_style</item>
+    </style>
     <style name="ShimmerStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/shimmer_style</item>
     </style>
     <style name="LayoutStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/layout_style</item>
     </style>
+    <style name="LayoutStyleBlack" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/layout_style_black</item>
+    </style>
     <style name="RaceLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style</item>
     </style>
+    <style name="RaceLayoutInverted" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_layout_style_inverted</item>
+    </style>
     <style name="CircuitLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/circuit_layout_style</item>
+    </style>
+    <style name="ProgressBarLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/progress_layout_style</item>
     </style>
     <style name="StatisticLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/statistic_layout_style</item>
@@ -112,8 +140,8 @@
     <style name="TextStyle.Gram"/>
 
     <style name="TextStyle.Gram.Bold">
-        <item name="fontFamily">@font/gram_bold</item>
-        <item name="android:fontFamily">@font/gram_bold</item>
+        <item name="fontFamily">@font/nimbus_bold</item>
+        <item name="android:fontFamily">@font/nimbus_bold</item>
     </style>
     <style name="TextStyle.Gram.Bold.ForTab">
         <item name="android:textSize">20sp</item>
@@ -128,13 +156,14 @@
     </style>
 
     <style name="TextStyle.Gram.Regular">
-        <item name="fontFamily">@font/gram_regular</item>
-        <item name="android:fontFamily">@font/gram_regular</item>
+        <item name="fontFamily">@font/nimbus_reg</item>
+        <item name="android:fontFamily">@font/nimbus_reg</item>
     </style>
+
     <style name="TextStyle.Gram.Regular.ForInfo">
-        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/grey</item>
         <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="TextStyle.Gram.Regular.Secondary">
@@ -228,18 +257,19 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="TextStyle.Fishmonger">
-        <item name="fontFamily">@font/fishmonger_regular</item>
-        <item name="android:fontFamily">@font/fishmonger_regular</item>
+    <style name="TextStyle.ShareTechCYR">
+        <item name="fontFamily">@font/share_tech_cyr</item>
+        <item name="android:fontFamily">@font/share_tech_cyr</item>
+        <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextStyle.Fishmonger.ForInfo">
+    <style name="TextStyle.ShareTechCYR.ForInfo">
         <item name="android:textColor">@color/grey</item>
         <item name="android:textSize">16sp</item>
     </style>
 
     <style name="footerButtonOn" parent="android:Widget.TextView">
         <item name="android:includeFontPadding">false</item>
-        <item name="android:fontFamily">"@font/fishmonger_regular"</item>
+        <item name="android:fontFamily">"@font/share_tech_cyr"</item>
         <item name="android:background">@drawable/buttons_footer</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/red</item>
@@ -247,7 +277,7 @@
     </style>
     <style name="footerButtonOff" parent="android:Widget.TextView">
         <item name="android:includeFontPadding">false</item>
-        <item name="android:fontFamily">"@font/fishmonger_regular"</item>
+        <item name="android:fontFamily">"@font/share_tech_cyr"</item>
         <item name="android:background">@drawable/buttons_footer</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/grey</item>

@@ -4,11 +4,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.animation.ObjectAnimator;
+import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -16,22 +15,26 @@ import android.os.Bundle;
 
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
+import java.util.List;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -39,6 +42,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,11 +58,23 @@ public class MainActivity extends AppCompatActivity {
     Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
     FirebaseDatabase database;
     private final String channelId = "channelID2";
-    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private static final long HOUR = 3600*1000;
-    private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-    SharedPreferences mPrefs;
+    //private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    //private static final long HOUR = 3600*1000;
+    //private static final long SPRINT_QUALI_DIFF = 44*60*1000;
+    //SharedPreferences mPrefs;
+    private LinearLayout futureLayout, pastLayout;
     public static final String APP_PREFERENCES = "mysettings";
+    private List<driversList> datumDrivers;
+    private List<teamsList> datumTeams;
+    private List<concludedRacesData> datumPast;
+    private List<futureRaceData> datumFuture;
+    private RecyclerView rvFuture, rvPast, rvDrivers, rvTeams;
+    private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams;
+    private ProgressBar raceProgress;
+    private TextView raceProgressText;
+
+    private static final TimeInterpolator GAUGE_ANIMATION_INTERPOLATOR = new DecelerateInterpolator(2);
+    private static final long GAUGE_ANIMATION_DURATION = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,6 +94,42 @@ public class MainActivity extends AppCompatActivity {
 
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
+        datumDrivers = new ArrayList<>();
+        datumTeams = new ArrayList<>();
+
+        futureLayout = findViewById(R.id.main_future);
+        pastLayout = findViewById(R.id.main_past);
+
+        rvFuture = (RecyclerView) findViewById(R.id.recyclerView_future);
+        rvPast = (RecyclerView) findViewById(R.id.recyclerView_past);
+        rvDrivers = (RecyclerView) findViewById(R.id.recyclerView_drivers);
+        rvTeams = (RecyclerView) findViewById(R.id.recyclerView_teams);
+        raceProgress = (ProgressBar) findViewById(R.id.race_progress);
+        raceProgressText = (TextView) findViewById(R.id.race_progress_text);
+
+        sfFuture = findViewById(R.id.shimmerFuture_layout);
+        sfPast = findViewById(R.id.shimmerPast_layout);
+        sfDrivers = findViewById(R.id.shimmerDrivers_layout);
+        sfTeams = findViewById(R.id.shimmerTeams_layout);
+
+        sfFuture.startShimmer();
+        sfPast.startShimmer();
+        sfDrivers.startShimmer();
+        sfTeams.startShimmer();
+
+        rvFuture.setHasFixedSize(true);
+        rvPast.setHasFixedSize(true);
+        rvDrivers.setHasFixedSize(true);
+        rvTeams.setHasFixedSize(true);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        rvFuture.setLayoutManager(linearLayoutManager);
+        LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);
+        rvPast.setLayoutManager(linearLayoutManager2);
+        LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
+        rvDrivers.setLayoutManager(linearLayoutManager3);
+        LinearLayoutManager linearLayoutManager4 = new LinearLayoutManager(this);
+        rvTeams.setLayoutManager(linearLayoutManager4);
+
 
         showDriverButton = (Button) findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(new View.OnClickListener() {
@@ -93,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, schuduleActivity.class);
+                Intent intent = new Intent(MainActivity.this, scheduleActivity.class);
                 MainActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
             }
@@ -119,24 +171,290 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        updateData(currentDate);
-        updateSprintData(currentDate);
+        //updateData(currentDate);
+        //updateSprintData(currentDate);
 
         String currentYear = Integer.toString(currentDate.getYear());
-        //getSchedule(currentYear, currentDate);
+        getTeamStanding(currentYear);
+        getDriversStanding(currentYear);
+        getSchedule(currentYear, currentDate);
         Intent intentStart = new Intent(this, BootService.class);
         intentStart.putExtra("channelId", channelId);
         startService(intentStart);
     }
 
+    private void postProgress(int progress) {
+        String strProgress = progress + " из 24";
+        if (progress>10 && progress<=13){
+            raceProgressText.setTextColor(getColor(R.color.dark_grey));
+        } else if (progress>13) {
+            raceProgressText.setTextColor(getColor(R.color.white));
+        }
+        raceProgress.setProgress(progress);
+        raceProgressText.setText(strProgress);
+        ObjectAnimator animator = ObjectAnimator.ofInt(raceProgress, "progress", 0, progress);
+        animator.setInterpolator(GAUGE_ANIMATION_INTERPOLATOR);
+        animator.setDuration(GAUGE_ANIMATION_DURATION);
+        animator.start();
+    }
+
+    private void getDriversStanding(String currentYear){
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/driverstandings/?format=json";
+        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+                Request.Method.GET,
+                url2,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject MRData = response.getJSONObject("MRData");
+                            String total = MRData.getString("total");
+                            if (!total.equals("0")){
+                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                                for(int i = 0; i < StandingsLists.length(); i++){
+                                    JSONArray DriverStandings = StandingsLists.getJSONObject(i)
+                                            .getJSONArray("DriverStandings");
+                                    for(int j = 0; j < 3; j++) {
+                                        String placement = DriverStandings.getJSONObject(j).getString("positionText");
+                                        String points = DriverStandings.getJSONObject(j).getString("points");
+                                        String driverName = DriverStandings.getJSONObject(j)
+                                                .getJSONObject("Driver").getString("givenName");
+                                        String driverFamilyName = DriverStandings.getJSONObject(j)
+                                                .getJSONObject("Driver").getString("familyName");
+                                        String driverCode = DriverStandings.getJSONObject(j)
+                                                .getJSONObject("Driver").getString("code");
+                                        JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
+                                        String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
+                                        String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+                                        driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                        datumDrivers.add(smth);
+                                    }
+                                }
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    rvDrivers.setVisibility(View.VISIBLE);
+                                    sfDrivers.setVisibility(View.GONE);
+                                    sfDrivers.stopShimmer();
+                                },500);
+                                mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
+                                rvDrivers.setAdapter(adapter);
+                            }else{
+                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        datumDrivers.add(new driversList("","","","","","","",
+                                                true, currentYear));
+                                        for (DataSnapshot child: snapshot.getChildren()) {
+                                            String constructorId = child.child("constructorId").getValue(String.class);
+                                            String constructorsName = child.child("name").getValue(String.class);
+
+                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                        String driverFullname = driverDataSnapshot.getKey();
+                                                        DatabaseReference driversRef = rootRef.child("drivers");
+                                                        DatabaseReference driverRef = driversRef.child(driverFullname);
+
+                                                        ValueEventListener driversValueEventListener = new ValueEventListener() {
+                                                            @Override
+                                                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                String[] parts = driverFullname.split(" ");
+                                                                String driverName, driverFamilyName;
+                                                                if(driverFullname.equals("Andrea Kimi Antonelli")){
+                                                                    driverName = parts[0] + " " + parts[1];
+                                                                    driverFamilyName = parts[2];
+                                                                }else{
+                                                                    driverName = parts[0];
+                                                                    driverFamilyName = parts[1];
+                                                                }
+                                                                String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
+                                                                driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
+                                                                        true, currentYear);
+                                                                datumDrivers.add(smth);
+                                                                mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
+                                                                Handler handler = new Handler();
+                                                                handler.postDelayed(()->{
+                                                                    rvDrivers.setVisibility(View.VISIBLE);
+                                                                    sfDrivers.setVisibility(View.GONE);
+                                                                    sfDrivers.stopShimmer();
+                                                                },500);
+                                                                rvDrivers.setAdapter(adapter);
+                                                            }
+
+                                                            @Override
+                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                Log.e("driverStandingsError", databaseError.getMessage()); //Don't ignore errors!
+                                                            }
+                                                        };
+                                                        driverRef.addListenerForSingleValueEvent(driversValueEventListener);
+                                                    }
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                                }
+                                            });
+                                        }
+                                    }
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(jsonObjectRequest2);
+    }
+
+    private void getTeamStanding(String currentYear){
+        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
+        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+                Request.Method.GET,
+                url2,
+                null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            JSONObject MRData = response.getJSONObject("MRData");
+                            String total = MRData.getString("total");
+                            if (!total.equals("0")){
+                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                                for(int i = 0; i < StandingsLists.length(); i++){
+                                    JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
+                                            .getJSONArray("ConstructorStandings");
+                                    for(int j = 0; j < 3; j++){
+                                        String constructorName = ConstructorStandings.getJSONObject(j)
+                                                .getJSONObject("Constructor").getString("name");
+                                        String position = ConstructorStandings.getJSONObject(j).getString("positionText");
+                                        String points = ConstructorStandings.getJSONObject(j).getString("points");
+                                        String constructorId = ConstructorStandings.getJSONObject(j)
+                                                .getJSONObject("Constructor").getString("constructorId");
+                                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                ArrayList<String> teamDrivers = new ArrayList<>();
+                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                    String driverFullname = driverDataSnapshot.getKey();
+                                                    teamDrivers.add(driverFullname);
+                                                }
+
+                                                teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                smth.setDrivers(teamDrivers);
+                                                datumTeams.add(smth);
+                                                Handler handler = new Handler();
+                                                handler.postDelayed(()->{
+                                                    rvTeams.setVisibility(View.VISIBLE);
+                                                    sfTeams.setVisibility(View.GONE);
+                                                    sfTeams.stopShimmer();
+                                                },500);
+                                                mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
+                                                rvTeams.setAdapter(adapter);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("teamStandingsError", error.getMessage());
+                                            }
+                                        });
+                                    }
+                                }
+
+                            }
+                            else{
+                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        ArrayList<String> firstTeam = new ArrayList<>();
+                                        firstTeam.add("");
+                                        firstTeam.add("");
+                                        teamsList first = new teamsList("","","","", true);
+                                        first.setDrivers(firstTeam);
+                                        datumTeams.add(first);
+
+                                        for (DataSnapshot child: snapshot.getChildren()) {
+
+                                            String constructorId = child.child("constructorId").getValue(String.class);
+                                            String constructorsName = child.child("name").getValue(String.class);
+
+                                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    ArrayList<String> teamDrivers = new ArrayList<>();
+                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                        String driverFullname = driverDataSnapshot.getKey();
+                                                        teamDrivers.add(driverFullname);
+                                                    }
+                                                    teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
+                                                    smth.setDrivers(teamDrivers);
+                                                    Handler handler = new Handler();
+                                                    handler.postDelayed(()->{
+                                                        rvTeams.setVisibility(View.VISIBLE);
+                                                        sfTeams.setVisibility(View.GONE);
+                                                        sfTeams.stopShimmer();
+                                                    },500);
+                                                    datumTeams.add(smth);
+                                                    mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
+                                                    rvTeams.setAdapter(adapter);
+                                                }
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e("teamStandingsError", error.getMessage());
+                                                }
+                                            });
+                                        }
+
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("teamStandingsError", error.getMessage());
+                                    }
+                                });
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(jsonObjectRequest2);
+    }
+
     private void getSchedule(String year, LocalDate currentDate){
-        ArrayList<String> raceNames = new ArrayList<>();
-        ArrayList<String> circuitsId = new ArrayList<>();
+        ArrayList<String> concludedRoundNumber = new ArrayList<>();
+        ArrayList<String> futureRaceRoundNumber = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds : snapshot.getChildren()) {
+                    Integer round = ds.child("round").getValue(Integer.class);
                     String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                     String dateEnd = ds.child("raceDate").getValue(String.class);
                     String raceName = ds.child("Circuit/raceName").getValue(String.class);
@@ -146,6 +464,7 @@ public class MainActivity extends AppCompatActivity {
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                     boolean future = false;
                     boolean isOnGoing = false;
+                    boolean concluded = true;
 
                     try{
                         Date start = formatter.parse(dateStart);
@@ -153,24 +472,53 @@ public class MainActivity extends AppCompatActivity {
                         Date current = formatter.parse(currentDateString);
                         if(start.after(current) && end.after(current))
                         {
+                            concluded = false;
                             future = true;
                             isOnGoing = false;
                         }
                         else if (current.equals(start) || current.equals(end)){
+                            concluded = false;
                             isOnGoing = true;
                         }
                         else if (current.after(start) && current.before(end)){
+                            concluded = false;
                             isOnGoing = true;
+                        }
+                        else{
+                            concluded = true;
+                            future = false;
+                            isOnGoing = false;
                         }
                     } catch (ParseException e){
                         Log.d("ParseExeption", "" + e);
                     }
-                    if (isOnGoing || future){
-                        raceNames.add(raceName);
-                        circuitsId.add(circuitId);
+                    if(concluded){
+                        concludedRoundNumber.add(round.toString());
+                    }
+                    if (future || isOnGoing){
+                        String newRound;
+                        if (isOnGoing){
+                           newRound = round + " " + getString(R.string.is_ongoing);
+                        }else{
+                            newRound = round.toString();
+                        }
+                        futureRaceRoundNumber.add(newRound.toUpperCase());
                     }
                 }
-                getRaceSchedule(raceNames, year, circuitsId);
+                Log.i("mainTest", " " + concludedRoundNumber.size() + " " + futureRaceRoundNumber.size());
+                if(!concludedRoundNumber.isEmpty()){
+                    pastLayout.setVisibility(View.VISIBLE);
+                    getPastRace(year, concludedRoundNumber.get(concludedRoundNumber.size()-1));
+                    postProgress(Integer.parseInt(concludedRoundNumber.get(concludedRoundNumber.size()-1)));
+                }else{
+                    pastLayout.setVisibility(View.GONE);
+                }
+                if(!futureRaceRoundNumber.isEmpty()){
+                    futureLayout.setVisibility(View.VISIBLE);
+                    getFutureRace(year, futureRaceRoundNumber.get(0));
+                }else{
+                    futureLayout.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -180,127 +528,112 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void getRaceSchedule(ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId){
-        ArrayList<LinkedHashMap<String, String>> eventsPerRace = new ArrayList<>();
-        for (int i = 0; i < raceNames.size(); i++) {
-            String raceName = raceNames.get(i);
-            String circuitId = circuitsId.get(i);
-            LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            int finalI = i;
-            rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
-                            " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
-                    String race = snapshot.child("raceDate").getValue(String.class) +
-                                " " + snapshot.child("raceTime").getValue(String.class);
+    private void getPastRace(String currentYear, String round){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(round)).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                datumPast = new ArrayList<>();
+                for(DataSnapshot ds : snapshot.getChildren()) {
+                    String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
+                    if (!winnerCode.equals("N/A")){
+                        String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                        String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
+                        String dateEnd = ds.child("raceDate").getValue(String.class);
+                        String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                        String secondCode = ds.child("RaceResults/raceSecondCode").getValue(String.class);
+                        String thirdCode = ds.child("RaceResults/raceThirdCode").getValue(String.class);
+                        rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                String circuitName = dataSnapshot.child("circuitName").getValue(String.class);
+                                String raceCountry = dataSnapshot.child("country").getValue(String.class);
+                                String raceLocation = dataSnapshot.child("location").getValue(String.class);
 
-                    String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
-                            " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
-
-                    String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
-                    if (sprintDate.equals("N/A")){
-                        String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
-                                " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
-
-                        String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
-                                " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
-
-                        eventsCountdown.put("first_practice_event", firstPractice);
-                        eventsCountdown.put("second_practice_event", secondPractice);
-                        eventsCountdown.put("third_practice_event", thirdPractice);
-                        eventsCountdown.put("quali_event", raceQuali);
-                        eventsCountdown.put("race_event", race);
-                    }else{
-                        String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
-                                " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
-                        String sprint = sprintDate +
-                                " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
-
-                        eventsCountdown.put("first_practice_event", firstPractice);
-                        eventsCountdown.put("sprint_quali_event", sprintQuali);
-                        eventsCountdown.put("sprint_event", sprint);
-                        eventsCountdown.put("quali_event", raceQuali);
-                        eventsCountdown.put("race_event", race);
-                    }
-                    eventsPerRace.add(eventsCountdown);
-                    if(finalI == raceNames.size() - 1){
-                        scheduleNotification(eventsPerRace, raceNames, currentYear, circuitsId);
+                                concludedRacesData concludedRace = new concludedRacesData(dateStart,
+                                        dateEnd, raceName, round, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
+                                        thirdCode, currentYear);
+                                datumPast.add(concludedRace);
+                                Handler handler = new Handler();
+                                handler.postDelayed(()->{
+                                    rvPast.setVisibility(View.VISIBLE);
+                                    sfPast.setVisibility(View.GONE);
+                                    sfPast.stopShimmer();
+                                },500);
+                                mainPastRaceAdapter adapter = new mainPastRaceAdapter(MainActivity.this, datumPast);
+                                rvPast.setAdapter(adapter);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
+                            }
+                        });
                     }
                 }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("futureActivityFirebaseError", error.getMessage());
-                }
-            });
-
-        }
-    }
-
-    @SuppressLint("ScheduleExactAlarm")
-    private void scheduleNotification(ArrayList<LinkedHashMap<String, String>> eventsPerRace, ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId) {
-        ArrayList<String> eventsStr = new ArrayList<>();
-        mPrefs = getSharedPreferences(APP_PREFERENCES, Activity.MODE_PRIVATE);
-        SharedPreferences.Editor editor = mPrefs.edit();
-        int iterator = 0;
-        for (int i = 0; i < raceNames.size(); i++){
-            LinkedHashMap<String, String> events = eventsPerRace.get(i);
-            String raceName = raceNames.get(i);
-            if (!events.isEmpty()) {
-
-                String stringForSharedPrefs = currentYear + "$" + raceName;
-                for(Map.Entry<String, String> entry : events.entrySet()){
-                    String key = entry.getKey();
-                    String value = entry.getValue();
-                    SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-                    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    try {
-                        Date eventStart_date = dateFormat.parse(value);
-                        Date endTime = new Date(eventStart_date.getTime() + HOUR);
-                        String endTimeStr = dateFormat.format(endTime);
-                        Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
-                        String endTimeStr_sprintQ = dateFormat.format(endTime_sprintQ);
-                        Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
-                        String endTimeStr_race = dateFormat.format(endTime_race);
-                        Date eventEnd_date;
-                        String eventEndStr_date;
-                        switch (key) {
-                            case "race_event":
-                                eventEnd_date = endTime_race;
-                                eventEndStr_date = endTimeStr_race + "Z";
-                                break;
-                            case "sprint_quali_event":
-                                eventEnd_date = endTime_sprintQ;
-                                eventEndStr_date = endTimeStr_sprintQ + "Z";
-                                break;
-                            default:
-                                eventEnd_date = endTime;
-                                eventEndStr_date = endTimeStr + "Z";
-                                break;
-                        }
-
-                        stringForSharedPrefs += "%" + key + "$" + value + "$" + eventEndStr_date;
-                    }catch(ParseException e){
-                        e.printStackTrace();
-                    }
-                    iterator += 2;
-                }
-                eventsStr.add(stringForSharedPrefs);
             }
 
-        }
-        JSONArray jsonArrayEvents = new JSONArray(eventsStr);
-        JSONArray jsonArrayCircuits = new JSONArray(circuitsId);
-        editor.putString("events_json", jsonArrayEvents.toString());
-        editor.putString("circuits_json", jsonArrayCircuits.toString());
-        editor.apply();
-
-        //Intent intentStart = new Intent(this, BootService.class);
-        //intentStart.putExtra("channelId", channelId);
-        //startService(intentStart);
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
+            }
+        });
     }
+
+    private void getFutureRace(String currentYear, String round){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        String newRound = " ";
+        if (round.contains(getString(R.string.is_ongoing).toUpperCase())){
+            String[] roundArray = round.split("\\s+");
+            newRound = roundArray[0];
+        }else{
+            newRound = round;
+        }
+        rootRef.child("schedule/season/" + currentYear).orderByChild("round")
+                .equalTo(Integer.valueOf(newRound)).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        datumFuture = new ArrayList<>();
+                        for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                            String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                            String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
+                            String dateEnd = ds.child("raceDate").getValue(String.class);
+                            String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+
+                            rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String circuitName = dataSnapshot.child("circuitName").getValue(String.class);
+                                    String raceCountry = dataSnapshot.child("country").getValue(String.class);
+                                    String raceLocation = dataSnapshot.child("location").getValue(String.class);
+                                    futureRaceData futureRaceData = new futureRaceData(raceName, dateStart, dateEnd,
+                                            circuitName, round, raceCountry, circuitId);
+                                    futureRaceData.setLocality(raceLocation);
+                                    datumFuture.add(futureRaceData);
+                                    Handler handler = new Handler();
+                                    handler.postDelayed(()->{
+                                        rvFuture.setVisibility(View.VISIBLE);
+                                        sfFuture.setVisibility(View.GONE);
+                                        sfFuture.stopShimmer();
+                                    },500);
+                                    futureRaceAdapter adapter = new futureRaceAdapter(MainActivity.this, datumFuture);
+                                    rvFuture.setAdapter(adapter);
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                                }
+                            });
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                    }
+                });
+    }
+
 
     public static boolean checkConnection(Context context) {
         try {
@@ -317,479 +650,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public static int isConnected(Context context) {
-        int result = 0; // Returns connection type. 0: none; 1: mobile data; 2: wifi; 3: vpn
-        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (cm != null) {
-            NetworkCapabilities capabilities = cm.getNetworkCapabilities(cm.getActiveNetwork());
-            if (capabilities != null) {
-                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                    result = 2;
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                    result = 1;
-                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
-                    result = 3;
-                }
-            }
+    public static int getStringByName(String name) {
+        int stringId = 0;
+
+        try {
+            Class res = R.string.class;
+            Field field = res.getField(name);
+            stringId = field.getInt(null);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return result;
-    }
 
-    private void updateSprintData(LocalDate currentDate){
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference last_sprint = rootRef.child("status/last_update");
-        last_sprint.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String last_sprint_race_update = snapshot.child("last_sprint").getValue(String.class);
-                String last_race_update = snapshot.child("last_race").getValue(String.class);
-                String currentYear = Integer.toString(currentDate.getYear());
-                RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-                String url3 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/last/sprint/?format=json";
-                JsonObjectRequest sprintJsonObjectRequest = new JsonObjectRequest(
-                        Request.Method.GET,
-                        url3,
-                        null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject MRData = response.getJSONObject("MRData");
-                                    JSONObject RaceTable = MRData.getJSONObject("RaceTable");
-                                    JSONArray Races = RaceTable.getJSONArray("Races");
-                                    for (int k = 0; k < Races.length(); k++){
-                                        String sprintName = Races.getJSONObject(k).getString("season") + " " +
-                                                Races.getJSONObject(k).getString("raceName");
-                                        String raceName = Races.getJSONObject(k).getString("raceName");
-                                        if (!last_sprint_race_update.equals(sprintName)){
-                                            if (sprintName.equals(last_race_update)){
-                                                //prefs.edit().putString("lastSprintUpdate", sprintName).apply();
-                                                rootRef.child("status/last_update")
-                                                        .child("last_sprint")
-                                                        .setValue(sprintName);
-                                                JSONArray SprintResults = Races.getJSONObject(k).getJSONArray("SprintResults");
-                                                for (int l = 0; l < SprintResults.length(); l++){
-                                                    String sprintPoints = SprintResults.getJSONObject(l).getString("points");
-                                                    String sprintDriverName = SprintResults
-                                                            .getJSONObject(l).getJSONObject("Driver")
-                                                            .getString("givenName") + " " +
-                                                            SprintResults
-                                                                    .getJSONObject(l).getJSONObject("Driver")
-                                                                    .getString("familyName");
-                                                    String driverCode = SprintResults.getJSONObject(l).getJSONObject("Driver").getString("code");
-                                                    String position = SprintResults.getJSONObject(l).getString("positionText");
-                                                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                                    rootRef.child("drivers/" + sprintDriverName).
-                                                            addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                    String sprintPointsTotal = Double.toString(
-                                                                            Double.parseDouble(Objects.requireNonNull(snapshot
-                                                                                    .child("totalPoints")
-                                                                                    .getValue(String.class))) + Integer.parseInt(sprintPoints));
-                                                                    Log.i("sprintPointsTotal", sprintDriverName + " " + sprintPointsTotal);
-                                                                    rootRef.child("drivers/" + sprintDriverName)
-                                                                            .child("totalPoints")
-                                                                            .setValue(sprintPointsTotal);
-                                                                }
-                                                                @Override
-                                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                                    Log.e("updateSprintDataError", error.getMessage());
-                                                                }
-                                                            });
-
-                                                    rootRef.child("schedule/season/" + currentYear + "/" + raceName)
-                                                            .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                @Override
-                                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                    switch (position){
-                                                                        case "1":
-                                                                            rootRef.child("schedule/season/"
-                                                                                            + currentYear + "/" + raceName)
-                                                                                    .child("Sprint/sprintWinnerCode")
-                                                                                    .setValue(driverCode);
-                                                                            break;
-                                                                        case "2":
-                                                                            rootRef.child("schedule/season/"
-                                                                                            + currentYear + "/" + raceName)
-                                                                                    .child("Sprint/sprintSecondCode")
-                                                                                    .setValue(driverCode);
-                                                                            break;
-                                                                        case "3":
-                                                                            rootRef.child("schedule/season/"
-                                                                                            + currentYear + "/" + raceName)
-                                                                                    .child("Sprint/sprintThirdCode")
-                                                                                    .setValue(driverCode);
-                                                                            break;
-                                                                        default:
-                                                                            break;
-                                                                    }
-                                                                }
-                                                                @Override
-                                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                                    Log.e("updateDataError", error.getMessage());
-                                                                }
-                                                            });
-                                                }
-                                            }
-                                            Log.i("updateState", "Sprint data updated successfully");
-                                            DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
-                                            String updateDate = currentDate.format(formatterUpdate);
-                                            rootRef.child("status/last_update")
-                                                    .child("update_date")
-                                                    .setValue(updateDate);
-                                        }else{
-                                            Log.i("updateState", "Sprint data updated earlier");
-                                        }
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-
-                            }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Log.e("sprintJsonObjectRequestError:", " " + error.getMessage());
-                    }
-                });
-                queue.add(sprintJsonObjectRequest);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void updateData(LocalDate currentDate) {
-        //String lastRaceUpdate = prefs.getString("lastRaceUpdate", "null");
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference lastRaceUpdate = rootRef.child("status/last_update").child("last_race");
-        lastRaceUpdate.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String lastRaceUpdate = snapshot.getValue(String.class);
-                        String currentYear = Integer.toString(currentDate.getYear());
-                        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-                        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/last/results/?format=json";
-                        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
-                                Request.Method.GET,
-                                url2,
-                                null,
-                                new Response.Listener<JSONObject>() {
-                                    @Override
-                                    public void onResponse(JSONObject response) {
-                                        try {
-                                            JSONObject MRData = response.getJSONObject("MRData");
-                                            JSONObject RaceTable = MRData.getJSONObject("RaceTable");
-                                            JSONArray Races = RaceTable.getJSONArray("Races");
-                                            for (int i = 0; i < Races.length(); i++){
-                                                String gpName = Races.getJSONObject(i).getString("season") + " " +
-                                                        Races.getJSONObject(i).getString("raceName");
-                                                String raceName = Races.getJSONObject(i).getString("raceName");
-                                                String circuitId = Races.getJSONObject(i).getJSONObject("Circuit")
-                                                        .getString("circuitId");
-                                                if (!lastRaceUpdate.equals(gpName)){
-                                                    JSONArray Results = Races.getJSONObject(i).getJSONArray("Results");
-                                                    for (int j = 0; j < Results.length(); j++){
-                                                        String positionText = Results.getJSONObject(j).getString("positionText");
-                                                        String gridText = Results.getJSONObject(j).getString("grid");
-                                                        String result = gridText + "-" + positionText;
-                                                        String position = Results.getJSONObject(j).getString("position");
-                                                        String points = Results.getJSONObject(j).getString("points");
-                                                        JSONObject Driver = Results.getJSONObject(j).getJSONObject("Driver");
-                                                        String driverName = Driver.getString("givenName") + " " + Driver.getString("familyName");
-                                                        String driverCode = Driver.getString("code");
-                                                        
-                                                        boolean hasFastestLap = false;
-                                                        String rank = "", time = " ";
-                                                        if (Results.getJSONObject(j).has("FastestLap")){
-                                                            JSONObject FastestLap = Results.getJSONObject(j).getJSONObject("FastestLap");
-                                                            rank = FastestLap.getString("rank");
-                                                            time = FastestLap.getJSONObject("Time").getString("time");
-                                                            hasFastestLap = true;
-                                                        }
-                                                        
-                                                        JSONObject Constructor = Results.getJSONObject(j).getJSONObject("Constructor");
-                                                        String teamName = Constructor.getString("name");
-                                                        String constructorId = Constructor.getString("constructorId");
-
-                                                        rootRef.child("status/last_update")
-                                                                .child("last_race")
-                                                                .setValue(gpName);
-
-                                                        int finalJ = j;
-                                                        boolean finalHasFastestLap = hasFastestLap;
-                                                        String finalRank = rank;
-                                                        rootRef.child("drivers/").orderByChild("driversCode").equalTo(driverCode)
-                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                        for (DataSnapshot driverSnaps: snapshot.getChildren()){
-                                                                            Log.i("updateDrivers", " " + finalJ + " " + driverCode + " is updating");
-
-                                                                            String totalWinsCount = driverSnaps
-                                                                                    .child("totalWins")
-                                                                                    .getValue(String.class);
-                                                                            String totalPodiumsCount = driverSnaps
-                                                                                    .child("totalPodiums")
-                                                                                    .getValue(String.class);
-
-                                                                            if(Integer.parseInt(position) <= 3){
-                                                                                if (position.equals("1")){
-                                                                                    totalWinsCount = Integer.toString(
-                                                                                            Integer.parseInt(totalWinsCount) + 1);
-                                                                                }
-                                                                                totalPodiumsCount = Integer.toString(
-                                                                                        Integer.parseInt(totalPodiumsCount) + 1);
-                                                                            }
-
-                                                                            String totalPoles = driverSnaps
-                                                                                    .child("polesCount")
-                                                                                    .getValue(String.class);
-                                                                            
-                                                                            if (gridText.equals("1")){
-                                                                                totalPoles = String.valueOf(Integer.parseInt(totalPoles) + 1);
-                                                                            }
-
-                                                                            String countGPEntered = Integer.toString(
-                                                                                    Integer.parseInt(Objects.requireNonNull(driverSnaps
-                                                                                            .child("gpEntered")
-                                                                                            .getValue(String.class))) + 1);
-                                                                            String totalPointsCount = Double.toString(
-                                                                                    Double.parseDouble(Objects.requireNonNull(driverSnaps
-                                                                                            .child("totalPoints")
-                                                                                            .getValue(String.class))) + Integer.parseInt(points));
-
-                                                                            String fastestLapsTotal = driverSnaps
-                                                                                    .child("fastestLapCount")
-                                                                                    .getValue(String.class);
-
-                                                                            if(finalHasFastestLap){
-                                                                                if(finalRank.equals("1")){
-                                                                                    fastestLapsTotal = String.valueOf(Integer.parseInt(fastestLapsTotal) + 1);
-                                                                                }
-                                                                            }
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("fastestLapCount")
-                                                                                    .setValue(fastestLapsTotal);
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("totalWins")
-                                                                                    .setValue(totalWinsCount);
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("totalPodiums")
-                                                                                    .setValue(totalPodiumsCount);
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("gpEntered")
-                                                                                    .setValue(countGPEntered);
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("totalPoints")
-                                                                                    .setValue(totalPointsCount);
-
-                                                                            rootRef.child("drivers/" + driverName)
-                                                                                    .child("polesCount")
-                                                                                    .setValue(totalPoles);
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                                        Log.e("updateDataError", error.getMessage());
-                                                                    }
-                                                                });
-
-                                                        rootRef.child("drivers/" + driverName)
-                                                                .child("lastEntry")
-                                                                .setValue(gpName);
-                                                        rootRef.child("drivers/" + driverName)
-                                                                .child("driversTeam")
-                                                                .setValue(teamName);
-
-                                                        rootRef.child("constructors/" + constructorId)
-                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                        if(finalHasFastestLap) {
-                                                                            if (finalRank.equals("1")) {
-                                                                                String fastestLapsTotal = snapshot
-                                                                                        .child("totalFastestLaps")
-                                                                                        .getValue(String.class);
-
-                                                                                fastestLapsTotal = Integer.toString(Integer.parseInt(fastestLapsTotal) + 1);
-
-                                                                                rootRef.child("constructors/" + constructorId)
-                                                                                        .child("totalFastestLaps")
-                                                                                        .setValue(fastestLapsTotal);
-                                                                            }
-                                                                        }
-
-                                                                        if(Integer.parseInt(position) <= 3){
-                                                                            if (position.equals("1")){
-                                                                                String totalWinsCount = snapshot
-                                                                                        .child("totalWins")
-                                                                                        .getValue(String.class);
-
-                                                                                totalWinsCount = Integer.toString(
-                                                                                        Integer.parseInt(totalWinsCount) + 1);
-
-                                                                                rootRef.child("constructors/" + constructorId)
-                                                                                        .child("totalWins")
-                                                                                        .setValue(totalWinsCount);
-                                                                            }
-                                                                            String totalPodiumsCount = snapshot
-                                                                                    .child("totalPodiums")
-                                                                                    .getValue(String.class);
-
-                                                                            totalPodiumsCount = Integer.toString(
-                                                                                    Integer.parseInt(totalPodiumsCount) + 1);
-
-                                                                            rootRef.child("constructors/" + constructorId)
-                                                                                    .child("totalPodiums")
-                                                                                    .setValue(totalPodiumsCount);
-                                                                        }
-
-                                                                        if (gridText.equals("1")){
-                                                                            String totalPoles = snapshot
-                                                                                    .child("totalPoles")
-                                                                                    .getValue(String.class);
-
-                                                                            totalPoles = Integer.toString(Integer.parseInt(totalPoles) + 1);
-
-                                                                            rootRef.child("constructors/" + constructorId)
-                                                                                    .child("totalPoles")
-                                                                                    .setValue(totalPoles);
-                                                                        }
-                                                                    }
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                                        Log.e("updateDataError", error.getMessage());
-                                                                    }
-                                                                });
-
-                                                        String finalTime = time;
-                                                        rootRef.child("circuits/" + circuitId)
-                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                        String currentFastLap = snapshot
-                                                                                .child("lapRecordTime")
-                                                                                .getValue(String.class);
-
-                                                                        if(finalHasFastestLap) {
-                                                                            if (finalRank.equals("1")) {
-                                                                                SimpleDateFormat formatterFastLap = new SimpleDateFormat("mm:ss.SSS");
-                                                                                try {
-                                                                                    Date fastestLap = formatterFastLap.parse(finalTime);
-                                                                                    Date currentFastestLap = formatterFastLap.parse(currentFastLap);
-                                                                                    if (fastestLap.getTime() < currentFastestLap.getTime()) {
-                                                                                        rootRef.child("circuits/" + circuitId)
-                                                                                                .child("lapRecordDriver")
-                                                                                                .setValue(driverName);
-                                                                                        rootRef.child("circuits/" + circuitId)
-                                                                                                .child("lapRecordTime")
-                                                                                                .setValue(finalTime);
-                                                                                        rootRef.child("circuits/" + circuitId)
-                                                                                                .child("lapRecordYear")
-                                                                                                .setValue(currentYear);
-                                                                                    }
-                                                                                } catch (
-                                                                                        ParseException e) {
-                                                                                    Log.d("ParseExeption", "" + e);
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                                        Log.e("updateDataError", error.getMessage());
-                                                                    }
-                                                                });
-
-                                                        rootRef.child("results/season/" + currentYear +
-                                                                        "/" + driverName)
-                                                                .child(raceName)
-                                                                .setValue(result);
-
-                                                        rootRef.child("schedule/season/" + currentYear + "/" + raceName)
-                                                                .addListenerForSingleValueEvent(new ValueEventListener() {
-                                                                    @Override
-                                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                                        if(finalHasFastestLap) {
-                                                                            if (finalRank.equals("1")) {
-                                                                                rootRef.child("schedule/season/"
-                                                                                                + currentYear + "/" + raceName)
-                                                                                        .child("RaceResults/fastestLapDriver")
-                                                                                        .setValue(driverName);
-                                                                                rootRef.child("schedule/season/"
-                                                                                                + currentYear + "/" + raceName)
-                                                                                        .child("RaceResults/fastestLapTime")
-                                                                                        .setValue(finalTime);
-                                                                            }
-                                                                        }
-                                                                        switch (position){
-                                                                            case "1":
-                                                                                rootRef.child("schedule/season/"
-                                                                                                + currentYear + "/" + raceName)
-                                                                                        .child("RaceResults/raceWinnerCode")
-                                                                                        .setValue(driverCode);
-                                                                                break;
-                                                                            case "2":
-                                                                                rootRef.child("schedule/season/"
-                                                                                                + currentYear + "/" + raceName)
-                                                                                        .child("RaceResults/raceSecondCode")
-                                                                                        .setValue(driverCode);
-                                                                                break;
-                                                                            case "3":
-                                                                                rootRef.child("schedule/season/"
-                                                                                                + currentYear + "/" + raceName)
-                                                                                        .child("RaceResults/raceThirdCode")
-                                                                                        .setValue(driverCode);
-                                                                                break;
-                                                                            default:
-                                                                                break;
-                                                                        }
-                                                                    }
-
-                                                                    @Override
-                                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                                        Log.e("updateDataError", error.getMessage());
-                                                                    }
-                                                                });
-                                                        DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
-                                                        String updateDate = currentDate.format(formatterUpdate);
-                                                        rootRef.child("status/last_update")
-                                                                .child("update_date")
-                                                                .setValue(updateDate);
-                                                        Log.i("updateState", "Race data updated successfully");
-                                                    }
-                                                }
-                                                else{
-                                                    Log.i("updateState", "Race data updated earlier");
-                                                }
-
-                                            }
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                    }
-                                }, new Response.ErrorListener() {
-                            @Override
-                            public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                        queue.add(jsonObjectRequest2);
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("updateRace_firebase", error.getMessage());
-                    }
-                }
-        );
+        return stringId;
     }
 }

@@ -94,7 +94,7 @@ public class futureRaceFragment extends Fragment {
                                                 recyclerView.setVisibility(View.VISIBLE);
                                                 shimmerFrameLayout.setVisibility(View.GONE);
                                                 shimmerFrameLayout.stopShimmer();
-                                            },500);
+                                            },800);
                                             adapter = new futureRaceAdapter(getActivity(), datum);
                                             recyclerView.setAdapter(adapter);
                                         }

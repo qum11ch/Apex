@@ -4,17 +4,17 @@
         <shape>
             <stroke
                 android:color="@color/grey"
-                android:width="10dp"/>
+                android:width="20dp"/>
             <corners
                 android:bottomLeftRadius="0dp"
                 android:bottomRightRadius="0dp"
                 android:topLeftRadius="0dp"
-                android:topRightRadius="10dp" />
+                android:topRightRadius="20dp" />
         </shape>
     </item>
     <item
-        android:top="5dp"
-        android:right="5dp"
+        android:top="10dp"
+        android:right="10dp"
         android:bottom="-1dp"
         android:left="-1dp">
         <shape>
@@ -23,7 +23,7 @@
                 android:bottomLeftRadius="0dp"
                 android:bottomRightRadius="0dp"
                 android:topLeftRadius="0dp"
-                android:topRightRadius="10dp"/>
+                android:topRightRadius="20dp"/>
         </shape>
     </item>
 </layer-list>

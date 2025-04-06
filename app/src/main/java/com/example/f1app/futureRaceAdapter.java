@@ -1,8 +1,15 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.driverStatsFragment.getCountryCode;
+import static com.example.f1app.teamsStandingsActivity.localizeLocality;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +20,12 @@ import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.DataHolder>{
     Activity context;
@@ -65,14 +75,39 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
             holder.raceMonth.setText(month);
         }
 
-        holder.raceName.setText(datum.getFutureRaceName() + " " + currentYear);
+        String localeRaceName = datum.getFutureRaceName().toLowerCase().replaceAll("\\s+", "_");
+        String futureRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + currentYear;
+        holder.raceName.setText(futureRaceName);
 
         //World.init(context);
         //holder.countryImage.setImageResource(World.getFlagOf(getCountryCode(datum.getCountry())));
 
-        holder.circuitName.setText(datum.getFutureCircuitName());
+        holder.circuitName.setText(context.getString(getStringByName(datum.getCircuitId() + "_text")));
 
-        String locale = datum.getLocale() + ", " + datum.getFutureRaceCountry();
+        String locale = " ";
+        if (Locale.getDefault().getLanguage().equals("ru")){
+            ArrayList<String> localizedData = localizeLocality(datum.getLocale(), datum.getFutureRaceCountry(), context);
+            String country = localizedData.get(0);
+            String cityName = localizedData.get(1);
+            locale = localizedData.get(2);
+        }else{
+            String cityName = datum.getLocale();
+            switch (cityName){
+                case "Monaco":
+                case "Singapore":
+                    cityName = null;
+                    break;
+                default:
+                    break;
+            }
+            if (cityName!=null){
+                locale = cityName + ", " + datum.getFutureRaceCountry();
+            }else{
+                locale = datum.getFutureRaceCountry();
+            }
+
+        }
+
         holder.raceCountry.setText(locale);
         holder.day_start.setText(dayStart);
         holder.day_end.setText(dayEnd);

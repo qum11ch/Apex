@@ -2,6 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:overScrollMode="never"
+    android:background="@color/light_grey"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:id="@+id/scrollView"
@@ -14,34 +15,27 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:paddingTop="30dp">
+            android:paddingTop="20dp">
             <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/ShimmerStyle"
+                android:id="@+id/race_info_layout"
+                android:layout_marginEnd="10dp"
+                android:gravity="center"
                 android:layout_marginStart="10dp"
-                android:id="@+id/flag_layout">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:padding="1dp"
+                    android:layout_centerVertical="true"
                     app:strokeColor="@color/grey"
                     android:scaleType="centerCrop"
                     app:shapeAppearanceOverlay="@style/customRoundedImageView"
                     android:id="@+id/flag"
                     android:layout_width="100dp"
                     android:layout_height="75dp" />
-            </RelativeLayout>
-            <RelativeLayout
-                android:id="@+id/race_info_layout"
-                android:layout_marginEnd="10dp"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@id/flag_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
                 <TextView
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/flag"
+                    android:textColor="@color/black"
                     android:id="@+id/raceName"
                     android:textStyle="bold"
                     android:gravity="bottom"
@@ -50,6 +44,10 @@
                     android:layout_height="wrap_content"
                     android:textAllCaps="true"/>
                 <TextView
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/flag"
+                    android:textStyle="normal"
+                    android:textColor="@color/black"
                     android:layout_marginTop="3dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:layout_below="@id/raceName"
@@ -82,6 +80,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
                     <TextView
+                        android:textColor="@color/dark_grey"
                         android:layout_marginStart="10dp"
                         android:id="@+id/length_info"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
@@ -129,6 +128,7 @@
                         android:layout_marginEnd="5dp"
                         android:paddingBottom="5dp">
                         <TextView
+                            android:textColor="@color/dark_grey"
                             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -149,6 +149,7 @@
                         android:orientation="vertical"
                         android:layout_marginStart="5dp">
                         <TextView
+                            android:textColor="@color/dark_grey"
                             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -175,6 +176,7 @@
                     <TextView
                         android:id="@+id/raceDist_info"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:textColor="@color/dark_grey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/race_distance"/>
@@ -211,6 +213,7 @@
                     <TextView
                         android:id="@+id/lapRecord_info"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:textColor="@color/dark_grey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/lap_record"/>
@@ -235,8 +238,8 @@
             <RelativeLayout
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="20dp"
-                style="@style/ItemStyle"
-                android:backgroundTint="@color/light_grey"
+                android:background="@drawable/save_style"
+                android:backgroundTint="@color/white"
                 android:layout_below="@id/circuitInfo_layout"
                 android:id="@+id/previousGP"
                 android:layout_width="match_parent"
@@ -246,8 +249,8 @@
                     android:paddingStart="20dp"
                     android:paddingEnd="0dp"
                     android:layout_centerInParent="true"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:textColor="@color/dark_grey"
+                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:textColor="@color/black"
                     android:textSize="22sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -257,7 +260,7 @@
         <com.facebook.shimmer.ShimmerFrameLayout
             android:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:id="@+id/shimmer_layout">
             <include layout="@layout/shimmer_race_circuit_fragment"/>
         </com.facebook.shimmer.ShimmerFrameLayout>

@@ -22,6 +22,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -40,13 +42,10 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
     @Override
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        switch (viewType){
-            case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team_first, parent , false);
-                break;
-            default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team, parent , false);
-                break;
+        if (viewType == 1) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_team_first, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
         }
         return new teamsStandingsAdapter.DataHolder(view, viewType);
     }
@@ -59,11 +58,12 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         holder.teamDriverFirst.setText(teamDrivers.get(0));
         holder.teamDriverSecond.setText(teamDrivers.get(1));
 
-        int resourceId_carImage = context.getResources().getIdentifier(datum.getTeamId() + "_left", "drawable",
-                context.getPackageName());
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
 
-        Glide.with(context)
-                .load(resourceId_carImage)
+        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_left.png");
+        GlideApp.with(context)
+                .load(mTeamCar)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
@@ -90,7 +90,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                 holder.cardView.getLayoutParams().height = height;
             }else{
                 holder.teamPosition.setText(datum.getPosition());
-                String teamPoints = datum.getPoints() + " PTS";
+                String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
                 holder.teamPoints.setText(teamPoints);
             }
         }else{
@@ -125,7 +125,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                 holder.teamPoints.getLayoutParams().width = width;
             } else {
                 holder.teamPosition.setText(datum.getPosition());
-                String teamPoints = datum.getPoints() + " PTS";
+                String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
                 holder.teamPoints.setText(teamPoints);
             }
 

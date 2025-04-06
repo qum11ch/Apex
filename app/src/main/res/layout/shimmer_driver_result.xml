@@ -17,8 +17,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
-            android:paddingTop="10dp"
-            style="@style/ItemStyle"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -29,23 +29,30 @@
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="2dp"
+                android:layout_marginStart="5dp"
                 android:layout_marginEnd="2dp"
                 android:lineSpacingExtra="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textSize="20sp" />
             <TextView
+                android:layout_gravity="center"
                 style="@style/ShimmerStyle"
                 android:layout_marginStart="2dp"
-                android:layout_marginEnd="2dp"
+                android:layout_marginEnd="5dp"
                 android:layout_weight="1"
                 android:id="@+id/driverResults"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="20dp"
                 android:gravity="center"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textSize="20sp"/>
         </LinearLayout>
+        <View
+            android:id="@+id/bottomLine"
+            android:background="@color/grey"
+            android:layout_gravity="bottom"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

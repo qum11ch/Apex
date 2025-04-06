@@ -25,12 +25,14 @@
                     android:id="@+id/fullTeamName_info"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center"
                     android:text="@string/full_team_name"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
                 <TextView
+                    android:gravity="center"
                     android:layout_below="@id/fullTeamName_info"
                     android:id="@+id/fullTeamName"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.Audiowide.ForStats"
                     android:textSize="20sp"
@@ -169,14 +171,29 @@
                     android:text="@string/constructors_championships"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Secondary" />
 
-                <TextView
-                    android:id="@+id/championships"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <LinearLayout
                     android:layout_below="@id/championships_info"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
-                    android:textSize="50sp" />
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/championships"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                        android:textColor="@color/black"
+                        android:textSize="50sp" />
+                    <TextView
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="10dp"
+                        android:text="@string/times"
+                        android:id="@+id/championshipsText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                        android:textSize="20sp"
+                        android:textColor="@color/black" />
+                </LinearLayout>
             </RelativeLayout>
 
             <RelativeLayout
@@ -368,8 +385,9 @@
                         android:layout_height="wrap_content"
                         android:layout_below="@id/teamBase_info"
                         android:paddingStart="10dp"
-                        android:paddingEnd="70dp"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                        android:paddingEnd="80dp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                        android:textSize="20sp"
                         android:textColor="@color/black" />
 
                     <RelativeLayout
@@ -416,7 +434,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/teamChief_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
                     android:textColor="@color/black" />
             </RelativeLayout>
 
@@ -442,7 +461,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/techChief_info"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
                     android:textColor="@color/black" />
             </RelativeLayout>
 
@@ -469,7 +489,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/chassis_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
                     android:textColor="@color/black" />
             </RelativeLayout>
 
@@ -496,7 +517,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/powerUnit_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
                     android:textColor="@color/black" />
             </RelativeLayout>
         </RelativeLayout>

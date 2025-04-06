@@ -140,7 +140,7 @@
                     android:gravity="bottom"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo" />
+                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
 
                 <TextView
                     android:textColor="@color/white"
@@ -151,7 +151,7 @@
                     android:layout_marginEnd="8dp"
                     android:includeFontPadding="false"
                     android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Fishmonger.ForInfo"
+                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
                     android:layout_marginBottom="10dp"/>
                 <LinearLayout
                     android:id="@+id/podiumImage_layout"

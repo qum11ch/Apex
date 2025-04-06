@@ -38,15 +38,49 @@
                 android:layout_height="wrap_content"
                 android:text="@string/first_entry"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+            <LinearLayout
+                android:layout_below="@id/firstGP_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:paddingBottom="5dp"
+                    android:layout_marginStart="10dp"
+                    android:id="@+id/firstGP"
+                    android:textSize="20sp"
+                    android:textColor="@color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"/>
+            </LinearLayout>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/lastEntry_layout"
+            style="@style/CircuitInfoLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/firstGP_layout"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="20dp">
 
             <TextView
-                android:id="@+id/firstGP"
-                android:layout_marginStart="10dp"
+                android:id="@+id/lastEntry_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/last_entry_text"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+            <TextView
+                android:paddingBottom="3dp"
+                android:id="@+id/lastEntry"
+                android:layout_below="@id/lastEntry_info"
+                android:textSize="20sp"
+                android:textColor="@color/black"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/firstGP_info"
-                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
-                android:textColor="@color/black" />
+                android:textAppearance="@style/TextStyle.GoodTiming.Regular"/>
         </RelativeLayout>
 
         <RelativeLayout
@@ -54,7 +88,7 @@
             style="@style/CircuitInfoLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/firstGP_layout"
+            android:layout_below="@id/lastEntry_layout"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp">
@@ -221,15 +255,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/drivers_championships"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Secondary" />
-
-            <TextView
-                android:id="@+id/championships"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_below="@id/championships_info"
-                android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                android:textColor="@color/black"
-                android:textSize="50sp" />
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/championships"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                    android:textColor="@color/black"
+                    android:textSize="50sp" />
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_marginStart="10dp"
+                    android:text="@string/times"
+                    android:id="@+id/championshipsText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
+                    android:textColor="@color/black" />
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -291,31 +339,33 @@
                                 android:scaleType="fitCenter" />
                         </RelativeLayout>
                     </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_below="@id/team"
+                        android:paddingTop="10dp"
+                        android:layout_marginEnd="4dp"
+                        android:background="@color/white"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_centerInParent="true"
+                            android:id='@+id/teamName'
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames"
+                            android:textStyle="bold"/>
+                        <ImageView
+                            android:contentDescription="@string/front_arrow"
+                            android:cropToPadding="true"
+                            android:layout_marginStart="5dp"
+                            android:layout_centerInParent="true"
+                            android:layout_toEndOf="@id/teamName"
+                            android:id='@+id/arrow'
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:src="@drawable/back_arrow_black"
+                            android:scaleX="-1"/>
+                    </RelativeLayout>
                 </RelativeLayout>
-                <RelativeLayout
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:layout_centerInParent="true"
-                        android:id='@+id/teamName'
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames"
-                        android:textStyle="bold"/>
-                    <ImageView
-                        android:contentDescription="@string/front_arrow"
-                        android:cropToPadding="true"
-                        android:layout_marginStart="5dp"
-                        android:layout_centerInParent="true"
-                        android:layout_toEndOf="@id/teamName"
-                        android:id='@+id/arrow'
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/back_arrow_black"
-                        android:scaleX="-1"/>
-                </RelativeLayout>
-
             </LinearLayout>
         </RelativeLayout>
 
@@ -363,7 +413,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/country_info"
-                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                android:textSize="20sp"
                 android:textColor="@color/black" />
             <RelativeLayout
                 android:layout_width="wrap_content"
@@ -403,16 +454,29 @@
                 android:layout_height="wrap_content"
                 android:text="@string/date_of_birth"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-
-            <TextView
-                android:paddingBottom="5dp"
-                android:id="@+id/birthdate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <LinearLayout
                 android:layout_below="@id/birthdate_info"
-                android:text=""
-                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
-                android:textColor="@color/black" />
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:paddingBottom="5dp"
+                    android:id="@+id/birthdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                    android:textColor="@color/black" />
+                <TextView
+                    android:paddingBottom="5dp"
+                    android:id="@+id/driverAge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="20sp"
+                    android:textColor="@color/black" />
+            </LinearLayout>
         </RelativeLayout>
 
     </RelativeLayout>

@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
@@ -40,11 +42,17 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
     public void onBindViewHolder(@NonNull teamDriversResultsAdapter.DataHolder holder, int position) {
         teamDriversResultsData datum = dataList.get(position);
 
+        if (position==dataList.size()-1){
+            holder.bottomLine.setVisibility(View.GONE);
+        }
+
         String raceName = datum.getRaceName();
         String firstDriverResult = datum.getFirstDriverResult();
         String secondDriverResult = datum.getSecondDriverResult();
 
-        holder.raceName.setText(raceName);
+        String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
+        String resultsRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + datum.getSeason();
+        holder.raceName.setText(resultsRaceName);
 
         if (!firstDriverResult.equals("N/C")){
             if (firstDriverResult.equals("NP")){
@@ -172,12 +180,14 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
     public class DataHolder extends RecyclerView.ViewHolder{
         TextView raceName, firstDriverResult, secondDriverResult;
         ConstraintLayout constraintLayout;
+        View bottomLine;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             raceName = itemView.findViewById(R.id.raceName);
             firstDriverResult = itemView.findViewById(R.id.result_firstDriver);
             secondDriverResult = itemView.findViewById(R.id.result_secondDriver);
             constraintLayout = itemView.findViewById(R.id.main_layout);
+            bottomLine = itemView.findViewById(R.id.bottomLine);
         }
     }
 

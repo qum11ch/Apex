@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/blue_gradient"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_width="match_parent"
+        android:paddingTop="40dp"
+        android:paddingBottom="20dp"
+        android:layout_height="wrap_content"
+        android:background="@color/red">
+        <ImageButton
+            android:layout_marginTop="2dp"
+            android:id='@+id/backButton'
+            android:contentDescription="@string/back_arrow"
+            android:paddingEnd="30dp"
+            android:paddingStart="0dp"
+            android:layout_width="100dp"
+            android:layout_height="30dp"
+            android:src="@drawable/back_arrow"
+            android:background="@color/red"/>
+        <TextView
+            android:paddingStart="40dp"
+            android:paddingEnd="40dp"
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:text="@string/drivers_header"
+            android:id="@+id/teamsHeader"
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+    </RelativeLayout>
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipe_layout"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:clipToPadding = "false"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="5dp"
+                    android:overScrollMode="never"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recyclerview_currentDrivers"
+                    android:visibility="gone"/>
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:duration="1500">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                    </LinearLayout>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+                <Button
+                    android:visibility="gone"
+                    android:layout_marginBottom="10dp"
+                    android:layout_below="@id/recyclerview_currentDrivers"
+                    style="@style/ItemStyle"
+                    android:backgroundTint="@color/white"
+                    android:textColor="@color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:id="@+id/pastSeasonDriversStandings"
+                    android:textSize="18sp"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="5dp"
+                    android:textAlignment="textStart"/>
+            </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    <include layout="@layout/footer_drivers"/>
+</LinearLayout>
