@@ -19,7 +19,6 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriversStandingsAdapter.DataHolder> {
@@ -93,19 +92,16 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         int resourceId_teamColor = getColorByName(datum.getConstructorId());
         holder.line.setBackgroundResource(resourceId_teamColor);
 
-        holder.constraintLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(context , driverPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("driverName", datum.getDriverName());
-                bundle.putString("driverCode", datum.getDriverCode());
-                bundle.putString("driverTeam", datum.getDriverTeam());
-                bundle.putString("driverFamilyName", datum.getDriverFamilyName());
-                bundle.putString("driverTeamId", datum.getConstructorId());
-                intent.putExtras(bundle);
-                context.startActivity(intent);
-            }
+        holder.constraintLayout.setOnClickListener(v -> {
+            Intent intent = new Intent(context , driverPageActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("driverName", datum.getDriverName());
+            bundle.putString("driverCode", datum.getDriverCode());
+            bundle.putString("driverTeam", datum.getDriverTeam());
+            bundle.putString("driverFamilyName", datum.getDriverFamilyName());
+            bundle.putString("driverTeamId", datum.getConstructorId());
+            intent.putExtras(bundle);
+            context.startActivity(intent);
         });
     }
 

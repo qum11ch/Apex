@@ -31,7 +31,6 @@ import java.util.TimeZone;
 
 public class BootService extends Service {
     SharedPreferences mPrefs;
-    private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
     private final IBinder mBinder = new LocalBinder();
 
@@ -58,8 +57,8 @@ public class BootService extends Service {
         if (intent!=null){
             Bundle bundle = intent.getExtras();
             mPrefs = getApplicationContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
-            JSONArray jsonArrayEvents = null;
-            JSONArray jsonArrayCircuits = null;
+            JSONArray jsonArrayEvents;
+            JSONArray jsonArrayCircuits;
             assert bundle != null;
             String mChannelId = bundle.getString("channelId");
             int iterator = 0;
@@ -95,7 +94,8 @@ public class BootService extends Service {
                         String bodyStart = body + " " + getString(R.string.notify_start_text);
                         String bodyEnd = body + " " + getString(R.string.notify_end_text);
                         Date current = Calendar.getInstance().getTime();
-                        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+                        String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+                        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
                         dateFormat.setTimeZone(TimeZone.getDefault());
                         try {
                             Date eventStart_date = dateFormat.parse(newDateStart);

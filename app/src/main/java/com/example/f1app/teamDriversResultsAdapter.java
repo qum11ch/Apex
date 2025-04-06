@@ -25,12 +25,6 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
         this.dataList = datum;
     }
 
-    public void updateData(List<teamDriversResultsData> datum) {
-        dataList.clear();
-        dataList.addAll(datum);
-        notifyDataSetChanged();
-    }
-
     @NonNull
     @Override
     public teamDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
