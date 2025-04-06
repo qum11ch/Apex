@@ -105,6 +105,9 @@ public class resetPageActivity extends AppCompatActivity {
                         resetButton.setVisibility(View.VISIBLE);
                         resetProgress.setVisibility(View.INVISIBLE);
                     });
+        }else{
+            resetProgress.setVisibility(View.INVISIBLE);
+            resetButton.setVisibility(View.VISIBLE);
         }
     }
 }
