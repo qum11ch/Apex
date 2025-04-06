@@ -35,7 +35,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
     @Override
     public teamDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_team_result, parent , false);
-        return new teamDriversResultsAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -64,49 +64,54 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 String firstDriverFinish = firstDriver[1];
                 String firstDriverStart = firstDriver[0];
 
-                if (firstDriverFinish.equals("R")){
-                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
-                    holder.firstDriverResult.setText(context.getResources().getString(R.string.ret_text));
-                } else if (firstDriverFinish.equals("W")) {
-                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-                    holder.firstDriverResult.setText(context.getResources().getString(R.string.wd_text));
-                } else if (firstDriverFinish.equals("D")) {
-                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
-                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
-                    holder.firstDriverResult.setText(context.getResources().getString(R.string.dsq_text));
-                } else{
-                    int finishPos = Integer.parseInt(firstDriverFinish);
-                    if (finishPos <= 3){
-                        switch(finishPos){
-                            case (1):
-                                holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gold));
-                                break;
-                            case (2):
-                                holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_silver));
-                                break;
-                            case (3):
-                                holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_bronze));
-                                break;
-                            default:
-                                break;
+                switch (firstDriverFinish) {
+                    case "R":
+                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.pink));
+                        holder.firstDriverResult.setText(context.getResources().getString(R.string.ret_text));
+                        break;
+                    case "W":
+                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
+                        holder.firstDriverResult.setText(context.getResources().getString(R.string.wd_text));
+                        break;
+                    case "D":
+                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
+                        holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
+                        holder.firstDriverResult.setText(context.getResources().getString(R.string.dsq_text));
+                        break;
+                    default:
+                        int finishPos = Integer.parseInt(firstDriverFinish);
+                        if (finishPos <= 3) {
+                            switch (finishPos) {
+                                case (1):
+                                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gold));
+                                    break;
+                                case (2):
+                                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_silver));
+                                    break;
+                                case (3):
+                                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_bronze));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else if (finishPos <= 10) {
+                            holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                            holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_green));
+                        } else {
+                            holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                            holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_purple));
                         }
-                    } else if (finishPos <= 10) {
-                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                        holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_green));
-                    } else{
-                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                        holder.firstDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_purple));
-                    }
-                    if(firstDriverStart.equals("1")){
-                        holder.firstDriverResult.setTextColor(ContextCompat.getColor(context,R.color.purple));
-                        holder.firstDriverResult.setTypeface(holder.secondDriverResult.getTypeface(), Typeface.BOLD);
-                    }
-                    holder.firstDriverResult.setText(firstDriverFinish);
+                        if (firstDriverStart.equals("1")) {
+                            holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.purple));
+                            holder.firstDriverResult.setTypeface(holder.secondDriverResult.getTypeface(), Typeface.BOLD);
+                        }
+                        holder.firstDriverResult.setText(firstDriverFinish);
+                        break;
                 }
             }
 
@@ -118,45 +123,50 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 String[] secondDriver = secondDriverResult.split("-");
                 String secondDriverFinish = secondDriver[1];
                 String secondDriverStart = secondDriver[0];
-                if (secondDriverFinish.equals("R")){
-                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.pink));
-                    holder.secondDriverResult.setText(context.getResources().getString(R.string.ret_text));
-                } else if (secondDriverFinish.equals("W")) {
-                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
-                    holder.secondDriverResult.setText(context.getResources().getString(R.string.wd_text));
-                } else if (secondDriverFinish.equals("D")) {
+                switch (secondDriverFinish) {
+                    case "R":
+                        holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.pink));
+                        holder.secondDriverResult.setText(context.getResources().getString(R.string.ret_text));
+                        break;
+                    case "W":
+                        holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
+                        holder.secondDriverResult.setText(context.getResources().getString(R.string.wd_text));
+                        break;
+                    case "D":
                         holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
                         holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
                         holder.secondDriverResult.setText(context.getResources().getString(R.string.dsq_text));
-                } else{
-                    int finishPos = Integer.parseInt(secondDriverFinish);
-                    if (finishPos <= 3){
-                        switch(finishPos){
-                            case (1):
-                                holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_gold));
-                                break;
-                            case (2):
-                                holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_silver));
-                                break;
-                            case (3):
-                                holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                                holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_bronze));
-                                break;
-                            default:
-                                break;
+                        break;
+                    default:
+                        int finishPos = Integer.parseInt(secondDriverFinish);
+                        if (finishPos <= 3) {
+                            switch (finishPos) {
+                                case (1):
+                                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gold));
+                                    break;
+                                case (2):
+                                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_silver));
+                                    break;
+                                case (3):
+                                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_bronze));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else if (finishPos <= 10) {
+                            holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                            holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_green));
+                        } else {
+                            holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                            holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context, R.color.light_purple));
                         }
-                    } else if (finishPos <= 10) {
-                        holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                        holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_green));
-                    } else{
-                        holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.dark_grey));
-                        holder.secondDriverResult.setBackgroundColor(ContextCompat.getColor(context,R.color.light_purple));
-                    }
-                    holder.secondDriverResult.setText(secondDriverFinish);
+                        holder.secondDriverResult.setText(secondDriverFinish);
+                        break;
                 }
                 if(secondDriverStart.equals("1")){
                     holder.secondDriverResult.setTextColor(ContextCompat.getColor(context,R.color.purple));
@@ -177,7 +187,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView raceName, firstDriverResult, secondDriverResult;
         ConstraintLayout constraintLayout;
         View bottomLine;

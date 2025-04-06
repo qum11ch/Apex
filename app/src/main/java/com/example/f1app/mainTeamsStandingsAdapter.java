@@ -1,15 +1,14 @@
 package com.example.f1app;
 
 
+import static com.example.f1app.driversStandingsAdapter.getColorByName;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -19,11 +18,6 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -118,29 +112,6 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
             constraintLayout = itemView.findViewById(R.id.main_layout);
             line = itemView.findViewById(R.id.line);
             bottomLine = itemView.findViewById(R.id.bottomLine);
-        }
-    }
-
-
-    public int getColorByName(String name) {
-        int colorId = 0;
-
-        try {
-            Class res = R.color.class;
-            Field field = res.getField(name);
-            colorId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return colorId;
-    }
-
-    private class OnTouch implements View.OnTouchListener
-    {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return true;
         }
     }
 }

@@ -14,7 +14,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -135,33 +134,38 @@ public class raceResultsRaceFragment extends Fragment {
                                         }
                                     }
 
-                                    if (positionText.equals("R")){
-                                        time = getResources().getString(R.string.dnf_text);
-                                        position = getResources().getString(R.string.nc_text);
-                                    } else if (positionText.equals("W")) {
-                                        time = getResources().getString(R.string.wd);
-                                        position = getResources().getString(R.string.wd_text);
-                                        points = " ";
-                                    } else if (positionText.equals("D")) {
-                                        time = getResources().getString(R.string.dsq_text);
-                                        position = getResources().getString(R.string.dsq_pos_text);
-                                        points = " ";}
-                                    else{
-                                        if (Result.has("Time")){
-                                            time = Result.getJSONObject("Time")
-                                                    .getString("time");
-                                            if (!positionText.equals("1")) {
-                                                time += getResources().getString(R.string.seconds_text);
+                                    switch (positionText) {
+                                        case "R":
+                                            time = getResources().getString(R.string.dnf_text);
+                                            position = getResources().getString(R.string.nc_text);
+                                            break;
+                                        case "W":
+                                            time = getResources().getString(R.string.wd);
+                                            position = getResources().getString(R.string.wd_text);
+                                            points = " ";
+                                            break;
+                                        case "D":
+                                            time = getResources().getString(R.string.dsq_text);
+                                            position = getResources().getString(R.string.dsq_pos_text);
+                                            points = " ";
+                                            break;
+                                        default:
+                                            if (Result.has("Time")) {
+                                                time = Result.getJSONObject("Time")
+                                                        .getString("time");
+                                                if (!positionText.equals("1")) {
+                                                    time += getResources().getString(R.string.seconds_text);
+                                                }
+                                            } else {
+                                                String status = Result.getString("status");
+                                                if (status.contains("Lap")) {
+                                                    time = Result.getString("status");
+                                                } else {
+                                                    time = getResources().getString(R.string.dnf_text);
+                                                }
                                             }
-                                        }else{
-                                            String status = Result.getString("status");
-                                            if (status.contains("Lap")){
-                                                time = Result.getString("status");
-                                            }else{
-                                                time = getResources().getString(R.string.dnf_text);
-                                            }
-                                        }
-                                        position = positionText;
+                                            position = positionText;
+                                            break;
                                     }
 
                                     raceResultsRaceData results = new raceResultsRaceData(position,

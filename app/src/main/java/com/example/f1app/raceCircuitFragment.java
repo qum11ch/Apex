@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.driverStatsFragment.getCountryCode;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,7 +19,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.blongho.country_data.World;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
@@ -32,10 +32,14 @@ import com.google.firebase.storage.StorageReference;
 import java.util.Locale;
 
 public class raceCircuitFragment extends Fragment {
-    private TextView raceName, circuitName, length, lapsNum, firstGP, raceDist, lapRecord_time,
-            lapRecord_driver, prevGPtext;
-    private ImageView circuitImage, flag;
-    private RelativeLayout previousGP, contentLayout;
+    private TextView circuitName;
+    private TextView length;
+    private TextView lapsNum;
+    private TextView firstGP;
+    private TextView raceDist;
+    private TextView lapRecord_time;
+    private TextView lapRecord_driver;
+    private RelativeLayout contentLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
 
 
@@ -57,7 +61,7 @@ public class raceCircuitFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        raceName = view.findViewById(R.id.raceName);
+        TextView raceName = view.findViewById(R.id.raceName);
         circuitName = view.findViewById(R.id.circuitName);
         length = view.findViewById(R.id.length);
         lapsNum = view.findViewById(R.id.lapsNum);
@@ -65,10 +69,10 @@ public class raceCircuitFragment extends Fragment {
         raceDist = view.findViewById(R.id.raceDist);
         lapRecord_time = view.findViewById(R.id.lapRecord_time);
         lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
-        circuitImage = view.findViewById(R.id.circuitImage);
-        flag = view.findViewById(R.id.flag);
-        previousGP = view.findViewById(R.id.previousGP);
-        prevGPtext = view.findViewById(R.id.prevGPtext);
+        ImageView circuitImage = view.findViewById(R.id.circuitImage);
+        ImageView flag = view.findViewById(R.id.flag);
+        RelativeLayout previousGP = view.findViewById(R.id.previousGP);
+        TextView prevGPtext = view.findViewById(R.id.prevGPtext);
         contentLayout = view.findViewById(R.id.content_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
 
@@ -81,6 +85,7 @@ public class raceCircuitFragment extends Fragment {
             String mYear = getArguments().getString("gpYear");
 
             String mPrevGPtext = " ";
+            assert mYear != null;
             if(Locale.getDefault().getLanguage().equals("ru")){
                 mPrevGPtext = getString(R.string.prev_race_results_text) + " " + (Integer.parseInt(mYear) - 1);
             }else{
@@ -157,30 +162,6 @@ public class raceCircuitFragment extends Fragment {
             });
         }
 
-    }
-
-    public String getCountryCode(String countryName) {
-        String[] isoCountryCodes = Locale.getISOCountries();
-        switch (countryName) {
-            case "usa":
-                return "us";
-            case "uk":
-                return "gb";
-            case "uae":
-                return "ae";
-            default:
-                for (String countryCode : isoCountryCodes) {
-                    Locale locale = new Locale("en", countryCode);
-                    String iso = locale.getISO3Country();
-                    String code = locale.getCountry();
-                    String name = locale.getDisplayCountry(new Locale("en", iso));
-                    if (countryName.equalsIgnoreCase(name)) {
-                        return code;
-                    }
-                }
-                break;
-        }
-        return " ";
     }
 
 }

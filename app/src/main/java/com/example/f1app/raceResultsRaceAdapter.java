@@ -32,7 +32,7 @@ public class raceResultsRaceAdapter extends RecyclerView.Adapter<raceResultsRace
     @Override
     public raceResultsRaceAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_race_result, parent , false);
-        return new raceResultsRaceAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class raceResultsRaceAdapter extends RecyclerView.Adapter<raceResultsRace
         holder.driverPoints.setText(mPoints);
 
 
-        Integer year = Integer.parseInt(mSeason);
+        int year = Integer.parseInt(mSeason);
 
         if (year >= 2024){
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -76,7 +76,7 @@ public class raceResultsRaceAdapter extends RecyclerView.Adapter<raceResultsRace
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView driver_placement, driverCode, driver_time, driverPoints;
         View line;
         public DataHolder(@NonNull View itemView) {

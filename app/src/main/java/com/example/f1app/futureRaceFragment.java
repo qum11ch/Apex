@@ -58,7 +58,7 @@ public class futureRaceFragment extends Fragment {
 
             recyclerView = view.findViewById(R.id.recyclerview_futureRaces);
 
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
             recyclerView.setLayoutManager(linearLayoutManager);
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
@@ -69,7 +69,7 @@ public class futureRaceFragment extends Fragment {
 
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.child("schedule/season/" + currentYear).orderByChild("round")
-                        .equalTo(Integer.valueOf(raceRound)).addValueEventListener(new ValueEventListener() {
+                        .equalTo(Integer.parseInt(raceRound)).addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 datum = new ArrayList<>();

@@ -17,7 +17,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -88,6 +87,7 @@ public class teamResultsFragment extends Fragment {
             radioButton_2025.setChecked(true);
 
             radioButton_2025.setChecked(true);
+            assert driversList != null;
             getResults("2025", driversList);
 
             radioButton_2025.setOnClickListener(new View.OnClickListener() {
@@ -155,19 +155,18 @@ public class teamResultsFragment extends Fragment {
         }
     }
     private void getResults(String season, ArrayList<String> drivers){
-        String mSeason = season;
         datum = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        rootRef.child("schedule/season/" + mSeason + "/").orderByChild("round").addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + season + "/").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for (DataSnapshot ds: snapshot.getChildren())
                 {
                     String raceName = ds.getKey();
-                    rootRef.child("results/season/").child(mSeason).addValueEventListener(new ValueEventListener() {
+                    rootRef.child("results/season/").child(season).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot resultSnapshot) {
                             String firstDriverName = drivers.get(0);

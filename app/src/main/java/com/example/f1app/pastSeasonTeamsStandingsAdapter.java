@@ -1,6 +1,9 @@
 package com.example.f1app;
 
 
+import static com.example.f1app.driversStandingsAdapter.getColorByName;
+
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -55,9 +57,10 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
                 view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
                 break;
         }
-        return new pastSeasonTeamsStandingsAdapter.DataHolder(view, viewType);
+        return new DataHolder(view, viewType);
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         teamsList datum = dataList.get(position);
@@ -119,7 +122,7 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView teamName, teamPoints, teamPosition,
                 teamDriverFirst, teamDriverSecond;
         ImageView team_car;
@@ -145,23 +148,9 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         }
     }
 
-
-    public int getColorByName(String name) {
-        int colorId = 0;
-
-        try {
-            Class res = R.color.class;
-            Field field = res.getField(name);
-            colorId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return colorId;
-    }
-
-    private class OnTouch implements View.OnTouchListener
+    private static class OnTouch implements View.OnTouchListener
     {
+        @SuppressLint("ClickableViewAccessibility")
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             return true;

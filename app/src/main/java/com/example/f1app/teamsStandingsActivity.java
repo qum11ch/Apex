@@ -52,7 +52,6 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
     private List<teamsList> datum;
     private RecyclerView recyclerView;
-    private ImageButton backButton;
     private Button pastSeasonTeamsStandings;
     private teamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
@@ -153,7 +152,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         });
 
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

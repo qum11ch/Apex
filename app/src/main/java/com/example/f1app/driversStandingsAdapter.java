@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,9 +20,7 @@ import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -220,17 +219,15 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         }
     }
 
-        public int getColorByName(String name) {
-            int colorId = 0;
-
-            try {
-                Class res = R.color.class;
-                Field field = res.getField(name);
-                colorId = field.getInt(null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return colorId;
+    public static int getColorByName(String name) {
+        int colorId = 0;
+        try {
+            Class<R.color> res = R.color.class;
+            Field field = res.getField(name);
+            colorId = field.getInt(null);
+        } catch (Exception e) {
+            Log.e("getColorByName", " " + e.getMessage());
         }
+        return colorId;
+    }
 }

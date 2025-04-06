@@ -4,7 +4,6 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.animation.ObjectAnimator;
 import android.animation.TimeInterpolator;
 import android.content.Context;
 import android.content.Intent;
@@ -57,7 +56,6 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
     Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
     FirebaseDatabase database;
-    private final String channelId = "channelID2";
     //private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
     //private static final long HOUR = 3600*1000;
     //private static final long SPRINT_QUALI_DIFF = 44*60*1000;
@@ -182,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
         getDriversStanding(currentYear);
         getSchedule(currentYear, currentDate);
         Intent intentStart = new Intent(this, BootService.class);
+        String channelId = "channelID2";
         intentStart.putExtra("channelId", channelId);
         startService(intentStart);
     }
@@ -378,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
 
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("teamStandingsError", error.getMessage());
+                                                Log.e("MainActivityTeams", error.getMessage());
                                             }
                                         });
                                     }
@@ -425,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
                                                 }
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("teamStandingsError", error.getMessage());
+                                                    Log.e("MainActivityTeams", error.getMessage());
                                                 }
                                             });
                                         }
@@ -434,13 +433,13 @@ public class MainActivity extends AppCompatActivity {
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("teamStandingsError", error.getMessage());
+                                        Log.e("MainActivityTeams", error.getMessage());
                                     }
                                 });
 
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e("MainActivityTeams", " " + e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {
@@ -536,7 +535,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPastRace(String currentYear, String round){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.valueOf(round)).addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.parseInt(round)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 datumPast = new ArrayList<>();
@@ -571,7 +570,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
+                                Log.e("MainActivityTeams", error.getMessage());
                             }
                         });
                     }
@@ -580,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
+                Log.e("MainActivityTeams", error.getMessage());
             }
         });
     }
@@ -595,7 +594,7 @@ public class MainActivity extends AppCompatActivity {
             newRound = round;
         }
         rootRef.child("schedule/season/" + currentYear).orderByChild("round")
-                .equalTo(Integer.valueOf(newRound)).addValueEventListener(new ValueEventListener() {
+                .equalTo(Integer.parseInt(newRound)).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         datumFuture = new ArrayList<>();
@@ -660,11 +659,11 @@ public class MainActivity extends AppCompatActivity {
         int stringId = 0;
 
         try {
-            Class res = R.string.class;
+            Class<R.string> res = R.string.class;
             Field field = res.getField(name);
             stringId = field.getInt(null);
         } catch (Exception e) {
-            e.printStackTrace();
+            Log.e("getStringByName", " " + e.getMessage());
         }
 
         return stringId;

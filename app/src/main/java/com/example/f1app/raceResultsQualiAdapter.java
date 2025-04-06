@@ -33,7 +33,7 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
     @Override
     public raceResultsQualiAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_quali_result, parent , false);
-        return new raceResultsQualiAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -78,7 +78,7 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
             holder.Q3_time.setText(mQ3);
         }
 
-        Integer year = Integer.parseInt(mSeason);
+        int year = Integer.parseInt(mSeason);
 
         if (year >= 2024){
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -102,7 +102,7 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView driver_placement, driverCode, Q1_time, Q2_time, Q3_time;
         View line;
         ConstraintLayout constraintLayout;

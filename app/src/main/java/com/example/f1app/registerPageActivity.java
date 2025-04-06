@@ -44,7 +44,6 @@ public class registerPageActivity extends AppCompatActivity {
     EditText editTextUsername, editTextEmail, editTextPassword;
     Button registerButton;
     TextView logInTextView;
-    private ImageButton backButton;
     ProgressBar registerProgress;
     TextInputLayout til_username, til_email, til_password;
     String email, password, username;
@@ -135,7 +134,7 @@ public class registerPageActivity extends AppCompatActivity {
             }
         });
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -150,7 +149,7 @@ public class registerPageActivity extends AppCompatActivity {
 
     }
 
-    private TextWatcher textWatcher = new TextWatcher() {
+    private final TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 

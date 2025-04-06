@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.annotation.SuppressLint;
@@ -15,8 +16,6 @@ import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -436,20 +435,5 @@ public class futureRaceScheduleFragment extends Fragment {
         }
 
     }
-
-    private int getStringByName(String name) {
-        int stringId = 0;
-
-        try {
-            Class res = R.string.class;
-            Field field = res.getField(name);
-            stringId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return stringId;
-    }
-
 
 }

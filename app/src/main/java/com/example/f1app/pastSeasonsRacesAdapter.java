@@ -210,7 +210,7 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ImageView countryImage, secondPlace_image, firstPlace_image, thirdPlace_image;

@@ -23,7 +23,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.blongho.country_data.World;
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -164,6 +163,7 @@ public class driverStatsFragment extends Fragment {
                     }
                     //driverCountry.setText(mDriverCountry);
 
+                    assert mDriverCountry != null;
                     Locale driverCountryLocale = new Locale(Locale.getDefault().getLanguage(), getCountryCode(mDriverCountry));
                     //Locale currentC = ConfigurationCompat.getLocales(getResources().getConfiguration()).get(0);
                     driverCountry.setText(driverCountryLocale.getDisplayCountry());
@@ -300,14 +300,6 @@ public class driverStatsFragment extends Fragment {
         Period period = Period.between(birthdate, currentDate);
 
         return period.getYears();
-    }
-
-    private String localeToEmoji(Locale locale) {
-        String countryCode = locale.getCountry();
-        int firstLetter = Character.codePointAt(countryCode, 0) - 0x41 + 0x1F1E6;
-        int secondLetter = Character.codePointAt(countryCode, 1) - 0x41 + 0x1F1E6;
-        return new String(Character.toChars(firstLetter)) + new String(Character.toChars(secondLetter));
-
     }
 
     public static String getCountryCode(String countryName) {

@@ -25,7 +25,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
@@ -46,11 +45,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 public class teamPageActivity extends AppCompatActivity {
-    private ImageButton backButton;
-    private ViewPager2 myViewPager2;
-    private viewPagerAdapter adapter;
-    private TextView teamNameFull, teamName;
-    private ImageView teamLogo, team_car;
+    private TextView teamName;
+    private ImageView team_car;
     private ProgressBar progressBar;
     private CoordinatorLayout contentLayout;
     private ToggleButton likeButton;
@@ -69,13 +65,13 @@ public class teamPageActivity extends AppCompatActivity {
 
         contentLayout = (CoordinatorLayout) findViewById(R.id.content_layout);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        teamNameFull = (TextView) findViewById(R.id.teamNameFull);
-        teamLogo = (ImageView) findViewById(R.id.teamLogo);
+        TextView teamNameFull = (TextView) findViewById(R.id.teamNameFull);
+        ImageView teamLogo = (ImageView) findViewById(R.id.teamLogo);
         team_car = (ImageView) findViewById(R.id.team_car);
         teamName = (TextView) findViewById(R.id.teamName);
         likeButton = (ToggleButton) findViewById(R.id.like_button);
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -266,8 +262,8 @@ public class teamPageActivity extends AppCompatActivity {
     }
 
     private void init(Bundle teamPageBundle) {
-        myViewPager2 = findViewById(R.id.viewPager2);
-        adapter = new viewPagerAdapter(this);
+        ViewPager2 myViewPager2 = findViewById(R.id.viewPager2);
+        viewPagerAdapter adapter = new viewPagerAdapter(this);
         teamStatsFragment teamStatsFragment = new teamStatsFragment();
         teamStatsFragment.setArguments(teamPageBundle);
         adapter.addFragment(teamStatsFragment);

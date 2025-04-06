@@ -10,7 +10,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -25,7 +24,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<pastSeasonDriversStandingsAdapter.DataHolder> {
@@ -196,18 +194,4 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
             line = itemView.findViewById(R.id.line);
         }
     }
-
-        public int getColorByName(String name) {
-            int colorId = 0;
-
-            try {
-                Class res = R.color.class;
-                Field field = res.getField(name);
-                colorId = field.getInt(null);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return colorId;
-        }
 }

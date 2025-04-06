@@ -18,7 +18,6 @@ import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONException;
 
-import java.lang.reflect.Field;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -61,6 +60,7 @@ public class BootService extends Service {
             mPrefs = getApplicationContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
             JSONArray jsonArrayEvents = null;
             JSONArray jsonArrayCircuits = null;
+            assert bundle != null;
             String mChannelId = bundle.getString("channelId");
             int iterator = 0;
             try {
@@ -109,7 +109,7 @@ public class BootService extends Service {
                                 pushNotification(season, raceName, circuitId, mChannelId, eventEnd_date, title, bodyEnd, iterator + 1);
                             }
                         }catch(ParseException e){
-                            e.printStackTrace();
+                            Log.e("BootService", " " +  e.getMessage());
                         }
                         iterator += 2;
                     }
@@ -132,7 +132,6 @@ public class BootService extends Service {
         intentStart.putExtra("circuitId", circuitId);
         intentStart.putExtra("title", title);
         intentStart.putExtra("body", body);
-        //sendBroadcast(intentStart);
         PendingIntent pendingIntentStart = PendingIntent.getBroadcast(getApplicationContext(), iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date.getTime(), pendingIntentStart);

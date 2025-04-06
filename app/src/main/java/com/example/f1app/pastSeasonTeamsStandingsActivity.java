@@ -1,17 +1,11 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
-import static com.example.f1app.driverStatsFragment.getCountryCode;
 
-import android.content.Context;
-import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,19 +36,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
-    Button showDriverButton, showDriverStanding, showTeams, showHomePage, showAccount;
-
     private List<teamsList> datum;
     private RecyclerView recyclerView;
-    private ImageButton backButton;
-    private TextView teamsHeader;
     private pastSeasonTeamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
@@ -74,7 +63,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 
-        teamsHeader = (TextView) findViewById(R.id.teamsHeader);
+        TextView teamsHeader = (TextView) findViewById(R.id.teamsHeader);
         String headerText = " ";
         if (Locale.getDefault().getLanguage().equals("ru")){
             headerText = getString(R.string.past_season_teams) + " 2024";
@@ -99,13 +88,13 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
                 datum = new ArrayList<>();
-                getTeamStanding("2024");
+                getTeamStanding();
                 swipeLayout.setRefreshing(false);
             }
         });
 
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -113,7 +102,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             }
         });
 
-        getTeamStanding("2024");
+        getTeamStanding();
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -121,9 +110,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
     }
 
-    private void getTeamStanding(String currentYear){
+    private void getTeamStanding(){
         RequestQueue queue = Volley.newRequestQueue(pastSeasonTeamsStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + "2024" + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -152,7 +141,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                         }
                                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                         String finalConstructorName = constructorName;
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        rootRef.child("driverLineUp/season/" + "2024" + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 ArrayList<String> teamDrivers = new ArrayList<>();

@@ -1,9 +1,9 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.getStringByName;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
-import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +15,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,7 +43,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
     @Override
     public scheduleAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(context).inflate(R.layout.item_schedule, parent , false);
-        return new scheduleAdapter.DataHolder(view);
+        return new DataHolder(view);
     }
 
     @Override
@@ -77,7 +75,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         return dataList.size();
     }
 
-    public class DataHolder extends RecyclerView.ViewHolder{
+    public static class DataHolder extends RecyclerView.ViewHolder{
         TextView eventDay, eventMonth, eventName, eventTime;
         ConstraintLayout constraintLayout;
         LinearLayout content_layout;
@@ -158,19 +156,5 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
             monthEvent = "JAN";
         }
         return new String[] {dayEvent, timeEvent, monthEvent, isFinished};
-    }
-
-    private int getStringByName(String name) {
-        int stringId = 0;
-
-        try {
-            Class res = R.string.class;
-            Field field = res.getField(name);
-            stringId = field.getInt(null);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return stringId;
     }
 }

@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.getStringByName;
-
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;

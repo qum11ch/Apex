@@ -36,7 +36,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -46,12 +45,9 @@ import androidx.viewpager2.widget.ViewPager2;
 public class scheduleActivity extends AppCompatActivity {
     Button showDriverButton, showTeams, showHomePage, showAccount;
     private Toolbar toolbar;
-    private ImageButton backButton;
     private ViewPager2 myViewPager2;
-    private viewPagerAdapter raceAdapter ;
     private CardView cardView;
     private SwipeRefreshLayout swipeLayout;
-    private Button pastSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -129,7 +125,7 @@ public class scheduleActivity extends AppCompatActivity {
             }
         });
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -249,7 +245,8 @@ public class scheduleActivity extends AppCompatActivity {
                             }
                         });
 
-                        roundOngoing.setText(Integer.valueOf(round).toString());
+                        String ongoingRoundText = String.valueOf(round);
+                        roundOngoing.setText(ongoingRoundText);
 
                         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
                         LocalDate startDateOngoing = LocalDate.parse(dateStart, dateFormatter);
@@ -296,7 +293,7 @@ public class scheduleActivity extends AppCompatActivity {
                                         bundle.putString("circuitId", circuitId);
                                         bundle.putString("circuitName" , circuitName);
                                         bundle.putString("raceCountry" , raceCountry);
-                                        bundle.putString("roundCount" , round.toString());
+                                        bundle.putString("roundCount" , String.valueOf(round));
                                         bundle.putString("dateStart", dateStart);
                                         intent.putExtras(bundle);
 
@@ -335,7 +332,7 @@ public class scheduleActivity extends AppCompatActivity {
 
     private void init(Bundle concludedRaceBundle, Bundle futureRaceBundle) {
         int prevFragment = myViewPager2.getCurrentItem();
-        raceAdapter = new viewPagerAdapter(this);
+        viewPagerAdapter raceAdapter = new viewPagerAdapter(this);
         futureRaceFragment futureRaceFragment = new futureRaceFragment();
         futureRaceFragment.setArguments(futureRaceBundle);
         raceAdapter.addFragment(futureRaceFragment);

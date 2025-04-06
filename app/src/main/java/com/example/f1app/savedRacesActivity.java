@@ -4,8 +4,6 @@ import static com.example.f1app.MainActivity.checkConnection;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -23,7 +21,6 @@ import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.WindowCompat;
@@ -106,12 +103,6 @@ public class savedRacesActivity extends AppCompatActivity {
         });
     }
 
-    //@Override
-    //public void onResume() {
-    //    super.onResume();
-    //    putRaces();
-    //}
-
     private void putRaces(){
         datum = new ArrayList<>();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -166,7 +157,7 @@ public class savedRacesActivity extends AppCompatActivity {
                                                 deleteRaceDialog = new Dialog(savedRacesActivity.this);
                                                 deleteRaceDialog.setContentView(R.layout.delete_race_dialog_box);
                                                 deleteRaceDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                                deleteRaceDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+                                                deleteRaceDialog.getWindow().setBackgroundDrawable(AppCompatResources.getDrawable(savedRacesActivity.this, R.drawable.custom_dialog_bg));
                                                 deleteRaceDialog.setCancelable(false);
 
                                                 Button cancelButton = deleteRaceDialog.findViewById(R.id.cancel_button);

@@ -63,9 +63,7 @@
                         android:layout_height="50dp"
                         android:layout_below="@id/teamNameFull"
                         android:layout_marginStart="20dp"
-                        android:layout_marginTop="5dp"
                         android:contentDescription="@string/teamlogo"
-                        android:paddingTop="5dp"
                         android:paddingBottom="5dp" />
                 </RelativeLayout>
 

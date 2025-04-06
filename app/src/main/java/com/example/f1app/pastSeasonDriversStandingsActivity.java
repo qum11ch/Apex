@@ -2,20 +2,15 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -29,11 +24,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -45,16 +35,12 @@ import java.util.List;
 import java.util.Locale;
 
 public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
-    Button showTeamsButton, showSchedule, showTeams, showHomePage, showAccount;
 
     private List<driversList> datum;
     private RecyclerView recyclerView;
-    private ImageButton backButton;
-    private Toolbar toolbar;
     private pastSeasonDriversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
-    private TextView driversHeader;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,7 +60,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
         recyclerView.setHasFixedSize(true);
 
-        driversHeader = (TextView) findViewById(R.id.driversHeader);
+        TextView driversHeader = (TextView) findViewById(R.id.driversHeader);
         String headerText = " ";
         if (Locale.getDefault().getLanguage().equals("ru")){
             headerText = getString(R.string.past_season_drivers) + " 2024";
@@ -101,7 +87,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
