@@ -133,7 +133,7 @@ public class raceCircuitFragment extends Fragment {
                     String mRaceDist = snapshot.child("raceDistance").getValue(String.class);
                     String mLapRecordTime = snapshot.child("lapRecordTime").getValue(String.class);
                     String mLapRecordDriver = snapshot.child("lapRecordDriver").getValue(String.class);
-                    String mLapRecordYear = snapshot.child("lapRecordYear").getValue(String.class);
+                    Integer mLapRecordYear = snapshot.child("lapRecordYear").getValue(Integer.class);
 
                     circuitName.setText(requireContext().getString(getStringByName(mCircuitId + "_text")));
                     length.setText(mLength);
