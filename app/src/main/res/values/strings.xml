@@ -238,6 +238,32 @@
     <string name="spanish_grand_prix_text">Spanish Grand Prix</string>
     <string name="são_paulo_grand_prix_text">São Paulo Grand Prix</string>
     <string name="united_states_grand_prix_text">United States Grand Prix</string>
+
+    <string name="abu_dhabi_grand_prix_locality">Abu Dhabi</string>
+    <string name="australian_grand_prix_locality">Australia</string>
+    <string name="austrian_grand_prix_locality">Austria</string>
+    <string name="azerbaijan_grand_prix_locality">Azerbaijan</string>
+    <string name="bahrain_grand_prix_locality">Bahrain</string>
+    <string name="belgian_grand_prix_locality">Belgium</string>
+    <string name="british_grand_prix_locality">Great Britain</string>
+    <string name="canadian_grand_prix_locality">Canada</string>
+    <string name="chinese_grand_prix_locality">China</string>
+    <string name="dutch_grand_prix_locality">Netherlands</string>
+    <string name="emilia_romagna_grand_prix_locality">Emilia-Romagna</string>
+    <string name="hungarian_grand_prix_locality">Hungary</string>
+    <string name="italian_grand_prix_locality">Italy</string>
+    <string name="japanese_grand_prix_locality">Japan</string>
+    <string name="las_vegas_grand_prix_locality">Las Vegas</string>
+    <string name="mexico_city_grand_prix_locality">Mexico</string>
+    <string name="miami_grand_prix_locality">Miami</string>
+    <string name="monaco_grand_prix_locality">Monaco</string>
+    <string name="qatar_grand_prix_locality">Qatar</string>
+    <string name="saudi_arabian_grand_prix_locality">Saudi Arabia</string>
+    <string name="singapore_grand_prix_locality">Singapore</string>
+    <string name="spanish_grand_prix_locality">Spain</string>
+    <string name="são_paulo_grand_prix_locality">Brazil</string>
+    <string name="united_states_grand_prix_locality">United States</string>
+
     <string name="malaysian_grand_prix_text">Malaysian Grand Prix</string>
     <string name="times"> </string>
     <string name="yas_marina_text">Yas Marina Circuit</string>

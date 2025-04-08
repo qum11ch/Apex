@@ -4,6 +4,8 @@ import static com.example.f1app.MainActivity.getStringByName;
 
 import android.app.Activity;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,13 +47,19 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
         String driverName = datum.getDriverName();
 
         String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
-        String resultsRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + datum.getSeason();
+        String resultsRaceName = context.getString(getStringByName(localeRaceName + "_locality"));
         holder.raceName.setText(resultsRaceName);
+
+        int strokeWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, context.getResources().getDisplayMetrics());
+
+        GradientDrawable myGrad = (GradientDrawable)holder.driverResults.getBackground();
+        myGrad.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
 
         if (!driverResult.equals("N/C")) {
             if (driverResult.equals("NP")) {
+                myGrad.setColor(ContextCompat.getColor(context, R.color.white));
+                holder.driverResults.setBackground(myGrad);
                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.white));
                 holder.driverResults.setText(context.getResources().getString(R.string.dns_text));
             } else {
                 String[] driverRes = driverResult.split("-");
@@ -59,42 +67,50 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                 String driverStart = driverRes[0];
 
                 if (driverFinish.equals("R")) {
+                    myGrad.setColor(ContextCompat.getColor(context, R.color.pink));
+                    holder.driverResults.setBackground(myGrad);
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                    holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.pink));
                     holder.driverResults.setText(context.getResources().getString(R.string.ret_text));
                 } else if (driverFinish.equals("W")) {
+                    myGrad.setColor(ContextCompat.getColor(context, R.color.light_grey));
+                    holder.driverResults.setBackground(myGrad);
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                    holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_grey));
                     holder.driverResults.setText(context.getResources().getString(R.string.wd_text));
                 } else if (driverFinish.equals("D")) {
+                    myGrad.setColor(ContextCompat.getColor(context, R.color.black));
+                    holder.driverResults.setBackground(myGrad);
                     holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.white));
-                    holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.black));
                     holder.driverResults.setText(context.getResources().getString(R.string.dsq_text));
                 } else {
                     int finishPos = Integer.parseInt(driverFinish);
                     if (finishPos <= 3) {
                         switch (finishPos) {
                             case (1):
+                                myGrad.setColor(ContextCompat.getColor(context, R.color.light_gold));
+                                holder.driverResults.setBackground(myGrad);
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_gold));
                                 break;
                             case (2):
+                                myGrad.setColor(ContextCompat.getColor(context, R.color.light_silver));
+                                holder.driverResults.setBackground(myGrad);
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_silver));
                                 break;
                             case (3):
+                                myGrad.setColor(ContextCompat.getColor(context, R.color.light_bronze));
+                                holder.driverResults.setBackground(myGrad);
                                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                                holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_bronze));
                                 break;
                             default:
                                 break;
                         }
                     } else if (finishPos <= 10) {
+                        myGrad.setColor(ContextCompat.getColor(context, R.color.light_green));
+                        holder.driverResults.setBackground(myGrad);
                         holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                        holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_green));
                     } else {
+                        myGrad.setColor(ContextCompat.getColor(context, R.color.light_purple));
+                        holder.driverResults.setBackground(myGrad);
                         holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
-                        holder.driverResults.setBackgroundColor(ContextCompat.getColor(context, R.color.light_purple));
                     }
                     if (driverStart.equals("1")) {
                         holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.purple));
@@ -104,6 +120,8 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
                 }
             }
         }else {
+            myGrad.setColor(ContextCompat.getColor(context, R.color.light_grey));
+            holder.driverResults.setBackground(myGrad);
             holder.driverResults.setText(context.getResources().getString(R.string.n_c_text));
         }
     }

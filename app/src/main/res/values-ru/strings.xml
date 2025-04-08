@@ -218,6 +218,32 @@
     <string name="são_paulo_grand_prix_text">Гран-при Сан-Паулу</string>
     <string name="united_states_grand_prix_text">Гран-при США</string>
     <string name="malaysian_grand_prix_text">Гран-при Малазии</string>
+
+    <string name="abu_dhabi_grand_prix_locality">Абу-Даби</string>
+    <string name="australian_grand_prix_locality">Австралия</string>
+    <string name="austrian_grand_prix_locality">Австрия</string>
+    <string name="azerbaijan_grand_prix_locality">Азербайджан</string>
+    <string name="bahrain_grand_prix_locality">Бахрейн</string>
+    <string name="belgian_grand_prix_locality">Бельгия</string>
+    <string name="british_grand_prix_locality">Великобритания</string>
+    <string name="canadian_grand_prix_locality">Канада</string>
+    <string name="chinese_grand_prix_locality">Китай</string>
+    <string name="dutch_grand_prix_locality">Нидерланды</string>
+    <string name="emilia_romagna_grand_prix_locality">Эмилия-Романья</string>
+    <string name="hungarian_grand_prix_locality">Венгрия</string>
+    <string name="italian_grand_prix_locality">Италия</string>
+    <string name="japanese_grand_prix_locality">Япония</string>
+    <string name="las_vegas_grand_prix_locality">Лас Вегас</string>
+    <string name="mexico_city_grand_prix_locality">Мексика</string>
+    <string name="miami_grand_prix_locality">Майами</string>
+    <string name="monaco_grand_prix_locality">Монако</string>
+    <string name="qatar_grand_prix_locality">Катар</string>
+    <string name="saudi_arabian_grand_prix_locality">Саудовская Аравия</string>
+    <string name="singapore_grand_prix_locality">Сингапур</string>
+    <string name="spanish_grand_prix_locality">Испания</string>
+    <string name="são_paulo_grand_prix_locality">Бразилия</string>
+    <string name="united_states_grand_prix_locality">США</string>
+
     <string name="times">раз</string>
     <string name="yas_marina_text">Яс Марина</string>
     <string name="albert_park_text">Алберт-Парк</string>

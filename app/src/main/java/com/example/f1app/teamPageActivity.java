@@ -105,16 +105,20 @@ public class teamPageActivity extends AppCompatActivity {
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
 
+            ArrayList<String> teamDrivers = new ArrayList<>();
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
+            rootRef.child("results/season/" + "2025").addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    ArrayList<String> teamDrivers = new ArrayList<>();
-                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                        String driverFullname = driverDataSnapshot.getKey();
-                        teamDrivers.add(driverFullname);
+                    for (DataSnapshot driverSnap: snapshot.getChildren()){
+                        String driverName = driverSnap.getKey();
+                        for (DataSnapshot raceSnaps: driverSnap.getChildren()){
+                            if (raceSnaps.child("TeamId").getValue(String.class).equals(mTeamId)){
+                                teamDrivers.add(driverName);
+                                break;
+                            }
+                        }
                     }
-
                     Bundle teamPageBundle = new Bundle();
                     teamPageBundle.putString("teamId", mTeamId);
                     teamPageBundle.putString("teamName", mTeamName);

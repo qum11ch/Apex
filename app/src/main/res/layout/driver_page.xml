@@ -174,7 +174,7 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/light_grey"
             android:overScrollMode="never"
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="center"
@@ -186,7 +186,7 @@
                     android:id="@+id/viewPager2"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_marginBottom="30dp"/>
+                    android:layout_marginBottom="20dp"/>
             </RelativeLayout>
 
         </androidx.core.widget.NestedScrollView>

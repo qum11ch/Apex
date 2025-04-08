@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +31,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -94,72 +96,136 @@ public class teamStatsFragment extends Fragment {
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
         if (!getArguments().isEmpty()){
+
+            LocalDate currentDate = LocalDate.now();
+            String currentYear = String.valueOf(currentDate.getYear());
             String mTeamId = getArguments().getString("teamId");
             String mTeamName = getArguments().getString("teamName");
-            ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
 
-            firstDriver_layout.setOnClickListener(view2 -> {
-                String[] driverFullname = driversList.get(0).split(" ");
-                String mDriverName, mDriverFamilyName;
-                if(driversList.get(0).equals("Andrea Kimi Antonelli")){
-                    mDriverName = driverFullname[0] + " " + driverFullname[1];
-                    mDriverFamilyName = driverFullname[2];
-                }else{
-                    mDriverName = driverFullname[0];
-                    mDriverFamilyName = driverFullname[1];
+            rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    ArrayList<String> driversList = new ArrayList<>();
+                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                        String driverFullname = driverDataSnapshot.getKey();
+                        driversList.add(driverFullname);
+                    }
+
+                    firstDriver_layout.setOnClickListener(view2 -> {
+                        String[] driverFullname = driversList.get(0).split(" ");
+                        String mDriverName, mDriverFamilyName;
+                        if(driversList.get(0).equals("Andrea Kimi Antonelli")){
+                            mDriverName = driverFullname[0] + " " + driverFullname[1];
+                            mDriverFamilyName = driverFullname[2];
+                        }else{
+                            mDriverName = driverFullname[0];
+                            mDriverFamilyName = driverFullname[1];
+                        }
+                        rootRef.child("drivers").child(driversList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                                Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("driverName", mDriverName);
+                                bundle.putString("driverFamilyName", mDriverFamilyName);
+                                bundle.putString("driverTeam", mTeamName);
+                                bundle.putString("driverCode", mDriverCode);
+                                bundle.putString("driverTeamId", mTeamId);
+                                intent.putExtras(bundle);
+                                requireContext().startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                            }
+                        });
+                    });
+
+                    secondDriver_layout.setOnClickListener(view1 -> {
+                        String[] driverFullname = driversList.get(1).split(" ");
+                        String mDriverName, mDriverFamilyName;
+                        if(driversList.get(1).equals("Andrea Kimi Antonelli")){
+                            mDriverName = driverFullname[0] + " " + driverFullname[1];
+                            mDriverFamilyName = driverFullname[2];
+                        }else{
+                            mDriverName = driverFullname[0];
+                            mDriverFamilyName = driverFullname[1];
+                        }
+                        rootRef.child("drivers").child(driversList.get(1)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                                Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                                Bundle bundle = new Bundle();
+                                bundle.putString("driverName", mDriverName);
+                                bundle.putString("driverFamilyName", mDriverFamilyName);
+                                bundle.putString("driverTeam", mTeamName);
+                                bundle.putString("driverCode", mDriverCode);
+                                bundle.putString("driverTeamId", mTeamId);
+                                intent.putExtras(bundle);
+                                requireContext().startActivity(intent);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                            }
+                        });
+                    });
+
+                    for (int i = 0; i < driversList.size(); i++){
+                        String[] driverFullname = driversList.get(i).split(" ");
+                        String mDriverName, mDriverFamilyName;
+                        if(driversList.get(i).equals("Andrea Kimi Antonelli")){
+                            mDriverName = driverFullname[0] + " " + driverFullname[1];
+                            mDriverFamilyName = driverFullname[2];
+                        }else{
+                            mDriverName = driverFullname[0];
+                            mDriverFamilyName = driverFullname[1];
+                        }
+                        int finalI = i;
+                        rootRef.child("drivers").child(driversList.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String driversCode = snapshot.child("driversCode").getValue(String.class);
+                                StorageReference storageRef = storage.getReference();
+                                StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase().toLowerCase() + ".png");
+                                if (finalI == 0){
+                                    firstDriverName.setText(mDriverName);
+                                    firstDriverFamilyName.setText(mDriverFamilyName);
+                                    GlideApp.with(requireContext())
+                                            .load(mDriverImage)
+                                            .transition(DrawableTransitionOptions.withCrossFade())
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .transition(DrawableTransitionOptions.withCrossFade())
+                                            .error(R.drawable.f1)
+                                            .into(firstDriver_image);
+                                }else{
+                                    secondDriverName.setText(mDriverName);
+                                    secondDriverFamilyName.setText(mDriverFamilyName);
+                                    GlideApp.with(requireContext())
+                                            .load(mDriverImage)
+                                            .transition(DrawableTransitionOptions.withCrossFade())
+                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                            .transition(DrawableTransitionOptions.withCrossFade())
+                                            .error(R.drawable.f1)
+                                            .into(secondDriver_image);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                            }
+                        });
+                    }
                 }
-                rootRef.child("drivers").child(driversList.get(0)).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
-                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("driverName", mDriverName);
-                        bundle.putString("driverFamilyName", mDriverFamilyName);
-                        bundle.putString("driverTeam", mTeamName);
-                        bundle.putString("driverCode", mDriverCode);
-                        bundle.putString("driverTeamId", mTeamId);
-                        intent.putExtras(bundle);
-                        requireContext().startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                    }
-                });
-            });
-
-            secondDriver_layout.setOnClickListener(view1 -> {
-                String[] driverFullname = driversList.get(1).split(" ");
-                String mDriverName, mDriverFamilyName;
-                if(driversList.get(1).equals("Andrea Kimi Antonelli")){
-                    mDriverName = driverFullname[0] + " " + driverFullname[1];
-                    mDriverFamilyName = driverFullname[2];
-                }else{
-                    mDriverName = driverFullname[0];
-                    mDriverFamilyName = driverFullname[1];
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("teamStandingsError", error.getMessage());
                 }
-                rootRef.child("drivers").child(driversList.get(1)).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
-                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("driverName", mDriverName);
-                        bundle.putString("driverFamilyName", mDriverFamilyName);
-                        bundle.putString("driverTeam", mTeamName);
-                        bundle.putString("driverCode", mDriverCode);
-                        bundle.putString("driverTeamId", mTeamId);
-                        intent.putExtras(bundle);
-                        requireContext().startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                    }
-                });
             });
 
             rootRef.child("constructors").child(mTeamId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -235,53 +301,6 @@ public class teamStatsFragment extends Fragment {
                     Log.e("teamPageActivity", "Constructor information getting error:" + error.getMessage());
                 }
             });
-
-            for (int i = 0; i < driversList.size(); i++){
-                String[] driverFullname = driversList.get(i).split(" ");
-                String mDriverName, mDriverFamilyName;
-                if(driversList.get(i).equals("Andrea Kimi Antonelli")){
-                    mDriverName = driverFullname[0] + " " + driverFullname[1];
-                    mDriverFamilyName = driverFullname[2];
-                }else{
-                    mDriverName = driverFullname[0];
-                    mDriverFamilyName = driverFullname[1];
-                }
-                int finalI = i;
-                rootRef.child("drivers").child(driversList.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String driversCode = snapshot.child("driversCode").getValue(String.class);
-                        StorageReference storageRef = storage.getReference();
-                        StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase().toLowerCase() + ".png");
-                        if (finalI == 0){
-                            firstDriverName.setText(mDriverName);
-                            firstDriverFamilyName.setText(mDriverFamilyName);
-                            GlideApp.with(requireContext())
-                                    .load(mDriverImage)
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .error(R.drawable.f1)
-                                    .into(firstDriver_image);
-                        }else{
-                            secondDriverName.setText(mDriverName);
-                            secondDriverFamilyName.setText(mDriverFamilyName);
-                            GlideApp.with(requireContext())
-                                    .load(mDriverImage)
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .error(R.drawable.f1)
-                                    .into(secondDriver_image);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                    }
-                });
-            }
 
 
         }else{

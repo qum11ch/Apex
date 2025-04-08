@@ -3,6 +3,8 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
@@ -14,29 +16,30 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversResultsAdapter.DataHolder>{
+public class teamTripleDriversResultsAdapter extends RecyclerView.Adapter<teamTripleDriversResultsAdapter.DataHolder>{
     Activity context;
-    List<teamDriversResultsData> dataList;
+    List<teamTripleDriversResultsData> dataList;
 
-    public teamDriversResultsAdapter(Activity context , List<teamDriversResultsData> datum){
+    public teamTripleDriversResultsAdapter(Activity context , List<teamTripleDriversResultsData> datum){
         this.context = context;
         this.dataList = datum;
     }
 
     @NonNull
     @Override
-    public teamDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_team_result, parent , false);
+    public teamTripleDriversResultsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(context).inflate(R.layout.item_team_triple_result, parent , false);
         return new DataHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull teamDriversResultsAdapter.DataHolder holder, int position) {
-        teamDriversResultsData datum = dataList.get(position);
+    public void onBindViewHolder(@NonNull teamTripleDriversResultsAdapter.DataHolder holder, int position) {
+        teamTripleDriversResultsData datum = dataList.get(position);
 
         if (position==dataList.size()-1){
             holder.bottomLine.setVisibility(View.GONE);
@@ -45,6 +48,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
         String raceName = datum.getRaceName();
         String firstDriverResult = datum.getFirstDriverResult();
         String secondDriverResult = datum.getSecondDriverResult();
+        String thirdDriverResult = datum.getThirdDriverResult();
 
         String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
         String resultsRaceName = context.getString(getStringByName(localeRaceName + "_locality"));
@@ -54,9 +58,11 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
 
         GradientDrawable myGradFirst = (GradientDrawable)holder.firstDriverResult.getBackground();
         GradientDrawable myGradSecond = (GradientDrawable)holder.secondDriverResult.getBackground();
+        GradientDrawable myGradThird = (GradientDrawable)holder.thirdDriverResult.getBackground();
 
         myGradFirst.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
         myGradSecond.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
+        myGradThird.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
 
         if (!firstDriverResult.equals("N/C")){
             if (firstDriverResult.equals("NP")) {
@@ -65,6 +71,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                 holder.firstDriverResult.setText(context.getResources().getString(R.string.dns_text));
             } else if (firstDriverResult.equals("null")) {
+                myGradFirst.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.light_grey));
                 myGradFirst.setColor(ContextCompat.getColor(context, R.color.light_grey));
                 holder.firstDriverResult.setBackground(myGradFirst);
                 holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
@@ -139,6 +146,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                 holder.secondDriverResult.setText(context.getResources().getString(R.string.dns_text));
             } else if (secondDriverResult.equals("null")) {
+                myGradSecond.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.light_grey));
                 myGradSecond.setColor(ContextCompat.getColor(context, R.color.light_grey));
                 holder.secondDriverResult.setBackground(myGradSecond);
                 holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
@@ -205,13 +213,90 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     holder.secondDriverResult.setTypeface(holder.secondDriverResult.getTypeface(), Typeface.BOLD);
                 }
             }
+
+            if (thirdDriverResult.equals("NP")) {
+                myGradThird.setColor(ContextCompat.getColor(context, R.color.white));
+                holder.thirdDriverResult.setBackground(myGradThird);
+                holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                holder.thirdDriverResult.setText(context.getResources().getString(R.string.dns_text));
+            }else if (thirdDriverResult.equals("null")) {
+                myGradThird.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.light_grey));
+                myGradThird.setColor(ContextCompat.getColor(context, R.color.light_grey));
+                holder.thirdDriverResult.setBackground(myGradThird);
+                holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                holder.thirdDriverResult.setText("-");
+            }else{
+                String[] thirdDriver = thirdDriverResult.split("-");
+                String thirdDriverFinish = thirdDriver[1];
+                String thirdDriverStart = thirdDriver[0];
+                switch (thirdDriverFinish) {
+                    case "R":
+                        myGradThird.setColor(ContextCompat.getColor(context, R.color.pink));
+                        holder.thirdDriverResult.setBackground(myGradThird);
+                        holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.thirdDriverResult.setText(context.getResources().getString(R.string.ret_text));
+                        break;
+                    case "W":
+                        myGradThird.setColor(ContextCompat.getColor(context, R.color.light_grey));
+                        holder.thirdDriverResult.setBackground(myGradThird);
+                        holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        holder.thirdDriverResult.setText(context.getResources().getString(R.string.wd_text));
+                        break;
+                    case "D":
+                        myGradThird.setColor(ContextCompat.getColor(context, R.color.black));
+                        holder.thirdDriverResult.setBackground(myGradThird);
+                        holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.white));
+                        holder.thirdDriverResult.setText(context.getResources().getString(R.string.dsq_text));
+                        break;
+                    default:
+                        int finishPos = Integer.parseInt(thirdDriverFinish);
+                        if (finishPos <= 3) {
+                            switch (finishPos) {
+                                case (1):
+                                    myGradThird.setColor(ContextCompat.getColor(context, R.color.light_gold));
+                                    holder.thirdDriverResult.setBackground(myGradThird);
+                                    holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    break;
+                                case (2):
+                                    myGradThird.setColor(ContextCompat.getColor(context, R.color.light_silver));
+                                    holder.thirdDriverResult.setBackground(myGradThird);
+                                    holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    break;
+                                case (3):
+                                    myGradThird.setColor(ContextCompat.getColor(context, R.color.light_bronze));
+                                    holder.thirdDriverResult.setBackground(myGradThird);
+                                    holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else if (finishPos <= 10) {
+                            myGradThird.setColor(ContextCompat.getColor(context, R.color.light_green));
+                            holder.thirdDriverResult.setBackground(myGradThird);
+                            holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        } else {
+                            myGradThird.setColor(ContextCompat.getColor(context, R.color.light_purple));
+                            holder.thirdDriverResult.setBackground(myGradThird);
+                            holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                        }
+                        holder.thirdDriverResult.setText(thirdDriverFinish);
+                        break;
+                }
+                if(thirdDriverStart.equals("1")){
+                    holder.thirdDriverResult.setTextColor(ContextCompat.getColor(context,R.color.purple));
+                    holder.thirdDriverResult.setTypeface(holder.thirdDriverResult.getTypeface(), Typeface.BOLD);
+                }
+            }
         } else{
             myGradFirst.setColor(ContextCompat.getColor(context, R.color.light_grey));
             holder.firstDriverResult.setBackground(myGradFirst);
             myGradSecond.setColor(ContextCompat.getColor(context, R.color.light_grey));
             holder.secondDriverResult.setBackground(myGradSecond);
+            myGradThird.setColor(ContextCompat.getColor(context, R.color.light_grey));
+            holder.thirdDriverResult.setBackground(myGradThird);
             holder.firstDriverResult.setText(context.getResources().getString(R.string.n_c_text));
             holder.secondDriverResult.setText(context.getResources().getString(R.string.n_c_text));
+            holder.thirdDriverResult.setText(context.getResources().getString(R.string.n_c_text));
         }
 
 
@@ -224,7 +309,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
     }
 
     public static class DataHolder extends RecyclerView.ViewHolder{
-        TextView raceName, firstDriverResult, secondDriverResult;
+        TextView raceName, firstDriverResult, secondDriverResult, thirdDriverResult;
         ConstraintLayout constraintLayout;
         View bottomLine;
         public DataHolder(@NonNull View itemView) {
@@ -232,6 +317,7 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
             raceName = itemView.findViewById(R.id.raceName);
             firstDriverResult = itemView.findViewById(R.id.result_firstDriver);
             secondDriverResult = itemView.findViewById(R.id.result_secondDriver);
+            thirdDriverResult = itemView.findViewById(R.id.result_thirdDriver);
             constraintLayout = itemView.findViewById(R.id.main_layout);
             bottomLine = itemView.findViewById(R.id.bottomLine);
         }

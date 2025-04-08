@@ -12,6 +12,7 @@ import android.widget.ScrollView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -32,7 +33,7 @@ public class driverResultsFragment extends Fragment {
     private List<driverResultsData> datum;
     private CheckBox radioButton_2025, radioButton_2024;
     private ShimmerFrameLayout shimmerFrameLayout;
-    private ScrollView scrollView;
+    private NestedScrollView scrollView;
 
     public driverResultsFragment() {
         // required empty public constructor.
@@ -168,7 +169,7 @@ public class driverResultsFragment extends Fragment {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             if (snapshot.hasChild(fullDriverName)){
                                 String driverResult = snapshot.child(fullDriverName)
-                                        .child(raceName).getValue(String.class);
+                                        .child(raceName).child("Result").getValue(String.class);
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);

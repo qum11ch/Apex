@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/scrollView"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="@color/light_grey"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:overScrollMode="never">
@@ -316,6 +316,7 @@
                     <RelativeLayout
                         android:id="@+id/team"
                         style="@style/StatisticLayoutColored"
+                        android:backgroundTint="@color/light_grey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="-1dp"
@@ -343,7 +344,7 @@
                         android:layout_below="@id/team"
                         android:paddingTop="10dp"
                         android:layout_marginEnd="4dp"
-                        android:background="@color/white"
+                        android:background="@color/light_grey"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <TextView
@@ -381,6 +382,7 @@
             android:orientation="vertical">
             <RelativeLayout
                 style="@style/StatisticLayoutColored"
+                android:backgroundTint="@color/light_grey"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dp"
@@ -416,25 +418,19 @@
                 android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                 android:textSize="20sp"
                 android:textColor="@color/black" />
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                style="@style/ShimmerStyle"
+
+            <com.google.android.material.imageview.ShapeableImageView
+                android:layout_centerVertical="true"
                 android:layout_alignParentEnd="true"
+                app:strokeColor="@color/grey"
                 android:layout_marginStart="10dp"
-                android:id="@+id/flag_layout"
                 android:layout_marginEnd="10dp"
-                android:layout_marginBottom="5dp">
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:padding="1dp"
-                    app:strokeColor="@color/grey"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/customRoundedImageView"
-                    android:id="@+id/flag"
-                    android:layout_width="60dp"
-                    android:layout_height="40dp" />
-            </RelativeLayout>
+                android:layout_marginBottom="5dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/customRoundedImageView"
+                android:id="@+id/flag"
+                android:layout_width="60dp"
+                android:layout_height="40dp" />
         </RelativeLayout>
 
         <RelativeLayout
