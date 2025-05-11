@@ -13,22 +13,26 @@
         android:layout_centerInParent="true">
         <ImageView
             android:id="@+id/splashscreen"
-            android:layout_width="128dp"
-            android:layout_height="128dp"
-            android:src="@mipmap/icon_foreground"
-            android:layout_gravity="center"/>
+            android:layout_width="64dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/icon_rounded"
+            android:layout_gravity="center_vertical"/>
+        <View
+            android:layout_width="15dp"
+            android:layout_height="30dp"/>
         <TextView
             android:textAllCaps="true"
-            android:gravity="center"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:text="@string/app_name"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
             android:textSize="48sp"/>
     </LinearLayout>
 
     <TextView
-        android:layout_width="fill_parent"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/footer_splash_screen"
         android:layout_marginStart="30dp"

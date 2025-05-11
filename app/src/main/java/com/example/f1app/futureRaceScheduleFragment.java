@@ -4,12 +4,14 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -59,6 +61,7 @@ public class futureRaceScheduleFragment extends Fragment {
     private String mYear;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
+    private Button predictButton;
 
 
     public futureRaceScheduleFragment() {
@@ -82,6 +85,7 @@ public class futureRaceScheduleFragment extends Fragment {
         hrs_countdown = view.findViewById(R.id.hrs_countdown);
         mns_countdown = view.findViewById(R.id.mns_countdown);
         countdown_header = view.findViewById(R.id.countdown_header);
+        predictButton = view.findViewById(R.id.predict_button);
         TextView infoRaceName = view.findViewById(R.id.infoRaceName);
 
         saveRace = view.findViewById(R.id.saveRace);
@@ -104,6 +108,16 @@ public class futureRaceScheduleFragment extends Fragment {
             //String mRound = getArguments().getString("roundCount");
             //String mCountry = getArguments().getString("raceCountry");
             mYear = getArguments().getString("gpYear");
+
+            predictButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(requireContext(), predictResultPage.class);
+                    i.putExtra("event", "Q");
+                    i.putExtra("gp", mRaceName);
+                    startActivity(i);
+                }
+            });
 
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
             String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;

@@ -15,7 +15,7 @@
     <string name="footer_driver">Гонщики</string>
     <string name="footer_teams">Команды</string>
     <string name="footer_schedule">Расписание</string>
-    <string name="footer_homePage">Дом</string>
+    <string name="footer_homePage">Главная</string>
     <string name="footer_account">Аккаунт</string>
     <string name="country">Страна:</string>
     <string name="pole_position">Полу-позиция</string>
@@ -46,7 +46,7 @@
     <string name="favorite_driver_has_not_yet_been_chosen">Любимый гонщик не выбран</string>
     <string name="change_private_data">Изменить приватные данные</string>
     <string name="delete_account">Удалить Аккаунт</string>
-    <string name="home_page">домашняя страница</string>
+    <string name="home_page">apex</string>
     <string name="change_private_data_info"> Для изменения приватных данных введите новые значения в поля и заново войдите в аккаунт для внесения изменений</string>
     <string name="back">назад</string>
     <string name="empty_race_list_header">Вернитесь \nПозже</string>
@@ -287,4 +287,14 @@
     <string name="retired_text">В отставке</string>
     <string name="wrong_email">Пользователя с таким email нет! Неправильный Email!</string>
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
+    <string name="predict">предсказание</string>
+    <string name="predict_button">Получить предсказание</string>
+    <string name="predict_text">Новый функционал: предсказание результатов квалификаций!</string>
+    <string name="prediction">предсказание</string>
+    <string name="predict_quali">Квалификация</string>
+    <string name="predict_sprint_quali">Спринт Квалификация</string>
+    <string name="predict_info_text">Здесь Вы можете получить предсказание результатов квалификации любого Гран-При 2025 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Предсказание может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что предсказание делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат предсказания.</string>
+    <string name="warning_it">Внимание! Получение предсказания может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
+    <string name="qualifying_text">Квалификация</string>
+    <string name="sprint_qualifying_text">Спринт Квалификация</string>
 </resources>

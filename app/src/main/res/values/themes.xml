@@ -15,4 +15,18 @@
         <item name="android:windowExitTransition">@transition/explode</item>
         
     </style>
+
+    <style name="AppTheme.WhiteStatusBar" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:statusBarColor">@color/white</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="colorPrimaryDark">@color/white</item>
+
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowEnterTransition">@transition/explode</item>
+        <item name="android:windowExitTransition">@transition/explode</item>
+    </style>
 </resources>

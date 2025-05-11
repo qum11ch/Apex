@@ -127,7 +127,6 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         }
 
         holder.raceCountry.setText(locale);
-        holder.raceCountry.setText(locale);
         holder.day_start.setText(dayStart);
         holder.day_end.setText(dayEnd);
 

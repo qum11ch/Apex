@@ -269,6 +269,22 @@
                     android:textSize="22sp"
                     android:textOff="@string/save_race"
                     android:textOn="@string/delete_race"/>
+                <Button
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@drawable/save_style"
+                    android:layout_below="@id/saveRace"
+                    android:id="@+id/predict_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:textAlignment="textStart"
+                    android:paddingStart="20dp"
+                    android:saveEnabled="false"
+                    android:paddingEnd="0dp"
+                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:text="@string/predict_button"/>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

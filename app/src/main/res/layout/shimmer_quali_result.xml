@@ -22,7 +22,7 @@
             android:layout_marginBottom="1dp"
             android:paddingEnd="10dp"
             android:paddingStart="0dp"
-            style="@style/ItemStyle"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"

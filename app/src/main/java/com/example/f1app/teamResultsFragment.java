@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -12,7 +13,6 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -46,7 +46,8 @@ public class teamResultsFragment extends Fragment {
     private CheckBox radioButton_2025, radioButton_2024;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerTripleFrameLayout;
     private String teamId = " ";
-    private RelativeLayout thirdDriverLayout;
+    private String teamName = " ";
+    private RelativeLayout firstDriverLayout, secondDriverLayout, thirdDriverLayout;
 
     public teamResultsFragment() {
         // required empty public constructor.
@@ -82,6 +83,8 @@ public class teamResultsFragment extends Fragment {
         radioButton_2024 = view.findViewById(R.id.radioButton_2024);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerTripleFrameLayout = view.findViewById(R.id.shimmerTriple_layout);
+        firstDriverLayout = view.findViewById(R.id.firstDriver_layout);
+        secondDriverLayout = view.findViewById(R.id.secondDriver_layout);
         thirdDriverLayout = view.findViewById(R.id.thirdDriver_layout);
         raceNameHeader = view.findViewById(R.id.raceName_header);
 
@@ -92,7 +95,7 @@ public class teamResultsFragment extends Fragment {
         if (!getArguments().isEmpty()){
             String mTeamId = getArguments().getString("teamId");
             teamId = mTeamId;
-            //String mTeamName = getArguments().getString("teamName");
+            teamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
 
             shimmerFrameLayout.startShimmer();
@@ -292,9 +295,12 @@ public class teamResultsFragment extends Fragment {
         for (int i = 0; i < drivers.size(); i++){
             String[] driverFullname = drivers.get(i).split(" ");
             String mDriverFamilyName;
+            String mDriverName;
             if(drivers.get(i).equals("Andrea Kimi Antonelli")){
+                mDriverName = driverFullname[0] + " " + driverFullname[1];
                 mDriverFamilyName = driverFullname[2];
             }else{
+                mDriverName = driverFullname[0];
                 mDriverFamilyName = driverFullname[1];
             }
             int finalI = i;
@@ -317,6 +323,32 @@ public class teamResultsFragment extends Fragment {
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .error(R.drawable.f1)
                                 .into(firstDriver_image);
+
+                        firstDriverLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rootRef.child("drivers").child(drivers.get(finalI)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("driverName", mDriverName);
+                                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                                        bundle.putString("driverTeam", teamName);
+                                        bundle.putString("driverCode", mDriverCode);
+                                        bundle.putString("driverTeamId", teamId);
+                                        intent.putExtras(bundle);
+                                        requireContext().startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                                    }
+                                });
+                            }
+                        });
                     } else if (finalI == 1) {
                         secondDriverFamilyName.setText(mDriverFamilyName);
                         GlideApp.with(requireContext())
@@ -326,6 +358,32 @@ public class teamResultsFragment extends Fragment {
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .error(R.drawable.f1)
                                 .into(secondDriver_image);
+
+                        secondDriverLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rootRef.child("drivers").child(drivers.get(finalI)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("driverName", mDriverName);
+                                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                                        bundle.putString("driverTeam", teamName);
+                                        bundle.putString("driverCode", mDriverCode);
+                                        bundle.putString("driverTeamId", teamId);
+                                        intent.putExtras(bundle);
+                                        requireContext().startActivity(intent);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                                    }
+                                });
+                            }
+                        });
                     } else if (finalI == 2) {
                         thirdDriverFamilyName.setText(mDriverFamilyName);
                         GlideApp.with(requireContext())
@@ -335,7 +393,31 @@ public class teamResultsFragment extends Fragment {
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .error(R.drawable.f1)
                                 .into(thirdDriver_image);
+                        thirdDriverLayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rootRef.child("drivers").child(drivers.get(finalI)).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        String mDriverCode = snapshot.child("driversCode").getValue(String.class);
+                                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("driverName", mDriverName);
+                                        bundle.putString("driverFamilyName", mDriverFamilyName);
+                                        bundle.putString("driverTeam", teamName);
+                                        bundle.putString("driverCode", mDriverCode);
+                                        bundle.putString("driverTeamId", teamId);
+                                        intent.putExtras(bundle);
+                                        requireContext().startActivity(intent);
+                                    }
 
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
+                                    }
+                                });
+                            }
+                        });
                     }
                 }
 

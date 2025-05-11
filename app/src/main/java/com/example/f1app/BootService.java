@@ -81,6 +81,7 @@ public class BootService extends Service {
                         String eventName = eventValue[0];
                         String eventStartDate = eventValue[1].replaceAll("\\s+", "T");
                         String eventEndDate = eventValue[2].replaceAll("\\s+", "T");
+
                         Instant dateInstStart = Instant.parse(eventStartDate);
                         ZonedDateTime dateTimeStart = dateInstStart.atZone(ZoneId.systemDefault());
                         Instant dateInstEnd = Instant.parse(eventEndDate);

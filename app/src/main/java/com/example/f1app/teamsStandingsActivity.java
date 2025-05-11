@@ -5,8 +5,6 @@ import static com.example.f1app.driverStatsFragment.getCountryCode;
 
 import android.content.Context;
 import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -39,11 +37,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public class teamsStandingsActivity extends AppCompatActivity {
     Button showDriverButton, showDriverStanding, showHomePage, showAccount;
@@ -266,76 +265,63 @@ public class teamsStandingsActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
-    public static ArrayList<String> localizeLocality(String locality, String country, Context context){
-        ArrayList<String> results = new ArrayList<>();
-        String locale;
-        Locale driverCountryLocale = new Locale(Locale.getDefault().getLanguage(), getCountryCode(country));
-        String localeCountry;
-        if (driverCountryLocale.getDisplayCountry().equals("Соединенные Штаты")){
-            localeCountry = "США";
-        }else{
-            localeCountry = driverCountryLocale.getDisplayCountry();
-        }
-
-        List<Address> addresses;
-        String cityName;
-
-        String address = locality + ", " + country;
-        addresses = geocodeWithRetry(address, 10, context);
-        cityName = addresses.get(0).getLocality();
-
-
-        if (cityName!=null){
-            switch (cityName){
-                case "Шпильберг-Книттельфельд":
-                    cityName = "Шпильберг";
-                    break;
-                case  "Stavelot":
-                    cityName = "Спа";
-                    break;
-                case "Abu Dhabi":
-                    cityName = "Абу-Даби";
-                    break;
-                default:
-                    break;
-            }
-            locale =  cityName + ", " + localeCountry;
-        }else{
-            if (localeCountry.equals("Бахрейн")){
-                cityName = "Сахир";
-                locale =  cityName + ", " + localeCountry;
-            }else{
-                locale = localeCountry;
-            }
-        }
-
-        results.add(localeCountry);
-        results.add(cityName);
-        results.add(locale);
-        return results;
+    public static String getLocalizedCity(String cityName) {
+        Map<String, String> cityTranslations = new HashMap<>();
+        cityTranslations.put("Melbourne", "Мельбурн");
+        cityTranslations.put("Austin", "Остин");
+        cityTranslations.put("Sakhir", "Сахир");
+        cityTranslations.put("Baku", "Баку");
+        cityTranslations.put("Barcelona", "Барселона");
+        cityTranslations.put("Hockenheim", "Хоккенхайм");
+        cityTranslations.put("Budapest", "Будапешт");
+        cityTranslations.put("Imola", "Имола");
+        cityTranslations.put("Sao Paulo", "Сан-Паулу");
+        cityTranslations.put("Istanbul", "Стамбул");
+        cityTranslations.put("Jeddah", "Джедда");
+        cityTranslations.put("Lusail", "Лусаил");
+        cityTranslations.put("Magny-Cours", "Маньи-Кур");
+        cityTranslations.put("Singapore", "Сингапур");
+        cityTranslations.put("Miami", "Майами");
+        cityTranslations.put("Monaco", "Монако");
+        cityTranslations.put("Monza", "Монца");
+        cityTranslations.put("Scarperia e San Piero", "Скарперия и Сан-Пьеро");
+        cityTranslations.put("Nürburg", "Нюрбург");
+        cityTranslations.put("Portimão", "Портиман");
+        cityTranslations.put("Spielberg", "Шпильберг");
+        cityTranslations.put("Le Castellet", "Ле Кастелле");
+        cityTranslations.put("Mexico City", "Мехико");
+        cityTranslations.put("Sepang", "Сепанг");
+        cityTranslations.put("Shanghai", "Шанхай");
+        cityTranslations.put("Silverstone", "Сильверстоун");
+        cityTranslations.put("Spa Francorchamps", "Спа-Франкоршам");
+        cityTranslations.put("Sochi", "Сочи");
+        cityTranslations.put("Suzuka", "Судзука");
+        cityTranslations.put("Las Vegas", "Лас-Вегас");
+        cityTranslations.put("Montreal", "Монреаль");
+        cityTranslations.put("Yas Marina", "Абу-Даби");
+        cityTranslations.put("Zandvoort", "Зандворт");
+        return cityTranslations.getOrDefault(cityName, cityName);
     }
 
-    public static List<Address> geocodeWithRetry(String address, int maxRetries, Context context) {
-        Geocoder geocoder = new Geocoder(context, Locale.getDefault());
-        int retryCount = 0;
+    public static ArrayList<String> localizeLocality(String locality, String country, Context context){
+        ArrayList<String> results = new ArrayList<>();
+        String fullPlace;
+        String cityName;
 
-        while (retryCount < maxRetries) {
-            try {
-                List<Address> addresses = geocoder.getFromLocationName(address, 1);
-                if (addresses != null && !addresses.isEmpty()) {
-                    return addresses;
-                }
-            } catch (IOException e) {
-                if (e.getMessage().contains("DEADLINE_EXCEEDED")) {
-                    retryCount++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {}
-                } else {
-                    break;
-                }
-            }
+        cityName = getLocalizedCity(locality);
+        String countryCode = getCountryCode(country.toLowerCase());
+        Locale locale = new Locale("ru", "RU");
+        String localizedCountry = new Locale("", countryCode).getDisplayCountry(locale);
+
+        if (locality.equals(country)){
+            fullPlace = cityName;
+        }else{
+            fullPlace = cityName + ", " + localizedCountry;
         }
-        return null;
+
+        results.add(localizedCountry);
+        results.add(cityName);
+        results.add(fullPlace);
+        return results;
     }
 }

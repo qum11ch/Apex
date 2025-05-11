@@ -59,7 +59,7 @@
     <string name="team_logo" translatable="false">team_logo</string>
     <string name="change_private_data">Change private data</string>
     <string name="delete_account">Delete account</string>
-    <string name="home_page">home page</string>
+    <string name="home_page">apex</string>
     <string name="private_logo" translatable="false">private_logo</string>
     <string name="change_private_data_info">To change private data put your new values into field and login to your account to save changes</string>
     <string name="back">back</string>
@@ -132,6 +132,9 @@
     <string name="q1_header" translatable="false">q1</string>
     <string name="q3_header" translatable="false">Q3</string>
     <string name="q2_header" translatable="false">Q2</string>
+    <string name="sq1_header" translatable="false">sq1</string>
+    <string name="sq3_header" translatable="false">sQ3</string>
+    <string name="sq2_header" translatable="false">sQ2</string>
     <string name="fastest_lap_header">Fastest Lap</string>
     <string name="race_status_header">TIME/RET</string>
     <string name="pts_header">PTS</string>
@@ -309,4 +312,14 @@
     <string name="wrong_email">There is no user with that email! Wrong Email!</string>
     <string name="login_fail_text">Login Failed. Wrong username or password</string>
     <string name="footer_splash_screen" translatable="false">This application is unofficial and is not associated in any way with the Formula 1 companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.</string>
+    <string name="predict">predict</string>
+    <string name="prediction">prediction</string>
+    <string name="predict_button">Get Prediction</string>
+    <string name="predict_text">New functionality: predicting qualification results!</string>
+    <string name="predict_quali">Qualifying</string>
+    <string name="predict_sprint_quali">Spring Qualifying</string>
+    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2025 Grand Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
+    <string name="warning_it">Attention! Getting the prediction may take some time! Approximate waiting time up to 2 minutes depending on your Internet connection!</string>
+    <string name="qualifying_text">Qualifying</string>
+    <string name="sprint_qualifying_text">Sprint Qualifying</string>
 </resources>

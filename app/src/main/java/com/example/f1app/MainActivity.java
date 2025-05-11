@@ -11,8 +11,6 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Bundle;
 
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -39,6 +37,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams, sfProgressBar;
     private ProgressBar raceProgress;
     private TextView raceProgressText;
+    private Button predict;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +80,6 @@ public class MainActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(MainActivity.this));
         }
-
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
 
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
@@ -105,6 +102,16 @@ public class MainActivity extends AppCompatActivity {
         sfTeams = findViewById(R.id.shimmerTeams_layout);
         sfProgressBar = findViewById(R.id.shimmerProgress_layout);
 
+        predict = findViewById(R.id.predict);
+
+        predict.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
+                MainActivity.this.startActivity(intent);
+
+            }
+        });
 
         sfProgressBar.startShimmer();
         sfFuture.startShimmer();
@@ -165,6 +172,10 @@ public class MainActivity extends AppCompatActivity {
         String channelId = "channelID2";
         intentStart.putExtra("channelId", channelId);
         startService(intentStart);
+
+        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        appBarLayout.setExpanded(true,true);
     }
 
     private void postProgress(int progress) {

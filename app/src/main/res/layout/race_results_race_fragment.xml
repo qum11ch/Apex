@@ -49,16 +49,17 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp" />
+
                 <TextView
                     android:id="@+id/fastestLapTime"
                     android:layout_width="wrap_content"
-                    android:layout_alignParentEnd="true"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="15dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:textColor="@color/black"
                     android:textSize="20sp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="15dp"
                     tools:ignore="RelativeOverlap" />
             </RelativeLayout>
             <com.facebook.shimmer.ShimmerFrameLayout
