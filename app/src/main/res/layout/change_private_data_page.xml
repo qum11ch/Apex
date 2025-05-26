@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorPrimary"
     tools:context=".registerPageActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
+        app:tint="@color/text_color_main"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_above="@id/resetHeader"
@@ -27,6 +28,7 @@
         android:text="@string/change_private_data"
         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
     <TextView
+        android:textColor="@color/text_color_main"
         android:layout_above="@id/email_layout"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
@@ -47,7 +49,7 @@
         app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
         app:errorTextColor="@color/red"
         app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-        app:hintTextColor="@color/black"
+        app:hintTextColor="@color/text_color_main"
         android:id="@+id/email_layout"
         android:layout_marginTop="40dp"
         android:layout_width="match_parent"
@@ -56,6 +58,7 @@
         app:hintEnabled="true"
         android:hint="@string/hint_email_new">
         <com.google.android.material.textfield.TextInputEditText
+            android:backgroundTint="@color/text_color_main"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:theme="@style/StyledTilEditTextTheme"
             android:inputType="textEmailAddress"
@@ -71,7 +74,7 @@
         app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
         app:errorTextColor="@color/red"
         app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-        app:hintTextColor="@color/black"
+        app:hintTextColor="@color/text_color_main"
         android:id="@+id/password_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -80,6 +83,7 @@
         app:passwordToggleEnabled="true"
         android:hint="@string/hint_password_new">
         <com.google.android.material.textfield.TextInputEditText
+            android:backgroundTint="@color/text_color_main"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:theme="@style/StyledTilEditTextTheme"
             android:inputType="textPassword"
@@ -120,7 +124,7 @@
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-        android:textColor="@color/white"
+        android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         android:elevation="0dp"
         android:layout_width="match_parent"
@@ -129,9 +133,9 @@
         android:text="@string/back"
         android:paddingStart="30dp"
         android:paddingEnd="50dp"
-        android:drawableStart="@drawable/back_arrow"
+        android:drawableStart="@drawable/back_arrow_black"
         android:textAllCaps="true"
-        android:backgroundTint="@color/dark_grey"
+        android:backgroundTint="@color/text_color_thirdly"
         android:layout_below="@id/resetLayout"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"

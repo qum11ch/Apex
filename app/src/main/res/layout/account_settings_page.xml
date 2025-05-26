@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorPrimary"
     tools:context=".registerPageActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color_main"
                 android:text="@string/usernameText"/>
             <TextView
                 android:layout_below="@id/username_header"
@@ -63,9 +63,9 @@
                 android:layout_marginEnd="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                android:textColor="@color/black" />
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
             <TextView
+                android:textColor="@color/text_color_main"
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:layout_width="match_parent"
@@ -75,6 +75,7 @@
                 android:layout_marginTop="30dp"
                 android:text="@string/driver_choice_text"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                app:np_textColor="@color/text_color_main"
                 android:layout_below="@id/username"
                 android:id="@+id/choiceDriver_hint"/>
             <com.shawnlin.numberpicker.NumberPicker
@@ -89,10 +90,12 @@
                 app:np_dividerType="underline"
                 app:np_itemSpacing="50dp"
                 app:np_orientation="horizontal"
-                app:np_selectedTextColor="@color/black"
+                app:np_selectedTextColor="@color/text_color_main"
+                app:np_textColor="@color/text_color_main"
                 app:np_selectedTextSize="20sp"
                 app:np_textSize="14sp" />
             <TextView
+                android:textColor="@color/text_color_main"
                 android:paddingStart="5dp"
                 android:paddingEnd="0dp"
                 android:layout_marginTop="25dp"
@@ -114,7 +117,8 @@
                 app:np_selectedTextSize="20sp"
                 app:np_textSize="14sp"
                 app:np_dividerType="underline"
-                app:np_selectedTextColor="@color/black"
+                app:np_selectedTextColor="@color/text_color_main"
+                app:np_textColor="@color/text_color_main"
                 app:np_itemSpacing="50dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/choiceTeam_hint"
@@ -146,9 +150,9 @@
                     android:layout_marginStart="5dp"
                     android:textSize="12sp"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorPrimary"
                     android:textStyle="bold"
-                    android:backgroundTint="@color/dark_grey"
+                    android:backgroundTint="@color/text_color_thirdly"
                     android:elevation="0dp"
                     android:layout_weight="1"
                     android:layout_width="0dp"

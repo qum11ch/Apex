@@ -58,7 +58,7 @@ public class accountPageActivity extends AppCompatActivity {
     private View line, line2;
     private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout,
             driverName_layout;
-    private ImageView teamLogo, teamCar, driverImage;
+    private ImageView teamLogo, teamCar, driverImage, arrow;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -92,6 +92,8 @@ public class accountPageActivity extends AppCompatActivity {
         teamName_layout = findViewById(R.id.teamName_layout);
         team_layout = findViewById(R.id.team_layout);
         driver_layout = findViewById(R.id.driver_layout);
+
+        arrow = findViewById(R.id.arrow);
 
         main_content = findViewById(R.id.main_content);
         loadingProgress = findViewById(R.id.loadingBar);
@@ -346,6 +348,8 @@ public class accountPageActivity extends AppCompatActivity {
                                     gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
                                     gd1.setStroke(12, Color.parseColor(teamColor));
                                     team_layout.setBackground(gd1);
+
+                                    arrow.setColorFilter(Color.parseColor(teamColor));
 
                                     StorageReference mTeamLogo;
                                     if (teamId.equals("alpine")) {

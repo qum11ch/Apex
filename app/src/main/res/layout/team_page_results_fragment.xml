@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:id="@+id/scrollView"
-    android:backgroundTint="@color/light_grey"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/white"
+    android:background="@color/colorDriverPages"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -24,8 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/team_results"
+                android:textColor="@color/text_color_main"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/black"
                 android:textSize="28sp"
                 android:textStyle="bold" />
             <LinearLayout
@@ -48,6 +47,7 @@
                     style="@style/ToggleButton"
                     android:checked="false"/>
                 <CheckBox
+                    android:layout_marginStart="5dp"
                     android:id="@+id/radioButton_2024"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -75,12 +75,13 @@
                     android:layout_marginEnd="10dp"
                     android:weightSum="5">
                     <TextView
+
+                        android:textColor="@color/text_color_main"
                         android:id="@+id/raceName_header"
                         android:layout_width="0dp"
                         android:layout_weight="2.7"
                         android:layout_height="match_parent"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/black"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:gravity="bottom"
@@ -96,7 +97,7 @@
                             android:id="@+id/striped_first"
                             android:layout_width="match_parent"
                             android:layout_height="84dp"
-                            android:background="@drawable/background_striped_lines_white">
+                            style="@style/StripedLinesWhite">
                             <ImageView
                                 android:id="@+id/firstDriver_image"
                                 android:layout_width="match_parent"
@@ -105,13 +106,13 @@
                                 android:scaleType="fitCenter"/>
                         </RelativeLayout>
                         <TextView
+                            android:textColor="@color/text_color_main"
                             android:layout_below="@id/striped_first"
                             android:gravity="center"
                             android:id='@+id/firstDriverFamilyName'
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </RelativeLayout>
@@ -125,8 +126,12 @@
                         <RelativeLayout
                             android:id="@+id/striped_second"
                             android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:background="@drawable/background_striped_lines_white">
+                            android:layout_height="84dp">
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="84dp"
+                                style="@style/StripedLinesWhite"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                             <ImageView
                                 android:id="@+id/secondDriver_image"
                                 android:layout_width="match_parent"
@@ -135,13 +140,13 @@
                                 android:scaleType="fitCenter" />
                         </RelativeLayout>
                         <TextView
+                            android:textColor="@color/text_color_main"
                             android:layout_below="@id/striped_second"
                             android:gravity="center"
                             android:id='@+id/secondDriverFamilyName'
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold"/>
                     </RelativeLayout>
@@ -155,8 +160,12 @@
                         <RelativeLayout
                             android:id="@+id/striped_third"
                             android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:background="@drawable/background_striped_lines_white">
+                            android:layout_height="84dp">
+                            <com.google.android.material.imageview.ShapeableImageView
+                                android:layout_width="match_parent"
+                                android:layout_height="84dp"
+                                style="@style/StripedLinesWhite"
+                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                             <ImageView
                                 android:id="@+id/thirdDriver_image"
                                 android:layout_width="match_parent"
@@ -169,9 +178,9 @@
                             android:gravity="center"
                             android:id='@+id/thirdDriverFamilyName'
                             android:layout_width="match_parent"
+                            android:textColor="@color/text_color_main"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/black"
                             android:textSize="16sp"
                             android:textStyle="bold" />
                     </RelativeLayout>

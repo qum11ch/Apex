@@ -48,8 +48,10 @@
         <activity android:name=".scheduleActivity" />
         <activity android:name=".driversStandingsActivity" />
         <activity android:name=".teamsStandingsActivity" />
-        <activity android:name=".teamPageActivity" />
-        <activity android:name=".driverPageActivity" />
+        <activity android:name=".teamPageActivity"
+            android:theme="@style/AppTheme.CollapsingToolbar"/>
+        <activity android:name=".driverPageActivity"
+            android:theme="@style/AppTheme.CollapsingToolbar"/>
         <activity android:name=".raceResultsActivity"/>
         <activity android:name=".pastSeasonDriversStandingsActivity"/>
         <activity android:name=".pastSeasonTeamsStandingsActivity"/>
@@ -64,7 +66,8 @@
         <activity
             android:name=".registerPageActivity"
             android:windowSoftInputMode="adjustPan" />
-        <activity android:name=".accountPageActivity" />
+        <activity android:name=".accountPageActivity"
+            android:theme="@style/AppTheme.CollapsingToolbar"/>
         <activity android:name=".savedRacesActivity" />
         <activity android:name=".splashNotificationActivity"
             android:noHistory="true"

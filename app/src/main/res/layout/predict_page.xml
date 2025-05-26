@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/header"
@@ -43,7 +44,7 @@
             android:paddingStart="10dp"
             android:paddingEnd="10dp">
             <TextView
-                android:textColor="@color/black"
+                android:textColor="@color/text_color_main"
                 android:paddingStart="10dp"
                 android:paddingEnd="10dp"
                 android:id="@+id/predict_info_text"
@@ -76,8 +77,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:np_orientation="vertical"
-                    app:np_selectedTextColor="@color/white"
-                    app:np_textColor="@color/black"
+                    app:np_selectedTextColor="@color/colorPrimary"
+                    app:np_textColor="@color/text_color_main"
                     app:np_selectedTextSize="20sp"
                     app:np_textSize="14sp"
                     app:np_dividerColor="@android:color/transparent"/>

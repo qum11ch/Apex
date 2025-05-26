@@ -2,7 +2,7 @@
 <RelativeLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/light_grey"
+    android:background="@color/colorPrimary"
     android:paddingTop="20dp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <View
@@ -104,7 +104,6 @@
                     android:layout_alignParentBottom="true"
                     style="@style/ShimmerStyle"
                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
             </RelativeLayout>
@@ -173,7 +172,6 @@
                 style="@style/ShimmerStyle"
                 android:id="@+id/lapRecord_time"
                 android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                android:textColor="@color/black"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content" />
             <TextView

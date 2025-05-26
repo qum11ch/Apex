@@ -53,10 +53,6 @@ import org.json.JSONObject;
 public class MainActivity extends AppCompatActivity {
     Button showDriverButton, showSchedule, showTeams, showAccount;
     FirebaseDatabase database;
-    //private final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    //private static final long HOUR = 3600*1000;
-    //private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-    //SharedPreferences mPrefs;
     private LinearLayout futureLayout, pastLayout;
     public static final String APP_PREFERENCES = "mysettings";
     private List<driversList> datumDrivers;
@@ -427,6 +423,7 @@ public class MainActivity extends AppCompatActivity {
                 }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
+
 
     private void getSchedule(String year, LocalDate currentDate){
         ArrayList<String> concludedRoundNumber = new ArrayList<>();

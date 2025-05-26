@@ -20,6 +20,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
 import com.blongho.country_data.World;
@@ -46,7 +47,7 @@ public class driverStatsFragment extends Fragment {
     private ImageView teamCar_image, flag, arrow;
     private RelativeLayout team_layout, driverInfo_layout;
     private LinearLayout driversTeam_layout;
-    private ScrollView scrollView;
+    private NestedScrollView scrollView;
 
 
     public driverStatsFragment() {
@@ -267,7 +268,7 @@ public class driverStatsFragment extends Fragment {
                             GradientDrawable gd1 = new GradientDrawable();
                             gd1.setColor(ContextCompat.getColor(requireContext(),R.color.white));
                             gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                            gd1.setStroke(12, Color.parseColor(mTeamColor));
+                            gd1.setStroke(15, Color.parseColor(mTeamColor));
                             driverInfo_layout.setBackground(gd1);
 
                             arrow.setColorFilter(Color.parseColor(mTeamColor));
@@ -291,7 +292,9 @@ public class driverStatsFragment extends Fragment {
 
     }
 
-    public static int calculateAge(LocalDate birthdate, LocalDate currentDate) {
+
+
+        public static int calculateAge(LocalDate birthdate, LocalDate currentDate) {
         Period period = Period.between(birthdate, currentDate);
 
         return period.getYears();

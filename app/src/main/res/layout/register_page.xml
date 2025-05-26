@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/colorPrimary"
     tools:context=".registerPageActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
@@ -50,7 +50,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:theme="@style/StyledTilEditTextTheme"
                 app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
+                app:hintTextColor="@color/text_color_main"
                 app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
                 app:errorTextColor="@color/red"
                 android:id="@+id/username_layout"
@@ -62,6 +62,7 @@
                 app:hintEnabled="true"
                 android:hint="@string/username_hint">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:backgroundTint="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:theme="@style/StyledTilEditTextTheme"
                     android:id="@+id/signUpUsername"
@@ -73,7 +74,7 @@
                 app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
                 app:errorTextColor="@color/red"
                 app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
+                app:hintTextColor="@color/text_color_main"
                 android:id="@+id/email_layout"
                 android:layout_below="@id/username_layout"
                 android:layout_width="match_parent"
@@ -84,6 +85,7 @@
                 app:hintEnabled="true"
                 android:hint="@string/email_hint">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:backgroundTint="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:theme="@style/StyledTilEditTextTheme"
                     android:inputType="textEmailAddress"
@@ -94,7 +96,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:theme="@style/StyledTilEditTextTheme"
                 app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
+                app:hintTextColor="@color/text_color_main"
                 app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
                 app:errorTextColor="@color/red"
                 android:id="@+id/password_layout"
@@ -108,6 +110,7 @@
                 app:errorEnabled="true"
                 android:hint="@string/password_hint">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:backgroundTint="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:inputType="textPassword"
                     android:theme="@style/StyledTilEditTextTheme"
@@ -116,6 +119,7 @@
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
             <TextView
+                android:textColor="@color/text_color_main"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -136,10 +140,11 @@
                 app:np_dividerType="underline"
                 app:np_itemSpacing="50dp"
                 app:np_orientation="horizontal"
-                app:np_selectedTextColor="@color/black"
+                app:np_selectedTextColor="@color/text_color_main"
                 app:np_selectedTextSize="20sp"
                 app:np_textSize="14sp" />
             <TextView
+                android:textColor="@color/text_color_main"
                 android:layout_marginTop="25dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -159,7 +164,7 @@
                 app:np_selectedTextSize="20sp"
                 app:np_textSize="14sp"
                 app:np_dividerType="underline"
-                app:np_selectedTextColor="@color/black"
+                app:np_selectedTextColor="@color/text_color_main"
                 app:np_itemSpacing="50dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/choiceTeam_hint"

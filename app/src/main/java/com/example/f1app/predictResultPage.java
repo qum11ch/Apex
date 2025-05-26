@@ -294,8 +294,7 @@ public class predictResultPage extends AppCompatActivity {
 
         RequestQueue queue = Volley.newRequestQueue(predictResultPage.this);
 
-        String url2 = "";
-
+        String url;
         ZonedDateTime oneYearEarlier;
 
         if (daysBetween > 365){
@@ -311,23 +310,23 @@ public class predictResultPage extends AppCompatActivity {
         boolean prevYear = false;
 
         if ((daysBetween <= 16) && (daysBetween >= -2)){
-            url2 = "https://api.open-meteo.com/v1/forecast?latitude="
+            url = "https://api.open-meteo.com/v1/forecast?latitude="
                     + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
                     + date + "&end_date=" + date;
         } else if (daysBetween > 16) {
             daysBetween = daysBetween - 365;
             if (daysBetween >= -2){
-                url2 = "https://api.open-meteo.com/v1/forecast?latitude="
+                url = "https://api.open-meteo.com/v1/forecast?latitude="
                         + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
                         + prevYearDate + "&end_date=" + prevYearDate;
             }else{
-                url2 = "https://archive-api.open-meteo.com/v1/archive?latitude="
+                url = "https://archive-api.open-meteo.com/v1/archive?latitude="
                         + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
                         + prevYearDate + "&end_date=" + prevYearDate;
             }
             prevYear = true;
         } else{
-            url2 = "https://archive-api.open-meteo.com/v1/archive?latitude="
+            url = "https://archive-api.open-meteo.com/v1/archive?latitude="
                     + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
                     + date + "&end_date=" + date;
         }
@@ -341,13 +340,12 @@ public class predictResultPage extends AppCompatActivity {
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
-                url2,
+                url,
                 null,
                 response -> {
                     try{
                         JSONObject hourly = response.getJSONObject("hourly");
 
-                        Log.i("WeatherPredict", " " + response.toString());
                         JSONArray timeArray = hourly.getJSONArray("time");
                         JSONArray tempArray = hourly.getJSONArray("temperature_2m");
                         JSONArray pressureArray = hourly.getJSONArray("pressure_msl");
@@ -386,6 +384,7 @@ public class predictResultPage extends AppCompatActivity {
                             Log.e("WeatherPredict", "Time " + finalTargetTime + " not found in response.");
                         }
 
+
                     }catch (JSONException e) {
                         Log.e("predictPageActivity", " " + e.getMessage());
                     }
@@ -393,6 +392,7 @@ public class predictResultPage extends AppCompatActivity {
 
         queue.add(jsonObjectRequest);
     }
+
 
     private void predictRequest(String gpName, int year, Double temp, Double pres, Double hum, int rain,
                                 String[] driverCodes, String[] teamNames, String event, int gpRound,

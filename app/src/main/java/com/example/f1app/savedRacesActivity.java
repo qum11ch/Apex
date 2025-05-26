@@ -192,7 +192,7 @@ public class savedRacesActivity extends AppCompatActivity {
                                                 int iconRight = itemView.getRight() - iconMargin;
                                                 icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
                                                 int backgroundCornerOffset = 100;
-                                                int marginBottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+                                                int marginBottom = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 0, getResources().getDisplayMetrics());
                                                 RectF bg = new RectF(itemView.getRight() + ((int) dX) - backgroundCornerOffset,
                                                         itemView.getTop(), itemView.getRight(), itemView.getBottom() - marginBottom);
                                                 Paint p = new Paint();

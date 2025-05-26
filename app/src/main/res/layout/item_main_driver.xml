@@ -43,7 +43,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:background="@color/dark_grey"
+                android:background="@color/text_color_thirdly"
                 android:layout_marginBottom="10dp"/>
             <RelativeLayout
                 android:layout_marginBottom="10dp"
@@ -58,7 +58,7 @@
                     android:id='@+id/driverName'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"/>
                 <TextView
                     android:layout_toEndOf="@id/driverName"
                     android:layout_marginStart="5dp"
@@ -76,16 +76,16 @@
                 android:textAllCaps="true"
                 android:layout_marginEnd="5dp"
                 style="@style/PtsStyle"
-                android:backgroundTint="@color/dark_grey"
+                android:backgroundTint="@color/text_color_thirdly"
                 android:layout_width="80dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/white"
+                android:textColor="@color/colorPrimary"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                 android:textSize="12sp"/>
         </LinearLayout>
         <View
             android:id="@+id/bottomLine"
-            android:background="@color/dark_grey"
+            android:background="@color/text_color_thirdly"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="1dp"/>

@@ -135,7 +135,9 @@ public class BootService extends Service {
         intentStart.putExtra("body", body);
         PendingIntent pendingIntentStart = PendingIntent.getBroadcast(getApplicationContext(), iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, date.getTime(), pendingIntentStart);
+        alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
+                date.getTime(),
+                pendingIntentStart);
     }
 
     @Override

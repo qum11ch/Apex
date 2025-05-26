@@ -187,6 +187,7 @@ public class driverPageActivity extends AppCompatActivity {
                 }
             });
 
+
             CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);

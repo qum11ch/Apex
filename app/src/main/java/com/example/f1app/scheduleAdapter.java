@@ -61,11 +61,15 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
 
         if (!isPast){
             if (eventDateData[3].equals("yes")){
+                holder.eventName.setTextColor(ContextCompat.getColor(context, R.color.black));
+                holder.eventDay.setTextColor(ContextCompat.getColor(context, R.color.black));
+                holder.eventTime.setTextColor(ContextCompat.getColor(context, R.color.black));
+                holder.eventMonth.setTextColor(ContextCompat.getColor(context, R.color.black));
+
                 holder.content_layout.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_silver)));
                 holder.eventMonth.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white)));
             }
         }
-
 
         holder.eventName.setText(context.getString(getStringByName(eventName + "_text")));
     }

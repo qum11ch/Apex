@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
     <ImageView
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
@@ -11,7 +13,8 @@
         android:id="@+id/lostConnection_image"
         android:contentDescription="@string/private_logo"
         android:src="@drawable/lost_connection"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true"
+        app:tint="@color/text_color_main" />
     <TextView
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
@@ -24,6 +27,7 @@
         android:text="@string/lost_connection"
         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
     <TextView
+        android:textColor="@color/text_color_main"
         android:layout_marginEnd="20dp"
         android:layout_marginStart="20dp"
         android:layout_centerInParent="true"
@@ -40,7 +44,7 @@
         android:layout_marginEnd="60dp"
         android:layout_marginStart="60dp"
         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-        android:textColor="@color/white"
+        android:textColor="@color/colorPrimary"
         android:textStyle="bold"
         android:elevation="0dp"
         android:layout_width="match_parent"
@@ -48,7 +52,7 @@
         android:id="@+id/tryAgainButton"
         android:text="@string/try_again_button"
         android:textAllCaps="true"
-        android:backgroundTint="@color/black"
+        android:backgroundTint="@color/text_color_main"
         android:layout_below="@id/lostConnectionInfo"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="30dp"

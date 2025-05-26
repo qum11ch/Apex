@@ -4,13 +4,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorDriverPages">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:visibility="gone"
         android:id="@+id/main_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <com.google.android.material.appbar.AppBarLayout
+            app:statusBarScrim="@android:color/transparent"
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -149,7 +151,7 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/colorDriverPages"
             android:overScrollMode="never"
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="center"
@@ -200,8 +202,12 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="140dp"
                                     android:layout_marginTop="5dp"
-                                    android:layout_marginEnd="5dp"
-                                    android:background="@drawable/background_striped_lines_white">
+                                    android:layout_marginEnd="5dp">
+                                    <com.google.android.material.imageview.ShapeableImageView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="140dp"
+                                        style="@style/StripedLinesWhite"
+                                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                                     <ImageView
                                         android:layout_marginStart="10dp"
                                         android:layout_marginEnd="10dp"
@@ -233,7 +239,7 @@
                                 android:id="@+id/teamName_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@color/white">
+                                android:background="@color/colorDriverPages">
                                 <TextView
                                     android:layout_centerInParent="true"
                                     android:id='@+id/teamName'
@@ -299,8 +305,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="168dp"
                                 android:layout_marginTop="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:background="@drawable/background_striped_lines_white">
+                                android:layout_marginEnd="5dp">
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="168dp"
+                                    style="@style/StripedLinesWhite"
+                                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                                 <ImageView
                                     android:id="@+id/driver_image"
                                     android:layout_width="match_parent"
@@ -330,15 +340,17 @@
 
                                 <TextView
                                     android:id='@+id/driverName'
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:textAlignment="center"
                                     android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
 
                                 <TextView
                                     android:layout_below="@id/driverName"
                                     android:id='@+id/driverFamilyName'
-                                    android:layout_width="wrap_content"
+                                    android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:textAlignment="center"
                                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
                             </RelativeLayout>
                         </RelativeLayout>
@@ -356,20 +368,18 @@
                     android:weightSum="2">
                     <Button
                         android:id="@+id/profileSettings"
-                        style="@style/ButtonStyle"
+                        style="@style/ButtonStyleAccountPage"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:paddingTop="10dp"
                         android:drawableTop="@drawable/settings"
-                        android:backgroundTint="@color/dark_blue"
                         android:layout_marginEnd="5dp"
                         android:text="@string/settings"
                         android:paddingBottom="10dp"
                         android:layout_weight="1"/>
                     <Button
                         android:id="@+id/savedRace"
-                        style="@style/ButtonStyle"
-                        android:backgroundTint="@color/dark_blue"
+                        style="@style/ButtonStyleAccountPage"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:paddingTop="10dp"
@@ -391,9 +401,8 @@
                     android:layout_marginEnd="10dp"
                     android:weightSum="2">
                     <Button
-                        android:backgroundTint="@color/dark_blue"
                         android:id="@+id/logout"
-                        style="@style/ButtonStyle"
+                        style="@style/ButtonStyleAccountPage"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:paddingTop="10dp"
@@ -413,7 +422,7 @@
         android:id="@+id/loadingBar"
         android:indeterminate="true"
         android:indeterminateTintMode="src_atop"
-        android:indeterminateTint="@color/red"
+        android:indeterminateTint="@color/progressBarColor"
         android:layout_centerInParent="true"/>
 </RelativeLayout>
 

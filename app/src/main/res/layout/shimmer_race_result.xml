@@ -3,8 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/light_grey">
+    android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
@@ -20,7 +19,7 @@
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
             android:layout_marginBottom="1dp"
-            android:background="@color/white"
+            android:background="@color/colorPrimary"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"

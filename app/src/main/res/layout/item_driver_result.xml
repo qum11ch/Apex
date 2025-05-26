@@ -37,7 +37,7 @@
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/black"
+                android:textColor="@color/text_color_main"
                 android:textSize="20sp"
                 tools:ignore="RtlSymmetry" />
             <TextView

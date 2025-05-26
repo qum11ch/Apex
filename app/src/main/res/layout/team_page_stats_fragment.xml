@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:background="@color/light_grey"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
+    android:background="@color/colorDriverPages"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <androidx.core.widget.NestedScrollView
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="10dp"
-        android:layout_marginEnd="20dp"
-        android:fillViewport="true"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:overScrollMode="never"
-        android:scrollbars="none">
+        android:layout_height="match_parent"
+        android:overScrollMode="never">
         <RelativeLayout
             android:id="@+id/staticLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp">
             <RelativeLayout
                 android:id="@+id/fullTeamName_layout"
                 android:layout_width="match_parent"
@@ -29,16 +29,17 @@
                     android:text="@string/full_team_name"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
                 <TextView
+                    android:textColor="@color/text_color_main"
                     android:gravity="center"
                     android:layout_below="@id/fullTeamName_info"
                     android:id="@+id/fullTeamName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.Audiowide.ForStats"
-                    android:textSize="20sp"
-                    android:textColor="@color/black" />
+                    android:textSize="20sp"/>
             </RelativeLayout>
             <TextView
+                android:textColor="@color/text_color_main"
                 android:layout_marginTop="30dp"
                 android:layout_below="@id/fullTeamName_layout"
                 android:id="@+id/statisticHeader"
@@ -46,7 +47,6 @@
                 android:layout_height="wrap_content"
                 android:text="@string/statistics_since_debut"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/black"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="10dp"/>
@@ -74,8 +74,7 @@
                     android:layout_below="@id/enterYear_info"
                     android:layout_marginStart="10dp"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"
-                    android:textColor="@color/black" />
+                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -100,8 +99,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/winsCount_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"
-                    android:textColor="@color/black" />
+                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -126,8 +124,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/podium_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"
-                    android:textColor="@color/black" />
+                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -152,8 +149,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/poles_info"
                     android:text=""
-                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"
-                    android:textColor="@color/black" />
+                    android:textAppearance="@style/TextStyle.Audiowide.ForStats"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -169,7 +165,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/constructors_championships"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Secondary" />
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
+                    android:textColor="@color/text_color_main"/>
 
                 <LinearLayout
                     android:layout_below="@id/championships_info"
@@ -177,13 +174,14 @@
                     android:layout_height="match_parent"
                     android:orientation="horizontal">
                     <TextView
+                        android:textColor="@color/text_color_main"
                         android:id="@+id/championships"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                        android:textColor="@color/black"
                         android:textSize="50sp" />
                     <TextView
+                        android:textColor="@color/text_color_main"
                         android:layout_marginTop="5dp"
                         android:layout_marginStart="10dp"
                         android:text="@string/times"
@@ -191,8 +189,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:textAppearance="@style/TextStyle.GoodTiming.Regular"
-                        android:textSize="20sp"
-                        android:textColor="@color/black" />
+                        android:textSize="20sp"/>
                 </LinearLayout>
             </RelativeLayout>
 
@@ -234,7 +231,6 @@
 
                         <RelativeLayout
                             style="@style/StatisticLayoutColored"
-                            android:backgroundTint="@color/light_grey"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="-1dp"
@@ -247,9 +243,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="168dp"
                                 android:layout_marginTop="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:background="@drawable/background_striped_lines_white">
-
+                                android:layout_marginEnd="5dp">
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="168dp"
+                                    style="@style/StripedLinesWhite"
+                                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                                 <ImageView
                                     android:id="@+id/firstDriver_image"
                                     android:layout_width="match_parent"
@@ -291,7 +290,6 @@
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo">
 
                         <RelativeLayout
-                            android:backgroundTint="@color/light_grey"
                             style="@style/StatisticLayoutColored"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -305,9 +303,12 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="168dp"
                                 android:layout_marginTop="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:background="@drawable/background_striped_lines_white">
-
+                                android:layout_marginEnd="5dp">
+                                <com.google.android.material.imageview.ShapeableImageView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="168dp"
+                                    style="@style/StripedLinesWhite"
+                                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
                                 <ImageView
                                     android:id="@+id/secondDriver_image"
                                     android:layout_width="match_parent"
@@ -328,7 +329,7 @@
                                     android:id='@+id/secondDriverName'
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames" />
+                                    android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForNames"/>
 
                                 <TextView
                                     android:id='@+id/secondDriverFamilyName'
@@ -342,6 +343,7 @@
             </RelativeLayout>
 
             <TextView
+                android:textColor="@color/text_color_main"
                 android:id="@+id/tech_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -349,7 +351,6 @@
                 android:layout_marginStart="10dp"
                 android:text="@string/technical_information"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/black"
                 android:textSize="28sp"
                 android:textStyle="bold" />
 
@@ -367,7 +368,6 @@
                 <RelativeLayout
                     android:id="@+id/tech_header"
                     style="@style/StatisticLayoutColored"
-                    android:backgroundTint="@color/light_grey"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
@@ -391,7 +391,7 @@
                         android:paddingEnd="80dp"
                         android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                         android:textSize="20sp"
-                        android:textColor="@color/black" />
+                        android:textColor="@color/text_color_main" />
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:layout_centerVertical="true"
@@ -431,7 +431,7 @@
                     android:text=""
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                     android:textSize="20sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_color_main"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -458,7 +458,7 @@
                     android:layout_below="@id/techChief_info"
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                     android:textSize="20sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_color_main"/>
             </RelativeLayout>
 
             <RelativeLayout
@@ -486,7 +486,7 @@
                     android:text=""
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                     android:textSize="20sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_color_main" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -514,7 +514,7 @@
                     android:text=""
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                     android:textSize="20sp"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_color_main"/>
             </RelativeLayout>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>

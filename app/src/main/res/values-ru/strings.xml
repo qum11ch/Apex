@@ -18,7 +18,7 @@
     <string name="footer_homePage">Главная</string>
     <string name="footer_account">Аккаунт</string>
     <string name="country">Страна:</string>
-    <string name="pole_position">Полу-позиция</string>
+    <string name="pole_position">Поул-позиция</string>
     <string name="team">Команда</string>
     <string name="save_race">Сохранить</string>
     <string name="settings">Настройки</string>
@@ -218,7 +218,6 @@
     <string name="são_paulo_grand_prix_text">Гран-при Сан-Паулу</string>
     <string name="united_states_grand_prix_text">Гран-при США</string>
     <string name="malaysian_grand_prix_text">Гран-при Малазии</string>
-
     <string name="abu_dhabi_grand_prix_locality">Абу-Даби</string>
     <string name="australian_grand_prix_locality">Австралия</string>
     <string name="austrian_grand_prix_locality">Австрия</string>
@@ -243,7 +242,6 @@
     <string name="spanish_grand_prix_locality">Испания</string>
     <string name="são_paulo_grand_prix_locality">Бразилия</string>
     <string name="united_states_grand_prix_locality">США</string>
-
     <string name="times">раз</string>
     <string name="yas_marina_text">Яс Марина</string>
     <string name="albert_park_text">Алберт-Парк</string>
@@ -287,14 +285,14 @@
     <string name="retired_text">В отставке</string>
     <string name="wrong_email">Пользователя с таким email нет! Неправильный Email!</string>
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
-    <string name="predict">предсказание</string>
-    <string name="predict_button">Получить предсказание</string>
-    <string name="predict_text">Новый функционал: предсказание результатов квалификаций!</string>
-    <string name="prediction">предсказание</string>
+    <string name="predict">прогноз</string>
+    <string name="predict_button">Получить прогноз</string>
+    <string name="predict_text">Новый функционал: прогнозирование результатов квалификаций!</string>
+    <string name="prediction">прогнозирование</string>
     <string name="predict_quali">Квалификация</string>
     <string name="predict_sprint_quali">Спринт Квалификация</string>
-    <string name="predict_info_text">Здесь Вы можете получить предсказание результатов квалификации любого Гран-При 2025 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Предсказание может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что предсказание делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат предсказания.</string>
-    <string name="warning_it">Внимание! Получение предсказания может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
+    <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2025 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
+    <string name="warning_it">Внимание! Получение прогноза может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
     <string name="qualifying_text">Квалификация</string>
     <string name="sprint_qualifying_text">Спринт Квалификация</string>
 </resources>

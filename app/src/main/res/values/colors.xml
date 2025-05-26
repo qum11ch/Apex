@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="light_status">#FFDDDDDD</color>
+    <color name="dark_status">#FFDDDDDD</color>
     <color name="colorPrimaryDark">#090e27</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimary">#FFF</color>
@@ -38,4 +40,15 @@
     <color name="red_bull">#3671C6</color>
     <color name="sauber">#5FDA4F</color>
     <color name="williams">#64C4FF</color>
+    <color name="text_color_main">#FF000000</color>
+    <color name="text_color_secondary">#8c8c8c</color>
+    <color name="text_color_thirdly">#38393e</color>
+    <color name="colorSecondary">#8c8c8c</color>
+    <color name="colorThirdly">#f2f2f2</color>
+    <color name="colorDriverPages">#FFF</color>
+    <color name="accountButtons">#090e27</color>
+    <color name="progressBarColor">#ee0000</color>
+    <color name="toggleButtonColor">#FFFFFFFF</color>
+    <color name="light_status_bar">#FFFFFFFF</color>
+    <color name="dark_status_bar">#FF000000</color>
 </resources>

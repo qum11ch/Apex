@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey"
+    android:background="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <RelativeLayout
         android:id="@+id/header"
@@ -53,7 +53,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:overScrollMode="never"
                     android:visibility="gone"
-                    android:layout_marginTop="15dp"
+                    android:layout_marginTop="20dp"
                     android:layout_marginEnd="15dp"
                     android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
@@ -87,27 +87,36 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="10dp"
                 android:layout_marginEnd="10dp">
-                <LinearLayout
+                <RelativeLayout
                     android:orientation="vertical"
-                    android:background="@drawable/striped_background_grey_white"
                     android:id="@+id/team"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="5dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="0dp"
-                    android:paddingTop="20dp">
+                    android:layout_marginBottom="5dp">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:background="@drawable/striped_background_grey_white"
+                        android:id="@+id/rounded_image"/>
                     <TextView
+                        android:paddingStart="10dp"
+                        android:paddingEnd="0dp"
+                        android:paddingTop="20dp"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                         android:textColor="@color/black"
                         android:textSize="28sp"
                         android:layout_marginEnd="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/empty_race_list_header"/>
+                        android:text="@string/empty_race_list_header"
+                        android:id="@+id/header_text"/>
                     <TextView
+                        android:layout_below="@id/header_text"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="0dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                         android:textStyle="bold"
                         android:textColor="@color/black"
@@ -116,7 +125,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/empty_saved_race_info"/>
-                </LinearLayout>
+                </RelativeLayout>
             </RelativeLayout>
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

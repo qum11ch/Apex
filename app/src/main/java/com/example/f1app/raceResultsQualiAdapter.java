@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -52,6 +53,7 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
 
         if(mQ1.isEmpty()){
             holder.Q1_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q1_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
             holder.Q1_time.setText("--");
         }else{
             holder.Q1_time.setText(mQ1);
@@ -59,9 +61,11 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
 
         if(mQ2.isEmpty()){
             holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q2_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
             holder.Q2_time.setText("--");
         } else if (mQ2.equals("--")) {
             holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q2_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
             holder.Q2_time.setText(mQ2);
         }else{
             holder.Q2_time.setText(mQ2);
@@ -69,9 +73,11 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
 
         if(mQ3.isEmpty()){
             holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q3_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
             holder.Q3_time.setText("--");
         } else if (mQ3.equals("--")) {
             holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
+            holder.Q3_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
             holder.Q3_time.setText(mQ3);
         }else{
             holder.Q3_time.setText(mQ3);

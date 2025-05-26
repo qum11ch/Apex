@@ -160,8 +160,6 @@ public class futureRaceScheduleFragment extends Fragment {
             day_start.setText(mFutureRaceStartDay);
             day_end.setText(mFutureRaceEndDay);
 
-
-
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
 
@@ -343,7 +341,6 @@ public class futureRaceScheduleFragment extends Fragment {
             hrs_countdown.setText("00");
             mns_countdown.setText("00");
         }else{
-
             long milliseconds = 0;
 
             Map.Entry<String, String> entry = events.entrySet().iterator().next();

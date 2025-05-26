@@ -100,7 +100,6 @@
                         android:text="@string/round"
                         android:paddingEnd="5dp"
                         android:paddingStart="0dp"
-                        android:background="@color/white"
                         android:textColor="@color/red"
                         android:textSize="14sp"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"/>
@@ -113,7 +112,6 @@
                         android:lineSpacingExtra="0dp"
                         android:paddingStart="0dp"
                         android:paddingEnd="10dp"
-                        android:background="@color/white"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                         android:textColor="@color/red"
                         android:textSize="14sp" />

@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
+    android:background="@color/colorPrimary"
     tools:context=".logInPageActivity">
     <RelativeLayout
         android:id="@+id/header"
@@ -49,7 +49,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:theme="@style/StyledTilEditTextTheme"
                 app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
+                app:hintTextColor="@color/text_color_main"
                 app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
                 app:errorTextColor="@color/red"
                 android:id="@+id/username_layout"
@@ -61,6 +61,7 @@
                 android:hint="@string/usernameText"
                 app:hintEnabled="true">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:backgroundTint="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:theme="@style/StyledTilEditTextTheme"
                     android:id="@+id/loginUsername"
@@ -70,7 +71,7 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:theme="@style/StyledTilEditTextTheme"
                 app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:hintTextColor="@color/black"
+                app:hintTextColor="@color/text_color_main"
                 app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
                 app:errorTextColor="@color/red"
                 android:id="@+id/password_layout"
@@ -84,6 +85,7 @@
                 app:hintEnabled="true"
                 android:hint="@string/passwordText">
                 <com.google.android.material.textfield.TextInputEditText
+                    android:backgroundTint="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:inputType="textPassword"
                     android:theme="@style/StyledTilEditTextTheme"
@@ -140,6 +142,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/signUpLayout">
                 <TextView
+                    android:textColor="@color/text_color_main"
                     android:textAppearance="@style/TextStyle.Gram.Regular"
                     android:textSize="20sp"
                     android:id="@+id/signUpText"

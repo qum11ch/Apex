@@ -18,7 +18,7 @@
         android:bottom="10dp"
         android:left="-1dp">
         <shape>
-            <solid android:color="@color/light_grey"/>
+            <solid android:color="@color/colorThirdly"/>
             <corners
                 android:bottomLeftRadius="0dp"
                 android:bottomRightRadius="20dp"

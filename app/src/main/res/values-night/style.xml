@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="ButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="declineButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/decline_button</item>
+    </style>
+
+    <style name="StyledTilEditTextTheme">
+        <item name="colorControlNormal">@color/black</item>
+        <item name="colorControlActivated">@color/red</item>
+    </style>
+
+    <style name="error_appearance" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="customRoundedImageView" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">1dp</item>
+        <item name="cornerSizeTopRight">5dp</item>
+        <item name="cornerSizeTopLeft">5dp</item>
+        <item name="cornerSizeBottomRight">5dp</item>
+        <item name="cornerSizeBottomLeft">5dp</item>
+    </style>
+
+    <style name="ToggleButton" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:background">@drawable/toggle_background_night</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
+    <style name="StripedLinesWhite">
+        <item name="android:background">@drawable/background_striped_lines_white_blue</item>
+    </style>
+
+    <style name="StripedLinesItems">
+        <item name="android:background">@drawable/background_striped_lines_item_night</item>
+    </style>
+
+    <style name="BackgroundGradient">
+        <item name="android:background">@drawable/black_gradient</item>
+    </style>
+
+    <style name="LikeToggleButton" parent="android:Widget">
+        <item name="android:background">@drawable/like_toggle_bg</item>
+        <item name="android:disabledAlpha">?android:attr/disabledAlpha</item>
+    </style>
+
+    <style name="CountdownStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded_for_countdown</item>
+    </style>
+    <style name="FooterStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/footer_style</item>
+    </style>
+    <style name="TopKeyMapStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/top_keymap_style</item>
+    </style>
+    <style name="BottomKeyMapStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/bottom_keymap_style</item>
+    </style>
+    <style name="ToggleButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/rounded_for_toggle</item>
+    </style>
+    <style name="ToggleButtonStyle.Checked">
+        <item name="backgroundTint">@color/red</item>
+    </style>
+    <style name="ItemStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style</item>
+    </style>
+    <style name="EmptyButton" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/empty_button_style</item>
+    </style>
+    <style name="ItemStyleInverted" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_inverted</item>
+    </style>
+    <style name="ItemStyleAlt" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_alt</item>
+    </style>
+    <style name="ItemStyleOngoing" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_ongoing</item>
+    </style>
+    <style name="StinkyBottomStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/stinky_bottom_style</item>
+    </style>
+    <style name="PtsStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/pts_style</item>
+    </style>
+    <style name="ResultsStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/results_style</item>
+    </style>
+    <style name="RacePodiumStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_podium_style</item>
+    </style>
+    <style name="ShimmerStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/shimmer_style</item>
+    </style>
+    <style name="LayoutStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/layout_style</item>
+    </style>
+    <style name="LayoutStyleBlack" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/layout_style_black</item>
+    </style>
+    <style name="RaceLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_layout_style</item>
+    </style>
+    <style name="RaceLayoutInverted" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/race_layout_style_inverted</item>
+    </style>
+    <style name="CircuitLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/circuit_layout_style</item>
+    </style>
+    <style name="ProgressBarLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/progress_layout_style</item>
+    </style>
+    <style name="StatisticLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/statistic_layout_style</item>
+    </style>
+    <style name="SavedRacesLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/statistic_layout_style_light_grey</item>
+    </style>
+    <style name="ScheduleEmptyLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/schedule_empty_layout_style</item>
+    </style>
+    <style name="StatisticLayoutColored" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/statistic_layout_style_colored</item>
+    </style>
+    <style name="StatisticLayoutTransparent" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/statistic_layout_style_transparent</item>
+    </style>
+
+    <style name="RaceInfoLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/races_info_style</item>
+    </style>
+    <style name="CircuitInfoLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/circuit_info_style</item>
+    </style>
+
+
+    <style name="TextStyle"/>
+    <style name="TextStyle.Gram"/>
+
+    <style name="TextStyle.Gram.Bold">
+        <item name="fontFamily">@font/nimbus_bold</item>
+        <item name="android:fontFamily">@font/nimbus_bold</item>
+    </style>
+    <style name="TextStyle.Gram.Bold.ForTab">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular.ForTab">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular">
+        <item name="fontFamily">@font/nimbus_reg</item>
+        <item name="android:fontFamily">@font/nimbus_reg</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular.ForInfo">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextStyle.Gram.Regular.Secondary">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Secondary_white">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.SimpleBold">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Simple">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.ItemStyle">
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+    <style name="TextStyle.Gram.Regular.Countdown">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">23sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming">
+        <item name="android:textColor">@color/text_color_main</item>
+    </style>
+
+    <style name='TextStyle.GoodTiming.Regular'>
+        <item name="android:textStyle">normal</item>
+        <item name="fontFamily">@font/good_timing_regular</item>
+        <item name="android:fontFamily">@font/good_timing_regular</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming.Regular.ForHeader">
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Regular.ForNames">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="TextStyle.GoodTiming.Bold">
+        <item name="android:textStyle">bold</item>
+        <item name="fontFamily">@font/good_timing_bd</item>
+        <item name="android:fontFamily">@font/good_timing_bd</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.ForCodes">
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.ForHeader">
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="TextStyle.GoodTiming.Bold.Big">
+        <item name="android:textSize">26sp</item>
+    </style>
+
+    <style name="TextStyle.Audiowide">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:fontFamily">@font/audiowide</item>
+        <item name="fontFamily">@font/audiowide</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPTS">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPTS.White">
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForDays">
+        <item name="android:textSize">18sp</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForDays.White">
+        <item name="android:textColor">@color/white</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForPlacement">
+        <item name="android:textSize">20sp</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForStats">
+        <item name="android:textSize">28sp</item>
+    </style>
+    <style name="TextStyle.Audiowide.ForCountdown">
+        <item name="android:textSize">36sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="TextStyle.ShareTechCYR">
+        <item name="fontFamily">@font/share_tech_cyr</item>
+        <item name="android:fontFamily">@font/share_tech_cyr</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="TextStyle.ShareTechCYR.ForInfo">
+        <item name="android:textColor">@color/text_color_secondary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="footerButtonOn" parent="android:Widget.TextView">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">"@font/share_tech_cyr"</item>
+        <item name="android:background">@drawable/buttons_footer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="footerButtonOff" parent="android:Widget.TextView">
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:fontFamily">"@font/share_tech_cyr"</item>
+        <item name="android:background">@drawable/buttons_footer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/text_color_secondary</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabPaddingStart">6dp</item>
+        <item name="tabPaddingEnd">6dp</item>
+        <item name="tabBackground">@color/red</item>
+        <item name="tabTextAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
+    </style>
+    <style name="AppTabLayoutPages" parent="Widget.Design.TabLayout">
+        <item name="tabIndicatorColor">@color/white</item>
+        <item name="tabIndicatorHeight">4dp</item>
+        <item name="tabPaddingStart">6dp</item>
+        <item name="tabPaddingEnd">6dp</item>
+        <item name="tabBackground">@color/dark_blue</item>
+        <item name="tabTextAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
+        <item name="tabSelectedTextColor">@color/white</item>
+        <item name="background">@color/dark_blue</item>
+        <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
+    </style>
+
+
+    <style name="MyCardView" parent="@style/Widget.MaterialComponents.CardView">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
+    </style>
+    <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+    <style name="ToolBarStyle" parent="ToolBarStyle.Base"/>
+
+    <style name="ToolBarStyle.Base" parent="">
+        <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
+        <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
+    </style>
+
+    <style name="ToolBarStyle.Event" parent="ToolBarStyle">
+        <item name="titleTextAppearance">@style/TextAppearance.Widget.Event.Toolbar.Title</item>
+    </style>
+
+    <style name="TextAppearance.Widget.Event.Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <!--Any text styling can be done here-->
+        <item name="android:textAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+</resources>

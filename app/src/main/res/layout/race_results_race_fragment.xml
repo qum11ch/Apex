@@ -2,14 +2,14 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@color/white"
+    android:background="@color/colorDriverPages"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <RelativeLayout
         android:id="@+id/fastestLap_layout"
         android:layout_width="match_parent"
         android:layout_height="125dp"
-        android:background="@drawable/striped_background_darkblue">
+        android:background="@drawable/background_striped_lines_darkblue">
         <RelativeLayout
             style="@style/PtsStyle"
             android:layout_centerInParent="true"
@@ -17,7 +17,7 @@
             android:layout_marginEnd="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white">
+            android:backgroundTint="@color/colorDriverPages">
             <TextView
                 android:id="@+id/fastestLap_header"
                 android:layout_width="wrap_content"
@@ -43,13 +43,12 @@
                     android:id="@+id/fastestLapDriverName"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_color_main"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     android:layout_marginStart="10dp" />
-
                 <TextView
                     android:id="@+id/fastestLapTime"
                     android:layout_width="wrap_content"
@@ -58,7 +57,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="15dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_color_main"
                     android:textSize="20sp"
                     tools:ignore="RelativeOverlap" />
             </RelativeLayout>
@@ -140,8 +139,14 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        android:id="@+id/header_line"
+        android:layout_below="@id/race_header"/>
     <LinearLayout
-        android:layout_below="@id/race_header"
+        android:layout_below="@id/header_line"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">

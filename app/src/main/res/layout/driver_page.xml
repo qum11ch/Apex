@@ -4,22 +4,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
+    android:background="@color/colorDriverPages"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <ProgressBar
         android:layout_centerInParent="true"
         android:layout_gravity="center"
-        android:backgroundTint="@color/red"
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="visible"
         android:indeterminate="true"
         android:indeterminateTintMode="src_atop"
-        android:indeterminateTint="@color/red"/>
-
+        android:indeterminateTint="@color/progressBarColor"/>
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/content_layout"
         android:visibility="gone"
@@ -174,7 +172,7 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/light_grey"
+            android:background="@color/colorDriverPages"
             android:overScrollMode="never"
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="center"

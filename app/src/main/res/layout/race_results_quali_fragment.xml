@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/light_grey"
+    android:background="@color/colorDriverPages"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
@@ -87,10 +87,16 @@
             android:textColor="@color/white"
             android:textSize="18sp"/>
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        android:id="@+id/header_line"
+        android:layout_below="@id/quali_header"/>
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/quali_header">
+        android:layout_below="@id/header_line">
         <androidx.recyclerview.widget.RecyclerView
             android:visibility="gone"
             android:overScrollMode="never"

@@ -155,8 +155,10 @@ public class NotifyReceiver extends BroadcastReceiver {
     private void createNotificationChannel(final Context context, String mChannelId) {
         String name = "Schedule Alerts";
         String des = "Race schedule alerts for user";
-        int importance = NotificationManager.IMPORTANCE_DEFAULT;
-        NotificationChannel channel = new NotificationChannel(mChannelId, name, importance);
+        NotificationChannel channel = new NotificationChannel(
+                mChannelId,
+                name,
+                NotificationManager.IMPORTANCE_DEFAULT);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         channel.setDescription(des);
         NotificationManager manager = context.getSystemService(NotificationManager.class);

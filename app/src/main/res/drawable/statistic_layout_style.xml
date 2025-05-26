@@ -3,7 +3,7 @@
     <item>
         <shape>
             <stroke
-                android:color="@color/grey"
+                android:color="@color/colorSecondary"
                 android:width="10dp"/>
             <corners
                 android:bottomLeftRadius="0dp"
@@ -18,7 +18,7 @@
         android:bottom="-1dp"
         android:left="-1dp">
         <shape>
-            <solid android:color="@color/light_grey"/>
+            <solid android:color="@color/colorDriverPages"/>
             <corners
                 android:bottomLeftRadius="0dp"
                 android:bottomRightRadius="0dp"

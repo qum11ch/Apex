@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey">
+    android:background="@color/colorPrimary">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -235,7 +235,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/race_weekend_text"
-                        android:textColor="@color/black"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
                     <LinearLayout
                         android:layout_below="@id/race_weekend_title"
@@ -282,7 +281,7 @@
                     android:saveEnabled="false"
                     android:paddingEnd="0dp"
                     android:textAppearance="@style/TextStyle.Gram.Bold"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_color_main"
                     android:textSize="22sp"
                     android:text="@string/predict_button"/>
             </RelativeLayout>

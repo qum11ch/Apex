@@ -2,11 +2,10 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_marginBottom="30dp"
-    android:background="@color/white"
+    android:background="@color/colorDriverPages"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
-        android:layout_below="@id/fastestLap_layout"
         android:orientation="horizontal"
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
@@ -73,8 +72,14 @@
             android:textColor="@color/white"
             android:textSize="18sp" />
     </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/light_grey"
+        android:id="@+id/header_line"
+        android:layout_below="@id/race_header"/>
     <RelativeLayout
-        android:layout_below="@id/race_header"
+        android:layout_below="@id/header_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <androidx.recyclerview.widget.RecyclerView

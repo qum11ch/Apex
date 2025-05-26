@@ -130,6 +130,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                 saveRace.setOnClickListener(view3 -> {
                     saveRace.setChecked(false);
                     Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
+
                 });
             }
 

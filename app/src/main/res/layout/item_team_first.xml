@@ -97,7 +97,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_width="75dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/striped_background_darkgrey_white"
+                    android:src="@drawable/background_first_item"
                     android:scaleType="fitXY"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_custom_corners"/>
                 <HorizontalScrollView

@@ -291,7 +291,7 @@ public class teamStatsFragment extends Fragment {
                     GradientDrawable gd1 = new GradientDrawable();
                     gd1.setColor(ContextCompat.getColor(requireContext(),R.color.white));
                     gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                    gd1.setStroke(12, Color.parseColor(mColor));
+                    gd1.setStroke(15, Color.parseColor(mColor));
                     tech_layout.setBackground(gd1);
                 }
 

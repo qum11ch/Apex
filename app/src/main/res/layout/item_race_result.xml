@@ -22,7 +22,7 @@
             android:layout_marginBottom="1dp"
             android:paddingEnd="10dp"
             android:paddingStart="0dp"
-            android:background="@color/white"
+            android:background="@color/colorDriverPages"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:orientation="horizontal"
@@ -43,7 +43,7 @@
                 android:id="@+id/line"
                 android:layout_width="3dp"
                 android:layout_height="match_parent"
-                android:background="@color/dark_grey"/>
+                android:background="@color/text_color_thirdly"/>
             <TextView
                 android:textSize="18sp"
                 android:gravity="center_vertical"

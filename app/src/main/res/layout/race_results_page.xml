@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".futureRaceActivity"
-    android:background="@color/second_pink">
+    android:background="@color/colorDriverPages">
     <RelativeLayout
         android:id="@+id/header"
         android:layout_width="match_parent"

@@ -44,7 +44,7 @@
                 android:layout_marginBottom="10dp"
                 android:layout_width="3dp"
                 android:layout_height="match_parent"
-                android:background="@color/dark_grey"/>
+                android:background="@color/text_color_thirdly"/>
             <RelativeLayout
                 android:id="@+id/driver_layout"
                 android:layout_width="0dp"
@@ -107,7 +107,7 @@
                     android:layout_alignParentEnd="true"
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
-                    android:src="@drawable/striped_background_white"
+                    style="@style/StripedLinesItems"
                     android:scaleType="fitXY"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_custom_corners"/>
                 <ImageView
@@ -126,11 +126,11 @@
                     android:layout_alignParentBottom="true"
                     android:layout_centerInParent="true"
                     style="@style/PtsStyle"
-                    android:backgroundTint="@color/black"
+                    android:backgroundTint="@color/text_color_thirdly"
                     android:layout_width="80dp"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="@color/white"
+                    android:textColor="@color/colorPrimary"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                     android:textSize="12sp"/>
             </RelativeLayout>
