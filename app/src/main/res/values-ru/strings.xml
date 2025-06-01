@@ -295,4 +295,16 @@
     <string name="warning_it">Внимание! Получение прогноза может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
     <string name="qualifying_text">Квалификация</string>
     <string name="sprint_qualifying_text">Спринт Квалификация</string>
+    <string name="yes_text">Да</string>
+    <string name="no_text">Нет</string>
+    <string name="actual_points_text">Очков сейчас</string>
+    <string name="max_points_text">Очков максимум</string>
+    <string name="can_win_wdc_text">Победит</string>
+    <string name="winners_wdc_button_text">Кто может выиграть чемпионат</string>
+    <string name="winners_wdc_header">Пилоты, которые могут выиграть чемпионат</string>
+    <string name="remaining_events_text">Осталось:</string>
+    <string name="conventional_events_text">Обычных Гран-при:</string>
+    <string name="sprint_events_text">Спринт Гран-при:</string>
+    <string name="max_points_events_text">Максимум очков можно набрать:</string>
+    <string name="winner_wdc_info_text">Здесь Вы можете узнать, какие гонщики теоретически еще могут побороться за титул чемпиона мира в личном зачете. Для этого рассчитывается максимально возможное количество очков, которое гонщик может набрать к концу сезона, и сравнивается с текущими результатами лидеров.</string>
 </resources>

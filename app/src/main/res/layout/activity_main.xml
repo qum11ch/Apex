@@ -237,6 +237,24 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/predict_button"/>
+                <Button
+                    android:textSize="16sp"
+                    android:enabled="true"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:layout_below="@id/predict"
+                    android:id="@+id/winnersWDS"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/winners_wdc_button_text"/>
                 <TextView
                     android:textColor="@color/text_color_main"
                     android:textAllCaps="true"
@@ -245,7 +263,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_below="@id/predict"
+                    android:layout_below="@id/winnersWDS"
                     android:text="@string/top_drivers"
                     android:textSize="16sp"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold"

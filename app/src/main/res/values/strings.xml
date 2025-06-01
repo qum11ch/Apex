@@ -322,4 +322,16 @@
     <string name="warning_it">Attention! Getting the prediction may take some time! Approximate waiting time up to 2 minutes depending on your Internet connection!</string>
     <string name="qualifying_text">Qualifying</string>
     <string name="sprint_qualifying_text">Sprint Qualifying</string>
+    <string name="yes_text">Yes</string>
+    <string name="no_text">No</string>
+    <string name="actual_points_text">Actual Points</string>
+    <string name="max_points_text">Max Points</string>
+    <string name="can_win_wdc_text">Can Win WDC</string>
+    <string name="winners_wdc_button_text">Who Can Win WDC</string>
+    <string name="winners_wdc_header">Drivers who can still win the WDC</string>
+    <string name="remaining_events_text">Events left:</string>
+    <string name="conventional_events_text">Conventional Events:</string>
+    <string name="sprint_events_text">Sprint Events:</string>
+    <string name="max_points_events_text">Maximum points that can be earned:</string>
+    <string name="winner_wdc_info_text">Here you can find out which drivers can theoretically still win the WDC. This is done by calculating the maximum number of points each driver can accumulate by the end of the season and comparing it with the current results of the leaders.</string>
 </resources>
