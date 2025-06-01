@@ -4,13 +4,20 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
+import android.os.Build;
 import android.os.Bundle;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -29,8 +36,11 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,7 +48,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -63,7 +72,11 @@ public class MainActivity extends AppCompatActivity {
     private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams, sfProgressBar;
     private ProgressBar raceProgress;
     private TextView raceProgressText;
-    private Button predict;
+    SharedPreferences mPrefs;
+    private static final long HOUR = 3600*1000;
+    private static final long SPRINT_QUALI_DIFF = 44*60*1000;
+    private static final int REQUEST_CODE_NOTIFICATIONS = 1001;
+    private static final String KEY_NOTIFICATIONS_ENABLED = "notifications_enabled";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,15 +111,12 @@ public class MainActivity extends AppCompatActivity {
         sfTeams = findViewById(R.id.shimmerTeams_layout);
         sfProgressBar = findViewById(R.id.shimmerProgress_layout);
 
-        predict = findViewById(R.id.predict);
+        Button predict = findViewById(R.id.predict);
 
-        predict.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
-                MainActivity.this.startActivity(intent);
+        predict.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
+            MainActivity.this.startActivity(intent);
 
-            }
         });
 
         sfProgressBar.startShimmer();
@@ -157,21 +167,49 @@ public class MainActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
 
-        //updateData(currentDate);
-        //updateSprintData(currentDate);
-
         String currentYear = Integer.toString(currentDate.getYear());
         getTeamStanding(currentYear);
         getDriversStanding(currentYear);
         getSchedule(currentYear, currentDate);
-        Intent intentStart = new Intent(this, BootService.class);
-        String channelId = "channelID2";
-        intentStart.putExtra("channelId", channelId);
-        startService(intentStart);
 
-        CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
-        AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.setExpanded(true,true);
+
+        mPrefs = getSharedPreferences(APP_PREFERENCES, Activity.MODE_PRIVATE);
+        checkNotificationPermission();
+    }
+
+    private void checkNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                        Manifest.permission.POST_NOTIFICATIONS)) {
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                            REQUEST_CODE_NOTIFICATIONS);
+                }
+            } else {
+                saveNotificationPreference(true);
+            }
+        } else {
+            saveNotificationPreference(true);
+        }
+    }
+
+
+    private void saveNotificationPreference(boolean isEnabled) {
+        mPrefs.edit().putBoolean(KEY_NOTIFICATIONS_ENABLED, isEnabled).apply();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == REQUEST_CODE_NOTIFICATIONS) {
+            saveNotificationPreference(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        }
     }
 
     private void postProgress(int progress) {
@@ -428,6 +466,8 @@ public class MainActivity extends AppCompatActivity {
     private void getSchedule(String year, LocalDate currentDate){
         ArrayList<String> concludedRoundNumber = new ArrayList<>();
         ArrayList<String> futureRaceRoundNumber = new ArrayList<>();
+        ArrayList<String> raceNames = new ArrayList<>();
+        ArrayList<String> circuitsId = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
@@ -436,8 +476,12 @@ public class MainActivity extends AppCompatActivity {
                     Integer round = ds.child("round").getValue(Integer.class);
                     String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                     String dateEnd = ds.child("raceDate").getValue(String.class);
-                    //String raceName = ds.child("Circuit/raceName").getValue(String.class);
-                    //String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+
+                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
+                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+
+                    raceNames.add(raceName);
+                    circuitsId.add(circuitId);
 
                     String currentDateString = currentDate.toString();
                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -490,6 +534,12 @@ public class MainActivity extends AppCompatActivity {
                     getFutureRace(year, futureRaceRoundNumber.get(0));
                 }else{
                     futureLayout.setVisibility(View.GONE);
+                }
+
+                boolean notificationsEnabled = mPrefs.getBoolean(KEY_NOTIFICATIONS_ENABLED, false);
+
+                if(notificationsEnabled){
+                    getRaceSchedule(raceNames, year, circuitsId);
                 }
             }
 
@@ -604,6 +654,120 @@ public class MainActivity extends AppCompatActivity {
                         Log.e("futureRaceFragmentFirebaseError", error.getMessage());
                     }
                 });
+    }
+
+    private void getRaceSchedule(ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId){
+        ArrayList<LinkedHashMap<String, String>> eventsPerRace = new ArrayList<>();
+        for (int i = 0; i < raceNames.size(); i++) {
+            String raceName = raceNames.get(i);
+            LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            int finalI = i;
+            rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
+                            " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
+                    String race = snapshot.child("raceDate").getValue(String.class) +
+                            " " + snapshot.child("raceTime").getValue(String.class);
+
+                    String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
+                            " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
+
+                    String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
+                    if (sprintDate.equals("N/A")){
+                        String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
+                                " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
+
+                        String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
+                                " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
+
+                        eventsCountdown.put("first_practice_event", firstPractice);
+                        eventsCountdown.put("second_practice_event", secondPractice);
+                        eventsCountdown.put("third_practice_event", thirdPractice);
+                        eventsCountdown.put("quali_event", raceQuali);
+                        eventsCountdown.put("race_event", race);
+                    }else{
+                        String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
+                                " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
+                        String sprint = sprintDate +
+                                " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
+
+                        eventsCountdown.put("first_practice_event", firstPractice);
+                        eventsCountdown.put("sprint_quali_event", sprintQuali);
+                        eventsCountdown.put("sprint_event", sprint);
+                        eventsCountdown.put("quali_event", raceQuali);
+                        eventsCountdown.put("race_event", race);
+                    }
+                    eventsPerRace.add(eventsCountdown);
+                    if(finalI == raceNames.size() - 1){
+                        scheduleNotification(eventsPerRace, raceNames, currentYear, circuitsId);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("futureActivityFirebaseError", error.getMessage());
+                }
+            });
+
+        }
+    }
+
+    private void scheduleNotification(ArrayList<LinkedHashMap<String, String>> eventsPerRace, ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId) {
+        ArrayList<String> eventsStr = new ArrayList<>();
+        SharedPreferences.Editor editor = mPrefs.edit();
+        for (int i = 0; i < raceNames.size(); i++){
+            LinkedHashMap<String, String> events = eventsPerRace.get(i);
+            String raceName = raceNames.get(i);
+            if (!events.isEmpty()) {
+
+                String stringForSharedPrefs = currentYear + "$" + raceName;
+                for(Map.Entry<String, String> entry : events.entrySet()){
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                    dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    try {
+                        Date eventStart_date = dateFormat.parse(value);
+                        Date endTime = new Date(eventStart_date.getTime() + HOUR);
+                        String endTimeStr = dateFormat.format(endTime);
+                        Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
+                        String endTimeStr_sprintQ = dateFormat.format(endTime_sprintQ);
+                        Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
+                        String endTimeStr_race = dateFormat.format(endTime_race);
+                        String eventEndStr_date;
+                        switch (key) {
+                            case "race_event":
+                                eventEndStr_date = endTimeStr_race + "Z";
+                                break;
+                            case "sprint_quali_event":
+                                eventEndStr_date = endTimeStr_sprintQ + "Z";
+                                break;
+                            default:
+                                eventEndStr_date = endTimeStr + "Z";
+                                break;
+                        }
+                        stringForSharedPrefs += "%" + key + "$" + value + "$" + eventEndStr_date;
+
+                    }catch(ParseException e){
+                        e.printStackTrace();
+                    }
+                }
+                eventsStr.add(stringForSharedPrefs);
+            }
+
+        }
+        JSONArray jsonArrayEvents = new JSONArray(eventsStr);
+        JSONArray jsonArrayCircuits = new JSONArray(circuitsId);
+        editor.putString("events_json", jsonArrayEvents.toString());
+        editor.putString("circuits_json", jsonArrayCircuits.toString());
+        editor.apply();
+
+        Intent intentStart = new Intent(this, BootService.class);
+        String channelId = "channelID2";
+        intentStart.putExtra("channelId", channelId);
+        startService(intentStart);
     }
 
 

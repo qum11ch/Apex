@@ -35,7 +35,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -140,6 +139,7 @@ public class accountPageActivity extends AppCompatActivity {
             Intent i = new Intent(accountPageActivity.this, MainActivity.class);
             i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(i);
+            finish();
         });
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
@@ -148,6 +148,7 @@ public class accountPageActivity extends AppCompatActivity {
                 Intent i = new Intent(accountPageActivity.this, MainActivity.class);
                 i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 startActivity(i);
+                finish();
             }
         });
 
@@ -198,7 +199,6 @@ public class accountPageActivity extends AppCompatActivity {
                     main_content.setVisibility(View.VISIBLE);
                     loadingProgress.setVisibility(View.GONE);
 
-                    CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
                     AppBarLayout appBarLayout = findViewById(R.id.appbar);
                     Toolbar toolbar = findViewById(R.id.toolbar);
                     appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {

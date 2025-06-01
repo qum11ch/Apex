@@ -10,6 +10,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -62,7 +63,7 @@ public class futureRaceActivity extends AppCompatActivity {
             String mDate = bundle.getString("dateStart");
 
             if (getIntent().hasExtra("fromNotify")){
-                backButton = (ImageButton) findViewById(R.id.backButton);
+                backButton = findViewById(R.id.backButton);
                 backButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -71,8 +72,17 @@ public class futureRaceActivity extends AppCompatActivity {
                         overridePendingTransition(0, 0);
                     }
                 });
+
+                getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        Intent i = new Intent(futureRaceActivity.this, MainActivity.class);
+                        startActivity(i);
+                        overridePendingTransition(0, 0);
+                    }
+                });
             }else{
-                backButton = (ImageButton) findViewById(R.id.backButton);
+                backButton = findViewById(R.id.backButton);
                 backButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -84,7 +94,7 @@ public class futureRaceActivity extends AppCompatActivity {
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
             LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
-            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
+            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy"));
 
 
             Bundle scheduleBundle = new Bundle();
@@ -124,15 +134,12 @@ public class futureRaceActivity extends AppCompatActivity {
         adapter.addFragment(circuitFragment);
         myViewPager2.setAdapter(adapter);
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(R.string.schedule_text);
-                }
-                else{
-                    tab.setText(R.string.circuit_text);
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(R.string.schedule_text);
+            }
+            else{
+                tab.setText(R.string.circuit_text);
             }
         });
         tabLayoutMediator.attach();
