@@ -19,11 +19,30 @@
 
 ---
 
+## Скриншоты
+
+<p align="center">
+  <img src="images/showcase_1.png" width="200"/>
+  <img src="images/showcase_2.png" width="200"/>
+  <img src="images/prediction_page.png" width="200"/>
+  <img src="images/schedule_page.png" width="200"/>
+  <img src="images/standings_page.png" width="200"/>
+  <img src="images/race_page.png" width="200"/>
+  <img src="images/stats_page.png" width="200"/>
+  <img src="images/dark_theme.png" width="200"/>
+</p>
+
+---
+
 ## Доступно в магазине
 
 Приложение **Apex** доступно для скачивания в RuStore:
 
-[!![RuStore](https://static.rustore.ru/assets/images/logo.svg)](https://www.rustore.ru/catalog/app/com.example.f1app)
+<p align="center">
+  <a href="https://www.rustore.ru/catalog/app/com.example.f1app">
+    <img src="images/RuStore_logo.png" alt="RuStore" width="100"/>
+  </a>
+</p>
 
 ---
 
