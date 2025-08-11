@@ -19,7 +19,15 @@
 
 ---
 
-## Требования
+## Доступно в магазине
+
+Приложение **Apex** доступно для скачивания в RuStore:
+
+[!![RuStore](https://static.rustore.ru/assets/images/logo.svg)](https://www.rustore.ru/catalog/app/com.example.f1app)
+
+---
+
+## Требования к мобильному устройству
 
 - Свободное место на накопителе: не менее 50 МБ;
 - Операционная система: Android версии не ниже 8.0 (API level 26);
