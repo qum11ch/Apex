@@ -309,11 +309,11 @@ public class predictResultPage extends AppCompatActivity {
 
         boolean prevYear = false;
 
-        if ((daysBetween <= 16) && (daysBetween >= -2)){
+        if ((daysBetween <= 15) && (daysBetween >= -2)){
             url = "https://api.open-meteo.com/v1/forecast?latitude="
                     + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
                     + date + "&end_date=" + date;
-        } else if (daysBetween > 16) {
+        } else if (daysBetween > 15) {
             daysBetween = daysBetween - 365;
             if (daysBetween >= -2){
                 url = "https://api.open-meteo.com/v1/forecast?latitude="
@@ -338,6 +338,7 @@ public class predictResultPage extends AppCompatActivity {
             finalTargetTime = targetDatetime;
         }
 
+        Log.i("FatalError", " " + url);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET,
                 url,
@@ -388,7 +389,7 @@ public class predictResultPage extends AppCompatActivity {
                     }catch (JSONException e) {
                         Log.e("predictPageActivity", " " + e.getMessage());
                     }
-                }, error -> Toast.makeText(predictResultPage.this, error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
 
         queue.add(jsonObjectRequest);
     }
