@@ -1,10 +1,9 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,18 +42,21 @@ public class winnersWDCActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private TextView round, raceName, convEventsCount, sprintEventsCount, maxPointsCount;
     private ShimmerFrameLayout shimmerFrameLayout;
-
+    private winnersWDCAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.winners_wdc_page);
 
-        datum = new ArrayList<>();
         recyclerView = findViewById(R.id.recyclerview_winnersWDC);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
+
+        datum = new ArrayList<>();
+        adapter = new winnersWDCAdapter(winnersWDCActivity.this, datum);
+        recyclerView.setAdapter(adapter);
 
         round = findViewById(R.id.round);
         raceName = findViewById(R.id.raceName);
@@ -180,14 +182,14 @@ public class winnersWDCActivity extends AppCompatActivity {
                                     datum.add(smth);
                                 }
                             }
-                            Handler handler = new Handler();
-                            handler.postDelayed(()->{
-                                recyclerView.setVisibility(View.VISIBLE);
-                                shimmerFrameLayout.setVisibility(View.GONE);
-                                shimmerFrameLayout.stopShimmer();
-                            },500);
-                            winnersWDCAdapter adapter = new winnersWDCAdapter(winnersWDCActivity.this, datum);
-                            recyclerView.setAdapter(adapter);
+                            hideShimmer(recyclerView, shimmerFrameLayout);
+                            //Handler handler = new Handler();
+                            //handler.postDelayed(()->{
+                            //    recyclerView.setVisibility(View.VISIBLE);
+                            //    shimmerFrameLayout.setVisibility(View.GONE);
+                            //    shimmerFrameLayout.stopShimmer();
+                            //},500);
+                            adapter.notifyItemChanged(datum.size() - 1);
 
                         }
                     } catch (JSONException e) {

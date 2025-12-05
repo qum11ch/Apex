@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -54,14 +56,16 @@ public class raceResultsRaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        datum = new ArrayList<>();
-
         recyclerView = view.findViewById(R.id.race_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        fastestLapDriverLayout = view.findViewById(R.id.fastestLapDriver_layout);
+        datum = new ArrayList<>();
 
+        adapter = new raceResultsRaceAdapter(getActivity(), datum);
+        recyclerView.setAdapter(adapter);
+
+        fastestLapDriverLayout = view.findViewById(R.id.fastestLapDriver_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerDriverLayout = view.findViewById(R.id.shimmer_layout_driver);
         shimmerDriverLayout.startShimmer();
@@ -76,7 +80,8 @@ public class raceResultsRaceFragment extends Fragment {
             //String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
-            datum = new ArrayList<>();
+            //datum = new ArrayList<>();
+            //adapter.notifyDataSetChanged();
             getRaceData(mCircuitId, mSeason);
         }
     }
@@ -121,12 +126,21 @@ public class raceResultsRaceFragment extends Fragment {
                                         String driver = driverName.charAt(0) + ". " + driverFamilyName;
                                         fastestLapTime.setText(mFastestLapTime);
                                         fastestLapDriverName.setText(driver);
-                                        Handler handler = new Handler();
-                                        handler.postDelayed(()->{
-                                            fastestLapDriverLayout.setVisibility(View.VISIBLE);
-                                            shimmerDriverLayout.setVisibility(View.GONE);
-                                            shimmerDriverLayout.stopShimmer();
-                                        },500);
+                                        //Handler handler = new Handler();
+                                        //handler.postDelayed(()->{
+                                        //    fastestLapDriverLayout.setVisibility(View.VISIBLE);
+                                        //    shimmerDriverLayout.setVisibility(View.GONE);
+                                        //    shimmerDriverLayout.stopShimmer();
+                                        //},500);
+
+                                        shimmerDriverLayout.animate()
+                                                .setDuration(500)
+                                                .withEndAction(() -> {
+                                                    fastestLapDriverLayout.setVisibility(View.VISIBLE);
+                                                    shimmerDriverLayout.setVisibility(View.GONE);
+                                                    shimmerDriverLayout.stopShimmer();
+                                                })
+                                                .start();
                                     }
                                 }
 
@@ -168,14 +182,15 @@ public class raceResultsRaceFragment extends Fragment {
                                         constructorId, driverCode, time, points, season);
                                 datum.add(results);
                             }
-                            Handler handler = new Handler();
-                            handler.postDelayed(()->{
-                                recyclerView.setVisibility(View.VISIBLE);
-                                shimmerFrameLayout.setVisibility(View.GONE);
-                                shimmerFrameLayout.stopShimmer();
-                            },500);
-                            adapter = new raceResultsRaceAdapter(requireActivity(), datum);
-                            recyclerView.setAdapter(adapter);
+                            //Handler handler = new Handler();
+                            //handler.postDelayed(()->{
+                            //    recyclerView.setVisibility(View.VISIBLE);
+                            //    shimmerFrameLayout.setVisibility(View.GONE);
+                            //    shimmerFrameLayout.stopShimmer();
+                            //},500);
+
+                            hideShimmer(recyclerView, shimmerFrameLayout);
+                            adapter.notifyItemChanged(datum.size() - 1);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();

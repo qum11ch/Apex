@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -52,11 +54,13 @@ public class raceResultsSprintFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        datum = new ArrayList<>();
-
         recyclerView = view.findViewById(R.id.race_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
+        datum = new ArrayList<>();
+        adapter = new raceResultsRaceAdapter(requireActivity(), datum);
+        recyclerView.setAdapter(adapter);
 
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
@@ -67,7 +71,7 @@ public class raceResultsSprintFragment extends Fragment {
             String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
-            datum = new ArrayList<>();
+            //datum = new ArrayList<>();
             getSprintData(mCircuitId, mSeason);
         }
     }
@@ -123,14 +127,14 @@ public class raceResultsSprintFragment extends Fragment {
                                             constructorId, driverCode, time, points, season);
                                     datum.add(results);
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new raceResultsRaceAdapter(requireActivity(), datum);
-                                recyclerView.setAdapter(adapter);
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    recyclerView.setVisibility(View.VISIBLE);
+                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                //    shimmerFrameLayout.stopShimmer();
+                                //},500);
+                                adapter.notifyItemChanged(datum.size() - 1);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

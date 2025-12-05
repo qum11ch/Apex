@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -81,6 +83,11 @@ public class driverResultsFragment extends Fragment {
             //String mDriverCode = getArguments().getString("driverCode");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
 
+            datum = new ArrayList<>();
+
+            adapter = new driverResultsAdapter(getActivity(), datum);
+            recyclerView.setAdapter(adapter);
+
             shimmerFrameLayout.startShimmer();
             radioButton_2025.setChecked(true);
 
@@ -156,7 +163,6 @@ public class driverResultsFragment extends Fragment {
 
     private void getResults(String season, String driverName, String driverFamilyName){
         String fullDriverName = driverName + " " + driverFamilyName;
-        datum = new ArrayList<>();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season/" + season + "/").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
@@ -172,28 +178,29 @@ public class driverResultsFragment extends Fragment {
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new driverResultsAdapter(getActivity(), datum);
-                                recyclerView.setAdapter(adapter);
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    recyclerView.setVisibility(View.VISIBLE);
+                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                //    shimmerFrameLayout.stopShimmer();
+                                //},500);
+
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                adapter.notifyItemChanged(datum.size() - 1);
                             }
                             else{
                                 String driverResult = getResources().getString(R.string.np_text);
                                 driverResultsData results = new driverResultsData(raceName,
                                         driverResult, fullDriverName, Integer.parseInt(season));
                                 datum.add(results);
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new driverResultsAdapter(getActivity(), datum);
-                                recyclerView.setAdapter(adapter);
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    recyclerView.setVisibility(View.VISIBLE);
+                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                //    shimmerFrameLayout.stopShimmer();
+                                //},500);
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                adapter.notifyItemChanged(datum.size() - 1);
                             }
                         }
 

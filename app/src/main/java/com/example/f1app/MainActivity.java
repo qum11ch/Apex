@@ -77,6 +77,11 @@ public class MainActivity extends AppCompatActivity {
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
     private static final int REQUEST_CODE_NOTIFICATIONS = 1001;
     private static final String KEY_NOTIFICATIONS_ENABLED = "notifications_enabled";
+    private mainDriversStandingsAdapter driversAdapter;
+    private mainTeamsStandingsAdapter teamsAdapter;
+    private mainPastRaceAdapter pastRaceAdapter;
+    private futureRaceAdapter futureRaceAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
-        datumDrivers = new ArrayList<>();
-        datumTeams = new ArrayList<>();
 
         futureLayout = findViewById(R.id.main_future);
         pastLayout = findViewById(R.id.main_past);
@@ -110,6 +113,23 @@ public class MainActivity extends AppCompatActivity {
         sfDrivers = findViewById(R.id.shimmerDrivers_layout);
         sfTeams = findViewById(R.id.shimmerTeams_layout);
         sfProgressBar = findViewById(R.id.shimmerProgress_layout);
+
+        datumDrivers = new ArrayList<>();
+        datumTeams = new ArrayList<>();
+        datumPast = new ArrayList<>();
+        datumFuture = new ArrayList<>();
+
+        driversAdapter = new mainDriversStandingsAdapter(this, datumDrivers);
+        rvDrivers.setAdapter(driversAdapter);
+
+        teamsAdapter = new mainTeamsStandingsAdapter(this, datumTeams);
+        rvTeams.setAdapter(teamsAdapter);
+
+        pastRaceAdapter = new mainPastRaceAdapter(this, datumPast);
+        rvPast.setAdapter(pastRaceAdapter);
+
+        futureRaceAdapter = new futureRaceAdapter(this, datumFuture);
+        rvFuture.setAdapter(futureRaceAdapter);
 
         Button predict = findViewById(R.id.predict);
 
@@ -220,12 +240,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void postProgress(int progress) {
-        String strProgress = progress + " из 24";
+        String strProgress = progress + "/24";
         if (progress>10 && progress<=13){
             raceProgressText.setTextColor(getColor(R.color.dark_grey));
         } else if (progress>13) {
             raceProgressText.setTextColor(getColor(R.color.white));
         }
+
+
         Handler handler = new Handler();
         handler.postDelayed(()->{
             raceProgress.setVisibility(View.VISIBLE);
@@ -270,16 +292,19 @@ public class MainActivity extends AppCompatActivity {
                                     datumDrivers.add(smth);
                                 }
                             }
-                            Handler handler = new Handler();
-                            handler.postDelayed(()->{
-                                rvDrivers.setVisibility(View.VISIBLE);
-                                sfDrivers.setVisibility(View.GONE);
-                                sfDrivers.stopShimmer();
-                            },500);
-                            mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
-                            rvDrivers.setAdapter(adapter);
+
+                            hideShimmer(rvDrivers, sfDrivers);
+                            //Handler handler = new Handler();
+                            //handler.postDelayed(()->{
+                            //    rvDrivers.setVisibility(View.VISIBLE);
+                            //    sfDrivers.setVisibility(View.GONE);
+                            //    sfDrivers.stopShimmer();
+                            //},500);
+
+                            driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
+
                         }else{
-                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            DatabaseReference rootRef = database.getReference();
                             rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -313,19 +338,20 @@ public class MainActivity extends AppCompatActivity {
                                                             driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                     true, currentYear);
                                                             datumDrivers.add(smth);
-                                                            mainDriversStandingsAdapter adapter = new mainDriversStandingsAdapter(MainActivity.this, datumDrivers);
-                                                            Handler handler = new Handler();
-                                                            handler.postDelayed(()->{
-                                                                rvDrivers.setVisibility(View.VISIBLE);
-                                                                sfDrivers.setVisibility(View.GONE);
-                                                                sfDrivers.stopShimmer();
-                                                            },500);
-                                                            rvDrivers.setAdapter(adapter);
+                                                            //Handler handler = new Handler();
+                                                            //handler.postDelayed(()->{
+                                                            //    rvDrivers.setVisibility(View.VISIBLE);
+                                                            //    sfDrivers.setVisibility(View.GONE);
+                                                            //    sfDrivers.stopShimmer();
+                                                            //},500);
+
+                                                            hideShimmer(rvDrivers, sfDrivers);
+                                                            driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
                                                         }
 
                                                         @Override
                                                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                            Log.e("driverStandingsError", databaseError.getMessage()); //Don't ignore errors!
+                                                            Log.e("driverStandingsError", databaseError.getMessage());
                                                         }
                                                     };
                                                     driverRef.addListenerForSingleValueEvent(driversValueEventListener);
@@ -334,14 +360,14 @@ public class MainActivity extends AppCompatActivity {
 
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                                Log.e("driverStandingsError", error.getMessage());
                                             }
                                         });
                                     }
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                    Log.e("driverStandingsError", error.getMessage());
                                 }
                             });
                         }
@@ -389,14 +415,15 @@ public class MainActivity extends AppCompatActivity {
                                             teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                             smth.setDrivers(teamDrivers);
                                             datumTeams.add(smth);
-                                            Handler handler = new Handler();
-                                            handler.postDelayed(()->{
-                                                rvTeams.setVisibility(View.VISIBLE);
-                                                sfTeams.setVisibility(View.GONE);
-                                                sfTeams.stopShimmer();
-                                            },500);
-                                            mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
-                                            rvTeams.setAdapter(adapter);
+                                            hideShimmer(rvTeams, sfTeams);
+
+                                            //Handler handler = new Handler();
+                                            //handler.postDelayed(()->{
+                                            //    rvTeams.setVisibility(View.VISIBLE);
+                                            //    sfTeams.setVisibility(View.GONE);
+                                            //    sfTeams.stopShimmer();
+                                            //},500);
+                                            teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
                                         }
 
                                         @Override
@@ -409,7 +436,7 @@ public class MainActivity extends AppCompatActivity {
 
                         }
                         else{
-                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            DatabaseReference rootRef = database.getReference();
                             rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -425,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
 
-                                        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                                        DatabaseReference rootRef = database.getReference();
                                         rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -436,15 +463,16 @@ public class MainActivity extends AppCompatActivity {
                                                 }
                                                 teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
-                                                Handler handler = new Handler();
-                                                handler.postDelayed(()->{
-                                                    rvTeams.setVisibility(View.VISIBLE);
-                                                    sfTeams.setVisibility(View.GONE);
-                                                    sfTeams.stopShimmer();
-                                                },500);
+
+                                                hideShimmer(rvTeams, sfTeams);
+                                                //Handler handler = new Handler();
+                                                //handler.postDelayed(()->{
+                                                //    rvTeams.setVisibility(View.VISIBLE);
+                                                //    sfTeams.setVisibility(View.GONE);
+                                                //    sfTeams.stopShimmer();
+                                                //},500);
                                                 datumTeams.add(smth);
-                                                mainTeamsStandingsAdapter adapter = new mainTeamsStandingsAdapter(MainActivity.this, datumTeams);
-                                                rvTeams.setAdapter(adapter);
+                                                teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
@@ -475,7 +503,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> futureRaceRoundNumber = new ArrayList<>();
         ArrayList<String> raceNames = new ArrayList<>();
         ArrayList<String> circuitsId = new ArrayList<>();
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference rootRef = database.getReference();
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -558,11 +586,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPastRace(String currentYear, String round){
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference rootRef = database.getReference();
         rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.parseInt(round)).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                datumPast = new ArrayList<>();
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
                     if (!winnerCode.equals("N/A")){
@@ -583,14 +610,15 @@ public class MainActivity extends AppCompatActivity {
                                         dateEnd, raceName, round, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
                                         thirdCode, currentYear);
                                 datumPast.add(concludedRace);
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    rvPast.setVisibility(View.VISIBLE);
-                                    sfPast.setVisibility(View.GONE);
-                                    sfPast.stopShimmer();
-                                },500);
-                                mainPastRaceAdapter adapter = new mainPastRaceAdapter(MainActivity.this, datumPast);
-                                rvPast.setAdapter(adapter);
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    rvPast.setVisibility(View.VISIBLE);
+                                //    sfPast.setVisibility(View.GONE);
+                                //    sfPast.stopShimmer();
+                                //},500);
+
+                                hideShimmer(rvPast, sfPast);
+                                pastRaceAdapter.notifyItemInserted(datumPast.size() - 1);
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
@@ -609,7 +637,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getFutureRace(String currentYear, String round){
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference rootRef = database.getReference();
         String newRound;
         if (round.contains(getString(R.string.is_ongoing).toUpperCase())){
             String[] roundArray = round.split("\\s+");
@@ -621,7 +649,6 @@ public class MainActivity extends AppCompatActivity {
                 .equalTo(Integer.parseInt(newRound)).addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        datumFuture = new ArrayList<>();
                         for(DataSnapshot ds : dataSnapshot.getChildren()) {
                             String raceName = ds.child("Circuit/raceName").getValue(String.class);
                             String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
@@ -638,18 +665,20 @@ public class MainActivity extends AppCompatActivity {
                                             circuitName, round, raceCountry, circuitId);
                                     futureRaceData.setLocality(raceLocation);
                                     datumFuture.add(futureRaceData);
-                                    Handler handler = new Handler();
-                                    handler.postDelayed(()->{
-                                        rvFuture.setVisibility(View.VISIBLE);
-                                        sfFuture.setVisibility(View.GONE);
-                                        sfFuture.stopShimmer();
-                                    },500);
-                                    futureRaceAdapter adapter = new futureRaceAdapter(MainActivity.this, datumFuture);
-                                    rvFuture.setAdapter(adapter);
+
+                                    hideShimmer(rvFuture, sfFuture);
+
+                                    //Handler handler = new Handler();
+                                    //handler.postDelayed(()->{
+                                    //    rvFuture.setVisibility(View.VISIBLE);
+                                    //    sfFuture.setVisibility(View.GONE);
+                                    //    sfFuture.stopShimmer();
+                                    //},500);
+                                    futureRaceAdapter.notifyItemInserted(datumFuture.size() - 1);
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                                    Toast.makeText(MainActivity.this, "MainActivity getFutureRace error" + error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
                         }
@@ -658,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("futureRaceFragmentFirebaseError", error.getMessage());
+                        Toast.makeText(MainActivity.this, "MainActivity getFutureRace error" + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -668,7 +697,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < raceNames.size(); i++) {
             String raceName = raceNames.get(i);
             LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference rootRef = database.getReference();
             int finalI = i;
             rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
@@ -777,6 +806,16 @@ public class MainActivity extends AppCompatActivity {
         startService(intentStart);
     }
 
+    public static void hideShimmer(RecyclerView rv, ShimmerFrameLayout sf) {
+        sf.animate()
+                .setDuration(500)
+                .withEndAction(() -> {
+                    rv.setVisibility(View.VISIBLE);
+                    sf.setVisibility(View.GONE);
+                    sf.stopShimmer();
+                })
+                .start();
+    }
 
     public static boolean checkConnection(Context context) {
         try {

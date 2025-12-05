@@ -312,10 +312,18 @@ public class driverPageActivity extends AppCompatActivity {
         });
         tabLayoutMediator.attach();
 
-        Handler handler = new Handler();
-        handler.postDelayed(()->{
-            contentLayout.setVisibility(View.VISIBLE);
-            progressBar.setVisibility(View.GONE);
-        },500);
+        progressBar.animate()
+                .setDuration(500)
+                .withEndAction(() -> {
+                    contentLayout.setVisibility(View.VISIBLE);
+                    progressBar.setVisibility(View.GONE);
+                })
+                .start();
+
+        //Handler handler = new Handler();
+        //handler.postDelayed(()->{
+        //    contentLayout.setVisibility(View.VISIBLE);
+        //    progressBar.setVisibility(View.GONE);
+        //},500);
     }
 }

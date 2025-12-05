@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -54,11 +56,13 @@ public class raceResultsQualiFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        datum = new ArrayList<>();
-
         recyclerView = view.findViewById(R.id.quali_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
+        datum = new ArrayList<>();
+        adapter = new raceResultsQualiAdapter(getActivity(), datum);
+        recyclerView.setAdapter(adapter);
 
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
@@ -69,7 +73,8 @@ public class raceResultsQualiFragment extends Fragment {
             String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
-            datum = new ArrayList<>();
+            //datum = new ArrayList<>();
+            //adapter.notifyDataSetChanged();
             getQualiData(mCircuitId, mSeason);
         }
     }
@@ -114,14 +119,15 @@ public class raceResultsQualiFragment extends Fragment {
                                             constructorId, driverCode, Q1, Q2, Q3, season);
                                     datum.add(results);
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new raceResultsQualiAdapter(getActivity(), datum);
-                                recyclerView.setAdapter(adapter);
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    recyclerView.setVisibility(View.VISIBLE);
+                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                //    shimmerFrameLayout.stopShimmer();
+                                //},500);
+
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                adapter.notifyItemChanged(datum.size() - 1);
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

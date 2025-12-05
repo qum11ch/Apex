@@ -20,7 +20,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="34" >
-
         <service
             android:name=".BootService"
             android:permission="android.permission.BIND_JOB_SERVICE"

@@ -1,10 +1,10 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -14,7 +14,6 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -44,12 +43,11 @@ import java.util.List;
 import java.util.Locale;
 
 public class driversStandingsActivity extends AppCompatActivity {
-    Button showTeamsButton, showSchedule, showTeams, showHomePage, showAccount;
+    Button showTeamsButton, showSchedule, showHomePage, showAccount;
 
     private List<driversList> datum;
     private RecyclerView recyclerView;
     private ImageButton backButton;
-    private Toolbar toolbar;
     private driversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
@@ -74,6 +72,10 @@ public class driversStandingsActivity extends AppCompatActivity {
         recyclerView.setHasFixedSize(true);
 
         datum = new ArrayList<>();
+
+        adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
+        recyclerView.setAdapter(adapter);
+
         LocalDate currentDate = LocalDate.now();
 
         swipeLayout = findViewById(R.id.swipe_layout);
@@ -86,7 +88,9 @@ public class driversStandingsActivity extends AppCompatActivity {
                 shimmerFrameLayout.startShimmer();
                 datum = new ArrayList<>();
                 getStanding(Integer.toString(currentDate.getYear()));
+
                 swipeLayout.setRefreshing(false);
+                adapter.notifyDataSetChanged();
             }
         });
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
@@ -203,15 +207,23 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         datum.add(smth);
                                     }
                                 }
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    recyclerView.setVisibility(View.VISIBLE);
-                                    pastSeasonDriversStandings.setVisibility(View.VISIBLE);
-                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                    shimmerFrameLayout.stopShimmer();
-                                },500);
-                                adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
-                                recyclerView.setAdapter(adapter);
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                pastSeasonDriversStandings.animate()
+                                        .setDuration(500)
+                                        .withEndAction(() -> {
+                                            pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                        })
+                                        .start();
+
+                                adapter.notifyItemInserted(datum.size() - 1);
+
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    recyclerView.setVisibility(View.VISIBLE);
+                                //    pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                //    shimmerFrameLayout.stopShimmer();
+                                //},500);
                             }else{
                                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                 rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
@@ -247,15 +259,26 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                 driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                         true, currentYear);
                                                                 datum.add(smth);
-                                                                adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
-                                                                Handler handler = new Handler();
-                                                                handler.postDelayed(()->{
-                                                                    recyclerView.setVisibility(View.VISIBLE);
-                                                                    pastSeasonDriversStandings.setVisibility(View.VISIBLE);
-                                                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                                                    shimmerFrameLayout.stopShimmer();
-                                                                },500);
-                                                                recyclerView.setAdapter(adapter);
+
+                                                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                                                pastSeasonDriversStandings.animate()
+                                                                        .setDuration(500)
+                                                                        .withEndAction(() -> {
+                                                                            pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                                                        })
+                                                                        .start();
+
+                                                                adapter.notifyItemInserted(datum.size() - 1);
+
+                                                                // adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
+                                                                // Handler handler = new Handler();
+                                                                // handler.postDelayed(()->{
+                                                                //     recyclerView.setVisibility(View.VISIBLE);
+                                                                //     pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                                                //     shimmerFrameLayout.setVisibility(View.GONE);
+                                                                //     shimmerFrameLayout.stopShimmer();
+                                                                // },500);
+                                                                // recyclerView.setAdapter(adapter);
                                                             }
 
                                                             @Override

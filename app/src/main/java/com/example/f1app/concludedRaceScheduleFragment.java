@@ -264,6 +264,10 @@ public class concludedRaceScheduleFragment extends Fragment {
             String currentYear = Integer.toString(currentDate.getYear());
 
             datum = new ArrayList<>();
+
+            adapter = new scheduleAdapter(getActivity(), datum, true);
+            recyclerView.setAdapter(adapter);
+
             getRaceSchedule(mRaceName, currentYear);
 
             CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
@@ -406,8 +410,8 @@ public class concludedRaceScheduleFragment extends Fragment {
                 }
                 datum.add(qualiEvent);
                 datum.add(raceEvent);
-                adapter = new scheduleAdapter(getActivity(), datum, true);
-                recyclerView.setAdapter(adapter);
+
+                adapter.notifyDataSetChanged();
             }
 
             @Override

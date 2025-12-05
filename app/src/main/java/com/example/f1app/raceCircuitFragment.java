@@ -144,12 +144,21 @@ public class raceCircuitFragment extends Fragment {
                     String lapRecordDriverSummary = mLapRecordDriver + " (" + mLapRecordYear + ")";
                     lapRecord_driver.setText(lapRecordDriverSummary);
 
-                    Handler handler = new Handler();
-                    handler.postDelayed(()->{
-                        contentLayout.setVisibility(View.VISIBLE);
-                        shimmerFrameLayout.setVisibility(View.GONE);
-                        shimmerFrameLayout.stopShimmer();
-                    },500);
+
+                    shimmerFrameLayout.animate()
+                            .setDuration(500)
+                            .withEndAction(() -> {
+                                contentLayout.setVisibility(View.VISIBLE);
+                                shimmerFrameLayout.setVisibility(View.GONE);
+                                shimmerFrameLayout.stopShimmer();
+                            })
+                            .start();
+                    //Handler handler = new Handler();
+                    //handler.postDelayed(()->{
+                    //    contentLayout.setVisibility(View.VISIBLE);
+                    //    shimmerFrameLayout.setVisibility(View.GONE);
+                    //    shimmerFrameLayout.stopShimmer();
+                    //},500);
                 }
 
                 @Override

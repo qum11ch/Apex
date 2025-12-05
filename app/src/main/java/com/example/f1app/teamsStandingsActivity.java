@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.hideShimmer;
 import static com.example.f1app.driverStatsFragment.getCountryCode;
 
 import android.content.Context;
@@ -89,6 +90,10 @@ public class teamsStandingsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(linearLayoutManager3);
 
         datum = new ArrayList<>();
+
+        adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
+        recyclerView.setAdapter(adapter);
+
         LocalDate currentDate = LocalDate.now();
 
         swipeLayout = findViewById(R.id.swipe_layout);
@@ -100,6 +105,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             datum = new ArrayList<>();
             getTeamStanding(Integer.toString(currentDate.getYear()));
             swipeLayout.setRefreshing(false);
+            adapter.notifyDataSetChanged();
         });
 
         showDriverButton = findViewById(R.id.showDriver);
@@ -183,15 +189,23 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                             teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                             smth.setDrivers(teamDrivers);
                                             datum.add(smth);
-                                            Handler handler = new Handler();
-                                            handler.postDelayed(()->{
-                                                recyclerView.setVisibility(View.VISIBLE);
-                                                pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
-                                                shimmerFrameLayout.setVisibility(View.GONE);
-                                                shimmerFrameLayout.stopShimmer();
-                                            },500);
-                                            adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
-                                            recyclerView.setAdapter(adapter);
+
+                                            hideShimmer(recyclerView, shimmerFrameLayout);
+                                            pastSeasonTeamsStandings.animate()
+                                                    .setDuration(500)
+                                                    .withEndAction(() -> {
+                                                        pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                                    }).start();
+
+                                            adapter.notifyItemInserted(datum.size() - 1);
+
+                                            //Handler handler = new Handler();
+                                            //handler.postDelayed(()->{
+                                            //    recyclerView.setVisibility(View.VISIBLE);
+                                            //    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                            //    shimmerFrameLayout.setVisibility(View.GONE);
+                                            //    shimmerFrameLayout.stopShimmer();
+                                            //},500);
                                         }
 
                                         @Override
@@ -231,16 +245,23 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 }
                                                 teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
-                                                Handler handler = new Handler();
-                                                handler.postDelayed(()->{
-                                                    recyclerView.setVisibility(View.VISIBLE);
-                                                    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
-                                                    shimmerFrameLayout.setVisibility(View.GONE);
-                                                    shimmerFrameLayout.stopShimmer();
-                                                },500);
+                                                //Handler handler = new Handler();
+                                                //handler.postDelayed(()->{
+                                                //    recyclerView.setVisibility(View.VISIBLE);
+                                                //    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                                //    shimmerFrameLayout.setVisibility(View.GONE);
+                                                //    shimmerFrameLayout.stopShimmer();
+                                                //},500);
                                                 datum.add(smth);
-                                                adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
-                                                recyclerView.setAdapter(adapter);
+
+                                                hideShimmer(recyclerView, shimmerFrameLayout);
+                                                pastSeasonTeamsStandings.animate()
+                                                        .setDuration(500)
+                                                        .withEndAction(() -> {
+                                                            pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                                        }).start();
+
+                                                adapter.notifyItemInserted(datum.size() - 1);
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {

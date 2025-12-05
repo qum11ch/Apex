@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -71,12 +72,18 @@ public class savedRacesActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
+        datum = new ArrayList<>();
+        adapter = new savedRacesAdapter(savedRacesActivity.this, datum);
+        recyclerView.setAdapter(adapter);
+
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             emptySavedRaceLayout.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
             shimmerFrameLayout.setVisibility(View.VISIBLE);
             shimmerFrameLayout.startShimmer();
+            datum = new ArrayList<>();
+            adapter.notifyDataSetChanged();
             putRaces();
             swipeLayout.setRefreshing(false);
         });
@@ -96,7 +103,6 @@ public class savedRacesActivity extends AppCompatActivity {
     }
 
     private void putRaces(){
-        datum = new ArrayList<>();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("users").orderByChild("userId")
@@ -109,21 +115,39 @@ public class savedRacesActivity extends AppCompatActivity {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     if(!snapshot.hasChild(username)) {
-                                        Handler handler = new Handler();
-                                        handler.postDelayed(()->{
-                                            recyclerView.setVisibility(View.GONE);
-                                            shimmerFrameLayout.setVisibility(View.GONE);
-                                            shimmerFrameLayout.stopShimmer();
-                                            emptySavedRaceLayout.setVisibility(View.VISIBLE);
-                                        },500);
+                                        shimmerFrameLayout.animate()
+                                                .setDuration(500)
+                                                .withEndAction(() -> {
+                                                    emptySavedRaceLayout.setVisibility(View.VISIBLE);
+                                                    recyclerView.setVisibility(View.GONE);
+                                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                                    shimmerFrameLayout.stopShimmer();
+                                                })
+                                                .start();
+                                        //Handler handler = new Handler();
+                                        //handler.postDelayed(()->{
+                                        //    recyclerView.setVisibility(View.GONE);
+                                        //    shimmerFrameLayout.setVisibility(View.GONE);
+                                        //    shimmerFrameLayout.stopShimmer();
+                                        //    emptySavedRaceLayout.setVisibility(View.VISIBLE);
+                                        //},500);
                                     }else {
-                                        Handler handler = new Handler();
-                                        handler.postDelayed(()->{
-                                            shimmerFrameLayout.setVisibility(View.GONE);
-                                            shimmerFrameLayout.stopShimmer();
-                                            emptySavedRaceLayout.setVisibility(View.GONE);
-                                            recyclerView.setVisibility(View.VISIBLE);
-                                        },500);
+                                        shimmerFrameLayout.animate()
+                                                .setDuration(500)
+                                                .withEndAction(() -> {
+                                                    emptySavedRaceLayout.setVisibility(View.GONE);
+                                                    recyclerView.setVisibility(View.VISIBLE);
+                                                    shimmerFrameLayout.setVisibility(View.GONE);
+                                                    shimmerFrameLayout.stopShimmer();
+                                                })
+                                                .start();
+                                        //Handler handler = new Handler();
+                                        //handler.postDelayed(()->{
+                                        //    shimmerFrameLayout.setVisibility(View.GONE);
+                                        //    shimmerFrameLayout.stopShimmer();
+                                        //    emptySavedRaceLayout.setVisibility(View.GONE);
+                                        //    recyclerView.setVisibility(View.VISIBLE);
+                                        //},500);
                                     }
                                     for (DataSnapshot savedRaceSnap: snapshot.child(username).getChildren()){
                                             String raceName = savedRaceSnap.child("raceName").getValue(String.class);
@@ -132,8 +156,7 @@ public class savedRacesActivity extends AppCompatActivity {
                                             savedRacesData savedRacesData = new savedRacesData(raceName, raceSeason, saveDate);
                                             datum.add(savedRacesData);
                                     }
-                                    adapter = new savedRacesAdapter(savedRacesActivity.this, datum);
-                                    recyclerView.setAdapter(adapter);
+                                    adapter.notifyItemChanged(datum.size() - 1);
 
                                     ItemTouchHelper.SimpleCallback simpleItemTouchCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                                         @Override

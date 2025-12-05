@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -76,6 +77,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
         datum = new ArrayList<>();
 
+        adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
+        recyclerView.setAdapter(adapter);
+
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             recyclerView.setVisibility(View.GONE);
@@ -84,6 +88,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             datum = new ArrayList<>();
             getTeamStanding();
             swipeLayout.setRefreshing(false);
+            adapter.notifyDataSetChanged();
         });
 
 
@@ -138,14 +143,15 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                             teamsList smth = new teamsList(finalConstructorName, position, points, constructorId, false);
                                             smth.setDrivers(teamDrivers);
                                             datum.add(smth);
-                                            Handler handler = new Handler();
-                                            handler.postDelayed(()->{
-                                                recyclerView.setVisibility(View.VISIBLE);
-                                                shimmerFrameLayout.setVisibility(View.GONE);
-                                                shimmerFrameLayout.stopShimmer();
-                                            },500);
-                                            adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
-                                            recyclerView.setAdapter(adapter);
+                                            //Handler handler = new Handler();
+                                            //handler.postDelayed(()->{
+                                            //    recyclerView.setVisibility(View.VISIBLE);
+                                            //    shimmerFrameLayout.setVisibility(View.GONE);
+                                            //    shimmerFrameLayout.stopShimmer();
+                                            //},500);
+
+                                            hideShimmer(recyclerView, shimmerFrameLayout);
+                                            adapter.notifyItemChanged(datum.size() - 1);
                                         }
 
                                         @Override

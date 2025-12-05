@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,7 +59,13 @@ public class predictResultPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.predict_results_page);
 
+        recyclerView = findViewById(R.id.quali_results);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(predictResultPage.this);
+        recyclerView.setLayoutManager(mLayoutManager);
+
         datum = new ArrayList<>();
+        adapter = new raceResultsQualiAdapter(predictResultPage.this, datum);
+        recyclerView.setAdapter(adapter);
 
         ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
@@ -67,10 +74,6 @@ public class predictResultPage extends AppCompatActivity {
                 finish();
             }
         });
-
-        recyclerView = findViewById(R.id.quali_results);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(predictResultPage.this);
-        recyclerView.setLayoutManager(mLayoutManager);
 
         poleLapDriverName = findViewById(R.id.poleLapDriverName);
         poleLapTime = findViewById(R.id.poleLapTime);
@@ -484,12 +487,21 @@ public class predictResultPage extends AppCompatActivity {
                                 String fullEventName = year + " " + localizedGpName + " " + eventType;
                                 eventInfo.setText(fullEventName);
 
-                                Handler handler = new Handler();
-                                handler.postDelayed(()->{
-                                    poleLapDriverLayout.setVisibility(View.VISIBLE);
-                                    shimmerDriverLayout.setVisibility(View.GONE);
-                                    shimmerDriverLayout.stopShimmer();
-                                },500);
+                                shimmerDriverLayout.animate()
+                                        .setDuration(500)
+                                        .withEndAction(() -> {
+                                            poleLapDriverLayout.setVisibility(View.VISIBLE);
+                                            shimmerDriverLayout.setVisibility(View.GONE);
+                                            shimmerDriverLayout.stopShimmer();
+                                        })
+                                        .start();
+
+                                //Handler handler = new Handler();
+                                //handler.postDelayed(()->{
+                                //    poleLapDriverLayout.setVisibility(View.VISIBLE);
+                                //    shimmerDriverLayout.setVisibility(View.GONE);
+                                //    shimmerDriverLayout.stopShimmer();
+                                //},500);
                             }
 
                             if (Q2_time.equals("null")){
@@ -510,16 +522,14 @@ public class predictResultPage extends AppCompatActivity {
                             datum.add(predictResults);
                         }
 
-
-
-                        Handler handler = new Handler();
-                        handler.postDelayed(()->{
-                            recyclerView.setVisibility(View.VISIBLE);
-                            shimmerFrameLayout.setVisibility(View.GONE);
-                            shimmerFrameLayout.stopShimmer();
-                        },500);
-                        adapter = new raceResultsQualiAdapter(predictResultPage.this, datum);
-                        recyclerView.setAdapter(adapter);
+                        hideShimmer(recyclerView, shimmerFrameLayout);
+                        //Handler handler = new Handler();
+                        //handler.postDelayed(()->{
+                        //    recyclerView.setVisibility(View.VISIBLE);
+                        //    shimmerFrameLayout.setVisibility(View.GONE);
+                        //    shimmerFrameLayout.stopShimmer();
+                        //},500);
+                        adapter.notifyItemChanged(datum.size() - 1);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
                     }
@@ -529,7 +539,7 @@ public class predictResultPage extends AppCompatActivity {
                         String errorText = "Code: " + error.networkResponse.statusCode + "Data: " +  new String(error.networkResponse.data);
                         Toast.makeText(predictResultPage.this, errorText, Toast.LENGTH_SHORT).show();
                     }else{
-                        Toast.makeText(predictResultPage.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
         );
