@@ -247,7 +247,6 @@ public class MainActivity extends AppCompatActivity {
             raceProgressText.setTextColor(getColor(R.color.white));
         }
 
-
         Handler handler = new Handler();
         handler.postDelayed(()->{
             raceProgress.setVisibility(View.VISIBLE);
@@ -294,13 +293,6 @@ public class MainActivity extends AppCompatActivity {
                             }
 
                             hideShimmer(rvDrivers, sfDrivers);
-                            //Handler handler = new Handler();
-                            //handler.postDelayed(()->{
-                            //    rvDrivers.setVisibility(View.VISIBLE);
-                            //    sfDrivers.setVisibility(View.GONE);
-                            //    sfDrivers.stopShimmer();
-                            //},500);
-
                             driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
 
                         }else{
@@ -338,12 +330,6 @@ public class MainActivity extends AppCompatActivity {
                                                             driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                     true, currentYear);
                                                             datumDrivers.add(smth);
-                                                            //Handler handler = new Handler();
-                                                            //handler.postDelayed(()->{
-                                                            //    rvDrivers.setVisibility(View.VISIBLE);
-                                                            //    sfDrivers.setVisibility(View.GONE);
-                                                            //    sfDrivers.stopShimmer();
-                                                            //},500);
 
                                                             hideShimmer(rvDrivers, sfDrivers);
                                                             driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
@@ -417,12 +403,6 @@ public class MainActivity extends AppCompatActivity {
                                             datumTeams.add(smth);
                                             hideShimmer(rvTeams, sfTeams);
 
-                                            //Handler handler = new Handler();
-                                            //handler.postDelayed(()->{
-                                            //    rvTeams.setVisibility(View.VISIBLE);
-                                            //    sfTeams.setVisibility(View.GONE);
-                                            //    sfTeams.stopShimmer();
-                                            //},500);
                                             teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
                                         }
 
@@ -465,12 +445,6 @@ public class MainActivity extends AppCompatActivity {
                                                 smth.setDrivers(teamDrivers);
 
                                                 hideShimmer(rvTeams, sfTeams);
-                                                //Handler handler = new Handler();
-                                                //handler.postDelayed(()->{
-                                                //    rvTeams.setVisibility(View.VISIBLE);
-                                                //    sfTeams.setVisibility(View.GONE);
-                                                //    sfTeams.stopShimmer();
-                                                //},500);
                                                 datumTeams.add(smth);
                                                 teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
                                             }
@@ -610,12 +584,6 @@ public class MainActivity extends AppCompatActivity {
                                         dateEnd, raceName, round, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
                                         thirdCode, currentYear);
                                 datumPast.add(concludedRace);
-                                //Handler handler = new Handler();
-                                //handler.postDelayed(()->{
-                                //    rvPast.setVisibility(View.VISIBLE);
-                                //    sfPast.setVisibility(View.GONE);
-                                //    sfPast.stopShimmer();
-                                //},500);
 
                                 hideShimmer(rvPast, sfPast);
                                 pastRaceAdapter.notifyItemInserted(datumPast.size() - 1);
@@ -667,13 +635,6 @@ public class MainActivity extends AppCompatActivity {
                                     datumFuture.add(futureRaceData);
 
                                     hideShimmer(rvFuture, sfFuture);
-
-                                    //Handler handler = new Handler();
-                                    //handler.postDelayed(()->{
-                                    //    rvFuture.setVisibility(View.VISIBLE);
-                                    //    sfFuture.setVisibility(View.GONE);
-                                    //    sfFuture.stopShimmer();
-                                    //},500);
                                     futureRaceAdapter.notifyItemInserted(datumFuture.size() - 1);
                                 }
                                 @Override

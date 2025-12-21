@@ -6,6 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.activity.OnBackPressedCallback;
@@ -54,7 +55,7 @@ public class accountPageActivity extends AppCompatActivity {
     private ProgressBar loadingProgress;
     private Dialog logoutDialog;
     private FirebaseAuth auth;
-    private View line, line2;
+    private View line2;
     private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout,
             driverName_layout;
     private ImageView teamLogo, teamCar, driverImage, arrow;
@@ -86,7 +87,6 @@ public class accountPageActivity extends AppCompatActivity {
         driverImage = findViewById(R.id.driver_image);
 
         line2 = findViewById(R.id.line2);
-        line = findViewById(R.id.line);
 
         teamName_layout = findViewById(R.id.teamName_layout);
         team_layout = findViewById(R.id.team_layout);
@@ -165,295 +165,455 @@ public class accountPageActivity extends AppCompatActivity {
         });
     }
 
-    protected void onResume(){
+    @Override
+    protected void onResume() {
         super.onResume();
+        main_content.setVisibility(View.GONE);
+        loadingProgress.setVisibility(View.VISIBLE);
+
         GradientDrawable gd = new GradientDrawable();
-        gd.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
-        gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+        gd.setColor(ContextCompat.getColor(accountPageActivity.this, R.color.white));
+        gd.setCornerRadii(new float[]{0, 0, 30, 30, 0, 0, 0, 0});
         gd.setStroke(12, ContextCompat.getColor(accountPageActivity.this, R.color.grey));
         driver_layout.setBackground(gd);
+
         GradientDrawable gd1 = new GradientDrawable();
-        gd1.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
-        gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
+        gd1.setColor(ContextCompat.getColor(accountPageActivity.this, R.color.white));
+        gd1.setCornerRadii(new float[]{0, 0, 30, 30, 0, 0, 0, 0});
         gd1.setStroke(12, ContextCompat.getColor(accountPageActivity.this, R.color.grey));
         team_layout.setBackground(gd1);
+
         getUserInfo();
     }
 
-    private void getUserInfo(){
+    private void getUserInfo() {
         FirebaseUser user = auth.getCurrentUser();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
+        if (user == null) {
+            showError(getString(R.string.dialog_login));
+            return;
+        }
+
         String userId = user.getUid();
-
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        StorageReference storageRef = storage.getReference();
-        rootRef.child("users").orderByChild("userId").equalTo(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+
+        rootRef.child("users")
+                .orderByChild("userId")
+                .equalTo(userId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                            String username = userSnapshot.getKey();
+                            String choiceDriver = userSnapshot.child("choiceDriver").getValue(String.class);
+                            String choiceTeam = userSnapshot.child("choiceTeam").getValue(String.class);
+
+                            showMainContent(username);
+                            setupToolbar(username);
+
+                            if (!isNullChoice(choiceDriver)) {
+                                loadDriverInfo(choiceDriver);
+                            } else {
+                                showNoDriver();
+                            }
+
+                            if (!isNullChoice(choiceTeam)) {
+                                loadTeamInfo(choiceTeam);
+                            } else {
+                                showNoTeam();
+                            }
+
+                            if (isNullChoice(choiceDriver) && isNullChoice(choiceTeam)) {
+                                showNoFavorites();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        handleFirebaseError(error, "Не удалось загрузить профиль");
+                    }
+                });
+    }
+
+    private boolean isNullChoice(String value) {
+        return value == null || value.equals("null");
+    }
+
+    private void showMainContent(String usernameStr) {
+        username.setText(usernameStr);
+        main_content.setVisibility(View.VISIBLE);
+        loadingProgress.setVisibility(View.GONE);
+    }
+
+    private void setupToolbar(String username) {
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = true;
+            int scrollRange = -1;
+
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for (DataSnapshot userSnapshot: snapshot.getChildren()){
-                    String choiceDriver = userSnapshot.child("choiceDriver").getValue(String.class);
-                    String choiceTeam = userSnapshot.child("choiceTeam").getValue(String.class);
-                    String mUsername = userSnapshot.getKey();
-                    username.setText(mUsername);
-
-                    main_content.setVisibility(View.VISIBLE);
-                    loadingProgress.setVisibility(View.GONE);
-
-                    AppBarLayout appBarLayout = findViewById(R.id.appbar);
-                    Toolbar toolbar = findViewById(R.id.toolbar);
-                    appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                        boolean isShow = true;
-                        int scrollRange = -1;
-
-                        @Override
-                        public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                            if (scrollRange == -1) {
-                                scrollRange = appBarLayout.getTotalScrollRange();
-                            }
-                            if (scrollRange + verticalOffset == 0) {
-                                tabUserName.setText(mUsername);
-                                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
-                                isShow = true;
-                            } else if (isShow) {
-                                tabUserName.setText(" ");
-                                toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
-                                isShow = false;
-                            }
-                        }
-                    });
-
-                    if(!choiceDriver.equals("null")){
-                        driverImage.setVisibility(View.VISIBLE);
-                        noDriver.setVisibility(View.INVISIBLE);
-                        fanText.setText(getString(R.string.fan_of_text));
-                        String[] driverFullname = choiceDriver.split(" ");
-                        String mDriverName, mDriverFamilyName;
-                        if(choiceDriver.equals("Andrea Kimi Antonelli")){
-                            mDriverName = driverFullname[0] + " " + driverFullname[1];
-                            mDriverFamilyName = driverFullname[2];
-                        }else{
-                            mDriverName = driverFullname[0];
-                            mDriverFamilyName = driverFullname[1];
-                        }
-                        rootRef.child("drivers").child(choiceDriver).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                String driverNumber = snapshot.child("permanentNumber").getValue(String.class);
-                                String driversCode = snapshot.child("driversCode").getValue(String.class);
-                                String team = snapshot.child("driversTeam").getValue(String.class);
-                                storageRef.child("drivers/" + driversCode.toLowerCase() + ".png").getDownloadUrl().addOnSuccessListener(
-                                        uri -> GlideApp.with(getApplicationContext())
-                                        .load(uri)
-                                        .transition(DrawableTransitionOptions.withCrossFade())
-                                        .error(R.drawable.f1)
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                        .skipMemoryCache(true)
-                                        .into(driverImage)).addOnFailureListener(
-                                                exception ->
-                                                        storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png")
-                                                                .getDownloadUrl()
-                                                                .addOnSuccessListener(uri ->
-                                                                        GlideApp.with(getApplicationContext())
-                                                                            .load(uri)
-                                                                            .transition(DrawableTransitionOptions.withCrossFade())
-                                                                            .error(R.drawable.f1)
-                                                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                                                            .skipMemoryCache(true)
-                                                                            .into(driverImage)).addOnFailureListener(
-                                                                                exception1 ->
-                                                                                        Toast.makeText(accountPageActivity.this, R.string.smth_wrong_text, Toast.LENGTH_SHORT).show()));
-                                userFavDriverNumber.setText(driverNumber);
-                                userFavDriver.setText(choiceDriver);
-                                driverName.setText(mDriverName);
-                                driverFamilyName.setText(mDriverFamilyName);
-
-                                if (team.equals("Sauber")) {
-                                    team = "Kick Sauber";
-                                }
-
-                                String finalTeam = team;
-                                rootRef.child("constructors")
-                                        .orderByChild("name")
-                                        .equalTo(team)
-                                        .addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                for (DataSnapshot teamSnap: snapshot.getChildren()){
-                                                    String teamId = teamSnap.child("constructorId").getValue(String.class);
-                                                    String teamColor = "#" + teamSnap.child("color").getValue(String.class);
-                                                    GradientDrawable gd = new GradientDrawable();
-                                                    gd.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
-                                                    gd.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                                                    gd.setStroke(12, Color.parseColor(teamColor));
-                                                    driver_layout.setBackground(gd);
-
-                                                    driver_layout.setOnClickListener(view -> {
-                                                        Intent intent = new Intent(accountPageActivity.this, driverPageActivity.class);
-                                                        Bundle bundle = new Bundle();
-                                                        bundle.putString("driverName", mDriverName);
-                                                        bundle.putString("driverFamilyName", mDriverFamilyName);
-                                                        bundle.putString("driverTeam", finalTeam);
-                                                        bundle.putString("driverCode", driversCode);
-                                                        bundle.putString("driverTeamId", teamId);
-                                                        intent.putExtras(bundle);
-                                                        accountPageActivity.this.startActivity(intent);
-                                                    });
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
-                                            }
-                                        });
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e("accountPageActivity", "Error while getting driver`s info. Error:" + error.getMessage());
-                            }
-                        });
-                    }else{
-                        driverImage.setVisibility(View.INVISIBLE);
-                        noDriver.setVisibility(View.VISIBLE);
-                        int height = 0;
-                        userFavDriverNumber.getLayoutParams().height = height;
-                        userFavDriver.getLayoutParams().height = height;
-                        line2.getLayoutParams().height = height;
-                        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-                        driverName_layout.setLayoutParams(layoutParams2);
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        int marginLeft = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, getResources().getDisplayMetrics());
-                        int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 5, getResources().getDisplayMetrics());
-                        layoutParams.setMargins(marginLeft, marginTop,0,0);
-                        layoutParams.addRule(RelativeLayout.BELOW, R.id.userFavDriver);
-                        layoutParams.addRule(RelativeLayout.END_OF, R.id.team_logo);
-                        userFavTeam.setLayoutParams(layoutParams);
-                        line.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 130, getResources().getDisplayMetrics());
-                    }
-
-                    if(!choiceTeam.equals("null")){
-                        teamCar.setVisibility(View.VISIBLE);
-                        noTeam.setVisibility(View.INVISIBLE);
-                        fanText.setText(getString(R.string.fan_of_text));
-                        rootRef.child("constructors").orderByChild("name").equalTo(choiceTeam).addValueEventListener(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot teamSnap: snapshot.getChildren()){
-                                    String teamId = teamSnap.child("constructorId").getValue(String.class);
-                                    String teamColor = "#" + teamSnap.child("color").getValue(String.class);
-
-                                    GradientDrawable gd1 = new GradientDrawable();
-                                    gd1.setColor(ContextCompat.getColor(accountPageActivity.this,R.color.white));
-                                    gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
-                                    gd1.setStroke(12, Color.parseColor(teamColor));
-                                    team_layout.setBackground(gd1);
-
-                                    arrow.setColorFilter(Color.parseColor(teamColor));
-
-                                    StorageReference mTeamLogo;
-                                    if (teamId.equals("alpine")) {
-                                        mTeamLogo = storageRef.child("teams/" + teamId + "_logo_alt.png");
-                                    } else if (teamId.equals("williams")) {
-                                        mTeamLogo = storageRef.child("teams/" + teamId + "_logo_alt.png");
-                                    } else{
-                                        mTeamLogo = storageRef.child("teams/" + teamId + "_logo.png");
-                                    }
-                                    GlideApp.with(getApplicationContext())
-                                            .load(mTeamLogo)
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                            .skipMemoryCache(true)
-                                            .transition(DrawableTransitionOptions.withCrossFade())
-                                            .error(R.drawable.f1)
-                                            .into(teamLogo);
-
-                                    StorageReference mTeamCar = storageRef.child("teams/" + teamId + ".png");
-                                    GlideApp.with(getApplicationContext())
-                                            .load(mTeamCar)
-                                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                            .skipMemoryCache(true)
-                                            .transition(DrawableTransitionOptions.withCrossFade())
-                                            .error(R.drawable.f1)
-                                            .into(teamCar);
-                                    userFavTeam.setText(choiceTeam);
-                                    teamName.setText(choiceTeam);
-
-                                    userFavTeam_layout.setOnClickListener(view -> {
-                                        DatabaseReference rootRef1 = FirebaseDatabase.getInstance().getReference();
-                                        rootRef1.child("driverLineUp/season/" + "2025" + "/" + teamId).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot1) {
-                                                ArrayList<String> teamDrivers = new ArrayList<>();
-                                                for (DataSnapshot driverDataSnapshot : snapshot1.child("drivers").getChildren()) {
-                                                    String driverName = driverDataSnapshot.getKey();
-                                                    teamDrivers.add(driverName);
-                                                }
-                                                Intent intent = new Intent(accountPageActivity.this, teamPageActivity.class);
-                                                Bundle bundle = new Bundle();
-                                                bundle.putString("teamName", choiceTeam);
-                                                bundle.putString("teamId", teamId);
-                                                bundle.putStringArrayList("teamDrivers", teamDrivers);
-                                                intent.putExtras(bundle);
-                                                accountPageActivity.this.startActivity(intent);
-                                            }
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("accountPageActivity error while opening driver`s team page. ERROR: ", error.getMessage());
-                                            }
-                                        });
-                                    });
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e("accountPageActivity", "Error while getting constructors. Error:" + error.getMessage());
-                            }
-                        });
-                    }else{
-                        teamCar.setVisibility(View.INVISIBLE);
-                        noTeam.setVisibility(View.VISIBLE);
-                        int height = 0;
-                        userFavTeam.getLayoutParams().height = height;
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-                        teamName_layout.setLayoutParams(layoutParams);
-                        teamLogo.getLayoutParams().height = height;
-                        line.getLayoutParams().height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
-                    }
-                    if(choiceTeam.equals("null")&&choiceDriver.equals("null")){
-                        teamCar.setVisibility(View.INVISIBLE);
-                        noTeam.setVisibility(View.VISIBLE);
-                        driverImage.setVisibility(View.INVISIBLE);
-                        noDriver.setVisibility(View.VISIBLE);
-                        RelativeLayout.LayoutParams layoutParams2 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-                        driverName_layout.setLayoutParams(layoutParams2);
-                        RelativeLayout.LayoutParams layoutParams3 = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, 0);
-                        teamName_layout.setLayoutParams(layoutParams3);
-                        fanText.setText(getString(R.string.no_fan_of_text));
-                        userFavTeam.getLayoutParams().height = 0;
-                        int lineWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 3, getResources().getDisplayMetrics());
-                        int lineHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 80, getResources().getDisplayMetrics());
-                        int marginTop = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 40, getResources().getDisplayMetrics());
-                        int marginStartLine = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 30, getResources().getDisplayMetrics());
-                        RelativeLayout.LayoutParams layoutParams = new RelativeLayout
-                                .LayoutParams(lineWidth, lineHeight);
-                        layoutParams.setMargins(marginStartLine, marginTop,0,0);
-                        line.setLayoutParams(layoutParams);
-                        RelativeLayout.LayoutParams Params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                        int marginStartDriver = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 20, getResources().getDisplayMetrics());
-                        Params.setMargins(marginStartDriver, marginTop,0,0);
-                        Params.addRule(RelativeLayout.END_OF, R.id.line);
-                        username.setLayoutParams(Params);
-                        //RelativeLayout contentHeader = (RelativeLayout) findViewById(R.id.content_header_layout);
-                        //int contentHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
-                        //contentHeader.getLayoutParams().height = contentHeight;
-                    }
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1) {
+                    scrollRange = appBarLayout.getTotalScrollRange();
                 }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("accountPageActivity", "Error while getting user`s info. Error:" + error.getMessage());
+                if (scrollRange + verticalOffset == 0) {
+                    tabUserName.setText(username);
+                    toolbar.setBackgroundColor(ContextCompat.getColor(
+                            getApplicationContext(), R.color.dark_blue));
+                    isShow = true;
+                } else if (isShow) {
+                    tabUserName.setText(" ");
+                    toolbar.setBackgroundColor(ContextCompat.getColor(
+                            getApplicationContext(), android.R.color.transparent));
+                    isShow = false;
+                }
             }
         });
     }
+
+    private void loadDriverInfo(String choiceDriver) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        String[] driverFullname = choiceDriver.split(" ");
+        String mDriverName, mDriverFamilyName;
+
+        if (choiceDriver.equals("Andrea Kimi Antonelli")) {
+            mDriverName = driverFullname[0] + " " + driverFullname[1];
+            mDriverFamilyName = driverFullname[2];
+        } else {
+            mDriverName = driverFullname[0];
+            mDriverFamilyName = driverFullname[1];
+        }
+
+        rootRef.child("drivers")
+                .child(choiceDriver)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        try {
+                            String driverNumber = snapshot.child("permanentNumber").getValue(String.class);
+                            String driversCode = snapshot.child("driversCode").getValue(String.class);
+                            String team = snapshot.child("driversTeam").getValue(String.class);
+
+                            if (driverNumber == null || driversCode == null || team == null) {
+                                showError("Неполные данные пилота");
+                                return;
+                            }
+
+                            displayDriverImage(driversCode);
+                            userFavDriverNumber.setText(driverNumber);
+                            userFavDriver.setText(choiceDriver);
+                            driverName.setText(mDriverName);
+                            driverFamilyName.setText(mDriverFamilyName);
+
+                            String finalTeam = team.equals("Sauber") ? "Kick Sauber" : team;
+                            loadDriverTeam(finalTeam, mDriverName, mDriverFamilyName, driversCode);
+
+                        } catch (Exception e) {
+                            Log.e("DriverInfo", "Error parsing driver data", e);
+                            showError("Ошибка загрузки данных пилота");
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        handleFirebaseError(error, "Не удалось загрузить данные пилота");
+                    }
+                });
+    }
+
+    private void displayDriverImage(String driversCode) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        storageRef.child("drivers/" + driversCode.toLowerCase() + ".png")
+                .getDownloadUrl()
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri,driverImage))
+                .addOnFailureListener(exception ->
+                        try2025DriverImage(storageRef, driversCode));
+    }
+
+    private void try2025DriverImage(StorageReference storageRef, String driversCode) {
+        storageRef.child("drivers/" + driversCode.toLowerCase() + "_2025.png")
+                .getDownloadUrl()
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage))
+                .addOnFailureListener(exception ->
+                        try2024DriverImage(storageRef, driversCode));
+    }
+
+    private void try2024DriverImage(StorageReference storageRef, String driversCode) {
+        storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png")
+                .getDownloadUrl()
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage))
+                .addOnFailureListener(exception ->
+                        showError(getString(R.string.smth_wrong_text)));
+    }
+
+    private void loadImageWithGlide(Uri uri, ImageView imageView) {
+        GlideApp.with(getApplicationContext())
+                .load(uri)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .error(R.drawable.f1)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .into(imageView);
+
+        imageView.setVisibility(View.VISIBLE);
+    }
+
+    private void loadDriverTeam(String team, String driverName, String driverFamilyName, String driversCode) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        rootRef.child("constructors")
+                .orderByChild("name")
+                .equalTo(team)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists()) {
+                            showError("Команда не найдена");
+                            return;
+                        }
+
+                        for (DataSnapshot teamSnap : snapshot.getChildren()) {
+                            setupDriverClickListener(teamSnap, team, driverName, driverFamilyName, driversCode);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        handleFirebaseError(error, "Ошибка загрузки команды");
+                    }
+                });
+    }
+
+    private void setupDriverClickListener(DataSnapshot teamSnap, String team,
+                                 String driverName, String driverFamilyName, String driversCode) {
+        try {
+            String teamId = teamSnap.child("constructorId").getValue(String.class);
+            String colorValue = teamSnap.child("color").getValue(String.class);
+
+            if (teamId == null || colorValue == null) {
+                Log.w("DriverData", "Missing team data");
+                return;
+            }
+
+            String teamColor = "#" + colorValue;
+
+            GradientDrawable gd = new GradientDrawable();
+            gd.setColor(ContextCompat.getColor(accountPageActivity.this, R.color.white));
+            gd.setCornerRadii(new float[]{0, 0, 30, 30, 0, 0, 0, 0});
+            gd.setStroke(12, Color.parseColor(teamColor));
+            driver_layout.setBackground(gd);
+
+            driver_layout.setOnClickListener(view -> {
+                Intent intent = new Intent(accountPageActivity.this, driverPageActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("driverName", driverName);
+                bundle.putString("driverFamilyName", driverFamilyName);
+                bundle.putString("driverTeam", team);
+                bundle.putString("driverCode", driversCode);
+                bundle.putString("driverTeamId", teamId);
+                intent.putExtras(bundle);
+                startActivity(intent);
+            });
+
+        } catch (IllegalArgumentException e) {
+            Log.e("DriverLayout", "Invalid color format", e);
+            showError("Ошибка отображения");
+        }
+    }
+
+    private void loadTeamInfo(String choiceTeam) {
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        rootRef.child("constructors")
+                .orderByChild("name")
+                .equalTo(choiceTeam)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!snapshot.exists()) {
+                            Log.w("TeamInfo", "Team not found: " + choiceTeam);
+                            showError("Команда не найдена в БД");
+                            return;
+                        }
+
+                        for (DataSnapshot teamSnap : snapshot.getChildren()) {
+                            try {
+                                String teamId = teamSnap.child("constructorId").getValue(String.class);
+                                String colorValue = teamSnap.child("color").getValue(String.class);
+
+                                if (teamId == null || colorValue == null) {
+                                    Log.w("TeamInfo", "Missing data - teamId: " + teamId + ", color: " + colorValue);
+                                    showError("Неполные данные команды");
+                                    continue;
+                                }
+
+                                String teamColor = "#" + colorValue;
+                                Log.d("TeamInfo", "Loading team: " + teamId + ", color: " + teamColor);
+
+                                displayTeamLayout(teamColor);
+                                loadTeamLogo(storageRef, teamId);
+                                loadTeamCar(storageRef, teamId);
+                                userFavTeam.setText(choiceTeam);
+                                teamName.setText(choiceTeam);
+
+                                setupTeamClickListener(choiceTeam, teamId);
+
+                            } catch (Exception e) {
+                                Log.e("TeamInfo", "Error parsing team data", e);
+                                showError("Ошибка загрузки команды");
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        handleFirebaseError(error, "Не удалось загрузить команду");
+                    }
+                });
+    }
+
+
+    private void displayTeamLayout(String teamColor) {
+        GradientDrawable gd = new GradientDrawable();
+        gd.setColor(ContextCompat.getColor(this, R.color.white));
+        gd.setCornerRadii(new float[]{0, 0, 30, 30, 0, 0, 0, 0});
+        gd.setStroke(12, Color.parseColor(teamColor));
+        team_layout.setBackground(gd);
+
+        arrow.setColorFilter(Color.parseColor(teamColor));
+    }
+
+    private void loadTeamCar(StorageReference storageRef, String teamId) {
+        Log.d("TeamCar", "Loading team car for: " + teamId); // Логирование
+
+        storageRef.child("teams/" + teamId + ".png")
+                .getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    Log.d("TeamCar", "Success loading: " + uri.toString());
+                    loadImageWithGlide(uri, teamCar);
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e("TeamCar", "Failed to load car. Path: teams/" + teamId + ".png", exception);
+                    showError("Не удалось загрузить машину");
+                });
+    }
+
+    private void loadTeamLogo(StorageReference storageRef, String teamId) {
+        Log.d("TeamLogo", "Loading logo for: " + teamId);
+
+        StorageReference logoRef;
+
+        if (teamId.equals("alpine") || teamId.equals("williams")) {
+            logoRef = storageRef.child("teams/" + teamId + "_logo_alt.png");
+        } else {
+            logoRef = storageRef.child("teams/" + teamId + "_logo.png");
+        }
+
+        logoRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    Log.d("TeamLogo", "Success loading: " + uri.toString());
+                    loadImageWithGlide(uri, teamLogo);
+                })
+                .addOnFailureListener(exception -> {
+                    Log.e("TeamLogo", "Failed to load logo. StorageRef: " + logoRef.getPath(), exception);
+                    showError(getString(R.string.smth_wrong_text));
+                });
+    }
+
+
+    private void setupTeamClickListener(String choiceTeam, String teamId) {
+        userFavTeam_layout.setOnClickListener(view -> {
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            rootRef.child("driverLineUp/season/2025/" + teamId)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            ArrayList<String> teamDrivers = new ArrayList<>();
+
+                            for (DataSnapshot driverSnap : snapshot.child("drivers").getChildren()) {
+                                String driverName = driverSnap.getKey();
+                                if (driverName != null) {
+                                    teamDrivers.add(driverName);
+                                }
+                            }
+
+                            Intent intent = new Intent(accountPageActivity.this, teamPageActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("teamName", choiceTeam);
+                            bundle.putString("teamId", teamId);
+                            bundle.putStringArrayList("teamDrivers", teamDrivers);
+                            intent.putExtras(bundle);
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            handleFirebaseError(error, "Не удалось загрузить состав команды");
+                        }
+                    });
+        });
+    }
+
+    private void showNoDriver() {
+        driverImage.setVisibility(View.INVISIBLE);
+        noDriver.setVisibility(View.VISIBLE);
+        collapseDriverLayout();
+    }
+
+    private void showNoTeam() {
+        teamCar.setVisibility(View.INVISIBLE);
+        noTeam.setVisibility(View.VISIBLE);
+        collapseTeamLayout();
+    }
+
+    private void showNoFavorites() {
+        fanText.setText(getString(R.string.no_fan_of_text));
+        collapseDriverLayout();
+        collapseTeamLayout();
+    }
+
+    private void collapseDriverLayout() {
+        userFavDriverNumber.getLayoutParams().height = 0;
+        userFavDriver.getLayoutParams().height = 0;
+        line2.getLayoutParams().height = 0;
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+        driverName_layout.setLayoutParams(layoutParams);
+    }
+
+    private void collapseTeamLayout() {
+        userFavTeam.getLayoutParams().height = 0;
+        teamLogo.getLayoutParams().height = 0;
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, 0);
+        teamName_layout.setLayoutParams(layoutParams);
+    }
+
+// ============ Error handling ============
+
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    private void handleFirebaseError(DatabaseError error, String defaultMessage) {
+        String userMessage = defaultMessage;
+
+        if (error.getCode() == DatabaseError.NETWORK_ERROR) {
+            userMessage = getString(R.string.lost_connection_info);
+        } else if (error.getCode() == DatabaseError.PERMISSION_DENIED) {
+            userMessage = "Нет доступа к этим данным";
+        }
+
+        Toast.makeText(this, userMessage, Toast.LENGTH_LONG).show();
+        Log.e("FirebaseDB", "Error code: " + error.getCode() + ", " + error.getMessage());
+    }
+
 }
