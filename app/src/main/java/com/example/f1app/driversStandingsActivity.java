@@ -107,7 +107,11 @@ public class driversStandingsActivity extends AppCompatActivity {
         pastSeasonDriversStandings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(driversStandingsActivity.this, pastSeasonDriversStandingsActivity.class);
+                Intent intent = new Intent(driversStandingsActivity.this,
+                        pastSeasonDriversStandingsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("season", "2024");
+                intent.putExtras(bundle);
                 driversStandingsActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
             }
@@ -216,14 +220,6 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         .start();
 
                                 adapter.notifyItemInserted(datum.size() - 1);
-
-                                //Handler handler = new Handler();
-                                //handler.postDelayed(()->{
-                                //    recyclerView.setVisibility(View.VISIBLE);
-                                //    pastSeasonDriversStandings.setVisibility(View.VISIBLE);
-                                //    shimmerFrameLayout.setVisibility(View.GONE);
-                                //    shimmerFrameLayout.stopShimmer();
-                                //},500);
                             }else{
                                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                 rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
@@ -269,21 +265,11 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                         .start();
 
                                                                 adapter.notifyItemInserted(datum.size() - 1);
-
-                                                                // adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
-                                                                // Handler handler = new Handler();
-                                                                // handler.postDelayed(()->{
-                                                                //     recyclerView.setVisibility(View.VISIBLE);
-                                                                //     pastSeasonDriversStandings.setVisibility(View.VISIBLE);
-                                                                //     shimmerFrameLayout.setVisibility(View.GONE);
-                                                                //     shimmerFrameLayout.stopShimmer();
-                                                                // },500);
-                                                                // recyclerView.setAdapter(adapter);
                                                             }
 
                                                             @Override
                                                             public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                                Log.e("driverStandingsError", databaseError.getMessage()); //Don't ignore errors!
+                                                                Log.e("driverStandingsError", databaseError.getMessage());
                                                             }
                                                         };
                                                         driverRef.addListenerForSingleValueEvent(driversValueEventListener);
@@ -292,18 +278,16 @@ public class driversStandingsActivity extends AppCompatActivity {
 
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                                    Log.e("driverStandingsError", error.getMessage());
                                                 }
                                             });
                                         }
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("driverStandingsError", error.getMessage()); //Don't ignore errors!
+                                        Log.e("driverStandingsError", error.getMessage());
                                     }
                                 });
-                            //
-
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();

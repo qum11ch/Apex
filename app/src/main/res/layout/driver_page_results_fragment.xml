@@ -31,34 +31,46 @@
             <LinearLayout
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
+                android:layout_marginBottom="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/resHeader"
                 android:id="@+id/toggleButtons"
                 android:orientation="horizontal">
                 <CheckBox
+                    android:id="@+id/radioButton_2026"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                    android:text="@string/_2026_season"
+                    android:textColor="@drawable/toggle_text_color"
+                    style="@style/ToggleButton"/>
+                <CheckBox
+                    android:layout_marginStart="5dp"
                     android:id="@+id/radioButton_2025"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textAllCaps="false"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                    android:textColor="@drawable/toggle_text_color"
                     android:text="@string/_2025_season"
-                    android:textColor="@drawable/toggle_text_color"
-                    style="@style/ToggleButton"
-                    android:checked="false"/>
-                <CheckBox
-                    android:layout_marginStart="5dp"
-                    android:id="@+id/radioButton_2024"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@drawable/toggle_text_color"
-                    android:text="@string/_2024_season"
-                    style="@style/ToggleButton"
-                    android:layout_marginEnd="5dp"/>
+                    style="@style/ToggleButton"/>
             </LinearLayout>
+            <CheckBox
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="20dp"
+                android:id="@+id/radioButton_2024"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="false"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@drawable/toggle_text_color"
+                android:text="@string/_2024_season"
+                style="@style/ToggleButton"
+                android:layout_marginEnd="5dp"
+                android:layout_below="@id/toggleButtons"/>
             <RelativeLayout
                 android:id="@+id/results_layout"
                 android:paddingStart="10dp"
@@ -67,7 +79,7 @@
                 android:layout_height="wrap_content"
                 style="@style/StatisticLayout"
                 android:paddingTop = "10dp"
-                android:layout_below="@id/toggleButtons">
+                android:layout_below="@id/radioButton_2024">
                 <LinearLayout
                     android:id="@+id/results_header"
                     android:orientation="horizontal"

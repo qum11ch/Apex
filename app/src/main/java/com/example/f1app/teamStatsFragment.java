@@ -89,8 +89,6 @@ public class teamStatsFragment extends Fragment {
         fullTeamName = view.findViewById(R.id.fullTeamName);
         flag = view.findViewById(R.id.flag);
 
-
-
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         FirebaseStorage storage = FirebaseStorage.getInstance();
 

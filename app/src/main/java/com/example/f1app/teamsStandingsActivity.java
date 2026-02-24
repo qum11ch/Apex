@@ -79,7 +79,11 @@ public class teamsStandingsActivity extends AppCompatActivity {
         }
         pastSeasonTeamsStandings.setText(buttonText);
         pastSeasonTeamsStandings.setOnClickListener(v -> {
-            Intent intent = new Intent(teamsStandingsActivity.this, pastSeasonTeamsStandingsActivity.class);
+            Intent intent = new Intent(teamsStandingsActivity.this,
+                    pastSeasonTeamsStandingsActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("season", "2024");
+            intent.putExtras(bundle);
             teamsStandingsActivity.this.startActivity(intent);
             overridePendingTransition(0, 0);
         });

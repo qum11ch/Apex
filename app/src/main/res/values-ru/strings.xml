@@ -64,6 +64,7 @@
     <string name="driver_results">Результаты гонщика</string>
     <string name="_2025_season">Сезон 2025</string>
     <string name="_2024_season">Сезон 2024</string>
+    <string name="_2026_season">Сезон 2026</string>
     <string name="race_name_header">Гран-При</string>
     <string name="result_header">Результаты</string>
     <string name="key_map">Легенда к таблице</string>
@@ -199,6 +200,8 @@
     <string name="azerbaijan_grand_prix_text">Гран-при Азербайджана</string>
     <string name="bahrain_grand_prix_text">Гран-при Бахрейна</string>
     <string name="belgian_grand_prix_text">Гран-при Бельгии</string>
+    <string name="barcelona_grand_prix_text">Гран-при Барселоны</string>
+    <string name="brazilian_grand_prix_text">Гран-при Бразилии</string>
     <string name="british_grand_prix_text">Гран-при Великобритании</string>
     <string name="canadian_grand_prix_text">Гран-при Канады</string>
     <string name="chinese_grand_prix_text">Гран-при Китая</string>
@@ -218,6 +221,10 @@
     <string name="são_paulo_grand_prix_text">Гран-при Сан-Паулу</string>
     <string name="united_states_grand_prix_text">Гран-при США</string>
     <string name="malaysian_grand_prix_text">Гран-при Малазии</string>
+
+
+    <string name="barcelona_grand_prix_locality">Испания</string>
+    <string name="brazilian_grand_prix_locality">Бразилия</string>
     <string name="abu_dhabi_grand_prix_locality">Абу-Даби</string>
     <string name="australian_grand_prix_locality">Австралия</string>
     <string name="austrian_grand_prix_locality">Австрия</string>
@@ -267,6 +274,8 @@
     <string name="catalunya_text">Каталунья</string>
     <string name="interlagos_text">Интерлагос</string>
     <string name="americas_text">Трасса Америк</string>
+    <string name="madring_text">Мадринг</string>
+
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Гран-при заверешено</string>
     <string name="notify_start_text"> началась</string>
@@ -283,6 +292,7 @@
     <string name="weekend_ends_text">Уикенд ГП окончен</string>
     <string name="last_text">Последняя</string>
     <string name="retired_text">В отставке</string>
+    <string name="reserve_text">Запасной пилот</string>
     <string name="wrong_email">Пользователя с таким email нет! Неправильный Email!</string>
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
     <string name="predict">прогноз</string>

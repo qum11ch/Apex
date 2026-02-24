@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -54,6 +55,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -71,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView rvFuture, rvPast, rvDrivers, rvTeams;
     private ShimmerFrameLayout sfFuture, sfPast, sfDrivers, sfTeams, sfProgressBar;
     private ProgressBar raceProgress;
-    private TextView raceProgressText;
+    private TextView raceProgressText, pastRaceHeader;
     SharedPreferences mPrefs;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
@@ -107,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
         rvTeams = findViewById(R.id.recyclerView_teams);
         raceProgress = findViewById(R.id.race_progress);
         raceProgressText = findViewById(R.id.race_progress_text);
+        pastRaceHeader = findViewById(R.id.pastRace_header);
 
         sfFuture = findViewById(R.id.shimmerFuture_layout);
         sfPast = findViewById(R.id.shimmerPast_layout);
@@ -296,66 +299,92 @@ public class MainActivity extends AppCompatActivity {
                             driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
 
                         }else{
+                            AtomicInteger driverCount = new AtomicInteger(0);
+                            final int MAX_DRIVERS = 3;
                             DatabaseReference rootRef = database.getReference();
                             rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    datumDrivers.add(new driversList("","","","","","","",
-                                            true, currentYear));
+                                    datumDrivers.clear();
                                     for (DataSnapshot child: snapshot.getChildren()) {
+                                        if (driverCount.get() >= MAX_DRIVERS) {
+                                            hideShimmer(rvDrivers, sfDrivers);
+                                            break;
+                                        }
+
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
 
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                    String driverFullname = driverDataSnapshot.getKey();
-                                                    DatabaseReference driversRef = rootRef.child("drivers");
-                                                    DatabaseReference driverRef = driversRef.child(driverFullname);
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId)
+                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                                    @Override
+                                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                        if (!snapshot.hasChild("drivers")) return;
 
-                                                    ValueEventListener driversValueEventListener = new ValueEventListener() {
-                                                        @Override
-                                                        public void onDataChange(DataSnapshot dataSnapshot) {
-                                                            String[] parts = driverFullname.split(" ");
-                                                            String driverName, driverFamilyName;
-                                                            if(driverFullname.equals("Andrea Kimi Antonelli")){
-                                                                driverName = parts[0] + " " + parts[1];
-                                                                driverFamilyName = parts[2];
-                                                            }else{
-                                                                driverName = parts[0];
-                                                                driverFamilyName = parts[1];
+                                                        for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                            if (driverCount.get() >= MAX_DRIVERS) {
+                                                                hideShimmer(rvDrivers, sfDrivers);
+                                                                return;
                                                             }
-                                                            String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
-                                                            driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
-                                                                    true, currentYear);
-                                                            datumDrivers.add(smth);
 
-                                                            hideShimmer(rvDrivers, sfDrivers);
-                                                            driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
+                                                            final String currentDriverFullname = driverDataSnapshot.getKey();
+                                                            final String finalConstructorsName = constructorsName;
+                                                            final String finalConstructorId = constructorId;
+
+                                                            DatabaseReference driversRef = rootRef.child("drivers");
+                                                            DatabaseReference driverRef = driversRef.child(currentDriverFullname);
+
+                                                            driverRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                                @Override
+                                                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                                                    if (driverCount.get() >= MAX_DRIVERS) return;
+                                                                    final int currentDriverPlace = driverCount.get() + 1;
+
+                                                                    String[] parts = currentDriverFullname.split(" ");
+                                                                    String driverName, driverFamilyName;
+                                                                    if(currentDriverFullname.equals("Andrea Kimi Antonelli")){
+                                                                        driverName = parts[0] + " " + parts[1];
+                                                                        driverFamilyName = parts[2];
+                                                                    } else {
+                                                                        driverName = parts[0];
+                                                                        driverFamilyName = parts[1];
+                                                                    }
+
+                                                                    String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
+                                                                    driversList smth = new driversList(driverName, driverFamilyName, finalConstructorsName,
+                                                                            finalConstructorId, "", String.valueOf(currentDriverPlace), driverCode, true, currentYear);
+
+                                                                    datumDrivers.add(smth);
+                                                                    driverCount.incrementAndGet();
+                                                                    driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
+
+                                                                    if (driverCount.get() >= MAX_DRIVERS) {
+                                                                        hideShimmer(rvDrivers, sfDrivers);
+                                                                    }
+                                                                }
+
+                                                                @Override
+                                                                public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                    Log.e("driverStandingsError", databaseError.getMessage());
+                                                                }
+                                                            });
                                                         }
+                                                    }
 
-                                                        @Override
-                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                            Log.e("driverStandingsError", databaseError.getMessage());
-                                                        }
-                                                    };
-                                                    driverRef.addListenerForSingleValueEvent(driversValueEventListener);
-                                                }
-                                            }
-
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError error) {
-                                                Log.e("driverStandingsError", error.getMessage());
-                                            }
-                                        });
+                                                    @Override
+                                                    public void onCancelled(@NonNull DatabaseError error) {
+                                                        Log.e("driverStandingsError", error.getMessage());
+                                                    }
+                                                });
                                     }
                                 }
+
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
                                     Log.e("driverStandingsError", error.getMessage());
                                 }
                             });
+
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -420,20 +449,15 @@ public class MainActivity extends AppCompatActivity {
                             rootRef.child("constructors").orderByChild("lastSeasonPos").limitToFirst(3).addValueEventListener(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    ArrayList<String> firstTeam = new ArrayList<>();
-                                    firstTeam.add("");
-                                    firstTeam.add("");
-                                    teamsList first = new teamsList("","","","", true);
-                                    first.setDrivers(firstTeam);
-                                    datumTeams.add(first);
-
+                                    datumDrivers.clear();
+                                    int teamIndex = 0;
                                     for (DataSnapshot child: snapshot.getChildren()) {
-
+                                        final int currentTeamPlace = teamIndex++;
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
 
                                         DatabaseReference rootRef = database.getReference();
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 ArrayList<String> teamDrivers = new ArrayList<>();
@@ -441,7 +465,7 @@ public class MainActivity extends AppCompatActivity {
                                                     String driverFullname = driverDataSnapshot.getKey();
                                                     teamDrivers.add(driverFullname);
                                                 }
-                                                teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
+                                                teamsList smth = new teamsList(constructorsName, String.valueOf(currentTeamPlace + 1), "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
 
                                                 hideShimmer(rvTeams, sfTeams);
@@ -536,7 +560,9 @@ public class MainActivity extends AppCompatActivity {
                     getPastRace(year, concludedRoundNumber.get(concludedRoundNumber.size()-1));
                     postProgress(Integer.parseInt(concludedRoundNumber.get(concludedRoundNumber.size()-1)));
                 }else{
+                    postProgress(0);
                     pastLayout.setVisibility(View.GONE);
+                    pastRaceHeader.setVisibility(View.GONE);
                 }
                 if(!futureRaceRoundNumber.isEmpty()){
                     futureLayout.setVisibility(View.VISIBLE);

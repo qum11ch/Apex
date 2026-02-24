@@ -58,54 +58,59 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonTeamsStandingsActivity.this));
         }
 
-        shimmerFrameLayout = findViewById(R.id.shimmer_layout);
-        shimmerFrameLayout.startShimmer();
+        if(!getIntent().getExtras().isEmpty()) {
+            Bundle bundle = getIntent().getExtras();
+            String mSeason = bundle.getString("season");
 
-        TextView teamsHeader = findViewById(R.id.teamsHeader);
-        String headerText;
-        if (Locale.getDefault().getLanguage().equals("ru")){
-            headerText = getString(R.string.past_season_teams) + " 2024";
-        }else{
-            headerText = "2024 " + getString(R.string.past_season_teams);
-        }
-        teamsHeader.setText(headerText);
-
-        recyclerView = findViewById(R.id.recyclerview_currentTeams);
-        recyclerView.setHasFixedSize(true);
-        LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager3);
-
-        datum = new ArrayList<>();
-
-        adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
-        recyclerView.setAdapter(adapter);
-
-        swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(() -> {
-            recyclerView.setVisibility(View.GONE);
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
+
+            TextView teamsHeader = findViewById(R.id.teamsHeader);
+            String headerText;
+            if (Locale.getDefault().getLanguage().equals("ru")){
+                headerText = getString(R.string.past_season_teams) + " " + mSeason;
+            }else{
+                headerText = mSeason + " " + getString(R.string.past_season_teams);
+            }
+            teamsHeader.setText(headerText);
+
+            recyclerView = findViewById(R.id.recyclerview_currentTeams);
+            recyclerView.setHasFixedSize(true);
+            LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(linearLayoutManager3);
+
             datum = new ArrayList<>();
-            getTeamStanding();
-            swipeLayout.setRefreshing(false);
-            adapter.notifyDataSetChanged();
-        });
+
+            adapter = new pastSeasonTeamsStandingsAdapter(pastSeasonTeamsStandingsActivity.this, datum);
+            recyclerView.setAdapter(adapter);
+
+            swipeLayout = findViewById(R.id.swipe_layout);
+            swipeLayout.setOnRefreshListener(() -> {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+                datum = new ArrayList<>();
+                getTeamStanding(mSeason);
+                swipeLayout.setRefreshing(false);
+                adapter.notifyDataSetChanged();
+            });
 
 
-        ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> finish());
+            ImageButton backButton = findViewById(R.id.backButton);
+            backButton.setOnClickListener(v -> finish());
 
-        getTeamStanding();
+            getTeamStanding(mSeason);
 
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
+            WindowInsetsControllerCompat windowInsetsController =
+                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+            windowInsetsController.setAppearanceLightStatusBars(false);
 
+        }
     }
 
-    private void getTeamStanding(){
+    private void getTeamStanding(String year){
         RequestQueue queue = Volley.newRequestQueue(pastSeasonTeamsStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + "2024" + "/constructorstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + year + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -127,12 +132,12 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                     String points = ConstructorStandings.getJSONObject(j).getString("points");
                                     String constructorId = ConstructorStandings.getJSONObject(j)
                                             .getJSONObject("Constructor").getString("constructorId");
-                                    if (constructorName.equals("Sauber")){
-                                            constructorName = "Kick Sauber";
-                                    }
+                                    //if (constructorName.equals("Sauber")){
+                                    //        constructorName = "Kick Sauber";
+                                    //}
                                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                     String finalConstructorName = constructorName;
-                                    rootRef.child("driverLineUp/season/" + "2024" + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                    rootRef.child("driverLineUp/season/" + year + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             ArrayList<String> teamDrivers = new ArrayList<>();
@@ -141,15 +146,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                                 teamDrivers.add(driverFullname);
                                             }
                                             teamsList smth = new teamsList(finalConstructorName, position, points, constructorId, false);
+                                            smth.setSeason(year);
                                             smth.setDrivers(teamDrivers);
                                             datum.add(smth);
-                                            //Handler handler = new Handler();
-                                            //handler.postDelayed(()->{
-                                            //    recyclerView.setVisibility(View.VISIBLE);
-                                            //    shimmerFrameLayout.setVisibility(View.GONE);
-                                            //    shimmerFrameLayout.stopShimmer();
-                                            //},500);
-
                                             hideShimmer(recyclerView, shimmerFrameLayout);
                                             adapter.notifyItemChanged(datum.size() - 1);
                                         }

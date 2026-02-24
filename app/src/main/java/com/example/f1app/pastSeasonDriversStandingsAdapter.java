@@ -82,6 +82,8 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
             mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + ".png");
         }
 
+        // StorageReference mDriverImage = "drivers/" + datum.getDriverCode().toLowerCase() + "_" + season + ".png"
+
         StorageReference mDriverTeamLogo = storageRef.child("teams/" + datum.getConstructorId().toLowerCase() + "_logo.png");
         mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
                 .load(uri)
@@ -122,7 +124,6 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
             params.setMargins(px, 0, 0, 0);
         }
         holder.driverFamilyName.setLayoutParams(params);
-
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , driverPageActivity.class);

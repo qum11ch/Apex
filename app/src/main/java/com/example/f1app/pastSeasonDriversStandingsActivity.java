@@ -52,48 +52,52 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonDriversStandingsActivity.this));
         }
 
-        shimmerFrameLayout = findViewById(R.id.shimmer_layout);
-        shimmerFrameLayout.startShimmer();
+        if(!getIntent().getExtras().isEmpty()) {
+            Bundle bundle = getIntent().getExtras();
+            String mSeason = bundle.getString("season");
 
-        recyclerView = findViewById(R.id.recyclerview_currentDrivers);
-        recyclerView.setHasFixedSize(true);
-
-        TextView driversHeader = findViewById(R.id.driversHeader);
-        String headerText;
-        if (Locale.getDefault().getLanguage().equals("ru")){
-            headerText = getString(R.string.past_season_drivers) + " 2024";
-        }else{
-            headerText = "2024 " + getString(R.string.past_season_drivers);
-        }
-        driversHeader.setText(headerText);
-
-        datum = new ArrayList<>();
-
-        adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
-        recyclerView.setAdapter(adapter);
-
-        swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(() -> {
-            recyclerView.setVisibility(View.GONE);
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
+
+            recyclerView = findViewById(R.id.recyclerview_currentDrivers);
+            recyclerView.setHasFixedSize(true);
+
+            TextView driversHeader = findViewById(R.id.driversHeader);
+
+            String headerText;
+            if (Locale.getDefault().getLanguage().equals("ru")){
+                headerText = getString(R.string.past_season_drivers) + " " + mSeason;
+            }else{
+                headerText = mSeason + " " + getString(R.string.past_season_drivers);
+            }
+            driversHeader.setText(headerText);
+
             datum = new ArrayList<>();
-            getStanding("2024");
-            swipeLayout.setRefreshing(false);
-        });
-        LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(linearLayoutManager3);
 
-        ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(v -> finish());
+            adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
+            recyclerView.setAdapter(adapter);
 
+            swipeLayout = findViewById(R.id.swipe_layout);
+            swipeLayout.setOnRefreshListener(() -> {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+                datum = new ArrayList<>();
+                getStanding(mSeason);
+                swipeLayout.setRefreshing(false);
+            });
+            LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
+            recyclerView.setLayoutManager(linearLayoutManager3);
 
-        getStanding("2024");
+            ImageButton backButton = findViewById(R.id.backButton);
+            backButton.setOnClickListener(v -> finish());
 
+            getStanding(mSeason);
 
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(false);
+            WindowInsetsControllerCompat windowInsetsController =
+                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+            windowInsetsController.setAppearanceLightStatusBars(false);
+        }
     }
 
 
@@ -130,13 +134,6 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                                     datum.add(smth);
                                 }
                             }
-                            //Handler handler = new Handler();
-                            //handler.postDelayed(()->{
-                            //    recyclerView.setVisibility(View.VISIBLE);
-                            //    shimmerFrameLayout.setVisibility(View.GONE);
-                            //    shimmerFrameLayout.stopShimmer();
-                            //},500);
-
                             hideShimmer(recyclerView, shimmerFrameLayout);
                             adapter.notifyItemChanged(datum.size() - 1);
                         }

@@ -54,16 +54,13 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         holder.driverName.setText(datum.getDriverName());
         //holder.driverTeam.setText(datum.getDriverTeam());
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
+        holder.driver_placement.setText(datum.getDriverPlacement());
 
         if (position == dataList.size() - 1){
             holder.bottomLine.getLayoutParams().height = 0;
         }
 
-        if (datum.getDriverName().equals("Andrea Kimi")){
-            RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.BELOW, R.id.driverName);
-            holder.driverFamilyName.setLayoutParams(params);
-        }else {
+        if (datum.isStartSeason()) {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
             params.addRule(RelativeLayout.END_OF, R.id.driverName);
             Resources r = context.getResources();
@@ -74,17 +71,27 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             );
             params.setMargins(px, 0, 0, 0);
             holder.driverFamilyName.setLayoutParams(params);
-        }
-        if (datum.isStartSeason()) {
-            holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3.3f);
-            layoutParams.setMargins(0, 10,0,80);
-            holder.driver_layout.setLayoutParams(layoutParams);
-            int width = 0;
-            holder.driver_placement.getLayoutParams().width = width;
-            holder.driver_points.getLayoutParams().width = width;
+
+            holder.driver_points.getLayoutParams().width = 0;
         } else {
-            holder.driver_placement.setText(datum.getDriverPlacement());
+            if (datum.getDriverName().equals("Andrea Kimi")){
+                RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.BELOW, R.id.driverName);
+                holder.driverFamilyName.setLayoutParams(params);
+            }else {
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.END_OF, R.id.driverName);
+                Resources r = context.getResources();
+                int px = (int) TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        5,
+                        r.getDisplayMetrics()
+                );
+                params.setMargins(px, 0, 0, 0);
+                holder.driverFamilyName.setLayoutParams(params);
+            }
+
+
             String driver_points = datum.getDriverPoints()  + " " + context.getString(R.string.pts_header);
             holder.driver_points.setText(driver_points);
         }

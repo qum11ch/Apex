@@ -6,9 +6,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -39,6 +42,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+
+import java.time.LocalDate;
+import java.util.Objects;
 
 public class driverPageActivity extends AppCompatActivity {
     private ImageButton backButton;
@@ -85,7 +91,8 @@ public class driverPageActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driverPageActivity.this));
         }
-
+        LocalDate currentDate = LocalDate.now();
+        String currentYear = Integer.toString(currentDate.getYear());
 
         if(!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -123,29 +130,69 @@ public class driverPageActivity extends AppCompatActivity {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
-
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("drivers").child(driver).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String driverTeam = snapshot.child("driversTeam").getValue(String.class);
-                    if (driverTeam.equals("Sauber")) {
-                        driverTeam = "Kick Sauber";
+                    if (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber")) {
+                        driverTeam = "Audi";
                     }
                     String mDriverNumber = snapshot.child("permanentNumber").getValue(String.class);
                     String lastEntry = snapshot.child("lastEntry").getValue(String.class);
+                    String status = snapshot.child("status").getValue(String.class);
                     String[] lastEntryParse = lastEntry.split("\\s+");
                     String lastDriverSeason = lastEntryParse[0];
-                    StorageReference mDriverImage;
-                    if (lastDriverSeason.equals("2024")){
-                        mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + "_2024.png");
-                        teamName.setText(R.string.retired_text);
-                        teamName.setAllCaps(true);
-                        teamName.setTextColor(ContextCompat.getColor(driverPageActivity.this, R.color.red));
-                    }else{
-                        mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
-                        teamName.setText(driverTeam);
+                    StorageReference mDriverImage = null;
+
+                    ViewGroup.LayoutParams upperParams = teamName.getLayoutParams();
+                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                            upperParams.width,
+                            upperParams.height
+                    );
+                    params.addRule(RelativeLayout.BELOW, R.id.teamName);
+                    params.topMargin = 10;
+                    params.leftMargin = 75;
+
+                    RelativeLayout parentLayout = findViewById(R.id.driver_layout);
+                    switch(Objects.requireNonNull(status)){
+                        case ("active"):
+                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
+                            teamName.setText(driverTeam);
+                            break;
+                        case ("reserve"):
+                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
+                            //mDriverImage = storageRef.child("drivers/" +
+                            //        mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
+
+                            teamName.setText(driverTeam);
+                            TextView reservedText = new TextView(driverPageActivity.this);
+
+                            reservedText.setText(getString(R.string.reserve_text));
+                            reservedText.setTextAppearance(R.style.TextStyle_GoodTiming_Regular);
+                            reservedText.setTextColor(ContextCompat.getColor(driverPageActivity.this,
+                                    R.color.light_bronze));
+                            reservedText.setTextSize(20);
+                            reservedText.setLayoutParams(params);
+                            parentLayout.addView(reservedText);
+                            break;
+                        case ("retired"):
+                            mDriverImage = storageRef.child("drivers/" +
+                                    mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
+
+                            TextView retiredText = new TextView(driverPageActivity.this);
+                            View line = findViewById(R.id.line2);
+                            line.setVisibility(View.GONE);
+                            retiredText.setText(getString(R.string.retired_text));
+                            retiredText.setTextAppearance(R.style.TextStyle_GoodTiming_Regular);
+                            retiredText.setTextColor(ContextCompat.getColor(driverPageActivity.this,
+                                    R.color.red));
+                            retiredText.setTextSize(22);
+                            retiredText.setLayoutParams(params);
+                            parentLayout.addView(retiredText);
+                            break;
                     }
+
                     driverfullName.setText(mDriverName);
                     driverFamilyName.setText(mDriverFamilyName);
                     driverNumber.setText(mDriverNumber);
@@ -319,11 +366,5 @@ public class driverPageActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 })
                 .start();
-
-        //Handler handler = new Handler();
-        //handler.postDelayed(()->{
-        //    contentLayout.setVisibility(View.VISIBLE);
-        //    progressBar.setVisibility(View.GONE);
-        //},500);
     }
 }

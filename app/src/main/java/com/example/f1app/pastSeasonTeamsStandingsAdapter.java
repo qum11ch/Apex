@@ -68,10 +68,12 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         holder.teamDriverFirst.setText(teamDrivers.get(0));
         holder.teamDriverSecond.setText(teamDrivers.get(1));
 
+        String season = datum.getSeason();
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_2024.png");
+        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_" + season + ".png");
         GlideApp.with(context)
                 .load(mTeamCar)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
@@ -88,14 +90,24 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
         holder.teamPoints.setText(teamPoints);
 
+        String teamId;
+        String teamName;
+        if (datum.getTeamId().equals("sauber")){
+            teamId = "audi";
+            teamName = "Audi";
+        }else{
+            teamId = datum.getTeamId();
+            teamName = datum.getTeam();
+        }
+
         int resourceId_teamColor = getColorByName(datum.getTeamId());
         holder.line.setBackgroundResource(resourceId_teamColor);
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , teamPageActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("teamName", datum.getTeam());
-            bundle.putString("teamId", datum.getTeamId());
+            bundle.putString("teamName", teamName);
+            bundle.putString("teamId", teamId);
             bundle.putStringArrayList("teamDrivers", teamDrivers);
             intent.putExtras(bundle);
             context.startActivity(intent);

@@ -43,21 +43,15 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         teamsList datum = dataList.get(position);
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
+        holder.teamPosition.setText(datum.getPosition());
 
         if (position == dataList.size() - 1){
             holder.bottomLine.getLayoutParams().height = 0;
         }
 
         if (datum.getStartSeasonInfo()) {
-            holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.WRAP_CONTENT, 3f);
-            layoutParams.setMargins(0, 10,0,20);
-            holder.team_layout.setLayoutParams(layoutParams);
-            int width = 0;
-            holder.teamPosition.getLayoutParams().width = width;
-            holder.teamPoints.getLayoutParams().width = width;
+            holder.teamPoints.getLayoutParams().width = 0;
         } else {
-            holder.teamPosition.setText(datum.getPosition());
             String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
             holder.teamPoints.setText(teamPoints);
         }

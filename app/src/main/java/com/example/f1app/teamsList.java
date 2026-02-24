@@ -3,9 +3,17 @@ package com.example.f1app;
 import java.util.ArrayList;
 
 public class teamsList {
-    private String team, points, position, teamId;
+    private String team, points, position, teamId, season;
     private ArrayList<String> drivers;
     private boolean startSeason;
+
+    public void setSeason(String season){
+        this.season = season;
+    }
+
+    public String getSeason(){
+        return season;
+    }
 
     public ArrayList<String> getDrivers() {
         return drivers;
