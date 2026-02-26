@@ -23,7 +23,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -107,14 +106,11 @@ public class futureRaceScheduleFragment extends Fragment {
             //String mCountry = getArguments().getString("raceCountry");
             mYear = getArguments().getString("gpYear");
 
-            predictButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent i = new Intent(requireContext(), predictResultPage.class);
-                    i.putExtra("event", "Q");
-                    i.putExtra("gp", mRaceName);
-                    startActivity(i);
-                }
+            predictButton.setOnClickListener(v -> {
+                Intent i = new Intent(requireContext(), predictResultPage.class);
+                i.putExtra("event", "Q");
+                i.putExtra("gp", mRaceName);
+                startActivity(i);
             });
 
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");

@@ -23,8 +23,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -209,23 +207,17 @@ public class driversStandingsActivity extends AppCompatActivity {
                             hideShimmer(recyclerView, shimmerFrameLayout);
                             driversStandings_2024.animate()
                                     .setDuration(500)
-                                    .withEndAction(() -> {
-                                        driversStandings_2024.setVisibility(View.VISIBLE);
-                                    })
+                                    .withEndAction(() -> driversStandings_2024.setVisibility(View.VISIBLE))
                                     .start();
 
                             driverStndLine.animate()
                                     .setDuration(500)
-                                    .withEndAction(() -> {
-                                        driverStndLine.setVisibility(View.VISIBLE);
-                                    })
+                                    .withEndAction(() -> driverStndLine.setVisibility(View.VISIBLE))
                                     .start();
 
                             driversStandings_2025.animate()
                                     .setDuration(500)
-                                    .withEndAction(() -> {
-                                        driversStandings_2025.setVisibility(View.VISIBLE);
-                                    })
+                                    .withEndAction(() -> driversStandings_2025.setVisibility(View.VISIBLE))
                                     .start();
 
                             adapter.notifyItemInserted(datum.size() - 1);
@@ -268,23 +260,17 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                             hideShimmer(recyclerView, shimmerFrameLayout);
                                                             driversStandings_2024.animate()
                                                                     .setDuration(500)
-                                                                    .withEndAction(() -> {
-                                                                        driversStandings_2024.setVisibility(View.VISIBLE);
-                                                                    })
+                                                                    .withEndAction(() -> driversStandings_2024.setVisibility(View.VISIBLE))
                                                                     .start();
 
                                                             driverStndLine.animate()
                                                                     .setDuration(500)
-                                                                    .withEndAction(() -> {
-                                                                        driverStndLine.setVisibility(View.VISIBLE);
-                                                                    })
+                                                                    .withEndAction(() -> driverStndLine.setVisibility(View.VISIBLE))
                                                                     .start();
 
                                                             driversStandings_2025.animate()
                                                                     .setDuration(500)
-                                                                    .withEndAction(() -> {
-                                                                        driversStandings_2025.setVisibility(View.VISIBLE);
-                                                                    })
+                                                                    .withEndAction(() -> driversStandings_2025.setVisibility(View.VISIBLE))
                                                                     .start();
 
                                                             adapter.notifyItemInserted(datum.size() - 1);

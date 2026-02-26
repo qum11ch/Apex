@@ -49,7 +49,7 @@ public class teamsList {
     }
 
     public boolean getStartSeasonInfo(){return startSeason;}
-    public void setStartSeasonInfo(boolean startSeason){this.startSeason = startSeason;}
+    //public void setStartSeasonInfo(boolean startSeason){this.startSeason = startSeason;}
 
     public teamsList(String team, String position, String points, String teamId,
                      boolean startSeason) {

@@ -82,7 +82,7 @@ public class driverPageActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driverPageActivity.this));
         }
-        LocalDate currentDate = LocalDate.now();
+        //LocalDate currentDate = LocalDate.now();
         //String currentYear = Integer.toString(currentDate.getYear());
 
         if(!getIntent().getExtras().isEmpty()){

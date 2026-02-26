@@ -212,21 +212,15 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                             hideShimmer(recyclerView, shimmerFrameLayout);
                                             teamsStandings_2024.animate()
                                                     .setDuration(500)
-                                                    .withEndAction(() -> {
-                                                        teamsStandings_2024.setVisibility(View.VISIBLE);
-                                                    }).start();
+                                                    .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
 
                                             teamStndLine.animate()
                                                     .setDuration(500)
-                                                    .withEndAction(() -> {
-                                                        teamStndLine.setVisibility(View.VISIBLE);
-                                                    }).start();
+                                                    .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
 
                                             teamsStandings_2025.animate()
                                                     .setDuration(500)
-                                                    .withEndAction(() -> {
-                                                        teamsStandings_2025.setVisibility(View.VISIBLE);
-                                                    }).start();
+                                                    .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
 
                                             adapter.notifyItemInserted(datum.size() - 1);
                                         }
@@ -274,21 +268,15 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 hideShimmer(recyclerView, shimmerFrameLayout);
                                                 teamsStandings_2024.animate()
                                                         .setDuration(500)
-                                                        .withEndAction(() -> {
-                                                            teamsStandings_2024.setVisibility(View.VISIBLE);
-                                                        }).start();
+                                                        .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
 
                                                 teamStndLine.animate()
                                                         .setDuration(500)
-                                                        .withEndAction(() -> {
-                                                            teamStndLine.setVisibility(View.VISIBLE);
-                                                        }).start();
+                                                        .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
 
                                                 teamsStandings_2025.animate()
                                                         .setDuration(500)
-                                                        .withEndAction(() -> {
-                                                            teamsStandings_2025.setVisibility(View.VISIBLE);
-                                                        }).start();
+                                                        .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
 
                                                 adapter.notifyItemInserted(datum.size() - 1);
                                             }

@@ -43,7 +43,6 @@ public class concludedRaceScheduleFragment extends Fragment {
     private TextView firstPlace_code;
     private TextView thirdPlace_code;
     private scheduleAdapter adapter;
-    private RecyclerView recyclerView;
     private ToggleButton saveRace;
     private LocalDate currentDate;
     private String fullRaceName_key, mRaceName, mYear;
@@ -79,7 +78,7 @@ public class concludedRaceScheduleFragment extends Fragment {
         TextView show_results = view.findViewById(R.id.show_results);
         saveRace = view.findViewById(R.id.saveRace);
 
-        recyclerView = view.findViewById(R.id.recyclerview_schedule);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         linearLayoutManager.setReverseLayout(true);
@@ -207,7 +206,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                             driverName = driverFullName[0];
                             driverFamilyName = driverFullName[1];
                         }
-                        String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
                         secondPlace_code.setText(driverFamilyName);
                     }
                 }

@@ -5,7 +5,6 @@ import static com.example.f1app.MainActivity.getStringByName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import com.shawnlin.numberpicker.NumberPicker;
 

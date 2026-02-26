@@ -69,7 +69,7 @@ public class concludedRaceActivity extends AppCompatActivity {
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
             LocalDate dateStart = LocalDate.parse(mDate, dateFormatter);
-            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy")).toString();
+            String gpYear = dateStart.format(DateTimeFormatter.ofPattern("yyyy"));
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("circuits").orderByChild("circuitName").equalTo(mCircuitName)
