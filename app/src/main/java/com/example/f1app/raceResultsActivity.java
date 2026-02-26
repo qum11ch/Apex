@@ -70,13 +70,8 @@ public class raceResultsActivity extends AppCompatActivity {
 
             raceTitle.setText(pastRaceName);
 
-            ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-            backButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    finish();
-                }
-            });
+            ImageButton backButton = findViewById(R.id.backButton);
+            backButton.setOnClickListener(v -> finish());
 
             WindowInsetsControllerCompat windowInsetsController =
                     WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -93,56 +88,48 @@ public class raceResultsActivity extends AppCompatActivity {
                         Request.Method.GET,
                         url2,
                         null,
-                        new Response.Listener<JSONObject>() {
-                            @Override
-                            public void onResponse(JSONObject response) {
-                                try {
-                                    JSONObject MRData = response.getJSONObject("MRData");
-                                    String total = MRData.getString("total");
-                                    if (!total.equals("0")){
-                                        myViewPager2 = findViewById(R.id.viewPager2);
-                                        adapter = new viewPagerAdapter(raceResultsActivity.this);
-                                        raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
-                                        raceFragment.setArguments(resultsBundle);
-                                        adapter.addFragment(raceFragment);
-                                        raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
-                                        qualiFragment.setArguments(resultsBundle);
-                                        adapter.addFragment(qualiFragment);
-                                        raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
-                                        sprintFragment.setArguments(resultsBundle);
-                                        adapter.addFragment(sprintFragment);
-                                        myViewPager2.setAdapter(adapter);
-                                        TabLayout tabLayout = findViewById(R.id.tab_layout);
-                                        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-                                            @Override
-                                            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                                                switch(position){
-                                                    case 0:
-                                                        tab.setText(R.string.race_text);
-                                                        break;
-                                                    case 1:
-                                                        tab.setText(R.string.quali_text);
-                                                        break;
-                                                    case 2:
-                                                        tab.setText(R.string.sprint_text);
-                                                        break;
-                                                }
+                        response -> {
+                            try {
+                                JSONObject MRData = response.getJSONObject("MRData");
+                                String total = MRData.getString("total");
+                                if (!total.equals("0")){
+                                    myViewPager2 = findViewById(R.id.viewPager2);
+                                    adapter = new viewPagerAdapter(raceResultsActivity.this);
+                                    raceResultsRaceFragment raceFragment = new raceResultsRaceFragment();
+                                    raceFragment.setArguments(resultsBundle);
+                                    adapter.addFragment(raceFragment);
+                                    raceResultsQualiFragment qualiFragment = new raceResultsQualiFragment();
+                                    qualiFragment.setArguments(resultsBundle);
+                                    adapter.addFragment(qualiFragment);
+                                    raceResultsSprintFragment sprintFragment = new raceResultsSprintFragment();
+                                    sprintFragment.setArguments(resultsBundle);
+                                    adapter.addFragment(sprintFragment);
+                                    myViewPager2.setAdapter(adapter);
+                                    TabLayout tabLayout = findViewById(R.id.tab_layout);
+                                    TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
+                                        @Override
+                                        public void onConfigureTab(TabLayout.Tab tab, int position) {
+                                            switch(position){
+                                                case 0:
+                                                    tab.setText(R.string.race_text);
+                                                    break;
+                                                case 1:
+                                                    tab.setText(R.string.quali_text);
+                                                    break;
+                                                case 2:
+                                                    tab.setText(R.string.sprint_text);
+                                                    break;
                                             }
-                                        });
-                                        tabLayoutMediator.attach();
-                                    }else{
-                                        init(resultsBundle);
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                                        }
+                                    });
+                                    tabLayoutMediator.attach();
+                                }else{
+                                    init(resultsBundle);
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        Toast.makeText(raceResultsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                        }, error -> Toast.makeText(raceResultsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
                 queue.add(jsonObjectRequest2);
             }else{
                 rootRef.child("schedule/season/" + mSeason).child(mRaceName).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -163,20 +150,17 @@ public class raceResultsActivity extends AppCompatActivity {
                             adapter.addFragment(sprintFragment);
                             myViewPager2.setAdapter(adapter);
                             TabLayout tabLayout = findViewById(R.id.tab_layout);
-                            TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-                                @Override
-                                public void onConfigureTab(TabLayout.Tab tab, int position) {
-                                    switch(position){
-                                        case 0:
-                                            tab.setText(R.string.race_text);
-                                            break;
-                                        case 1:
-                                            tab.setText(R.string.quali_text);
-                                            break;
-                                        case 2:
-                                            tab.setText(R.string.sprint_text);
-                                            break;
-                                    }
+                            TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+                                switch(position){
+                                    case 0:
+                                        tab.setText(R.string.race_text);
+                                        break;
+                                    case 1:
+                                        tab.setText(R.string.quali_text);
+                                        break;
+                                    case 2:
+                                        tab.setText(R.string.sprint_text);
+                                        break;
                                 }
                             });
                             tabLayoutMediator.attach();
@@ -212,15 +196,12 @@ public class raceResultsActivity extends AppCompatActivity {
         }
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(R.string.race_text);
-                }
-                else{
-                    tab.setText(R.string.quali_text);
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(R.string.race_text);
+            }
+            else{
+                tab.setText(R.string.quali_text);
             }
         });
         tabLayoutMediator.attach();

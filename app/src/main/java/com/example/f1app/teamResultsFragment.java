@@ -107,7 +107,7 @@ public class teamResultsFragment extends Fragment {
             teamId = mTeamId;
             teamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
-            String mCurrentSeason = getArguments().getString("currentSeason");
+            //String mCurrentSeason = getArguments().getString("currentSeason");
 
             shimmerFrameLayout.startShimmer();
             shimmerTripleFrameLayout.startShimmer();

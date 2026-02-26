@@ -48,13 +48,8 @@ public class concludedRaceActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(concludedRaceActivity.this));
         }
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         if (!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -137,15 +132,12 @@ public class concludedRaceActivity extends AppCompatActivity {
         }
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(R.string.schedule_text);
-                }
-                else{
-                    tab.setText(R.string.circuit_text);
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(R.string.schedule_text);
+            }
+            else{
+                tab.setText(R.string.circuit_text);
             }
         });
         tabLayoutMediator.attach();

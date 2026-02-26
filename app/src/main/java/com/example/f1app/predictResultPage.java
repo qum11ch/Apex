@@ -70,13 +70,8 @@ public class predictResultPage extends AppCompatActivity {
         adapter = new raceResultsQualiAdapter(predictResultPage.this, datum);
         recyclerView.setAdapter(adapter);
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
         if (!checkLightTheme(predictResultPage.this)){

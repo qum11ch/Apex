@@ -93,8 +93,8 @@ public class concludedRaceScheduleFragment extends Fragment {
             String mRaceEndDay = getArguments().getString("raceEndDay");
             String mRaceStartMonth = getArguments().getString("raceStartMonth");
             String mRaceEndMonth = getArguments().getString("raceEndMonth");
-            String mRound = getArguments().getString("roundCount");
-            String mCountry = getArguments().getString("raceCountry");
+            //String mRound = getArguments().getString("roundCount");
+            //String mCountry = getArguments().getString("raceCountry");
             mYear = getArguments().getString("gpYear");
             String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
             String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
@@ -172,16 +172,16 @@ public class concludedRaceScheduleFragment extends Fragment {
                     for (DataSnapshot ds: snapshot.getChildren()){
                         String driver = ds.getKey();
                         String[] driverFullName = driver.split(" ");
-                        String driverName;
+                        //String driverName;
                         String driverFamilyName;
                         if (driver.equals("Andrea Kimi Antonelli")){
-                            driverName = driverFullName[1];
+                        //    driverName = driverFullName[1];
                             driverFamilyName = driverFullName[2];
                         }else{
-                            driverName = driverFullName[0];
+                        //    driverName = driverFullName[0];
                             driverFamilyName = driverFullName[1];
                         }
-                        String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
                         firstPlace_code.setText(driverFamilyName);
                     }
                 }
@@ -224,16 +224,16 @@ public class concludedRaceScheduleFragment extends Fragment {
                     for (DataSnapshot ds: snapshot.getChildren()){
                         String driver = ds.getKey();
                         String[] driverFullName = driver.split(" ");
-                        String driverName;
+                        //String driverName;
                         String driverFamilyName;
                         if (driver.equals("Andrea Kimi Antonelli")){
-                            driverName = driverFullName[1];
+                        //    driverName = driverFullName[1];
                             driverFamilyName = driverFullName[2];
                         }else{
-                            driverName = driverFullName[0];
+                        //    driverName = driverFullName[0];
                             driverFamilyName = driverFullName[1];
                         }
-                        String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
                         thirdPlace_code.setText(driverFamilyName);
                     }
                 }

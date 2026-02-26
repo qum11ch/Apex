@@ -51,13 +51,8 @@ public class predictPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("/schedule/season/" + currentSeason)
@@ -90,24 +85,21 @@ public class predictPageActivity extends AppCompatActivity {
                         numberPicker.setMaxValue(values.length - 1);
                         numberPicker.setDisplayedValues(values);
 
-                        predictButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                int selectedId = radioGroup.getCheckedRadioButtonId();
-                                if (selectedId == -1) {
-                                    Toast.makeText(predictPageActivity.this, "No answer has been selected",
-                                            Toast.LENGTH_SHORT).show();
-                                } else {
-                                    RadioButton radioButton = findViewById(selectedId);
-                                    String value = radioButton.getTag().toString();
-                                    String gpName = raceList.get(numberPicker.getValue());
+                        predictButton.setOnClickListener(v -> {
+                            int selectedId = radioGroup.getCheckedRadioButtonId();
+                            if (selectedId == -1) {
+                                Toast.makeText(predictPageActivity.this, "No answer has been selected",
+                                        Toast.LENGTH_SHORT).show();
+                            } else {
+                                RadioButton radioButton = findViewById(selectedId);
+                                String value = radioButton.getTag().toString();
+                                String gpName = raceList.get(numberPicker.getValue());
 
-                                    Intent i = new Intent(predictPageActivity.this, predictResultPage.class);
-                                    i.putExtra("event", value);
-                                    i.putExtra("gp", gpName);
-                                    i.putExtra("currentSeason", currentSeason);
-                                    startActivity(i);
-                                }
+                                Intent i = new Intent(predictPageActivity.this, predictResultPage.class);
+                                i.putExtra("event", value);
+                                i.putExtra("gp", gpName);
+                                i.putExtra("currentSeason", currentSeason);
+                                startActivity(i);
                             }
                         });
                     }

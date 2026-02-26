@@ -168,7 +168,7 @@ public class futureRaceScheduleFragment extends Fragment {
 
             getRaceSchedule(mRaceName, currentYear);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
+            //CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
         }
@@ -343,7 +343,7 @@ public class futureRaceScheduleFragment extends Fragment {
             hrs_countdown.setText("00");
             mns_countdown.setText("00");
         }else{
-            long milliseconds = 0;
+            long milliseconds;
 
             Map.Entry<String, String> entry = events.entrySet().iterator().next();
             String key = entry.getKey();

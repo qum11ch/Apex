@@ -17,7 +17,6 @@ import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -159,24 +158,20 @@ public class MainActivity extends AppCompatActivity {
 
 
         showDriverButton = findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(v -> {
-            startActivity_getSeason(driversStandingsActivity.class);
-        });
+        showDriverButton.setOnClickListener(v ->
+                startActivity_getSeason(driversStandingsActivity.class));
 
         showSchedule = findViewById(R.id.showSchedule);
-        showSchedule.setOnClickListener(v -> {
-            startActivity_getSeason(scheduleActivity.class);
-        });
+        showSchedule.setOnClickListener(v ->
+                startActivity_getSeason(scheduleActivity.class));
 
         showTeams = findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(v -> {
-            startActivity_getSeason(teamsStandingsActivity.class);
-        });
+        showTeams.setOnClickListener(v ->
+                startActivity_getSeason(teamsStandingsActivity.class));
 
         showAccount = findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(v -> {
-            startActivity_getSeason(logInPageActivity.class);
-        });
+        showAccount.setOnClickListener(v ->
+                startActivity_getSeason(logInPageActivity.class));
         String currentYear = Integer.toString(currentDate.getYear());
 
         DatabaseReference rootRef = database.getReference();

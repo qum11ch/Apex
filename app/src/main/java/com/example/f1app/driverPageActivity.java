@@ -60,23 +60,18 @@ public class driverPageActivity extends AppCompatActivity {
         setContentView(R.layout.driver_page);
         EdgeToEdge.enable(this);
 
-        contentLayout = (CoordinatorLayout) findViewById(R.id.content_layout);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        driverfullName = (TextView) findViewById(R.id.driverfullName);
-        driverFamilyName = (TextView) findViewById(R.id.driverFamilyName);
-        driverImage = (ImageView) findViewById(R.id.driver_image);
-        driverNumber = (TextView) findViewById(R.id.driverNumber);
-        driverName = (TextView) findViewById(R.id.driverName);
-        teamName = (TextView) findViewById(R.id.teamName);
-        likeButton = (ToggleButton) findViewById(R.id.like_button);
+        contentLayout = findViewById(R.id.content_layout);
+        progressBar = findViewById(R.id.progressBar);
+        driverfullName = findViewById(R.id.driverfullName);
+        driverFamilyName = findViewById(R.id.driverFamilyName);
+        driverImage = findViewById(R.id.driver_image);
+        driverNumber = findViewById(R.id.driverNumber);
+        driverName = findViewById(R.id.driverName);
+        teamName = findViewById(R.id.teamName);
+        likeButton = findViewById(R.id.like_button);
 
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finishAfterTransition();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finishAfterTransition());
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -88,7 +83,7 @@ public class driverPageActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driverPageActivity.this));
         }
         LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
+        //String currentYear = Integer.toString(currentDate.getYear());
 
         if(!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -104,23 +99,17 @@ public class driverPageActivity extends AppCompatActivity {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user!=null){
                 isFavourite(driver);
-                likeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        if(likeButton.isChecked()){
-                            saveDriver(driver);
-                        }else{
-                            deleteDriver(driver);
-                        }
+                likeButton.setOnClickListener(view -> {
+                    if(likeButton.isChecked()){
+                        saveDriver(driver);
+                    }else{
+                        deleteDriver(driver);
                     }
                 });
             }else{
-                likeButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        likeButton.setChecked(false);
-                        Toast.makeText(driverPageActivity.this, getString(R.string.driver_save_error_login_text), Toast.LENGTH_LONG).show();
-                    }
+                likeButton.setOnClickListener(view -> {
+                    likeButton.setChecked(false);
+                    Toast.makeText(driverPageActivity.this, getString(R.string.driver_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
 
@@ -232,15 +221,15 @@ public class driverPageActivity extends AppCompatActivity {
             });
 
 
-            CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
 
             if (!checkLightTheme(driverPageActivity.this)){
                 collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
             }
 
-            AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+            AppBarLayout appBarLayout = findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+            Toolbar toolbar = findViewById(R.id.toolbar);
             appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
                 boolean isShow = true;
                 int scrollRange = -1;
@@ -352,15 +341,12 @@ public class driverPageActivity extends AppCompatActivity {
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setTag("sticky");
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, new TabLayoutMediator.TabConfigurationStrategy(){
-            @Override
-            public void onConfigureTab(TabLayout.Tab tab, int position) {
-                if (position == 0){
-                    tab.setText(R.string.stats_text);
-                }
-                else{
-                    tab.setText(R.string.results_text);
-                }
+        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
+            if (position == 0){
+                tab.setText(R.string.stats_text);
+            }
+            else{
+                tab.setText(R.string.results_text);
             }
         });
         tabLayoutMediator.attach();

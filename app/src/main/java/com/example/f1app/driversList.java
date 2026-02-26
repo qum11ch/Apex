@@ -68,17 +68,17 @@ public class driversList {
         return driverPoints;
     }
 
-    public void setDriverPoints(String driverPoints) {
-        this.driverPoints = driverPoints;
-    }
+    //public void setDriverPoints(String driverPoints) {
+    //    this.driverPoints = driverPoints;
+    //}
 
     public String getDriverPlacement() {
         return driverPlacement;
     }
 
-    public void setDriverPlacement(String driverPlacement) {
-        this.driverPlacement = driverPlacement;
-    }
+    //public void setDriverPlacement(String driverPlacement) {
+    //    this.driverPlacement = driverPlacement;
+    //}
 
     public String getDriverCode() {
         return driverCode;
@@ -92,9 +92,9 @@ public class driversList {
         return startSeason;
     }
 
-    public void setStartSeason(boolean startSeason) {
-        this.startSeason = startSeason;
-    }
+    //public void setStartSeason(boolean startSeason) {
+    //    this.startSeason = startSeason;
+    //}
 
     public String getSeason() {
         return season;

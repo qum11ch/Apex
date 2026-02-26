@@ -137,14 +137,12 @@ public class teamsStandingsActivity extends AppCompatActivity {
         });
 
         showDrivers = findViewById(R.id.showDriver);
-        showDrivers.setOnClickListener(v -> {
-            startActivity_seasonData(teamsStandingsActivity.this, driversStandingsActivity.class, mCurrentSeason);
-        });
+        showDrivers.setOnClickListener(v ->
+            startActivity_seasonData(teamsStandingsActivity.this, driversStandingsActivity.class, mCurrentSeason)
+        );
 
         showSchedule = findViewById(R.id.showSchedule);
-        showSchedule.setOnClickListener(v -> {
-            startActivity_seasonData(teamsStandingsActivity.this, scheduleActivity.class, mCurrentSeason);
-        });
+        showSchedule.setOnClickListener(v -> startActivity_seasonData(teamsStandingsActivity.this, scheduleActivity.class, mCurrentSeason));
 
         showHomePage = findViewById(R.id.showHomePage);
         showHomePage.setOnClickListener(v -> {
@@ -154,9 +152,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         });
 
         showAccount = findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(v -> {
-            startActivity_seasonData(teamsStandingsActivity.this, logInPageActivity.class, mCurrentSeason);
-        });
+        showAccount.setOnClickListener(v -> startActivity_seasonData(teamsStandingsActivity.this, logInPageActivity.class, mCurrentSeason));
 
 
         ImageButton backButton = findViewById(R.id.backButton);

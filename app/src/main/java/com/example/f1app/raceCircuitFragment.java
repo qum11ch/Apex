@@ -21,8 +21,6 @@ import androidx.fragment.app.Fragment;
 import com.blongho.country_data.World;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
-import com.google.android.material.tabs.TabLayout;
-import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,9 +39,8 @@ public class raceCircuitFragment extends Fragment {
     private TextView raceDist;
     private TextView lapRecord_time;
     private TextView lapRecord_driver;
-    private RelativeLayout contentLayout, circuitInfoLayout;
+    private RelativeLayout contentLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
-    private View resultsLine;
 
     public raceCircuitFragment() {
         // required empty public constructor.
@@ -72,9 +69,9 @@ public class raceCircuitFragment extends Fragment {
         lapRecord_time = view.findViewById(R.id.lapRecord_time);
         lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
         ImageView circuitImage = view.findViewById(R.id.circuitImage);
-        circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
+        RelativeLayout circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
         ImageView flag = view.findViewById(R.id.flag);
-        resultsLine = view.findViewById(R.id.resultsLine);
+        View resultsLine = view.findViewById(R.id.resultsLine);
         Button raceResults_2025 = view.findViewById(R.id.raceResults_2025);
         Button raceResults_2024 = view.findViewById(R.id.raceResults_2024);
         contentLayout = view.findViewById(R.id.content_layout);

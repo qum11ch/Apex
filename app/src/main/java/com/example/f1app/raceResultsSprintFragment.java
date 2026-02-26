@@ -67,7 +67,7 @@ public class raceResultsSprintFragment extends Fragment {
 
         if (!getArguments().isEmpty()){
             String mCircuitId = getArguments().getString("circuitId");
-            String mRaceName = getArguments().getString("raceName");
+            //String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
             //datum = new ArrayList<>();
@@ -82,63 +82,55 @@ public class raceResultsSprintFragment extends Fragment {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            JSONObject RaceTable = MRData.getJSONObject("RaceTable");
-                            JSONArray Races = RaceTable.getJSONArray("Races");
-                            for(int i = 0; i < Races.length(); i++) {
-                                JSONArray QualifyingResults = Races.getJSONObject(i)
-                                        .getJSONArray("SprintResults");
-                                for (int j = 0; j < QualifyingResults.length(); j++) {
-                                    JSONObject Result = QualifyingResults.getJSONObject(j);
-                                    String positionText = Result.getString("positionText");
-                                    String driverCode = Result.getJSONObject("Driver")
-                                            .getString("code");
-                                    String constructorId = Result.getJSONObject("Constructor")
-                                            .getString("constructorId");
-                                    String time;
-                                    String points = Result.getString("points");
-                                    String position = positionText;;
-                                    if (positionText.equals("R")){
-                                        time = getResources().getString(R.string.dnf_text);
-                                        position = getResources().getString(R.string.nc_text);
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        JSONObject RaceTable = MRData.getJSONObject("RaceTable");
+                        JSONArray Races = RaceTable.getJSONArray("Races");
+                        for(int i = 0; i < Races.length(); i++) {
+                            JSONArray QualifyingResults = Races.getJSONObject(i)
+                                    .getJSONArray("SprintResults");
+                            for (int j = 0; j < QualifyingResults.length(); j++) {
+                                JSONObject Result = QualifyingResults.getJSONObject(j);
+                                String positionText = Result.getString("positionText");
+                                String driverCode = Result.getJSONObject("Driver")
+                                        .getString("code");
+                                String constructorId = Result.getJSONObject("Constructor")
+                                        .getString("constructorId");
+                                String time;
+                                String points = Result.getString("points");
+                                String position = positionText;;
+                                if (positionText.equals("R")){
+                                    time = getResources().getString(R.string.dnf_text);
+                                    position = getResources().getString(R.string.nc_text);
+                                }else{
+                                    if (Result.has("Time")){
+                                        time = Result.getJSONObject("Time")
+                                                .getString("time");
+                                        if (!positionText.equals("1")) {
+                                            time += getResources().getString(R.string.seconds_text);
+                                        }
                                     }else{
-                                        if (Result.has("Time")){
-                                            time = Result.getJSONObject("Time")
-                                                    .getString("time");
-                                            if (!positionText.equals("1")) {
-                                                time += getResources().getString(R.string.seconds_text);
-                                            }
+                                        String status = Result.getString("status");
+                                        if (status.contains("Lap")){
+                                            time = Result.getString("status");
                                         }else{
-                                            String status = Result.getString("status");
-                                            if (status.contains("Lap")){
-                                                time = Result.getString("status");
-                                            }else{
-                                                time = getResources().getString(R.string.dnf_text);
-                                                position = getResources().getString(R.string.nc_text);
-                                            }
+                                            time = getResources().getString(R.string.dnf_text);
+                                            position = getResources().getString(R.string.nc_text);
                                         }
                                     }
-                                    raceResultsRaceData results = new raceResultsRaceData(position,
-                                            constructorId, driverCode, time, points, season);
-                                    datum.add(results);
                                 }
-                                hideShimmer(recyclerView, shimmerFrameLayout);
-                                adapter.notifyItemChanged(datum.size() - 1);
+                                raceResultsRaceData results = new raceResultsRaceData(position,
+                                        constructorId, driverCode, time, points, season);
+                                datum.add(results);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            hideShimmer(recyclerView, shimmerFrameLayout);
+                            adapter.notifyItemChanged(datum.size() - 1);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }

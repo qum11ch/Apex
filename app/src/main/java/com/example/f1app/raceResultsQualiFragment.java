@@ -66,10 +66,9 @@ public class raceResultsQualiFragment extends Fragment {
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         if (!getArguments().isEmpty()){
             String mCircuitId = getArguments().getString("circuitId");
-            String mRaceName = getArguments().getString("raceName");
+            //String mRaceName = getArguments().getString("raceName");
             String mSeason = getArguments().getString("season");
 
             //datum = new ArrayList<>();
@@ -85,52 +84,44 @@ public class raceResultsQualiFragment extends Fragment {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            JSONObject RaceTable = MRData.getJSONObject("RaceTable");
-                            JSONArray Races = RaceTable.getJSONArray("Races");
-                            for(int i = 0; i < Races.length(); i++) {
-                                JSONArray QualifyingResults = Races.getJSONObject(i)
-                                        .getJSONArray("QualifyingResults");
-                                for (int j = 0; j < QualifyingResults.length(); j++) {
-                                    JSONObject Result = QualifyingResults.getJSONObject(j);
-                                    String position = Result.getString("position");
-                                    String driverCode = Result.getJSONObject("Driver")
-                                            .getString("code");
-                                    String constructorId = Result.getJSONObject("Constructor")
-                                            .getString("constructorId");
-                                    String Q1 = Result.getString("Q1");
-                                    String Q2, Q3;
-                                    if (Result.has("Q2")){
-                                        Q2 = Result.getString("Q2");
-                                    }else{
-                                        Q2 = "--";
-                                    }
-                                    if (Result.has("Q3")){
-                                        Q3 = Result.getString("Q3");
-                                    }else{
-                                        Q3 = "--";
-                                    }
-                                    raceResultsQualiData results = new raceResultsQualiData(position,
-                                            constructorId, driverCode, Q1, Q2, Q3, season);
-                                    datum.add(results);
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        JSONObject RaceTable = MRData.getJSONObject("RaceTable");
+                        JSONArray Races = RaceTable.getJSONArray("Races");
+                        for(int i = 0; i < Races.length(); i++) {
+                            JSONArray QualifyingResults = Races.getJSONObject(i)
+                                    .getJSONArray("QualifyingResults");
+                            for (int j = 0; j < QualifyingResults.length(); j++) {
+                                JSONObject Result = QualifyingResults.getJSONObject(j);
+                                String position = Result.getString("position");
+                                String driverCode = Result.getJSONObject("Driver")
+                                        .getString("code");
+                                String constructorId = Result.getJSONObject("Constructor")
+                                        .getString("constructorId");
+                                String Q1 = Result.getString("Q1");
+                                String Q2, Q3;
+                                if (Result.has("Q2")){
+                                    Q2 = Result.getString("Q2");
+                                }else{
+                                    Q2 = "--";
                                 }
-                                hideShimmer(recyclerView, shimmerFrameLayout);
-                                adapter.notifyItemChanged(datum.size() - 1);
+                                if (Result.has("Q3")){
+                                    Q3 = Result.getString("Q3");
+                                }else{
+                                    Q3 = "--";
+                                }
+                                raceResultsQualiData results = new raceResultsQualiData(position,
+                                        constructorId, driverCode, Q1, Q2, Q3, season);
+                                datum.add(results);
                             }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                            hideShimmer(recyclerView, shimmerFrameLayout);
+                            adapter.notifyItemChanged(datum.size() - 1);
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(requireContext(), error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }

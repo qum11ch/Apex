@@ -50,6 +50,10 @@ public class scheduleActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
 
+    public scheduleActivity(Toolbar toolbar) {
+        this.toolbar = toolbar;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -84,9 +88,7 @@ public class scheduleActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         showDrivers = findViewById(R.id.showDriver);
-        showDrivers.setOnClickListener(v -> {
-            startActivity_seasonData(scheduleActivity.this, driversStandingsActivity.class, mCurrentSeason);
-        });
+        showDrivers.setOnClickListener(v -> startActivity_seasonData(scheduleActivity.this, driversStandingsActivity.class, mCurrentSeason));
 
         showHomePage = findViewById(R.id.showHomePage);
         showHomePage.setOnClickListener(v -> {
@@ -96,14 +98,10 @@ public class scheduleActivity extends AppCompatActivity {
         });
 
         showTeams = findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(v -> {
-            startActivity_seasonData(scheduleActivity.this, teamsStandingsActivity.class, mCurrentSeason);
-        });
+        showTeams.setOnClickListener(v -> startActivity_seasonData(scheduleActivity.this, teamsStandingsActivity.class, mCurrentSeason));
 
         showAccount = findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(v -> {
-            startActivity_seasonData(scheduleActivity.this, logInPageActivity.class, mCurrentSeason);
-        });
+        showAccount.setOnClickListener(v -> startActivity_seasonData(scheduleActivity.this, logInPageActivity.class, mCurrentSeason));
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());

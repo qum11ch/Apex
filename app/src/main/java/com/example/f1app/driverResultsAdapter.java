@@ -44,7 +44,7 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
 
         String raceName = datum.getRaceName();
         String driverResult = datum.getDriverResult();
-        String driverName = datum.getDriverName();
+        //String driverName = datum.getDriverName();
 
         String localeRaceName = raceName.toLowerCase().replaceAll("\\s+", "_");
         String resultsRaceName = context.getString(getStringByName(localeRaceName + "_locality"));

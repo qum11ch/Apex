@@ -47,7 +47,6 @@
             <Button
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="2dp"
-                android:layout_below="@id/emptySavedRace_layout"
                 android:backgroundTint="@color/white"
                 android:textSize="18sp"
                 style="@style/PrevResultsStyle"
@@ -61,7 +60,6 @@
                 android:id="@+id/seasonResults_2025"/>
             <Button
                 android:layout_marginBottom="10dp"
-                android:layout_below="@id/seasonResults_2025"
                 style="@style/PrevResultsStyleButtom"
                 android:backgroundTint="@color/white"
                 android:textSize="18sp"
@@ -72,8 +70,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:textAppearance="@style/TextStyle.Gram.Bold"
-                android:id="@+id/seasonResults_2024"
-/>
+                android:id="@+id/seasonResults_2024" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

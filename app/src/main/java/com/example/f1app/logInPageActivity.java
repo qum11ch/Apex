@@ -40,14 +40,13 @@ import com.google.firebase.database.ValueEventListener;
 
 public class logInPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    Button showDrivers, showSchedule, showTeams, showHomePage, showAccount;
+    Button showDrivers, showSchedule, showTeams, showHomePage;
     EditText editTextUsername, editTextPassword;
     Button loginButton;
     ProgressBar loginProgress;
     LinearLayout signUpLayout;
     TextInputLayout til_username, til_password;
     String password, username;
-    SharedPreferences prefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -72,94 +71,41 @@ public class logInPageActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.loginButton);
 
         signUpLayout = findViewById(R.id.signUpLayout);
-        signUpLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity_seasonData(logInPageActivity.this, registerPageActivity.class, mCurrentSeason);
-                //Intent intent = new Intent(getApplicationContext(), registerPageActivity.class);
-                //startActivity(intent);
-            }
-        });
+        signUpLayout.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, registerPageActivity.class, mCurrentSeason));
 
         loginProgress = findViewById(R.id.loginProgress);
-        til_username = (TextInputLayout) findViewById(R.id.username_layout);
-        til_password = (TextInputLayout) findViewById(R.id.password_layout);
+        til_username = findViewById(R.id.username_layout);
+        til_password = findViewById(R.id.password_layout);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null){
-            //Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
-            //startActivity(i);
             startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, mCurrentSeason);
             finish();
         }
 
-        TextView resetPassword = (TextView) findViewById(R.id.resetPassword);
-        resetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Intent i = new Intent(logInPageActivity.this, resetPageActivity.class);
-                //startActivity(i);
-                startActivity_seasonData(logInPageActivity.this, resetPageActivity.class, mCurrentSeason);
-            }
+        TextView resetPassword = findViewById(R.id.resetPassword);
+        resetPassword.setOnClickListener(view -> startActivity_seasonData(logInPageActivity.this, resetPageActivity.class, mCurrentSeason));
+
+        loginButton.setOnClickListener(v -> loginUserAccount(mCurrentSeason));
+
+        showDrivers = findViewById(R.id.showDriver);
+        showDrivers.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, driversStandingsActivity.class, mCurrentSeason));
+
+        showSchedule = findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, scheduleActivity.class, mCurrentSeason));
+
+        showHomePage = findViewById(R.id.showHomePage);
+        showHomePage.setOnClickListener(v -> {
+            Intent intent = new Intent(logInPageActivity.this, MainActivity.class);
+            logInPageActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginUserAccount(mCurrentSeason);
-            }
-        });
+        showTeams = findViewById(R.id.showTeams);
+        showTeams.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, teamsStandingsActivity.class, mCurrentSeason));
 
-        showDrivers = (Button) findViewById(R.id.showDriver);
-        showDrivers.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity_seasonData(logInPageActivity.this, driversStandingsActivity.class, mCurrentSeason);
-                //Intent intent = new Intent(logInPageActivity.this, driversStandingsActivity.class);
-                //logInPageActivity.this.startActivity(intent);
-                //overridePendingTransition(0, 0);
-            }
-        });
-
-        showSchedule = (Button) findViewById(R.id.showSchedule);
-        showSchedule.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity_seasonData(logInPageActivity.this, scheduleActivity.class, mCurrentSeason);
-                //Intent intent = new Intent(logInPageActivity.this, scheduleActivity.class);
-                //logInPageActivity.this.startActivity(intent);
-                //overridePendingTransition(0, 0);
-            }
-        });
-
-        showHomePage = (Button) findViewById(R.id.showHomePage);
-        showHomePage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(logInPageActivity.this, MainActivity.class);
-                logInPageActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
-        });
-
-        showTeams = (Button) findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity_seasonData(logInPageActivity.this, teamsStandingsActivity.class, mCurrentSeason);
-                //Intent intent = new Intent(logInPageActivity.this, teamsStandingsActivity.class);
-                //logInPageActivity.this.startActivity(intent);
-                //overridePendingTransition(0, 0);
-            }
-        });
-
-        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
         editTextPassword.addTextChangedListener(textWatcher);
         editTextUsername.addTextChangedListener(textWatcher);
@@ -214,19 +160,15 @@ public class logInPageActivity extends AppCompatActivity {
                         String email = snapshot.child("userEmail").getValue(String.class);
                         auth = FirebaseAuth.getInstance();
                         auth.signInWithEmailAndPassword(email, password)
-                                .addOnCompleteListener(logInPageActivity.this, new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) {
-                                            Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
-                                            startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, currentSeason);
-                                            //startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
-                                            finish();
-                                        } else {
-                                            loginProgress.setVisibility(View.INVISIBLE);
-                                            loginButton.setVisibility(View.VISIBLE);
-                                            Toast.makeText(logInPageActivity.this, getString(R.string.auth_fail_text), Toast.LENGTH_LONG).show();
-                                        }
+                                .addOnCompleteListener(logInPageActivity.this, task -> {
+                                    if (task.isSuccessful()) {
+                                        Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
+                                        startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, currentSeason);
+                                        finish();
+                                    } else {
+                                        loginProgress.setVisibility(View.INVISIBLE);
+                                        loginButton.setVisibility(View.VISIBLE);
+                                        Toast.makeText(logInPageActivity.this, getString(R.string.auth_fail_text), Toast.LENGTH_LONG).show();
                                     }
                                 });
                     }

@@ -34,7 +34,6 @@ public class driverResultsFragment extends Fragment {
     private CheckBox radioButton_2025, radioButton_2024, radioButton_2026;
     private ShimmerFrameLayout shimmerFrameLayout;
     private NestedScrollView scrollView;
-    private boolean isInitialLoad = false;
 
     public driverResultsFragment() {
         // required empty public constructor.

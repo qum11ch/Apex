@@ -86,7 +86,7 @@ public class registerPageActivity extends AppCompatActivity {
                 }
                 driverPicker.setMinValue(1);
                 driverPicker.setMaxValue(driversList.size());
-                Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
+                driversList.sort(String.CASE_INSENSITIVE_ORDER);
                 Collections.reverse(driversList);
                 driversList.add(getString(R.string.nobody));
                 Collections.reverse(driversList);

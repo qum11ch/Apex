@@ -166,117 +166,109 @@ public class winnersWDCActivity extends AppCompatActivity {
                 Request.Method.GET,
                 url2,
                 null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            JSONObject MRData = response.getJSONObject("MRData");
-                            String total = MRData.getString("total");
-                            if (!total.equals("0")) {
-                                JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                                JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                                for (int i = 0; i < StandingsLists.length(); i++) {
-                                    JSONArray DriverStandings = StandingsLists.getJSONObject(i)
-                                            .getJSONArray("DriverStandings");
-                                    int leaderPoints = 0;
-                                    for (int j = 0; j < DriverStandings.length(); j++) {
-                                        String pointsText = DriverStandings.getJSONObject(j).getString("points");
-                                        int points = Integer.parseInt(pointsText);
-                                        String placement = DriverStandings.getJSONObject(j).getString("positionText");
-                                        String driverName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("givenName");
-                                        String driverFamilyName = DriverStandings.getJSONObject(j)
-                                                .getJSONObject("Driver").getString("familyName");
+                response -> {
+                    try {
+                        JSONObject MRData = response.getJSONObject("MRData");
+                        String total = MRData.getString("total");
+                        if (!total.equals("0")) {
+                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
+                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+                            for (int i = 0; i < StandingsLists.length(); i++) {
+                                JSONArray DriverStandings = StandingsLists.getJSONObject(i)
+                                        .getJSONArray("DriverStandings");
+                                int leaderPoints = 0;
+                                for (int j = 0; j < DriverStandings.length(); j++) {
+                                    String pointsText = DriverStandings.getJSONObject(j).getString("points");
+                                    int points = Integer.parseInt(pointsText);
+                                    String placement = DriverStandings.getJSONObject(j).getString("positionText");
+                                    String driverName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("givenName");
+                                    String driverFamilyName = DriverStandings.getJSONObject(j)
+                                            .getJSONObject("Driver").getString("familyName");
 
-                                        JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                        String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                        String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
+                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
+                                    String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
 
-                                        if (j == 0){
-                                            leaderPoints = points;
-                                        }
+                                    if (j == 0){
+                                        leaderPoints = points;
+                                    }
 
-                                        int driverMaxPoints = points + maxPoints;
-                                        boolean canWin = driverMaxPoints > leaderPoints;
+                                    int driverMaxPoints = points + maxPoints;
+                                    boolean canWin = driverMaxPoints > leaderPoints;
 
-                                        driversWDCPointsList smth = new driversWDCPointsList(driverName,
-                                                driverFamilyName, constructorsName, constructorId,
-                                                season, points, driverMaxPoints, canWin, placement);
-                                        datum.add(smth);
+                                    driversWDCPointsList smth = new driversWDCPointsList(driverName,
+                                            driverFamilyName, constructorsName, constructorId,
+                                            season, points, driverMaxPoints, canWin, placement);
+                                    datum.add(smth);
+                                }
+                            }
+                            hideShimmer(recyclerView, shimmerFrameLayout);
+                            adapter.notifyItemChanged(datum.size() - 1);
+                        }else{
+                            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                            final int[] placementHolder = {1};
+                            rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    for (DataSnapshot child: snapshot.getChildren()) {
+                                        String constructorId = child.child("constructorId").getValue(String.class);
+                                        String constructorsName = child.child("name").getValue(String.class);
+                                        rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                datum.clear();
+                                                for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
+                                                    String driverFullname = driverDataSnapshot.getKey();
+                                                    DatabaseReference driversRef = rootRef.child("drivers");
+                                                    DatabaseReference driverRef = driversRef.child(driverFullname);
+                                                    ValueEventListener driversValueEventListener = new ValueEventListener() {
+                                                        @Override
+                                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                                            String[] parts = driverFullname.split(" ");
+                                                            String driverName, driverFamilyName;
+                                                            if(driverFullname.equals("Andrea Kimi Antonelli")){
+                                                                driverName = parts[0] + " " + parts[1];
+                                                                driverFamilyName = parts[2];
+                                                            }else{
+                                                                driverName = parts[0];
+                                                                driverFamilyName = parts[1];
+                                                            }
+                                                            driversWDCPointsList smth = new driversWDCPointsList(driverName,
+                                                                    driverFamilyName, constructorsName, constructorId,
+                                                                    season, 0, maxPoints, true, String.valueOf(placementHolder[0]));
+                                                            datum.add(smth);
+                                                            hideShimmer(recyclerView, shimmerFrameLayout);
+                                                            adapter.notifyItemChanged(datum.size() - 1);
+                                                            placementHolder[0]++;
+                                                        }
+
+                                                        @Override
+                                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                            Log.e("driverStandingsError", databaseError.getMessage());
+                                                        }
+                                                    };
+                                                    driverRef.addListenerForSingleValueEvent(driversValueEventListener);
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onCancelled(@NonNull DatabaseError error) {
+                                                Log.e("driverStandingsError", error.getMessage());
+                                            }
+                                        });
                                     }
                                 }
-                                hideShimmer(recyclerView, shimmerFrameLayout);
-                                adapter.notifyItemChanged(datum.size() - 1);
-                            }else{
-                                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                final int[] placementHolder = {1};
-                                rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        for (DataSnapshot child: snapshot.getChildren()) {
-                                            String constructorId = child.child("constructorId").getValue(String.class);
-                                            String constructorsName = child.child("name").getValue(String.class);
-                                            rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addValueEventListener(new ValueEventListener() {
-                                                @Override
-                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    datum.clear();
-                                                    for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
-                                                        String driverFullname = driverDataSnapshot.getKey();
-                                                        DatabaseReference driversRef = rootRef.child("drivers");
-                                                        DatabaseReference driverRef = driversRef.child(driverFullname);
-                                                        ValueEventListener driversValueEventListener = new ValueEventListener() {
-                                                            @Override
-                                                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                                                String[] parts = driverFullname.split(" ");
-                                                                String driverName, driverFamilyName;
-                                                                if(driverFullname.equals("Andrea Kimi Antonelli")){
-                                                                    driverName = parts[0] + " " + parts[1];
-                                                                    driverFamilyName = parts[2];
-                                                                }else{
-                                                                    driverName = parts[0];
-                                                                    driverFamilyName = parts[1];
-                                                                }
-                                                                driversWDCPointsList smth = new driversWDCPointsList(driverName,
-                                                                        driverFamilyName, constructorsName, constructorId,
-                                                                        season, 0, maxPoints, true, String.valueOf(placementHolder[0]));
-                                                                datum.add(smth);
-                                                                hideShimmer(recyclerView, shimmerFrameLayout);
-                                                                adapter.notifyItemChanged(datum.size() - 1);
-                                                                placementHolder[0]++;
-                                                            }
-
-                                                            @Override
-                                                            public void onCancelled(@NonNull DatabaseError databaseError) {
-                                                                Log.e("driverStandingsError", databaseError.getMessage());
-                                                            }
-                                                        };
-                                                        driverRef.addListenerForSingleValueEvent(driversValueEventListener);
-                                                    }
-                                                }
-
-                                                @Override
-                                                public void onCancelled(@NonNull DatabaseError error) {
-                                                    Log.e("driverStandingsError", error.getMessage());
-                                                }
-                                            });
-                                        }
-                                    }
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("driverStandingsError", error.getMessage());
-                                    }
-                                });
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    Log.e("driverStandingsError", error.getMessage());
+                                }
+                            });
                         }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(winnersWDCActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
+                }, error -> Toast.makeText(winnersWDCActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 }
