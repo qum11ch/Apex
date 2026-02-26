@@ -50,8 +50,7 @@ public class scheduleActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
 
-    public scheduleActivity(Toolbar toolbar) {
-        this.toolbar = toolbar;
+    public scheduleActivity() {
     }
 
     @Override

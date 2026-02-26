@@ -43,7 +43,7 @@
                     android:id="@+id/fastestLapDriverName"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/text_color_main"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:layout_marginTop="10dp"
@@ -57,7 +57,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="15dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/text_color_main"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     tools:ignore="RelativeOverlap" />
             </RelativeLayout>
