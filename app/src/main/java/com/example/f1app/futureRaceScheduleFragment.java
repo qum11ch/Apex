@@ -52,7 +52,6 @@ public class futureRaceScheduleFragment extends Fragment {
     private TextView mns_countdown;
     private TextView countdown_header;
     private scheduleAdapter adapter;
-    private RecyclerView recyclerView;
     private long diffStart, diffEnd;
     private ToggleButton saveRace;
     private LocalDate currentDate;
@@ -61,7 +60,6 @@ public class futureRaceScheduleFragment extends Fragment {
     private String mYear;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-    private Button predictButton;
 
 
     public futureRaceScheduleFragment() {
@@ -85,12 +83,12 @@ public class futureRaceScheduleFragment extends Fragment {
         hrs_countdown = view.findViewById(R.id.hrs_countdown);
         mns_countdown = view.findViewById(R.id.mns_countdown);
         countdown_header = view.findViewById(R.id.countdown_header);
-        predictButton = view.findViewById(R.id.predict_button);
+        Button predictButton = view.findViewById(R.id.predict_button);
         TextView infoRaceName = view.findViewById(R.id.infoRaceName);
 
         saveRace = view.findViewById(R.id.saveRace);
 
-        recyclerView = view.findViewById(R.id.recyclerview_schedule);
+        RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         linearLayoutManager.setReverseLayout(true);

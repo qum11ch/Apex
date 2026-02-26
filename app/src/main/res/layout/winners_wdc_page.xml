@@ -67,7 +67,7 @@
                     android:layout_marginEnd="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:backgroundTint="@color/colorDriverPages">
+                    android:backgroundTint="@color/statusBar_color">
                     <LinearLayout
                         android:id="@+id/roundLayout"
                         android:layout_width="match_parent"
@@ -120,7 +120,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/remaining_events_text"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/text_color_main"
+                        android:textColor="@color/white"
                         android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"/>
@@ -138,7 +138,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/conventional_events_text"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/text_color_main"
+                            android:textColor="@color/white"
                             android:textSize="20sp"
                             android:layout_marginEnd="5dp"/>
                         <TextView
@@ -147,7 +147,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/text_color_main"
+                            android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
@@ -166,7 +166,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/sprint_events_text"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/text_color_main"
+                            android:textColor="@color/white"
                             android:textSize="20sp"
                             android:layout_marginEnd="5dp"/>
                         <TextView
@@ -175,7 +175,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textColor="@color/text_color_main"
+                            android:textColor="@color/white"
                             android:textSize="20sp"
                             android:textStyle="bold"/>
                     </LinearLayout>
@@ -187,7 +187,7 @@
                         android:layout_height="wrap_content"
                         android:text="@string/max_points_events_text"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/text_color_main"
+                        android:textColor="@color/white"
                         android:textSize="20sp"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"/>
@@ -198,7 +198,7 @@
                         android:id="@+id/max_points_count"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textColor="@color/text_color_main"
+                        android:textColor="@color/white"
                         android:textSize="20sp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:layout_marginStart="10dp"
@@ -211,7 +211,7 @@
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"
                 android:orientation="horizontal"
-                android:background="@color/dark_blue"
+                android:background="@color/statusBar_color"
                 android:id="@+id/wdc_table"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

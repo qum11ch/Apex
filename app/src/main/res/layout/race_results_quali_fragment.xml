@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/colorDriverPages"
+    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <LinearLayout
         android:paddingTop="5dp"
         android:paddingBottom="5dp"
         android:orientation="horizontal"
-        android:background="@color/dark_blue"
+        android:background="@color/statusBar_color"
         android:id="@+id/quali_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

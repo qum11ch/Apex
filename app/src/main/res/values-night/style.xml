@@ -6,6 +6,12 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="FlatButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/flat</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="declineButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/decline_button</item>
     </style>
@@ -40,7 +46,7 @@
     </style>
 
     <style name="StripedLinesWhite">
-        <item name="android:background">@drawable/background_striped_lines_white_blue</item>
+        <item name="android:background">@drawable/background_striped_lines_item_night</item>
     </style>
 
     <style name="StripedLinesItems">
@@ -77,6 +83,13 @@
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
     </style>
+    <style name="PrevResultsStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_previous</item>
+    </style>
+    <style name="PrevResultsStyleButtom" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_previous_buttom</item>
+    </style>
+
     <style name="EmptyButton" parent="android:Widget.TextView">
         <item name="android:background">@drawable/empty_button_style</item>
     </style>
@@ -285,7 +298,7 @@
         <item name="android:fontFamily">"@font/share_tech_cyr"</item>
         <item name="android:background">@drawable/buttons_footer</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/red</item>
+        <item name="android:textColor">@color/white</item>
         <item name="android:textSize">14sp</item>
     </style>
     <style name="footerButtonOff" parent="android:Widget.TextView">
@@ -293,7 +306,7 @@
         <item name="android:fontFamily">"@font/share_tech_cyr"</item>
         <item name="android:background">@drawable/buttons_footer</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/text_color_secondary</item>
+        <item name="android:textColor">@color/grey</item>
         <item name="android:textSize">14sp</item>
     </style>
 
@@ -312,10 +325,10 @@
         <item name="tabIndicatorHeight">4dp</item>
         <item name="tabPaddingStart">6dp</item>
         <item name="tabPaddingEnd">6dp</item>
-        <item name="tabBackground">@color/dark_blue</item>
+        <item name="tabBackground">@color/darkest_grey</item>
         <item name="tabTextAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
         <item name="tabSelectedTextColor">@color/white</item>
-        <item name="background">@color/dark_blue</item>
+        <item name="background">@color/darkest_grey</item>
         <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
     </style>
 

@@ -10,6 +10,7 @@ public class driversList {
     private String driverCode;
     private boolean startSeason;
     private String season;
+    private String currentSeason;
 
     public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode, boolean startSeason, String season) {
         this.driverName = driverName;
@@ -25,6 +26,14 @@ public class driversList {
 
     public String getDriverName() {
         return driverName;
+    }
+
+    public String getCurrentSeason(){
+        return currentSeason;
+    }
+
+    public void setCurrentSeason(String currentSeason){
+        this.currentSeason = currentSeason;
     }
 
     public void setDriverName(String driverName) {

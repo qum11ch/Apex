@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:background="@android:color/transparent"
+<FrameLayout android:background="@android:color/transparent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".futureRaceFragment">
+    tools:context=".futureRaceFragment"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.example.f1app.LockableNestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -13,25 +13,30 @@
         android:overScrollMode="never"
         android:scrollbars="none">
         <RelativeLayout
-            android:id="@+id/team_layout"
             style="@style/ScheduleEmptyLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:layout_marginStart="10dp"
-            android:layout_marginBottom="1000dp"
             android:layout_marginEnd="10dp">
-            <LinearLayout
+            <RelativeLayout
                 android:orientation="vertical"
-                android:background="@drawable/background_striped_lines_blue"
-                android:id="@+id/team"
+                android:id="@+id/emptyFutureRace_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="0dp"
-                android:layout_marginTop="10dp"
                 android:layout_marginEnd="10dp"
-                android:paddingTop="20dp">
+                android:layout_marginBottom="10dp">
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_marginTop="10dp"
+                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.RightSide"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:background="@drawable/background_striped_lines_blue"
+                    android:id="@+id/stripedImage"/>
                 <TextView
+                    android:id="@+id/header_text"
+                    android:layout_marginTop="20dp"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@color/white"
                     android:layout_marginStart="10dp"
@@ -41,6 +46,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/empty_race_list_header"/>
                 <TextView
+                    android:layout_below="@id/header_text"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:textStyle="normal"
                     android:textColor="@color/white"
@@ -50,7 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/empty_race_list_future"/>
-            </LinearLayout>
+            </RelativeLayout>
         </RelativeLayout>
     </com.example.f1app.LockableNestedScrollView>
 </FrameLayout>

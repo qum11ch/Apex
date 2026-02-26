@@ -3,6 +3,7 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,15 +44,15 @@ import java.util.List;
 import java.util.Locale;
 
 public class driversStandingsActivity extends AppCompatActivity {
-    Button showTeamsButton, showSchedule, showHomePage, showAccount;
-
+    Button showTeams, showSchedule, showHomePage, showAccount;
+    private View driverStndLine;
     private List<driversList> datum;
     private RecyclerView recyclerView;
-    private ImageButton backButton;
     private driversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
-    private Button pastSeasonDriversStandings;
+    private Button driversStandings_2024, driversStandings_2025;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,11 +66,15 @@ public class driversStandingsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driversStandingsActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        mCurrentSeason = intentBundle.getString("currentSeason");
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
         recyclerView.setHasFixedSize(true);
+        driverStndLine = findViewById(R.id.driverStndLine);
 
         datum = new ArrayList<>();
 
@@ -77,13 +82,17 @@ public class driversStandingsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         LocalDate currentDate = LocalDate.now();
+        driversStandings_2024 = (Button) findViewById(R.id.driversStandings_2024);
+        driversStandings_2025 = (Button) findViewById(R.id.driversStandings_2025);
 
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 recyclerView.setVisibility(View.GONE);
-                pastSeasonDriversStandings.setVisibility(View.GONE);
+                driversStandings_2024.setVisibility(View.GONE);
+                driversStandings_2025.setVisibility(View.GONE);
+                driverStndLine.setVisibility(View.GONE);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
                 shimmerFrameLayout.startShimmer();
                 datum = new ArrayList<>();
@@ -96,34 +105,49 @@ public class driversStandingsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        pastSeasonDriversStandings = (Button) findViewById(R.id.pastSeasonDriversStandings);
-        String buttonText;
+        String buttonText_2024, buttonText_2025;
         if (Locale.getDefault().getLanguage().equals("ru")){
-            buttonText = getText(R.string.past_season_drivers) + " 2024";
+            buttonText_2024 = getText(R.string.past_season_drivers) + " 2024";
+            buttonText_2025 = getText(R.string.past_season_drivers) + " 2025";
         }else{
-            buttonText = "2024 " + getText(R.string.past_season_drivers);
+            buttonText_2024 = "2024 " + getText(R.string.past_season_drivers);
+            buttonText_2025 = "2025 " + getText(R.string.past_season_drivers);
         }
-        pastSeasonDriversStandings.setText(buttonText);
-        pastSeasonDriversStandings.setOnClickListener(new View.OnClickListener() {
+        driversStandings_2024.setText(buttonText_2024);
+        driversStandings_2024.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(driversStandingsActivity.this,
                         pastSeasonDriversStandingsActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("season", "2024");
+                bundle.putString("currentSeason", mCurrentSeason);
                 intent.putExtras(bundle);
                 driversStandingsActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
             }
         });
 
-        showTeamsButton = (Button) findViewById(R.id.showTeams);
-        showTeamsButton.setOnClickListener(new View.OnClickListener() {
+        driversStandings_2025.setText(buttonText_2025);
+        driversStandings_2025.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(driversStandingsActivity.this, teamsStandingsActivity.class);
+                Intent intent = new Intent(driversStandingsActivity.this,
+                        pastSeasonDriversStandingsActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("season", "2025");
+                bundle.putString("currentSeason", mCurrentSeason);
+                intent.putExtras(bundle);
                 driversStandingsActivity.this.startActivity(intent);
                 overridePendingTransition(0, 0);
+            }
+        });
+
+        showTeams = (Button) findViewById(R.id.showTeams);
+        showTeams.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity_seasonData(driversStandingsActivity.this, teamsStandingsActivity.class, mCurrentSeason);
             }
         });
 
@@ -131,9 +155,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(driversStandingsActivity.this, scheduleActivity.class);
-                driversStandingsActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
+                startActivity_seasonData(driversStandingsActivity.this, scheduleActivity.class, mCurrentSeason);
             }
         });
 
@@ -151,14 +173,12 @@ public class driversStandingsActivity extends AppCompatActivity {
         showAccount.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(driversStandingsActivity.this, logInPageActivity.class);
-                driversStandingsActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
+                startActivity_seasonData(driversStandingsActivity.this, logInPageActivity.class, mCurrentSeason);
             }
         });
 
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -167,7 +187,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         });
 
 
-        getStanding(Integer.toString(currentDate.getYear()));
+        getStanding(mCurrentSeason);
 
 
         WindowInsetsControllerCompat windowInsetsController =
@@ -175,10 +195,19 @@ public class driversStandingsActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
+    public static void startActivity_seasonData(Activity activity, Class<?> className, String currentSeason){
+        Intent intent = new Intent(activity, className);
+        Bundle bundle = new Bundle();
+        bundle.putString("currentSeason" , currentSeason);
+        intent.putExtras(bundle);
+        activity.startActivity(intent);
+        activity.overridePendingTransition(0, 0);
+    }
 
-    public void getStanding(String currentYear){
+
+    public void getStanding(String currentSeason){
         RequestQueue queue = Volley.newRequestQueue(driversStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/driverstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentSeason + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -207,15 +236,29 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                         String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                         String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-                                        driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                        driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentSeason);
                                         datum.add(smth);
                                     }
                                 }
                                 hideShimmer(recyclerView, shimmerFrameLayout);
-                                pastSeasonDriversStandings.animate()
+                                driversStandings_2024.animate()
                                         .setDuration(500)
                                         .withEndAction(() -> {
-                                            pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                            driversStandings_2024.setVisibility(View.VISIBLE);
+                                        })
+                                        .start();
+
+                                driverStndLine.animate()
+                                        .setDuration(500)
+                                        .withEndAction(() -> {
+                                            driverStndLine.setVisibility(View.VISIBLE);
+                                        })
+                                        .start();
+
+                                driversStandings_2025.animate()
+                                        .setDuration(500)
+                                        .withEndAction(() -> {
+                                            driversStandings_2025.setVisibility(View.VISIBLE);
                                         })
                                         .start();
 
@@ -226,12 +269,12 @@ public class driversStandingsActivity extends AppCompatActivity {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                                         datum.add(new driversList("","","","","","","",
-                                            true, currentYear));
+                                            true, currentSeason));
                                         for (DataSnapshot child: snapshot.getChildren()) {
                                             String constructorId = child.child("constructorId").getValue(String.class);
                                             String constructorsName = child.child("name").getValue(String.class);
 
-                                            rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                            rootRef.child("driverLineUp/season/" + currentSeason + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                     for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
@@ -253,14 +296,28 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                 }
                                                                 String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
                                                                 driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
-                                                                        true, currentYear);
+                                                                        true, currentSeason);
                                                                 datum.add(smth);
 
                                                                 hideShimmer(recyclerView, shimmerFrameLayout);
-                                                                pastSeasonDriversStandings.animate()
+                                                                driversStandings_2024.animate()
                                                                         .setDuration(500)
                                                                         .withEndAction(() -> {
-                                                                            pastSeasonDriversStandings.setVisibility(View.VISIBLE);
+                                                                            driversStandings_2024.setVisibility(View.VISIBLE);
+                                                                        })
+                                                                        .start();
+
+                                                                driverStndLine.animate()
+                                                                        .setDuration(500)
+                                                                        .withEndAction(() -> {
+                                                                            driverStndLine.setVisibility(View.VISIBLE);
+                                                                        })
+                                                                        .start();
+
+                                                                driversStandings_2025.animate()
+                                                                        .setDuration(500)
+                                                                        .withEndAction(() -> {
+                                                                            driversStandings_2025.setVisibility(View.VISIBLE);
                                                                         })
                                                                         .start();
 
@@ -290,7 +347,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                 });
                             }
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e("driverStandingsError", e.getMessage());
                         }
                     }
                 }, new Response.ErrorListener() {

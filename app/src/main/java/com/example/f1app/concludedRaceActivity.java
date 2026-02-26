@@ -30,18 +30,13 @@ import java.time.format.DateTimeFormatter;
 
 public class concludedRaceActivity extends AppCompatActivity {
 
-    private ImageButton backButton;
-    private TextView raceTitle;
-    private ViewPager2 myViewPager2;
-    private viewPagerAdapter adapter ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_page);
 
-        raceTitle = findViewById(R.id.raceTitile);
+        TextView raceTitle = findViewById(R.id.raceTitile);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -53,7 +48,7 @@ public class concludedRaceActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(concludedRaceActivity.this));
         }
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,8 +121,8 @@ public class concludedRaceActivity extends AppCompatActivity {
     }
 
     private void init(Bundle scheduleBundle, Bundle circuitBundle) {
-        myViewPager2 = findViewById(R.id.viewPager2);
-        adapter = new viewPagerAdapter(this);
+        ViewPager2 myViewPager2 = findViewById(R.id.viewPager2);
+        viewPagerAdapter adapter = new viewPagerAdapter(this);
         concludedRaceScheduleFragment scheduleFragment = new concludedRaceScheduleFragment();
         scheduleFragment.setArguments(scheduleBundle);
         adapter.addFragment(scheduleFragment);

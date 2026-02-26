@@ -98,6 +98,7 @@ public class teamStatsFragment extends Fragment {
             String currentYear = String.valueOf(currentDate.getYear());
             String mTeamId = getArguments().getString("teamId");
             String mTeamName = getArguments().getString("teamName");
+            String mCurrentSeason = getArguments().getString("currentSeason");
 
             rootRef.child("driverLineUp/season/" + currentYear + "/" + mTeamId).addValueEventListener(new ValueEventListener() {
                 @Override
@@ -129,6 +130,7 @@ public class teamStatsFragment extends Fragment {
                                 bundle.putString("driverTeam", mTeamName);
                                 bundle.putString("driverCode", mDriverCode);
                                 bundle.putString("driverTeamId", mTeamId);
+                                bundle.putString("currentSeason", mCurrentSeason);
                                 intent.putExtras(bundle);
                                 requireContext().startActivity(intent);
                             }
@@ -161,6 +163,7 @@ public class teamStatsFragment extends Fragment {
                                 bundle.putString("driverTeam", mTeamName);
                                 bundle.putString("driverCode", mDriverCode);
                                 bundle.putString("driverTeamId", mTeamId);
+                                bundle.putString("currentSeason", mCurrentSeason);
                                 intent.putExtras(bundle);
                                 requireContext().startActivity(intent);
                             }
@@ -188,7 +191,7 @@ public class teamStatsFragment extends Fragment {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 String driversCode = snapshot.child("driversCode").getValue(String.class);
                                 StorageReference storageRef = storage.getReference();
-                                StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase().toLowerCase() + ".png");
+                                StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase().toLowerCase() + "_" + mCurrentSeason + ".png");
                                 if (finalI == 0){
                                     firstDriverName.setText(mDriverName);
                                     firstDriverFamilyName.setText(mDriverFamilyName);
@@ -197,7 +200,7 @@ public class teamStatsFragment extends Fragment {
                                             .transition(DrawableTransitionOptions.withCrossFade())
                                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                                             .transition(DrawableTransitionOptions.withCrossFade())
-                                            .error(R.drawable.f1)
+                                            .error(R.drawable.placeholder_driver)
                                             .into(firstDriver_image);
                                 }else{
                                     secondDriverName.setText(mDriverName);
@@ -207,7 +210,7 @@ public class teamStatsFragment extends Fragment {
                                             .transition(DrawableTransitionOptions.withCrossFade())
                                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                                             .transition(DrawableTransitionOptions.withCrossFade())
-                                            .error(R.drawable.f1)
+                                            .error(R.drawable.placeholder_driver)
                                             .into(secondDriver_image);
                                 }
                             }

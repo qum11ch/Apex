@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -39,13 +40,12 @@ import com.google.firebase.database.ValueEventListener;
 
 public class logInPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    Button showDriverButton, showSchedule, showTeams, showHomePage, showAccount;
+    Button showDrivers, showSchedule, showTeams, showHomePage, showAccount;
     EditText editTextUsername, editTextPassword;
     Button loginButton;
     ProgressBar loginProgress;
     LinearLayout signUpLayout;
     TextInputLayout til_username, til_password;
-    private ImageButton backButton;
     String password, username;
     SharedPreferences prefs;
     @Override
@@ -60,6 +60,9 @@ public class logInPageActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(logInPageActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        String mCurrentSeason = intentBundle.getString("currentSeason");
+
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
@@ -72,8 +75,9 @@ public class logInPageActivity extends AppCompatActivity {
         signUpLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), registerPageActivity.class);
-                startActivity(intent);
+                startActivity_seasonData(logInPageActivity.this, registerPageActivity.class, mCurrentSeason);
+                //Intent intent = new Intent(getApplicationContext(), registerPageActivity.class);
+                //startActivity(intent);
             }
         });
 
@@ -83,8 +87,9 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if(user!=null){
-            Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
-            startActivity(i);
+            //Intent i = new Intent(logInPageActivity.this, accountPageActivity.class);
+            //startActivity(i);
+            startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, mCurrentSeason);
             finish();
         }
 
@@ -92,25 +97,27 @@ public class logInPageActivity extends AppCompatActivity {
         resetPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(logInPageActivity.this, resetPageActivity.class);
-                startActivity(i);
+                //Intent i = new Intent(logInPageActivity.this, resetPageActivity.class);
+                //startActivity(i);
+                startActivity_seasonData(logInPageActivity.this, resetPageActivity.class, mCurrentSeason);
             }
         });
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginUserAccount();
+                loginUserAccount(mCurrentSeason);
             }
         });
 
-        showDriverButton = (Button) findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(new View.OnClickListener() {
+        showDrivers = (Button) findViewById(R.id.showDriver);
+        showDrivers.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(logInPageActivity.this, driversStandingsActivity.class);
-                logInPageActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
+                startActivity_seasonData(logInPageActivity.this, driversStandingsActivity.class, mCurrentSeason);
+                //Intent intent = new Intent(logInPageActivity.this, driversStandingsActivity.class);
+                //logInPageActivity.this.startActivity(intent);
+                //overridePendingTransition(0, 0);
             }
         });
 
@@ -118,9 +125,10 @@ public class logInPageActivity extends AppCompatActivity {
         showSchedule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(logInPageActivity.this, scheduleActivity.class);
-                logInPageActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
+                startActivity_seasonData(logInPageActivity.this, scheduleActivity.class, mCurrentSeason);
+                //Intent intent = new Intent(logInPageActivity.this, scheduleActivity.class);
+                //logInPageActivity.this.startActivity(intent);
+                //overridePendingTransition(0, 0);
             }
         });
 
@@ -138,13 +146,14 @@ public class logInPageActivity extends AppCompatActivity {
         showTeams.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(logInPageActivity.this, teamsStandingsActivity.class);
-                logInPageActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
+                startActivity_seasonData(logInPageActivity.this, teamsStandingsActivity.class, mCurrentSeason);
+                //Intent intent = new Intent(logInPageActivity.this, teamsStandingsActivity.class);
+                //logInPageActivity.this.startActivity(intent);
+                //overridePendingTransition(0, 0);
             }
         });
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,7 +187,7 @@ public class logInPageActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
-    private void loginUserAccount() {
+    private void loginUserAccount(String currentSeason) {
         loginProgress.setVisibility(View.VISIBLE);
         loginButton.setVisibility(View.INVISIBLE);
 
@@ -210,7 +219,8 @@ public class logInPageActivity extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
                                             Toast.makeText(logInPageActivity.this, getString(R.string.login_succ_text), Toast.LENGTH_LONG).show();
-                                            startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
+                                            startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, currentSeason);
+                                            //startActivity(new Intent(logInPageActivity.this, accountPageActivity.class));
                                             finish();
                                         } else {
                                             loginProgress.setVisibility(View.INVISIBLE);

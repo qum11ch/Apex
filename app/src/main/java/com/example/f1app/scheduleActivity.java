@@ -2,6 +2,7 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
 import android.content.Intent;
@@ -42,11 +43,12 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 public class scheduleActivity extends AppCompatActivity {
-    Button showDriverButton, showTeams, showHomePage, showAccount;
+    Button showDrivers, showTeams, showHomePage, showAccount;
     private Toolbar toolbar;
     private ViewPager2 myViewPager2;
     private CardView cardView;
     private SwipeRefreshLayout swipeLayout;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,8 @@ public class scheduleActivity extends AppCompatActivity {
         getSchedule(currentYear, currentDate);
         myViewPager2 = findViewById(R.id.viewPager2);
 
-
+        Bundle intentBundle = getIntent().getExtras();
+        mCurrentSeason = intentBundle.getString("currentSeason");
 
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
@@ -80,11 +83,9 @@ public class scheduleActivity extends AppCompatActivity {
 
         setSupportActionBar(toolbar);
 
-        showDriverButton = findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(v -> {
-            Intent intent = new Intent(scheduleActivity.this, driversStandingsActivity.class);
-            scheduleActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+        showDrivers = findViewById(R.id.showDriver);
+        showDrivers.setOnClickListener(v -> {
+            startActivity_seasonData(scheduleActivity.this, driversStandingsActivity.class, mCurrentSeason);
         });
 
         showHomePage = findViewById(R.id.showHomePage);
@@ -96,16 +97,12 @@ public class scheduleActivity extends AppCompatActivity {
 
         showTeams = findViewById(R.id.showTeams);
         showTeams.setOnClickListener(v -> {
-            Intent intent = new Intent(scheduleActivity.this, teamsStandingsActivity.class);
-            scheduleActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_seasonData(scheduleActivity.this, teamsStandingsActivity.class, mCurrentSeason);
         });
 
         showAccount = findViewById(R.id.showAccount);
         showAccount.setOnClickListener(v -> {
-            Intent intent = new Intent(scheduleActivity.this, logInPageActivity.class);
-            scheduleActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_seasonData(scheduleActivity.this, logInPageActivity.class, mCurrentSeason);
         });
 
         ImageButton backButton = findViewById(R.id.backButton);
@@ -278,7 +275,7 @@ public class scheduleActivity extends AppCompatActivity {
 
                 if(!concludedRoundNumber.isEmpty()){
                     concludedFragmentBundle.putStringArrayList("raceRound", concludedRoundNumber);
-                    concludedFragmentBundle.putString("season", year);
+                    concludedFragmentBundle.putString("season", mCurrentSeason);
                     concludedFragmentBundle.putString("parent", "schedule");
                 }
                 if(!futureRaceRoundNumber.isEmpty()){

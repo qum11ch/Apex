@@ -45,6 +45,8 @@ public class predictPageActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.radioGroup);
         predictButton = findViewById(R.id.predict_button);
 
+        String currentSeason = getIntent().getStringExtra("currentSeason");
+
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
@@ -58,7 +60,7 @@ public class predictPageActivity extends AppCompatActivity {
         });
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("/schedule/season/2025")
+        rootRef.child("/schedule/season/" + currentSeason)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -103,6 +105,7 @@ public class predictPageActivity extends AppCompatActivity {
                                     Intent i = new Intent(predictPageActivity.this, predictResultPage.class);
                                     i.putExtra("event", value);
                                     i.putExtra("gp", gpName);
+                                    i.putExtra("currentSeason", currentSeason);
                                     startActivity(i);
                                 }
                             }

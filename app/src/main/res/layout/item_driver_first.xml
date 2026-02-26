@@ -86,9 +86,10 @@
                         android:paddingBottom="5dp"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:src="@drawable/f1"
+                        android:src="@drawable/placeholder"
                         android:layout_weight="1"/>
                     <TextView
+
                         android:textColor="@color/white"
                         android:gravity="center_vertical"
                         android:id="@+id/driverTeam"

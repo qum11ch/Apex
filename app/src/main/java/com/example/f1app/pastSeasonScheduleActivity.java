@@ -28,7 +28,7 @@ import java.util.Locale;
 
 public class pastSeasonScheduleActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeLayout;
-
+    private String mSeason;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -40,6 +40,8 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonScheduleActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        mSeason = intentBundle.getString("season");
 
         setContentView(R.layout.past_season_schedule_page);
 
@@ -47,9 +49,9 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
 
         String headerText;
         if (Locale.getDefault().getLanguage().equals("ru")){
-            headerText = getString(R.string.past_season_result) + " 2024";
+            headerText = getString(R.string.past_season_result) + " " + mSeason;
         }else{
-            headerText = "2024 " + getString(R.string.past_season_result);
+            headerText = mSeason + " " + getString(R.string.past_season_result);
         }
         pageHeader.setText(headerText);
 
@@ -73,7 +75,7 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
 
     private void getSchedule(){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + mSeason).orderByChild("round").addValueEventListener(new ValueEventListener() {
         //rootRef.child("schedule/season/" + "2024").orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -91,7 +93,7 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
                 }
 
                 concludedFragmentBundle.putStringArrayList("raceRound", concludedRoundNumber);
-                concludedFragmentBundle.putString("season", "2024");
+                concludedFragmentBundle.putString("season", mSeason);
                 concludedFragmentBundle.putString("parent", "pastSeasonSchedule");
                 init(concludedFragmentBundle);
             }

@@ -155,6 +155,11 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             StorageReference mWinnerImage;
             StorageReference mSecondImage;
             StorageReference mThirdImage;
+
+            // mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            // mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            // mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
+
             if (mSeason.equals("2024")){
                 mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_2024.png");
                 mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_2024.png");
@@ -169,22 +174,19 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             GlideApp.with(context)
                     .load(mWinnerImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(holder.firstPlace_image);
-
 
             GlideApp.with(context)
                     .load(mSecondImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(holder.secondPlace_image);
-
-
 
             GlideApp.with(context)
                     .load(mThirdImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(holder.thirdPlace_image);
         }
 

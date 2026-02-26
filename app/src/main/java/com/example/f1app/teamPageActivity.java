@@ -1,9 +1,9 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -81,6 +81,7 @@ public class teamPageActivity extends AppCompatActivity {
             Bundle bundle = getIntent().getExtras();
             String mTeamId = bundle.getString("teamId");
             String mTeamName = bundle.getString("teamName");
+            String mCurrentSeason = bundle.getString("currentSeason");
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -107,13 +108,14 @@ public class teamPageActivity extends AppCompatActivity {
 
             ArrayList<String> teamDrivers = new ArrayList<>();
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("results/season/" + "2025").addValueEventListener(new ValueEventListener() {
+            rootRef.child("results/season/" + currentYear).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     for (DataSnapshot driverSnap: snapshot.getChildren()){
                         String driverName = driverSnap.getKey();
                         for (DataSnapshot raceSnaps: driverSnap.getChildren()){
                             if (raceSnaps.child("TeamId").getValue(String.class).equals(mTeamId)){
+                                Log.e("fatal", "DriversList: " + mTeamId + " - " + raceSnaps.child("TeamId").getValue(String.class));
                                 teamDrivers.add(driverName);
                                 break;
                             }
@@ -123,7 +125,7 @@ public class teamPageActivity extends AppCompatActivity {
                     teamPageBundle.putString("teamId", mTeamId);
                     teamPageBundle.putString("teamName", mTeamName);
                     teamPageBundle.putStringArrayList("teamDrivers", teamDrivers);
-
+                    teamPageBundle.putString("currentSeason", mCurrentSeason);
                     init(teamPageBundle);
                 }
 
@@ -133,37 +135,42 @@ public class teamPageActivity extends AppCompatActivity {
                 }
             });
 
-
             teamNameFull.setText(mTeamName);
-            StorageReference mTeamCar = storageRef.child("teams/" + mTeamId.toLowerCase() + ".png");
+            StorageReference mTeamCar = storageRef.child("teams/" + mTeamId.toLowerCase() + "_"  + mCurrentSeason + ".png");
 
             GlideApp.with(getApplicationContext())
                     .load(mTeamCar)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_car)
                     .into(team_car);
 
             StorageReference mTeamLogo;
 
-            if (mTeamId.equals("alpine")) {
-                mTeamLogo = storageRef.child("teams/" + mTeamId.toLowerCase() + "_logo_alt.png");
-            } else if (mTeamId.equals("williams")) {
-                mTeamLogo = storageRef.child("teams/" + mTeamId.toLowerCase() + "_logo_alt.png");
-            } else{
-                mTeamLogo = storageRef.child("teams/" + mTeamId.toLowerCase() + "_logo.png");
+            switch(mTeamId){
+                case "alpine":
+                case "williams":
+                case "cadillac":
+                case "audi":
+                    mTeamLogo = storageRef.child("teams/" + mTeamId.toLowerCase() + "_logo_alt.png");
+                    break;
+                default:
+                    mTeamLogo = storageRef.child("teams/" + mTeamId.toLowerCase() + "_logo.png");
             }
+
             GlideApp.with(getApplicationContext())
                     .load(mTeamLogo)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .skipMemoryCache(true)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder)
                     .into(teamLogo);
 
             CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-
+            if (!checkLightTheme(teamPageActivity.this)){
+                collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(teamPageActivity.this, R.drawable.black_gradient));
+            }
             AppBarLayout appBarLayout = findViewById(R.id.appbar);
             Toolbar toolbar = findViewById(R.id.toolbar);
             appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -177,7 +184,11 @@ public class teamPageActivity extends AppCompatActivity {
                     }
                     if (scrollRange + verticalOffset == 0) {
                         teamName.setText(mTeamName);
-                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                        if (!checkLightTheme(teamPageActivity.this)){
+                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.darkest_grey));
+                        }else{
+                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                        }
                         isShow = true;
                     } else if (isShow) {
                         teamName.setText(" ");
@@ -288,10 +299,5 @@ public class teamPageActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 })
                 .start();
-        //Handler handler = new Handler();
-        //handler.postDelayed(()->{
-        //    contentLayout.setVisibility(View.VISIBLE);
-        //    progressBar.setVisibility(View.GONE);
-        //},500);
     }
 }

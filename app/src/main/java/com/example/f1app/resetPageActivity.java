@@ -1,8 +1,8 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -39,6 +39,10 @@ public class resetPageActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(resetPageActivity.this));
         }
+
+        Bundle intentBundle = getIntent().getExtras();
+        String mCurrentSeason = intentBundle.getString("currentSeason");
+
         userEmail = findViewById(R.id.userEmail);
         resetButton = findViewById(R.id.resetPassword);
 
@@ -46,7 +50,7 @@ public class resetPageActivity extends AppCompatActivity {
 
         resetProgress = findViewById(R.id.resetProgress);
 
-        resetButton.setOnClickListener(v -> loginUserAccount());
+        resetButton.setOnClickListener(v -> loginUserAccount(mCurrentSeason));
 
         userEmail.addTextChangedListener(textWatcher);
 
@@ -77,7 +81,7 @@ public class resetPageActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
-    private void loginUserAccount() {
+    private void loginUserAccount(String currentSeason) {
         resetButton.setVisibility(View.INVISIBLE);
         resetProgress.setVisibility(View.VISIBLE);
 
@@ -96,8 +100,7 @@ public class resetPageActivity extends AppCompatActivity {
             auth.sendPasswordResetEmail(emailAddress)
                     .addOnSuccessListener(unesed -> {
                         Toast.makeText(resetPageActivity.this, getString(R.string.reset_password_text), Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(resetPageActivity.this, logInPageActivity.class);
-                        resetPageActivity.this.startActivity(intent);
+                        startActivity_seasonData(resetPageActivity.this, logInPageActivity.class, currentSeason);
                         finish();
                     })
                     .addOnFailureListener(e -> {

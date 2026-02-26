@@ -249,6 +249,7 @@
     <string name="spanish_grand_prix_locality">Испания</string>
     <string name="são_paulo_grand_prix_locality">Бразилия</string>
     <string name="united_states_grand_prix_locality">США</string>
+
     <string name="times">раз</string>
     <string name="yas_marina_text">Яс Марина</string>
     <string name="albert_park_text">Алберт-Парк</string>
@@ -278,8 +279,8 @@
 
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Гран-при заверешено</string>
-    <string name="notify_start_text"> началась</string>
-    <string name="notify_end_text"> закончилась</string>
+    <string name="notify_start_text"> начнется через 5 минут!</string>
+    <string name="notify_end_text"> закончилась!</string>
     <string name="past_season_result">Результаты Гран-при в</string>
     <string name="last_entry_text">Последнее участие в Гран-при</string>
     <string name="past_season_drivers">Личный зачет в</string>
@@ -297,11 +298,10 @@
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
     <string name="predict">прогноз</string>
     <string name="predict_button">Получить прогноз</string>
-    <string name="predict_text">Новый функционал: прогнозирование результатов квалификаций!</string>
     <string name="prediction">прогнозирование</string>
     <string name="predict_quali">Квалификация</string>
     <string name="predict_sprint_quali">Спринт Квалификация</string>
-    <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2025 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
+    <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2026 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
     <string name="warning_it">Внимание! Получение прогноза может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
     <string name="qualifying_text">Квалификация</string>
     <string name="sprint_qualifying_text">Спринт Квалификация</string>

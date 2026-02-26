@@ -25,11 +25,6 @@ import java.time.format.DateTimeFormatter;
 
 public class futureRaceActivity extends AppCompatActivity {
 
-    private ImageButton backButton;
-    private TextView futureRaceTitle;
-    private ViewPager2 myViewPager2;
-    private viewPagerAdapter adapter ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -46,7 +41,7 @@ public class futureRaceActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(futureRaceActivity.this));
         }
 
-        futureRaceTitle = findViewById(R.id.raceTitile);
+        TextView futureRaceTitle = findViewById(R.id.raceTitile);
 
 
         if (!getIntent().getExtras().isEmpty()){
@@ -62,6 +57,7 @@ public class futureRaceActivity extends AppCompatActivity {
             String mCountry = bundle.getString("raceCountry");
             String mDate = bundle.getString("dateStart");
 
+            ImageButton backButton;
             if (getIntent().hasExtra("fromNotify")){
                 backButton = findViewById(R.id.backButton);
                 backButton.setOnClickListener(new View.OnClickListener() {
@@ -124,8 +120,8 @@ public class futureRaceActivity extends AppCompatActivity {
     }
 
     private void init(Bundle scheduleBundle, Bundle circuitBundle) {
-        myViewPager2 = findViewById(R.id.viewPager2);
-        adapter = new viewPagerAdapter(this);
+        ViewPager2 myViewPager2 = findViewById(R.id.viewPager2);
+        viewPagerAdapter adapter = new viewPagerAdapter(this);
         futureRaceScheduleFragment scheduleFragment = new futureRaceScheduleFragment();
         scheduleFragment.setArguments(scheduleBundle);
         adapter.addFragment(scheduleFragment);

@@ -3,7 +3,6 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,13 +118,6 @@ public class raceResultsQualiFragment extends Fragment {
                                             constructorId, driverCode, Q1, Q2, Q3, season);
                                     datum.add(results);
                                 }
-                                //Handler handler = new Handler();
-                                //handler.postDelayed(()->{
-                                //    recyclerView.setVisibility(View.VISIBLE);
-                                //    shimmerFrameLayout.setVisibility(View.GONE);
-                                //    shimmerFrameLayout.stopShimmer();
-                                //},500);
-
                                 hideShimmer(recyclerView, shimmerFrameLayout);
                                 adapter.notifyItemChanged(datum.size() - 1);
                             }

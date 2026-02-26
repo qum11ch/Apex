@@ -44,7 +44,7 @@ public class teamResultsFragment extends Fragment {
     private List<teamTripleDriversResultsData> datumTriple;
     private TextView firstDriverFamilyName, secondDriverFamilyName, thirdDriverFamilyName, raceNameHeader;
     private ImageView firstDriver_image, secondDriver_image, thirdDriver_image;
-    private CheckBox radioButton_2025, radioButton_2024;
+    private CheckBox radioButton_2025, radioButton_2024, radioButton_2026;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerTripleFrameLayout;
     private String teamId = " ";
     private String teamName = " ";
@@ -89,6 +89,7 @@ public class teamResultsFragment extends Fragment {
         secondDriver_image = view.findViewById(R.id.secondDriver_image);
         thirdDriver_image = view.findViewById(R.id.thirdDriver_image);
         radioButton_2025 = view.findViewById(R.id.radioButton_2025);
+        radioButton_2026 = view.findViewById(R.id.radioButton_2026);
         radioButton_2024 = view.findViewById(R.id.radioButton_2024);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerTripleFrameLayout = view.findViewById(R.id.shimmerTriple_layout);
@@ -106,48 +107,119 @@ public class teamResultsFragment extends Fragment {
             teamId = mTeamId;
             teamName = getArguments().getString("teamName");
             ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
+            String mCurrentSeason = getArguments().getString("currentSeason");
 
             shimmerFrameLayout.startShimmer();
             shimmerTripleFrameLayout.startShimmer();
-            radioButton_2025.setChecked(true);
+            radioButton_2026.setChecked(true);
 
             assert driversList != null;
 
-            loadDriversInfo(driversList, "2025");
-            getResults("2025", driversList);
+            Log.e("fatal", "DriversList: " + mTeamId + " - " + driversList);
+
+            loadDriversInfo(driversList, "2026");
+            getResults("2026", driversList);
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            rootRef.child("constructors").child(teamId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Integer enterYear = snapshot.child("enterYear").getValue(Integer.class);
+                    if (enterYear > 2024){
+                        radioButton_2024.setVisibility(View.GONE);
+                    }
+                    if (enterYear > 2025) {
+                        radioButton_2025.setVisibility(View.GONE);
+                    }
+                    if (enterYear > 2026){
+                        radioButton_2026.setVisibility(View.GONE);
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("driverPageActivity", "Driver information getting error:" + error.getMessage());
+                }
+            });
 
             radioButton_2025.setOnClickListener(view1 -> {
                 if (!radioButton_2025.isChecked()) {
+                    radioButton_2026.setChecked(false);
                     radioButton_2025.setChecked(true);
                     radioButton_2024.setChecked(false);
                 }
                 radioButton_2024.setChecked(false);
+                radioButton_2026.setChecked(false);
+            });
+
+            radioButton_2026.setOnClickListener(view1 -> {
+                if (!radioButton_2026.isChecked()) {
+                    radioButton_2026.setChecked(true);
+                    radioButton_2025.setChecked(false);
+                    radioButton_2024.setChecked(false);
+                }
+                radioButton_2024.setChecked(false);
+                radioButton_2025.setChecked(false);
             });
 
             radioButton_2024.setOnClickListener(view2 -> {
                 if (!radioButton_2024.isChecked()) {
                     radioButton_2025.setChecked(false);
+                    radioButton_2026.setChecked(false);
                     radioButton_2024.setChecked(true);
                 }
                 radioButton_2025.setChecked(false);
+                radioButton_2026.setChecked(false);
             });
 
-            radioButton_2025.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (radioButton_2025.isChecked()) {
+            radioButton_2026.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2026.isChecked()) {
                     recyclerView.setVisibility(View.GONE);
                     shimmerFrameLayout.setVisibility(View.VISIBLE);
                     shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
                     shimmerFrameLayout.startShimmer();
                     shimmerTripleFrameLayout.startShimmer();
-                    loadDriversInfo(driversList, "2025");
-                    getResults("2025", driversList);
+                    loadDriversInfo(driversList, "2026");
+                    getResults("2026", driversList);
+                }
+            });
+
+            radioButton_2025.setOnCheckedChangeListener((compoundButton, b) -> {
+                if (radioButton_2025.isChecked()) {
+                    ArrayList<String> teamDrivers = new ArrayList<>();
+
+                    rootRef.child("results/season/2025").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            for (DataSnapshot driverSnap : snapshot.getChildren()) {
+                                String driverName = driverSnap.getKey();
+                                for (DataSnapshot raceSnaps : driverSnap.getChildren()) {
+                                    String teamIdFromDb = raceSnaps.child("TeamId").getValue(String.class);
+                                    if (teamIdFromDb != null && teamIdFromDb.equals(mTeamId)) {
+                                        teamDrivers.add(driverName);
+                                        break;
+                                    }
+                                }
+                            }
+                            recyclerView.setVisibility(View.GONE);
+                            shimmerFrameLayout.setVisibility(View.VISIBLE);
+                            shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
+                            shimmerFrameLayout.startShimmer();
+                            shimmerTripleFrameLayout.startShimmer();
+                            loadDriversInfo(teamDrivers, "2025");
+                            getResults("2025", teamDrivers);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.e("error", "" + error);
+                        }
+                    });
                 }
             });
 
             radioButton_2024.setOnCheckedChangeListener((compoundButton, b) -> {
                 if (radioButton_2024.isChecked()) {
                     ArrayList<String> teamDrivers = new ArrayList<>();
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
                     rootRef.child("results/season/2024").addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
@@ -207,19 +279,20 @@ public class teamResultsFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String driversCode = snapshot.child("driversCode").getValue(String.class);
-                    StorageReference mDriverImage;
-                    if (season.equals("2024")) {
-                        mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png");
-                    } else {
-                        mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + ".png");
-                    }
+                    StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_" + season + ".png");
+                    //if (season.equals("2024")) {
+                    //    mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png");
+                    //} else {
+                    //    mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + ".png");
+                    //}
+
                     if (finalI == 0) {
                         firstDriverFamilyName.setText(finalDriverFamilyName);
                         GlideApp.with(requireContext())
                                 .load(mDriverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.f1)
+                                .error(R.drawable.placeholder_driver)
                                 .into(firstDriver_image);
 
                         firstDriverLayout.setOnClickListener(v ->
@@ -232,7 +305,7 @@ public class teamResultsFragment extends Fragment {
                                 .load(mDriverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.f1)
+                                .error(R.drawable.placeholder_driver)
                                 .into(secondDriver_image);
 
                         secondDriverLayout.setOnClickListener(v ->
@@ -245,7 +318,7 @@ public class teamResultsFragment extends Fragment {
                                 .load(mDriverImage)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.f1)
+                                .error(R.drawable.placeholder_driver)
                                 .into(thirdDriver_image);
 
                         thirdDriverLayout.setOnClickListener(v ->

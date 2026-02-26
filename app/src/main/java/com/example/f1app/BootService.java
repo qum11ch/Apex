@@ -28,6 +28,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class BootService extends Service {
     SharedPreferences mPrefs;
@@ -61,6 +62,7 @@ public class BootService extends Service {
             JSONArray jsonArrayCircuits;
             assert bundle != null;
             String mChannelId = bundle.getString("channelId");
+            long fiveMinutesMillis = TimeUnit.MINUTES.toMillis(5);
             int iterator = 0;
             try {
                 jsonArrayEvents = new JSONArray(mPrefs.getString("events_json", "[]"));
@@ -101,13 +103,17 @@ public class BootService extends Service {
                         try {
                             Date eventStart_date = dateFormat.parse(newDateStart);
                             Date eventEnd_date = dateFormat.parse(newDateEnd);
-                            long diffStart = eventStart_date.getTime() - current.getTime();
-                            long diffEnd = eventEnd_date.getTime() - current.getTime();
+
+                            Date notifyStart_date = new Date(eventStart_date.getTime() - fiveMinutesMillis);
+                            Date notifyEnd_date = new Date(eventEnd_date.getTime() + fiveMinutesMillis);
+
+                            long diffStart = notifyStart_date.getTime() - current.getTime();
+                            long diffEnd = notifyEnd_date.getTime() - current.getTime();
                             if (diffStart >= -100){
-                                pushNotification(season, raceName, circuitId, mChannelId, eventStart_date, title, bodyStart, iterator);
+                                pushNotification(season, raceName, circuitId, mChannelId, notifyStart_date, title, bodyStart, iterator);
                             }
                             if (diffEnd >= -100){
-                                pushNotification(season, raceName, circuitId, mChannelId, eventEnd_date, title, bodyEnd, iterator + 1);
+                                pushNotification(season, raceName, circuitId, mChannelId, notifyEnd_date, title, bodyEnd, iterator + 1);
                             }
                         }catch(ParseException e){
                             Log.e("BootService", " " +  e.getMessage());

@@ -14,7 +14,6 @@ import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -115,6 +114,7 @@ public class driverStatsFragment extends Fragment {
             String mDriverTeam = getArguments().getString("driverTeam");
             //String mDriverCode = getArguments().getString("driverCode");
             String mTeamId = getArguments().getString("driverTeamId");
+            String mCurrentSeason = getArguments().getString("currentSeason");
 
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
@@ -189,6 +189,7 @@ public class driverStatsFragment extends Fragment {
                                             bundle.putString("teamName", mDriverTeam);
                                             bundle.putString("teamId", mTeamId1);
                                             bundle.putStringArrayList("teamDrivers", teamDrivers);
+                                            bundle.putString("currentSeason", mCurrentSeason);
                                             intent.putExtras(bundle);
                                             requireContext().startActivity(intent);
                                         }
@@ -249,14 +250,14 @@ public class driverStatsFragment extends Fragment {
                             String mTeamId = snapshot.child("constructorId").getValue(String.class);
                             String mTeamColor = "#" + snapshot.child("color").getValue(String.class);
 
-                            StorageReference mWinnerImage = storageRef.child("teams/" + mTeamId.toLowerCase() + ".png");
+                            StorageReference mTeamCar = storageRef.child("teams/" + mTeamId.toLowerCase() + "_"  + mCurrentSeason + ".png");
 
                             GlideApp.with(requireContext())
-                                    .load(mWinnerImage)
+                                    .load(mTeamCar)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                                     .transition(DrawableTransitionOptions.withCrossFade())
-                                    .error(R.drawable.f1)
+                                    .error(R.drawable.placeholder_car)
                                     .into(teamCar_image);
 
                             GradientDrawable gd = new GradientDrawable();

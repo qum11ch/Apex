@@ -168,7 +168,8 @@
                         android:layout_width="0dp"
                         android:layout_height="84dp"
                         android:layout_weight="1">
-                        <View
+                        <com.google.android.material.imageview.ShapeableImageView
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@drawable/background_striped_lines"/>
@@ -185,7 +186,8 @@
                         android:layout_width="0dp"
                         android:layout_height="84dp"
                         android:layout_weight="1">
-                        <View
+                        <com.google.android.material.imageview.ShapeableImageView
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@drawable/background_striped_lines"/>
@@ -202,7 +204,8 @@
                         android:layout_width="0dp"
                         android:layout_height="84dp"
                         android:layout_weight="1">
-                        <View
+                        <com.google.android.material.imageview.ShapeableImageView
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:background="@drawable/background_striped_lines"/>

@@ -1,9 +1,9 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -59,6 +60,11 @@ public class raceResultsRaceFragment extends Fragment {
         recyclerView = view.findViewById(R.id.race_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
+
+        RelativeLayout fastestLapLayout = view.findViewById(R.id.fastestLap_layout);
+        if (!checkLightTheme(getContext())){
+            fastestLapLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.background_striped_lines_item_night));
+        }
 
         datum = new ArrayList<>();
 
@@ -126,12 +132,6 @@ public class raceResultsRaceFragment extends Fragment {
                                         String driver = driverName.charAt(0) + ". " + driverFamilyName;
                                         fastestLapTime.setText(mFastestLapTime);
                                         fastestLapDriverName.setText(driver);
-                                        //Handler handler = new Handler();
-                                        //handler.postDelayed(()->{
-                                        //    fastestLapDriverLayout.setVisibility(View.VISIBLE);
-                                        //    shimmerDriverLayout.setVisibility(View.GONE);
-                                        //    shimmerDriverLayout.stopShimmer();
-                                        //},500);
 
                                         shimmerDriverLayout.animate()
                                                 .setDuration(500)
@@ -182,12 +182,6 @@ public class raceResultsRaceFragment extends Fragment {
                                         constructorId, driverCode, time, points, season);
                                 datum.add(results);
                             }
-                            //Handler handler = new Handler();
-                            //handler.postDelayed(()->{
-                            //    recyclerView.setVisibility(View.VISIBLE);
-                            //    shimmerFrameLayout.setVisibility(View.GONE);
-                            //    shimmerFrameLayout.stopShimmer();
-                            //},500);
 
                             hideShimmer(recyclerView, shimmerFrameLayout);
                             adapter.notifyItemChanged(datum.size() - 1);

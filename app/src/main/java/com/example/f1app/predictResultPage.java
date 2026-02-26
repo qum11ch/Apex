@@ -1,10 +1,10 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -50,7 +51,9 @@ public class predictResultPage extends AppCompatActivity {
     private raceResultsQualiAdapter adapter;
     private RecyclerView recyclerView;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout;
-    private TextView poleLapDriverName, poleLapTime, eventInfo, Q1TimeText, Q2TimeText, Q3TimeText;
+    private TextView poleLapDriverName;
+    private TextView poleLapTime;
+    private TextView eventInfo;
     private RelativeLayout poleLapDriverLayout;
 
     @Override
@@ -75,6 +78,11 @@ public class predictResultPage extends AppCompatActivity {
             }
         });
 
+        RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
+        if (!checkLightTheme(predictResultPage.this)){
+            fastestLapLayout.setBackground(ContextCompat.getDrawable(predictResultPage.this, R.drawable.background_striped_lines_item_night));
+        }
+
         poleLapDriverName = findViewById(R.id.poleLapDriverName);
         poleLapTime = findViewById(R.id.poleLapTime);
         eventInfo = findViewById(R.id.event_info);
@@ -85,9 +93,9 @@ public class predictResultPage extends AppCompatActivity {
         shimmerDriverLayout.startShimmer();
         shimmerFrameLayout.startShimmer();
 
-        Q1TimeText = findViewById(R.id.Q1_time);
-        Q2TimeText = findViewById(R.id.Q2_time);
-        Q3TimeText = findViewById(R.id.Q3_time);
+        TextView q1TimeText = findViewById(R.id.Q1_time);
+        TextView q2TimeText = findViewById(R.id.Q2_time);
+        TextView q3TimeText = findViewById(R.id.Q3_time);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -97,15 +105,16 @@ public class predictResultPage extends AppCompatActivity {
             Bundle bundle = getIntent().getExtras();
             String gpName = bundle.getString("gp");
             String event = bundle.getString("event");
+            String currentSeason = bundle.getString("currentSeason");
 
             if (event.equals("SQ")){
-                Q1TimeText.setText(R.string.sq1_header);
-                Q2TimeText.setText(R.string.sq2_header);
-                Q3TimeText.setText(R.string.sq3_header);
+                q1TimeText.setText(R.string.sq1_header);
+                q2TimeText.setText(R.string.sq2_header);
+                q3TimeText.setText(R.string.sq3_header);
             }else{
-                Q1TimeText.setText(R.string.q1_header);
-                Q2TimeText.setText(R.string.q2_header);
-                Q3TimeText.setText(R.string.q3_header);
+                q1TimeText.setText(R.string.q1_header);
+                q2TimeText.setText(R.string.q2_header);
+                q3TimeText.setText(R.string.q3_header);
             }
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -115,21 +124,26 @@ public class predictResultPage extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                             String lastRace = snapshot.child("last_race").getValue(String.class);
                             String year = lastRace.substring(0, 4);
-                            String raceName = lastRace.substring(5, lastRace.length());
+                            if (year.equals(currentSeason)){
+                                String raceName = lastRace.substring(5, lastRace.length());
 
-                            rootRef.child("schedule/season/" + year).child(raceName).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    Integer roundNumber = snapshot.child("round").getValue(Integer.class);
-                                    getPridiction(gpName, roundNumber, event);
-                                }
+                                rootRef.child("schedule/season/" + year).child(raceName).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        Integer roundNumber = snapshot.child("round").getValue(Integer.class);
+                                        getPridiction(gpName, roundNumber, event, currentSeason);
+                                    }
 
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("predictPageActivity", error.getMessage());
-                                }
-                            });
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError error) {
+                                        Log.e("predictPageActivity", error.getMessage());
+                                    }
+                                });
+                            }else{
+                                getPridiction(gpName, 0, event, currentSeason);
+                            }
                         }
+
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -139,9 +153,9 @@ public class predictResultPage extends AppCompatActivity {
         }
     }
 
-    private void getPridiction(String gpName, Integer lastGPRound, String event){
+    private void getPridiction(String gpName, Integer lastGPRound, String event, String currentSeason){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("driverLineUp/season/2025")
+        rootRef.child("driverLineUp/season/" + currentSeason)
                 .addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -159,7 +173,7 @@ public class predictResultPage extends AppCompatActivity {
                         ArrayList<String> teamNamesList = correctTeamNames(teamIdsList);
                         ArrayList<String> driversCodesList = correctDriversCodes(driversList);
 
-                        rootRef.child("schedule/season/2025").child(gpName)
+                        rootRef.child("schedule/season/" + currentSeason).child(gpName)
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -390,9 +404,12 @@ public class predictResultPage extends AppCompatActivity {
 
 
                     }catch (JSONException e) {
-                        Log.e("predictPageActivity", " " + e.getMessage());
+                        Log.e("predictPageActivity", "Wheather error " + e.getMessage());
                     }
-                }, error -> Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> {
+                    Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d ("fatal", " " + error.getMessage());
+        });
 
         queue.add(jsonObjectRequest);
     }
@@ -495,13 +512,6 @@ public class predictResultPage extends AppCompatActivity {
                                             shimmerDriverLayout.stopShimmer();
                                         })
                                         .start();
-
-                                //Handler handler = new Handler();
-                                //handler.postDelayed(()->{
-                                //    poleLapDriverLayout.setVisibility(View.VISIBLE);
-                                //    shimmerDriverLayout.setVisibility(View.GONE);
-                                //    shimmerDriverLayout.stopShimmer();
-                                //},500);
                             }
 
                             if (Q2_time.equals("null")){
@@ -523,12 +533,6 @@ public class predictResultPage extends AppCompatActivity {
                         }
 
                         hideShimmer(recyclerView, shimmerFrameLayout);
-                        //Handler handler = new Handler();
-                        //handler.postDelayed(()->{
-                        //    recyclerView.setVisibility(View.VISIBLE);
-                        //    shimmerFrameLayout.setVisibility(View.GONE);
-                        //    shimmerFrameLayout.stopShimmer();
-                        //},500);
                         adapter.notifyItemChanged(datum.size() - 1);
                     } catch (JSONException e) {
                         throw new RuntimeException(e);
@@ -537,6 +541,7 @@ public class predictResultPage extends AppCompatActivity {
                 error -> {
                     if (error.networkResponse != null) {
                         String errorText = "Code: " + error.networkResponse.statusCode + "Data: " +  new String(error.networkResponse.data);
+                        Log.d("fatal", " " + errorText);
                         Toast.makeText(predictResultPage.this, errorText, Toast.LENGTH_SHORT).show();
                     }else{
                         Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show();
@@ -555,7 +560,7 @@ public class predictResultPage extends AppCompatActivity {
 
     public static Integer isStreetCircuit(String circuitId){
         String[] street_circuits_list = {"albert_park", "baku", "monaco", "villeneuve", "jeddah",
-                "vegas", "miami", "marina_bay"};
+                "vegas", "miami", "marina_bay", "madring"};
         if (Arrays.asList(street_circuits_list).contains(circuitId)){
             return 1;
         }else{
@@ -573,8 +578,10 @@ public class predictResultPage extends AppCompatActivity {
         teamNames.put("mercedes", "Mercedes");
         teamNames.put("rb", "Racing Bulls");
         teamNames.put("red_bull", "Red Bull Racing");
-        teamNames.put("sauber", "Kick Sauber");
+        //teamNames.put("sauber", "Kick Sauber");
         teamNames.put("williams", "Williams");
+        teamNames.put("cadillac", "Cadillac");
+        teamNames.put("audi", "Audi");
 
         ArrayList<String> results = new ArrayList<>();
         for(int i = 0; i < teamIds.size(); i++){
@@ -603,11 +610,13 @@ public class predictResultPage extends AppCompatActivity {
         driversCodes.put("Isack Hadjar", "HAD");
         driversCodes.put("Liam Lawson", "LAW");
         driversCodes.put("Max Verstappen", "VER");
-        driversCodes.put("Yuki Tsunoda", "TSU");
         driversCodes.put("Gabriel Bortoleto", "BOR");
         driversCodes.put("Nico Hülkenberg", "HUL");
         driversCodes.put("Alexander Albon", "ALB");
         driversCodes.put("Carlos Sainz", "SAI");
+        driversCodes.put("Valtteri Bottas", "BOT");
+        driversCodes.put("Arvid Lindblad", "LIN");
+        driversCodes.put("Sergio Pérez", "PER");
 
         ArrayList<String> results = new ArrayList<>();
         for(int i = 0; i < drivers.size(); i++){
@@ -636,11 +645,13 @@ public class predictResultPage extends AppCompatActivity {
         driversCodes.put("HAD", "Isack Hadjar");
         driversCodes.put("LAW", "Liam Lawson");
         driversCodes.put("VER", "Max Verstappen");
-        driversCodes.put("TSU", "Yuki Tsunoda");
         driversCodes.put("BOR", "Gabriel Bortoleto");
         driversCodes.put("HUL", "Nico Hülkenberg");
         driversCodes.put("ALB", "Alexander Albon");
         driversCodes.put("SAI", "Carlos Sainz");
+        driversCodes.put("BOT", "Valtteri Bottas");
+        driversCodes.put("LIN", "Arvid Lindblad");
+        driversCodes.put("PER", "Sergio Pérez");
 
         return driversCodes.get(driverCode);
     }
@@ -655,8 +666,10 @@ public class predictResultPage extends AppCompatActivity {
         teamIds.put("Mercedes", "mercedes");
         teamIds.put("Racing Bulls", "rb");
         teamIds.put("Red Bull Racing", "red_bull");
-        teamIds.put("Kick Sauber", "sauber");
+        //teamIds.put("Kick Sauber", "sauber");
         teamIds.put("Williams", "williams");
+        teamIds.put("Cadillac", "cadillac");
+        teamIds.put("Audi", "audi");
 
         return teamIds.get(teamName);
     }

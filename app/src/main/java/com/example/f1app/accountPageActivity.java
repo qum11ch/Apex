@@ -1,6 +1,8 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.checkLightTheme;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,7 +15,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -36,6 +37,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -59,11 +61,21 @@ public class accountPageActivity extends AppCompatActivity {
     private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout,
             driverName_layout;
     private ImageView teamLogo, teamCar, driverImage, arrow;
+    private String mCurrentSeason;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.account_page);
+
+        if (!checkConnection(getApplicationContext())){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountPageActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountPageActivity.this));
+        }
+
+        Bundle intentBundle = getIntent().getExtras();
+        mCurrentSeason = intentBundle.getString("currentSeason");
 
         Button logout = findViewById(R.id.logout);
 
@@ -106,12 +118,6 @@ public class accountPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountPageActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountPageActivity.this));
-        }
-
         logoutDialog = new Dialog(accountPageActivity.this);
         logoutDialog.setContentView(R.layout.logout_dialog_box);
         logoutDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -126,8 +132,9 @@ public class accountPageActivity extends AppCompatActivity {
         confirmButton.setOnClickListener(view -> {
             logoutDialog.dismiss();
             Toast.makeText(accountPageActivity.this, user.getEmail() + " " + getString(R.string.logout_text), Toast.LENGTH_SHORT).show();
-            Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
-            startActivity(i);
+            startActivity_seasonData(accountPageActivity.this, logInPageActivity.class, mCurrentSeason);
+            //Intent i = new Intent(accountPageActivity.this, logInPageActivity.class);
+            //startActivity(i);
             auth.signOut();
             finish();
         });
@@ -182,7 +189,6 @@ public class accountPageActivity extends AppCompatActivity {
         gd1.setCornerRadii(new float[]{0, 0, 30, 30, 0, 0, 0, 0});
         gd1.setStroke(12, ContextCompat.getColor(accountPageActivity.this, R.color.grey));
         team_layout.setBackground(gd1);
-
         getUserInfo();
     }
 
@@ -246,6 +252,10 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void setupToolbar(String username) {
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        if (!checkLightTheme(accountPageActivity.this)){
+            collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(accountPageActivity.this, R.drawable.black_gradient));
+        }
         AppBarLayout appBarLayout = findViewById(R.id.appbar);
         Toolbar toolbar = findViewById(R.id.toolbar);
 
@@ -260,8 +270,11 @@ public class accountPageActivity extends AppCompatActivity {
                 }
                 if (scrollRange + verticalOffset == 0) {
                     tabUserName.setText(username);
-                    toolbar.setBackgroundColor(ContextCompat.getColor(
-                            getApplicationContext(), R.color.dark_blue));
+                    if (!checkLightTheme(accountPageActivity.this)){
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.darkest_grey));
+                    }else{
+                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                    }
                     isShow = true;
                 } else if (isShow) {
                     tabUserName.setText(" ");
@@ -327,9 +340,9 @@ public class accountPageActivity extends AppCompatActivity {
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        storageRef.child("drivers/" + driversCode.toLowerCase() + ".png")
+        storageRef.child("drivers/" + driversCode.toLowerCase() + "_" + mCurrentSeason + ".png")
                 .getDownloadUrl()
-                .addOnSuccessListener(uri -> loadImageWithGlide(uri,driverImage))
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri,driverImage, "driverImage"))
                 .addOnFailureListener(exception ->
                         try2025DriverImage(storageRef, driversCode));
     }
@@ -337,7 +350,7 @@ public class accountPageActivity extends AppCompatActivity {
     private void try2025DriverImage(StorageReference storageRef, String driversCode) {
         storageRef.child("drivers/" + driversCode.toLowerCase() + "_2025.png")
                 .getDownloadUrl()
-                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage))
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage, "driverImage"))
                 .addOnFailureListener(exception ->
                         try2024DriverImage(storageRef, driversCode));
     }
@@ -345,16 +358,35 @@ public class accountPageActivity extends AppCompatActivity {
     private void try2024DriverImage(StorageReference storageRef, String driversCode) {
         storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png")
                 .getDownloadUrl()
-                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage))
+                .addOnSuccessListener(uri -> loadImageWithGlide(uri, driverImage, "driverImage"))
                 .addOnFailureListener(exception ->
                         showError(getString(R.string.smth_wrong_text)));
     }
 
-    private void loadImageWithGlide(Uri uri, ImageView imageView) {
+    private void loadImageWithGlide(Uri uri, ImageView imageView, String imageType) {
+        String drawableName = "";
+        switch(imageType){
+            case "driverImage":
+                drawableName = "placeholder_driver";
+                break;
+            case "carImage":
+                drawableName = "placeholder_car";
+                break;
+            case "teamLogo":
+                drawableName = "placeholder";
+                break;
+        }
+
+        int resId = getResources().getIdentifier(
+                drawableName,
+                "drawable",
+                getPackageName()
+        );
+
         GlideApp.with(getApplicationContext())
                 .load(uri)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(resId)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(imageView);
 
@@ -414,6 +446,7 @@ public class accountPageActivity extends AppCompatActivity {
                 bundle.putString("driverTeam", team);
                 bundle.putString("driverCode", driversCode);
                 bundle.putString("driverTeamId", teamId);
+                bundle.putString("currentSeason", mCurrentSeason);
                 intent.putExtras(bundle);
                 startActivity(intent);
             });
@@ -489,13 +522,13 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void loadTeamCar(StorageReference storageRef, String teamId) {
-        Log.d("TeamCar", "Loading team car for: " + teamId); // Логирование
+        Log.d("TeamCar", "Loading team car for: " + teamId);
 
-        storageRef.child("teams/" + teamId + ".png")
+        storageRef.child("teams/" + teamId + "_" + mCurrentSeason + ".png")
                 .getDownloadUrl()
                 .addOnSuccessListener(uri -> {
                     Log.d("TeamCar", "Success loading: " + uri.toString());
-                    loadImageWithGlide(uri, teamCar);
+                    loadImageWithGlide(uri, teamCar, "carImage");
                 })
                 .addOnFailureListener(exception -> {
                     Log.e("TeamCar", "Failed to load car. Path: teams/" + teamId + ".png", exception);
@@ -517,7 +550,7 @@ public class accountPageActivity extends AppCompatActivity {
         logoRef.getDownloadUrl()
                 .addOnSuccessListener(uri -> {
                     Log.d("TeamLogo", "Success loading: " + uri.toString());
-                    loadImageWithGlide(uri, teamLogo);
+                    loadImageWithGlide(uri, teamLogo, "logoImage");
                 })
                 .addOnFailureListener(exception -> {
                     Log.e("TeamLogo", "Failed to load logo. StorageRef: " + logoRef.getPath(), exception);
@@ -548,6 +581,7 @@ public class accountPageActivity extends AppCompatActivity {
                             bundle.putString("teamName", choiceTeam);
                             bundle.putString("teamId", teamId);
                             bundle.putStringArrayList("teamDrivers", teamDrivers);
+                            bundle.putString("currentSeason", mCurrentSeason);
                             intent.putExtras(bundle);
                             startActivity(intent);
                         }
@@ -596,8 +630,6 @@ public class accountPageActivity extends AppCompatActivity {
                 ViewGroup.LayoutParams.WRAP_CONTENT, 0);
         teamName_layout.setLayoutParams(layoutParams);
     }
-
-// ============ Error handling ============
 
     private void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();

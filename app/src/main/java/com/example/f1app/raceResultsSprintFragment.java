@@ -3,7 +3,6 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -128,12 +127,6 @@ public class raceResultsSprintFragment extends Fragment {
                                     datum.add(results);
                                 }
                                 hideShimmer(recyclerView, shimmerFrameLayout);
-                                //Handler handler = new Handler();
-                                //handler.postDelayed(()->{
-                                //    recyclerView.setVisibility(View.VISIBLE);
-                                //    shimmerFrameLayout.setVisibility(View.GONE);
-                                //    shimmerFrameLayout.stopShimmer();
-                                //},500);
                                 adapter.notifyItemChanged(datum.size() - 1);
                             }
                         } catch (JSONException e) {

@@ -1,11 +1,11 @@
 package com.example.f1app;
 
-
-import static com.example.f1app.driversStandingsAdapter.getColorByName;
+import static com.example.f1app.driversStandingsAdapter.setTeamColor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -62,6 +62,9 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
+        holder.team_car.setScaleX(1);
+        holder.team_car.setScrollX(0);
+
         teamsList datum = dataList.get(position);
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
@@ -69,9 +72,39 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         holder.teamDriverSecond.setText(teamDrivers.get(1));
 
         String season = datum.getSeason();
+        String currentSeason = datum.getCurrentSeason();
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
+
+        holder.scrollView.setOnTouchListener(new OnTouch());
+
+        switch (season){
+            case "2024":
+                holder.team_car.setScaleX(-1);
+                holder.team_car.setScrollX(185);
+                break;
+            case "2025":
+                switch (datum.getTeamId()){
+                    case "red_bull":
+                    case "alpine":
+                        holder.team_car.setScaleX(-1);
+                        holder.team_car.setScrollX(185);
+                        break;
+                    default:
+                        holder.team_car.setScrollX(-185);
+                        break;
+                }
+                break;
+            case "2026":
+                if (datum.getTeamId().equals("audi")) {
+                    holder.team_car.setScaleX(-1);
+                    holder.team_car.setScrollX(185);
+                } else {
+                    holder.team_car.setScrollX(-185);
+                }
+                break;
+        }
 
         StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_" + season + ".png");
         GlideApp.with(context)
@@ -79,13 +112,9 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_car)
                 .into(holder.team_car);
 
-        holder.scrollView.setOnTouchListener(new OnTouch());
-
-        holder.team_car.setScaleX(-1);
-        holder.team_car.setScrollX(175);
         holder.teamPosition.setText(datum.getPosition());
         String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
         holder.teamPoints.setText(teamPoints);
@@ -100,15 +129,19 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
             teamName = datum.getTeam();
         }
 
-        int resourceId_teamColor = getColorByName(datum.getTeamId());
-        holder.line.setBackgroundResource(resourceId_teamColor);
-
+        if (teamId.equals("audi")){
+            String mTeamColor = "#01E801";
+            holder.line.setBackgroundColor(Color.parseColor(mTeamColor));
+        }else{
+            setTeamColor(teamId, holder.line, context);
+        }
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , teamPageActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("teamName", teamName);
             bundle.putString("teamId", teamId);
             bundle.putStringArrayList("teamDrivers", teamDrivers);
+            bundle.putString("currentSeason", currentSeason);
             intent.putExtras(bundle);
             context.startActivity(intent);
         });

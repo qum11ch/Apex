@@ -6,6 +6,15 @@ public class teamsList {
     private String team, points, position, teamId, season;
     private ArrayList<String> drivers;
     private boolean startSeason;
+    private String currentSeason;
+
+    public String getCurrentSeason(){
+        return currentSeason;
+    }
+
+    public void setCurrentSeason(String currentSeason){
+        this.currentSeason = currentSeason;
+    }
 
     public void setSeason(String season){
         this.season = season;

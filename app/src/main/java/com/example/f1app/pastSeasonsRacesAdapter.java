@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
@@ -14,9 +15,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -76,6 +79,12 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
 
         String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
         String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
+
+        if (!checkLightTheme(context)){
+            holder.stripedImgFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+            holder.stripedImgSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+            holder.stripedImgThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+        }
 
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
@@ -147,6 +156,11 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
         StorageReference mWinnerImage;
         StorageReference mSecondImage;
         StorageReference mThirdImage;
+
+        //StorageReference mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+        //StorageReference mSecondImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase()  + "_" + mSeason + ".png");
+        //StorageReference mThirdImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+
         if (mSeason.equals("2024")){
             mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_2024.png");
             mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_2024.png");
@@ -161,22 +175,19 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
         GlideApp.with(context)
                 .load(mWinnerImage)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_driver)
                 .into(holder.firstPlace_image);
-
 
         GlideApp.with(context)
                 .load(mSecondImage)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_driver)
                 .into(holder.secondPlace_image);
-
-
 
         GlideApp.with(context)
                 .load(mThirdImage)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_driver)
                 .into(holder.thirdPlace_image);
 
         holder.constraintLayout.setOnClickListener(v -> {
@@ -210,8 +221,12 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
                 secondPlace_code, firstPlace_code, thirdPlace_code;
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
+        ShapeableImageView stripedImgFirst, stripedImgSecond, stripedImgThird;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
+            stripedImgFirst = itemView.findViewById(R.id.stripedImg_first);
+            stripedImgSecond = itemView.findViewById(R.id.stripedImg_second);
+            stripedImgThird = itemView.findViewById(R.id.stripedImg_third);
             round = itemView.findViewById(R.id.round);
             day_start = itemView.findViewById(R.id.day_start);
             day_end = itemView.findViewById(R.id.day_end);

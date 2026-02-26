@@ -1,6 +1,6 @@
 package com.example.f1app;
 
-import static com.example.f1app.driversStandingsAdapter.getColorByName;
+import static com.example.f1app.driversStandingsAdapter.setTeamColor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,6 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -56,6 +55,8 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
         holder.driver_placement.setText(datum.getDriverPlacement());
 
+        //String currentSeason = datum.getSeason();
+
         if (position == dataList.size() - 1){
             holder.bottomLine.getLayoutParams().height = 0;
         }
@@ -96,8 +97,8 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             holder.driver_points.setText(driver_points);
         }
 
-        int resourceId_teamColor = getColorByName(datum.getConstructorId());
-        holder.line.setBackgroundResource(resourceId_teamColor);
+        String mTeamId = datum.getConstructorId();
+        setTeamColor(mTeamId, holder.line, context);
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , driverPageActivity.class);
@@ -107,6 +108,7 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             bundle.putString("driverTeam", datum.getDriverTeam());
             bundle.putString("driverFamilyName", datum.getDriverFamilyName());
             bundle.putString("driverTeamId", datum.getConstructorId());
+            bundle.putString("currentSeason", datum.getSeason());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });

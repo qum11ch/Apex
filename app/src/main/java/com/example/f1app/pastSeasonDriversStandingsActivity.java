@@ -4,7 +4,6 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -39,6 +38,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
     private pastSeasonDriversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         if(!getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String mSeason = bundle.getString("season");
+            mCurrentSeason = bundle.getString("currentSeason");
 
             shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
@@ -101,9 +102,9 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
     }
 
 
-    public void getStanding(String currentYear){
+    public void getStanding(String seasonYear){
         RequestQueue queue = Volley.newRequestQueue(pastSeasonDriversStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/driverstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + seasonYear + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -130,7 +131,8 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                                     JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, seasonYear);
+                                    smth.setCurrentSeason(mCurrentSeason);
                                     datum.add(smth);
                                 }
                             }

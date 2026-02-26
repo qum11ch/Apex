@@ -100,7 +100,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
                         android:background="@drawable/striped_background_grey_white"
-                        android:id="@+id/rounded_image"/>
+                        android:id="@+id/stripedImage"/>
                     <TextView
                         android:paddingStart="10dp"
                         android:paddingEnd="0dp"

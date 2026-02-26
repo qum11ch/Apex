@@ -225,26 +225,44 @@
                         android:paddingBottom="5dp"/>
                 </LinearLayout>
             </RelativeLayout>
-            <RelativeLayout
+            <Button
+                android:backgroundTint="@color/colorThirdly"
+                android:textColor="@color/text_color_main"
                 android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/save_style"
+                android:layout_marginBottom="2dp"
                 android:layout_below="@id/circuitInfo_layout"
-                android:id="@+id/previousGP"
+                android:textSize="18sp"
+                style="@style/FlatButtonStyle"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginBottom="30dp">
-                <TextView
-                    android:paddingStart="20dp"
-                    android:paddingEnd="0dp"
-                    android:layout_centerInParent="true"
-                    android:textAppearance="@style/TextStyle.Gram.Bold"
-                    android:textColor="@color/text_color_main"
-                    android:textSize="22sp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/prevGPtext"/>
-            </RelativeLayout>
+                android:textAppearance="@style/TextStyle.Gram.Bold"
+                android:id="@+id/raceResults_2025"
+                android:layout_marginEnd="20dp"/>
+            <View
+                android:layout_below="@id/raceResults_2025"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:layout_marginEnd="20dp"
+                android:background="@color/grey"
+                android:id="@+id/resultsLine"/>
+            <Button
+                android:backgroundTint="@color/colorThirdly"
+                android:textColor="@color/text_color_main"
+                android:layout_marginBottom="30dp"
+                android:layout_below="@id/resultsLine"
+                style="@style/PrevResultsStyleButtom"
+                android:textSize="18sp"
+                android:textAlignment="textStart"
+                android:paddingStart="20dp"
+                android:paddingEnd="5dp"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:textAppearance="@style/TextStyle.Gram.Bold"
+                android:id="@+id/raceResults_2024"
+                android:layout_marginEnd="20dp"/>
         </RelativeLayout>
         <com.facebook.shimmer.ShimmerFrameLayout
             android:visibility="visible"

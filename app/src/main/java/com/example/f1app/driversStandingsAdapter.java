@@ -1,8 +1,12 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
+
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -15,15 +19,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.lang.reflect.Field;
 import java.util.List;
 
 public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandingsAdapter.DataHolder> {
@@ -47,7 +56,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
 
     @NonNull
     @Override
-    public driversStandingsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view;
         if (viewType == 1) {
@@ -59,7 +68,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
     }
 
     @Override
-    public void onBindViewHolder(@NonNull driversStandingsAdapter.DataHolder holder, int position) {
+    public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         driversList datum = dataList.get(position);
         holder.driverName.setText(datum.getDriverName());
         holder.driverTeam.setText(datum.getDriverTeam());
@@ -69,23 +78,39 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         StorageReference storageRef = storage.getReference();
         String season = datum.getSeason();
 
-        StorageReference mDriverImage;
-        if (season.equals("2024")){
-            mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_2024.png");
+        // StorageReference mDriverImage;
+        // if (season.equals("2024")){
+        //     mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_2024.png");
+        // }else{
+        //     mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + ".png");
+        // }
+
+        StorageReference mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_"  + season + ".png");
+
+        String teamId = datum.getConstructorId().toLowerCase();
+        StorageReference mDriverTeamLogo;
+        if (!checkLightTheme(context)){
+            switch(teamId){
+                case "audi":
+                case "alpine":
+                case "cadillac":
+                    mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo_alt.png");
+                    break;
+                default:
+                    mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo.png");
+                    break;
+            }
         }else{
-            mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + ".png");
+            mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo.png");
         }
 
-        //mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_"  + season + ".png");
-
-        StorageReference mDriverTeamLogo = storageRef.child("teams/" + datum.getConstructorId().toLowerCase() + "_logo.png");
         mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
                 .load(uri)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .skipMemoryCache(true)
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder)
                 .into(holder.driverTeam_logo)).addOnFailureListener(e -> GlideApp.with(context)
-                        .load(R.drawable.f1)
+                        .load(R.drawable.placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .skipMemoryCache(true)
                         .into(holder.driverTeam_logo));
@@ -94,9 +119,9 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 .load(uri)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .skipMemoryCache(true)
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_driver)
                 .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
-                        .load(R.drawable.f1)
+                        .load(R.drawable.placeholder_driver)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .skipMemoryCache(true)
                         .into(holder.driverImage));
@@ -143,8 +168,8 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
                 holder.driver_points.setText(driver_points);
             }
 
-            int resourceId_teamColor = getColorByName(datum.getConstructorId());
-            holder.line.setBackgroundResource(resourceId_teamColor);
+            String mTeamId = datum.getConstructorId();
+            setTeamColor(mTeamId, holder.line, context);
         }
 
         holder.constraintLayout.setOnClickListener(v -> {
@@ -155,8 +180,26 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
             bundle.putString("driverTeam", datum.getDriverTeam());
             bundle.putString("driverFamilyName", datum.getDriverFamilyName());
             bundle.putString("driverTeamId", datum.getConstructorId());
+            bundle.putString("currentSeason", season);
             intent.putExtras(bundle);
             context.startActivity(intent);
+        });
+    }
+
+    public static void setTeamColor (String teamId, View view, Context context){
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("constructors").child(teamId).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String mTeamColor = "#" + snapshot.child("color").getValue(String.class);
+                view.setBackgroundColor(Color.parseColor(mTeamColor));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Activity activity = (Activity) context;
+                Log.e(String.valueOf(activity), "Team color information getting error:" + error.getMessage());
+            }
         });
     }
 
@@ -190,17 +233,5 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
             driverImage = itemView.findViewById(R.id.driverImage);
             line = itemView.findViewById(R.id.line);
         }
-    }
-
-    public static int getColorByName(String name) {
-        int colorId = 0;
-        try {
-            Class<R.color> res = R.color.class;
-            Field field = res.getField(name);
-            colorId = field.getInt(null);
-        } catch (Exception e) {
-            Log.e("getColorByName", " " + e.getMessage());
-        }
-        return colorId;
     }
 }

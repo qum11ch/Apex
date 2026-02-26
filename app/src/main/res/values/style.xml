@@ -21,6 +21,12 @@
         <item name="android:textSize">18sp</item>
     </style>
 
+    <style name="FlatButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/flat</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="ButtonStyleAccountPage" parent="android:Widget.TextView">
         <item name="android:background">@drawable/rounded_for_account</item>
         <item name="android:textColor">@color/colorPrimary</item>
@@ -98,9 +104,25 @@
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
     </style>
+    <style name="PrevResultsStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_previous</item>
+    </style>
+    <style name="PrevResultsStyleButtom" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_previous_buttom</item>
+    </style>
     <style name="ShapeAppearanceOverlay.App.CornerCircle" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">5%</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.App.CornerCircle.RightSide" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">5%</item>
+        <item name="cornerSizeBottomRight">5%</item>
+    </style>
+    <style name="ShapeAppearanceOverlay.App.CornerCircle.TopSide" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">5%</item>
+        <item name="cornerSizeTopLeft">5%</item>
     </style>
     <style name="EmptyButton" parent="android:Widget.TextView">
         <item name="android:background">@drawable/empty_button_style</item>

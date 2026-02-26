@@ -1,7 +1,6 @@
 package com.example.f1app;
 
-
-import static com.example.f1app.driversStandingsAdapter.getColorByName;
+import static com.example.f1app.driversStandingsAdapter.setTeamColor;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -60,30 +59,29 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         holder.teamDriverFirst.setText(teamDrivers.get(0));
         holder.teamDriverSecond.setText(teamDrivers.get(1));
 
+        String season = datum.getSeason();
+
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
 
-        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_left.png");
+        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_"  + season + ".png");
+
         GlideApp.with(context)
                 .load(mTeamCar)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .skipMemoryCache(true)
                 .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.f1)
+                .error(R.drawable.placeholder_car)
                 .into(holder.team_car);
 
         holder.scrollView.setOnTouchListener(new OnTouch());
 
         if (holder.getItemViewType() == 1){
-            switch (datum.getTeamId()){
-                case "red_bull":
-                case "alpine":
-                    holder.team_car.setScaleX(-1);
-                    holder.team_car.setScrollX(250);
-                    break;
-                default:
-                    holder.team_car.setScrollX(-250);
-                    break;
+            if (datum.getTeamId().equals("audi")) {
+                holder.team_car.setScaleX(-1);
+                holder.team_car.setScrollX(250);
+            } else {
+                holder.team_car.setScrollX(-250);
             }
             if (datum.getStartSeasonInfo()) {
                 int width = 0;
@@ -96,26 +94,18 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                 holder.teamPoints.setText(teamPoints);
             }
         }else{
-            switch (datum.getTeamId()){
-                case "red_bull":
-                case "alpine":
-                    holder.team_car.setScaleX(-1);
-                    holder.team_car.setScrollX(175);
-                    break;
-                default:
-                    holder.team_car.setScrollX(-175);
-                    break;
+            if (datum.getTeamId().equals("audi")) {
+                holder.team_car.setScaleX(-1);
+                holder.team_car.setScrollX(185);
+            } else {
+                holder.team_car.setScrollX(-185);
             }
             if (datum.getStartSeasonInfo()) {
-                switch (datum.getTeamId()){
-                    case "red_bull":
-                    case "alpine":
-                        holder.team_car.setScaleX(-1);
-                        holder.team_car.setScrollX(125);
-                        break;
-                    default:
-                        holder.team_car.setScrollX(-125);
-                        break;
+                if (datum.getTeamId().equals("audi")) {
+                    holder.team_car.setScaleX(-1);
+                    holder.team_car.setScrollX(135);
+                } else {
+                    holder.team_car.setScrollX(-135);
                 }
 
                 holder.leftLayout.setLayoutParams(new LinearLayout.LayoutParams(0, RelativeLayout.LayoutParams.MATCH_PARENT, 0.2f));
@@ -131,8 +121,8 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                 holder.teamPoints.setText(teamPoints);
             }
 
-            int resourceId_teamColor = getColorByName(datum.getTeamId());
-            holder.line.setBackgroundResource(resourceId_teamColor);
+            String mTeamId = datum.getTeamId();
+            setTeamColor(mTeamId, holder.line, context);
         }
 
         holder.constraintLayout.setOnClickListener(v -> {
@@ -141,6 +131,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
             bundle.putString("teamName", datum.getTeam());
             bundle.putString("teamId", datum.getTeamId());
             bundle.putStringArrayList("teamDrivers", teamDrivers);
+            bundle.putString("currentSeason", datum.getSeason());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });

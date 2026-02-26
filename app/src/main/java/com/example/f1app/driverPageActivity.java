@@ -1,15 +1,14 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -47,9 +46,6 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 public class driverPageActivity extends AppCompatActivity {
-    private ImageButton backButton;
-    private ViewPager2 myViewPager2;
-    private viewPagerAdapter adapter;
     private TextView teamName, driverNumber, driverfullName,
             driverFamilyName, driverName;
     private ProgressBar progressBar;
@@ -74,7 +70,7 @@ public class driverPageActivity extends AppCompatActivity {
         teamName = (TextView) findViewById(R.id.teamName);
         likeButton = (ToggleButton) findViewById(R.id.like_button);
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,6 +97,7 @@ public class driverPageActivity extends AppCompatActivity {
             //String mDriverTeam = bundle.getString("driverTeam");
             String mDriverCode = bundle.getString("driverCode");
             //String mTeamId = bundle.getString("driverTeamId");
+            String mCurrentSeason = bundle.getString("currentSeason");
 
             String driver = mDriverName + " " + mDriverFamilyName;
 
@@ -157,13 +154,13 @@ public class driverPageActivity extends AppCompatActivity {
                     RelativeLayout parentLayout = findViewById(R.id.driver_layout);
                     switch(Objects.requireNonNull(status)){
                         case ("active"):
-                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
+                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + "_" + mCurrentSeason + ".png");
                             teamName.setText(driverTeam);
                             break;
                         case ("reserve"):
-                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
-                            //mDriverImage = storageRef.child("drivers/" +
-                            //        mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
+                            //mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
+                            mDriverImage = storageRef.child("drivers/" +
+                                    mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
 
                             teamName.setText(driverTeam);
                             TextView reservedText = new TextView(driverPageActivity.this);
@@ -209,7 +206,7 @@ public class driverPageActivity extends AppCompatActivity {
                                 driverPageBundle.putString("driverTeam", finalDriverTeam);
                                 driverPageBundle.putString("driverCode", mDriverCode);
                                 driverPageBundle.putString("driverTeamId", mDriverTeamId);
-
+                                driverPageBundle.putString("currentSeason", mCurrentSeason);
                                 init(driverPageBundle);
                             }
                         }
@@ -224,7 +221,7 @@ public class driverPageActivity extends AppCompatActivity {
                             .transition(DrawableTransitionOptions.withCrossFade())
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .transition(DrawableTransitionOptions.withCrossFade())
-                            .error(R.drawable.f1)
+                            .error(R.drawable.placeholder_driver)
                             .into(driverImage);
                 }
 
@@ -236,6 +233,11 @@ public class driverPageActivity extends AppCompatActivity {
 
 
             CollapsingToolbarLayout collapsingToolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.collapsing_toolbar);
+
+            if (!checkLightTheme(driverPageActivity.this)){
+                collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
+            }
+
             AppBarLayout appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -250,7 +252,11 @@ public class driverPageActivity extends AppCompatActivity {
                     }
                     if (scrollRange + verticalOffset == 0) {
                         driverName.setText(driver);
-                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                        if (!checkLightTheme(driverPageActivity.this)){
+                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.darkest_grey));
+                        }else{
+                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+                        }
                         isShow = true;
                     } else if (isShow) {
                         driverName.setText(" ");
@@ -328,8 +334,8 @@ public class driverPageActivity extends AppCompatActivity {
     }
 
     private void init(Bundle driverPageBundle) {
-        myViewPager2 = findViewById(R.id.viewPager2);
-        adapter = new viewPagerAdapter(this);
+        ViewPager2 myViewPager2 = findViewById(R.id.viewPager2);
+        viewPagerAdapter adapter = new viewPagerAdapter(this);
         driverStatsFragment driverStatsFragment = new driverStatsFragment();
         driverStatsFragment.setArguments(driverPageBundle);
         adapter.addFragment(driverStatsFragment);

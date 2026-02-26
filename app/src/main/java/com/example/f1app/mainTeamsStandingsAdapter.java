@@ -1,7 +1,6 @@
 package com.example.f1app;
 
-
-import static com.example.f1app.driversStandingsAdapter.getColorByName;
+import static com.example.f1app.driversStandingsAdapter.setTeamColor;
 
 import android.content.Context;
 import android.content.Intent;
@@ -9,7 +8,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -56,8 +54,8 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
             holder.teamPoints.setText(teamPoints);
         }
 
-        int resourceId_teamColor = getColorByName(datum.getTeamId());
-        holder.line.setBackgroundResource(resourceId_teamColor);
+        String mTeamId = datum.getTeamId();
+        setTeamColor(mTeamId, holder.line, context);
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , teamPageActivity.class);
@@ -65,6 +63,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
             bundle.putString("teamName", datum.getTeam());
             bundle.putString("teamId", datum.getTeamId());
             bundle.putStringArrayList("teamDrivers", teamDrivers);
+            bundle.putString("currentSeason", datum.getSeason());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });

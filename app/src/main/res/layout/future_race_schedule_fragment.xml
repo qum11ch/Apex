@@ -268,11 +268,18 @@
                     android:textSize="22sp"
                     android:textOff="@string/save_race"
                     android:textOn="@string/delete_race"/>
+                <View
+                    android:layout_below="@id/saveRace"
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_marginEnd="30dp"
+                    android:background="@color/grey"
+                    android:id="@+id/lineBetween"/>
                 <Button
-                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:layout_marginEnd="20dp"
                     android:background="@drawable/save_style"
-                    android:layout_below="@id/saveRace"
+                    android:layout_below="@id/lineBetween"
                     android:id="@+id/predict_button"
                     android:layout_width="match_parent"
                     android:layout_height="60dp"

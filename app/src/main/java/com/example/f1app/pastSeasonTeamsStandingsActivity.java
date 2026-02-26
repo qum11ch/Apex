@@ -4,7 +4,6 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -45,6 +44,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private pastSeasonTeamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,6 +61,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         if(!getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String mSeason = bundle.getString("season");
+            mCurrentSeason = bundle.getString("currentSeason");
 
             shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
@@ -136,7 +137,6 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                     //        constructorName = "Kick Sauber";
                                     //}
                                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                    String finalConstructorName = constructorName;
                                     rootRef.child("driverLineUp/season/" + year + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -145,9 +145,10 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                                 String driverFullname = driverDataSnapshot.getKey();
                                                 teamDrivers.add(driverFullname);
                                             }
-                                            teamsList smth = new teamsList(finalConstructorName, position, points, constructorId, false);
+                                            teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                             smth.setSeason(year);
                                             smth.setDrivers(teamDrivers);
+                                            smth.setCurrentSeason(mCurrentSeason);
                                             datum.add(smth);
                                             hideShimmer(recyclerView, shimmerFrameLayout);
                                             adapter.notifyItemChanged(datum.size() - 1);
@@ -163,7 +164,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
                         }
                     } catch (JSONException e) {
-                        e.printStackTrace();
+                        Toast.makeText(pastSeasonTeamsStandingsActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }, error -> Toast.makeText(pastSeasonTeamsStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);

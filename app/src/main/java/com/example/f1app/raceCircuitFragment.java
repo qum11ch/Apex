@@ -5,11 +5,11 @@ import static com.example.f1app.driverStatsFragment.getCountryCode;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -21,6 +21,8 @@ import androidx.fragment.app.Fragment;
 import com.blongho.country_data.World;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,9 +41,9 @@ public class raceCircuitFragment extends Fragment {
     private TextView raceDist;
     private TextView lapRecord_time;
     private TextView lapRecord_driver;
-    private RelativeLayout contentLayout;
+    private RelativeLayout contentLayout, circuitInfoLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
-
+    private View resultsLine;
 
     public raceCircuitFragment() {
         // required empty public constructor.
@@ -70,9 +72,11 @@ public class raceCircuitFragment extends Fragment {
         lapRecord_time = view.findViewById(R.id.lapRecord_time);
         lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
         ImageView circuitImage = view.findViewById(R.id.circuitImage);
+        circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
         ImageView flag = view.findViewById(R.id.flag);
-        RelativeLayout previousGP = view.findViewById(R.id.previousGP);
-        TextView prevGPtext = view.findViewById(R.id.prevGPtext);
+        resultsLine = view.findViewById(R.id.resultsLine);
+        Button raceResults_2025 = view.findViewById(R.id.raceResults_2025);
+        Button raceResults_2024 = view.findViewById(R.id.raceResults_2024);
         contentLayout = view.findViewById(R.id.content_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
 
@@ -84,29 +88,31 @@ public class raceCircuitFragment extends Fragment {
             String mCountry = getArguments().getString("raceCountry");
             String mYear = getArguments().getString("gpYear");
 
-            String mPrevGPtext;
-            assert mYear != null;
-            if(Locale.getDefault().getLanguage().equals("ru")){
-                mPrevGPtext = getString(R.string.prev_race_results_text) + " " + (Integer.parseInt(mYear) - 1);
-            }else{
-                mPrevGPtext = (Integer.parseInt(mYear) - 1) + " " + getString(R.string.prev_race_results_text);
-            }
-
-            prevGPtext.setText(mPrevGPtext);
-
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
             String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
             raceName.setText(futureRaceName);
 
-            previousGP.setOnClickListener(view1 -> {
-                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName", mRaceName);
-                bundle.putString("circuitId", mCircuitId);
-                bundle.putString("season", String.valueOf(Integer.parseInt(mYear) - 1));
-                intent.putExtras(bundle);
-                requireContext().startActivity(intent);
-            });
+            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
+            switch (mYear){
+                case "2024":
+                    raceResults_2024.setVisibility(View.GONE);
+                    raceResults_2025.setVisibility(View.GONE);
+                    resultsLine.setVisibility(View.GONE);
+                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
+                    circuitInfoLayout.setLayoutParams(params);
+                    break;
+                case "2025":
+                    checkPrevSeason("2024", mRaceName, mCircuitId, mYear, raceResults_2024);
+                    raceResults_2025.setVisibility(View.GONE);
+                    resultsLine.setVisibility(View.GONE);
+                    params.bottomMargin = (int) (40 * getResources().getDisplayMetrics().density);
+                    circuitInfoLayout.setLayoutParams(params);
+                    break;
+                default:
+                    checkPrevSeason("2024", mRaceName, mCircuitId, mYear, raceResults_2024);
+                    checkPrevSeason("2025", mRaceName, mCircuitId, mYear, raceResults_2025);
+                    break;
+            }
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -116,7 +122,7 @@ public class raceCircuitFragment extends Fragment {
             GlideApp.with(requireContext())
                     .load(mCircuitImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder)
                     .into(circuitImage);
 
             World.init(requireContext());
@@ -135,15 +141,19 @@ public class raceCircuitFragment extends Fragment {
                     String mLapRecordDriver = snapshot.child("lapRecordDriver").getValue(String.class);
                     Integer mLapRecordYear = snapshot.child("lapRecordYear").getValue(Integer.class);
 
+                    if (mLapRecordYear == 0){
+                        lapRecord_driver.setVisibility(View.GONE);
+                    }else{
+                        String lapRecordDriverSummary = mLapRecordDriver + " (" + mLapRecordYear + ")";
+                        lapRecord_driver.setText(lapRecordDriverSummary);
+                    }
+
                     circuitName.setText(requireContext().getString(getStringByName(mCircuitId + "_text")));
                     length.setText(mLength);
                     lapsNum.setText(mLapsNum);
                     firstGP.setText(mFirstGP);
                     raceDist.setText(mRaceDist);
                     lapRecord_time.setText(mLapRecordTime);
-                    String lapRecordDriverSummary = mLapRecordDriver + " (" + mLapRecordYear + ")";
-                    lapRecord_driver.setText(lapRecordDriverSummary);
-
 
                     shimmerFrameLayout.animate()
                             .setDuration(500)
@@ -153,12 +163,6 @@ public class raceCircuitFragment extends Fragment {
                                 shimmerFrameLayout.stopShimmer();
                             })
                             .start();
-                    //Handler handler = new Handler();
-                    //handler.postDelayed(()->{
-                    //    contentLayout.setVisibility(View.VISIBLE);
-                    //    shimmerFrameLayout.setVisibility(View.GONE);
-                    //    shimmerFrameLayout.stopShimmer();
-                    //},500);
                 }
 
                 @Override
@@ -168,6 +172,68 @@ public class raceCircuitFragment extends Fragment {
             });
         }
 
+    }
+
+    private void checkPrevSeason(String season, String mRaceName, String circuitId,
+                                 String currentSeason, Button prevSeason){
+        String raceName;
+        switch (mRaceName){
+            case "Brazilian Grand Prix":
+                raceName = "São Paulo Grand Prix";
+                break;
+            case "Spanish Grand Prix":
+                if (currentSeason.equals("2026")){
+                    raceName = "Madrid Grand Prix";
+                }else{
+                    raceName = mRaceName;
+                }
+                break;
+            case "Barcelona Grand Prix":
+                if (currentSeason.equals("2026")){
+                    raceName = "Spanish Grand Prix";
+                }else{
+                    raceName = mRaceName;
+                }
+                break;
+            default:
+                raceName = mRaceName;
+                break;
+        }
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        rootRef.child("schedule/season/" + season).child(raceName).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.hasChildren()){
+                    //Log.e("raceCircuit", " " + snapshot + " " + snapshot.exists());
+                    //Log.e("raceCircuit", "Has Previous Year Race" + " " + snapshot.hasChildren());
+                    String mPrevGPtext;
+                    if(Locale.getDefault().getLanguage().equals("ru")){
+                        mPrevGPtext = getString(R.string.prev_race_results_text) + " " + season;
+                    }else{
+                        mPrevGPtext = season + " " + getString(R.string.prev_race_results_text);
+                    }
+                    prevSeason.setText(mPrevGPtext);
+
+                    prevSeason.setOnClickListener(view1 -> {
+                        Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                        Bundle bundle = new Bundle();
+                        bundle.putString("raceName", raceName);
+                        bundle.putString("circuitId", circuitId);
+                        bundle.putString("season", season);
+                        intent.putExtras(bundle);
+                        requireContext().startActivity(intent);
+                    });
+                }else{
+                    prevSeason.setVisibility(View.GONE);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("raceResultsQualiAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
+            }
+        });
     }
 
 }

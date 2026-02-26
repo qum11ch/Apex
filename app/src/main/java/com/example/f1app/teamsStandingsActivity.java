@@ -3,11 +3,11 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 import static com.example.f1app.driverStatsFragment.getCountryCode;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,14 +46,15 @@ import java.util.Locale;
 import java.util.Map;
 
 public class teamsStandingsActivity extends AppCompatActivity {
-    Button showDriverButton, showDriverStanding, showHomePage, showAccount;
-
+    Button showDrivers, showSchedule, showHomePage, showAccount;
+    private View teamStndLine;
     private List<teamsList> datum;
     private RecyclerView recyclerView;
-    private Button pastSeasonTeamsStandings;
+    private Button teamsStandings_2024, teamsStandings_2025;
     private teamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -67,22 +68,43 @@ public class teamsStandingsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamsStandingsActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        mCurrentSeason = intentBundle.getString("currentSeason");
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        teamStndLine = findViewById(R.id.teamStndLine);
 
-        pastSeasonTeamsStandings = findViewById(R.id.pastSeasonTeamsStandings);
-        String buttonText;
+        teamsStandings_2024 = findViewById(R.id.teamsStandings_2024);
+        teamsStandings_2025 = findViewById(R.id.teamsStandings_2025);
+
+        String buttonText_2024, buttonText_2025;
         if (Locale.getDefault().getLanguage().equals("ru")){
-            buttonText = getText(R.string.past_season_teams) + " 2024";
+            buttonText_2024 = getText(R.string.past_season_teams) + " 2024";
+            buttonText_2025 = getText(R.string.past_season_teams) + " 2025";
         }else{
-            buttonText = "2024 " + getText(R.string.past_season_teams);
+            buttonText_2024 = "2024 " + getText(R.string.past_season_teams);
+            buttonText_2025 = "2025 " + getText(R.string.past_season_teams);
         }
-        pastSeasonTeamsStandings.setText(buttonText);
-        pastSeasonTeamsStandings.setOnClickListener(v -> {
+        teamsStandings_2024.setText(buttonText_2024);
+        teamsStandings_2024.setOnClickListener(v -> {
             Intent intent = new Intent(teamsStandingsActivity.this,
                     pastSeasonTeamsStandingsActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("season", "2024");
+            bundle.putString("currentSeason", mCurrentSeason);
+            intent.putExtras(bundle);
+            teamsStandingsActivity.this.startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
+
+        teamsStandings_2025.setText(buttonText_2025);
+        teamsStandings_2025.setOnClickListener(v -> {
+            Intent intent = new Intent(teamsStandingsActivity.this,
+                    pastSeasonTeamsStandingsActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("season", "2025");
+            bundle.putString("currentSeason", mCurrentSeason);
             intent.putExtras(bundle);
             teamsStandingsActivity.this.startActivity(intent);
             overridePendingTransition(0, 0);
@@ -103,7 +125,9 @@ public class teamsStandingsActivity extends AppCompatActivity {
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             recyclerView.setVisibility(View.GONE);
-            pastSeasonTeamsStandings.setVisibility(View.GONE);
+            teamsStandings_2024.setVisibility(View.GONE);
+            teamsStandings_2025.setVisibility(View.GONE);
+            teamStndLine.setVisibility(View.GONE);
             shimmerFrameLayout.setVisibility(View.VISIBLE);
             shimmerFrameLayout.startShimmer();
             datum = new ArrayList<>();
@@ -112,18 +136,14 @@ public class teamsStandingsActivity extends AppCompatActivity {
             adapter.notifyDataSetChanged();
         });
 
-        showDriverButton = findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(v -> {
-            Intent intent = new Intent(teamsStandingsActivity.this, driversStandingsActivity.class);
-            teamsStandingsActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+        showDrivers = findViewById(R.id.showDriver);
+        showDrivers.setOnClickListener(v -> {
+            startActivity_seasonData(teamsStandingsActivity.this, driversStandingsActivity.class, mCurrentSeason);
         });
 
-        showDriverStanding = findViewById(R.id.showSchedule);
-        showDriverStanding.setOnClickListener(v -> {
-            Intent intent = new Intent(teamsStandingsActivity.this, scheduleActivity.class);
-            teamsStandingsActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+        showSchedule = findViewById(R.id.showSchedule);
+        showSchedule.setOnClickListener(v -> {
+            startActivity_seasonData(teamsStandingsActivity.this, scheduleActivity.class, mCurrentSeason);
         });
 
         showHomePage = findViewById(R.id.showHomePage);
@@ -135,9 +155,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         showAccount = findViewById(R.id.showAccount);
         showAccount.setOnClickListener(v -> {
-            Intent intent = new Intent(teamsStandingsActivity.this, logInPageActivity.class);
-            teamsStandingsActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_seasonData(teamsStandingsActivity.this, logInPageActivity.class, mCurrentSeason);
         });
 
 
@@ -192,24 +210,29 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                             }
                                             teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                             smth.setDrivers(teamDrivers);
+                                            smth.setSeason(mCurrentSeason);
                                             datum.add(smth);
 
                                             hideShimmer(recyclerView, shimmerFrameLayout);
-                                            pastSeasonTeamsStandings.animate()
+                                            teamsStandings_2024.animate()
                                                     .setDuration(500)
                                                     .withEndAction(() -> {
-                                                        pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                                        teamsStandings_2024.setVisibility(View.VISIBLE);
+                                                    }).start();
+
+                                            teamStndLine.animate()
+                                                    .setDuration(500)
+                                                    .withEndAction(() -> {
+                                                        teamStndLine.setVisibility(View.VISIBLE);
+                                                    }).start();
+
+                                            teamsStandings_2025.animate()
+                                                    .setDuration(500)
+                                                    .withEndAction(() -> {
+                                                        teamsStandings_2025.setVisibility(View.VISIBLE);
                                                     }).start();
 
                                             adapter.notifyItemInserted(datum.size() - 1);
-
-                                            //Handler handler = new Handler();
-                                            //handler.postDelayed(()->{
-                                            //    recyclerView.setVisibility(View.VISIBLE);
-                                            //    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
-                                            //    shimmerFrameLayout.setVisibility(View.GONE);
-                                            //    shimmerFrameLayout.stopShimmer();
-                                            //},500);
                                         }
 
                                         @Override
@@ -248,21 +271,27 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     teamDrivers.add(driverFullname);
                                                 }
                                                 teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
+                                                smth.setSeason(mCurrentSeason);
                                                 smth.setDrivers(teamDrivers);
-                                                //Handler handler = new Handler();
-                                                //handler.postDelayed(()->{
-                                                //    recyclerView.setVisibility(View.VISIBLE);
-                                                //    pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
-                                                //    shimmerFrameLayout.setVisibility(View.GONE);
-                                                //    shimmerFrameLayout.stopShimmer();
-                                                //},500);
                                                 datum.add(smth);
 
                                                 hideShimmer(recyclerView, shimmerFrameLayout);
-                                                pastSeasonTeamsStandings.animate()
+                                                teamsStandings_2024.animate()
                                                         .setDuration(500)
                                                         .withEndAction(() -> {
-                                                            pastSeasonTeamsStandings.setVisibility(View.VISIBLE);
+                                                            teamsStandings_2024.setVisibility(View.VISIBLE);
+                                                        }).start();
+
+                                                teamStndLine.animate()
+                                                        .setDuration(500)
+                                                        .withEndAction(() -> {
+                                                            teamStndLine.setVisibility(View.VISIBLE);
+                                                        }).start();
+
+                                                teamsStandings_2025.animate()
+                                                        .setDuration(500)
+                                                        .withEndAction(() -> {
+                                                            teamsStandings_2025.setVisibility(View.VISIBLE);
                                                         }).start();
 
                                                 adapter.notifyItemInserted(datum.size() - 1);
@@ -325,6 +354,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         cityTranslations.put("Montreal", "Монреаль");
         cityTranslations.put("Yas Marina", "Абу-Даби");
         cityTranslations.put("Zandvoort", "Зандворт");
+        cityTranslations.put("Madrid", "Мадрид");
         return cityTranslations.getOrDefault(cityName, cityName);
     }
 

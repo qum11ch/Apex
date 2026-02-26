@@ -26,19 +26,9 @@
     <color name="dark_grey">#38393e</color>
     <color name="darkest_grey">#222222</color>
     <color name="dark_blue">#090e27</color>
-    <color name="red">#ee0000</color>
+    <color name="red">#a1000b</color>
     <color name="brown">#71423C</color>
     <color name="light_grey">#f2f2f2</color>
-    <color name="alpine">#0093CC</color>
-    <color name="aston_martin">#1D9C71</color>
-    <color name="ferrari">#E80020</color>
-    <color name="haas">#B6BABD</color>
-    <color name="mclaren">#FF8000</color>
-    <color name="mercedes">#27F4D2</color>
-    <color name="rb">#6692FF</color>
-    <color name="red_bull">#3671C6</color>
-    <color name="sauber">#5FDA4F</color>
-    <color name="williams">#64C4FF</color>
     <color name="text_color_main">#FFFF</color>
     <color name="text_color_secondary">#FFFF</color>
     <color name="text_color_thirdly">#FFFF</color>
@@ -48,6 +38,8 @@
     <color name="accountButtons">#FFFF</color>
     <color name="progressBarColor">#FFFF</color>
     <color name="toggleButtonColor">#222222</color>
-
+    <color name="green">#5FDA4F</color>
     <color name="dark_status_bar">#FF222222</color>
+    <color name="schedule_color">#303030</color>
+    <color name="statusBar_color">#222222</color>
 </resources>

@@ -55,19 +55,24 @@ public class raceResultsRaceAdapter extends RecyclerView.Adapter<raceResultsRace
         int year = Integer.parseInt(mSeason);
 
         if (year >= 2024){
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("constructors/" + mDriverTeam).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String teamColor = "#" + snapshot.child("color").getValue(String.class);
-                    holder.line.setBackgroundColor(Color.parseColor(teamColor));
-                }
+            if(mDriverTeam.equals("sauber")){
+                String teamColor = "#01E801";
+                holder.line.setBackgroundColor(Color.parseColor(teamColor));
+            }else{
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+                rootRef.child("constructors/" + mDriverTeam).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String teamColor = "#" + snapshot.child("color").getValue(String.class);
+                        holder.line.setBackgroundColor(Color.parseColor(teamColor));
+                    }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("raceResultsQualiAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("raceResultsRaceAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
+                    }
+                });
+            }
         }
     }
 

@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -71,7 +72,6 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
     }
 
     public void openRace(String raceName, String raceSeason){
-
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season").child(raceSeason).child(raceName)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -146,14 +146,14 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
+                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

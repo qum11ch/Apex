@@ -30,7 +30,7 @@
                 android:layout_weight="0.5"
                 android:gravity="center">
                 <TextView
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:id="@+id/team_placement"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -57,7 +57,7 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp">
                 <TextView
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:id="@+id/teamName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
                     android:lineSpacingExtra="0dp"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                 <TextView
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:id="@+id/driverFirst"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -77,7 +77,7 @@
                     android:lineSpacingExtra="0dp"
                     android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
                 <TextView
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:id="@+id/driverSecond"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

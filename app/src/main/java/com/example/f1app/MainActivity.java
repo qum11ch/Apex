@@ -10,12 +10,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -55,7 +57,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.checkerframework.checker.units.qual.A;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -83,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
     private mainTeamsStandingsAdapter teamsAdapter;
     private mainPastRaceAdapter pastRaceAdapter;
     private futureRaceAdapter futureRaceAdapter;
+    private String currentSeason;
 
 
     @Override
@@ -134,20 +136,7 @@ public class MainActivity extends AppCompatActivity {
         futureRaceAdapter = new futureRaceAdapter(this, datumFuture);
         rvFuture.setAdapter(futureRaceAdapter);
 
-        Button predict = findViewById(R.id.predict);
-
-        predict.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
-            MainActivity.this.startActivity(intent);
-
-        });
-
         Button winnersWDC = findViewById(R.id.winnersWDS);
-
-        winnersWDC.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, winnersWDCActivity.class);
-            MainActivity.this.startActivity(intent);
-        });
 
         sfProgressBar.startShimmer();
         sfFuture.startShimmer();
@@ -171,42 +160,85 @@ public class MainActivity extends AppCompatActivity {
 
         showDriverButton = findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, driversStandingsActivity.class);
-            MainActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_getSeason(driversStandingsActivity.class);
         });
 
         showSchedule = findViewById(R.id.showSchedule);
         showSchedule.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, scheduleActivity.class);
-            MainActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_getSeason(scheduleActivity.class);
         });
 
         showTeams = findViewById(R.id.showTeams);
         showTeams.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, teamsStandingsActivity.class);
-            MainActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_getSeason(teamsStandingsActivity.class);
         });
 
         showAccount = findViewById(R.id.showAccount);
         showAccount.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, logInPageActivity.class);
-            MainActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
+            startActivity_getSeason(logInPageActivity.class);
+        });
+        String currentYear = Integer.toString(currentDate.getYear());
+
+        DatabaseReference rootRef = database.getReference();
+        rootRef.child("status/season").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                currentSeason = snapshot.getValue(String.class);
+                getTeamStanding(currentSeason);
+                getDriversStanding(currentSeason);
+                getSchedule(currentYear, currentDate);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                getTeamStanding(currentYear);
+                getDriversStanding(currentYear);
+                getSchedule(currentYear, currentDate);
+                Log.e("MainActivityError", error.getMessage());
+            }
         });
 
-        String currentYear = Integer.toString(currentDate.getYear());
-        getTeamStanding(currentYear);
-        getDriversStanding(currentYear);
-        getSchedule(currentYear, currentDate);
+        winnersWDC.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, winnersWDCActivity.class);
+            intent.putExtra("currentSeason", currentSeason);
+            MainActivity.this.startActivity(intent);
+        });
 
         AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.setExpanded(true,true);
 
         mPrefs = getSharedPreferences(APP_PREFERENCES, Activity.MODE_PRIVATE);
         checkNotificationPermission();
+
+        Button predict = findViewById(R.id.predict);
+
+        predict.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
+            intent.putExtra("currentSeason", currentSeason);
+            MainActivity.this.startActivity(intent);
+
+        });
+    }
+
+    private void startActivity_getSeason(Class<?> className){
+        DatabaseReference rootRef = database.getReference();
+        rootRef.child("status/season").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String currentSeason = snapshot.getValue(String.class);
+                Intent intent = new Intent(MainActivity.this, className);
+                Bundle bundle = new Bundle();
+                bundle.putString("currentSeason" , currentSeason);
+                intent.putExtras(bundle);
+                MainActivity.this.startActivity(intent);
+                overridePendingTransition(0, 0);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e("MainActivityError", error.getMessage());
+            }
+        });
     }
 
     private void checkNotificationPermission() {
@@ -255,15 +287,14 @@ public class MainActivity extends AppCompatActivity {
             raceProgress.setVisibility(View.VISIBLE);
             sfProgressBar.setVisibility(View.GONE);
             sfProgressBar.stopShimmer();
-
             raceProgress.setProgress(progress);
             raceProgressText.setText(strProgress);
         },500);
     }
 
-    private void getDriversStanding(String currentYear){
+    private void getDriversStanding(String season){
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/driverstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -290,11 +321,10 @@ public class MainActivity extends AppCompatActivity {
                                     JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentYear);
+                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, season);
                                     datumDrivers.add(smth);
                                 }
                             }
-
                             hideShimmer(rvDrivers, sfDrivers);
                             driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
 
@@ -315,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
 
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId)
+                                        rootRef.child("driverLineUp/season/" + season + "/" + constructorId)
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                                     @Override
                                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -352,8 +382,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                                     String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
                                                                     driversList smth = new driversList(driverName, driverFamilyName, finalConstructorsName,
-                                                                            finalConstructorId, "", String.valueOf(currentDriverPlace), driverCode, true, currentYear);
-
+                                                                            finalConstructorId, "", String.valueOf(currentDriverPlace), driverCode, true, season);
                                                                     datumDrivers.add(smth);
                                                                     driverCount.incrementAndGet();
                                                                     driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
@@ -393,9 +422,9 @@ public class MainActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
-    private void getTeamStanding(String currentYear){
+    private void getTeamStanding(String season){
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
+        String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
                 Request.Method.GET,
                 url2,
@@ -418,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
                                     String constructorId = ConstructorStandings.getJSONObject(j)
                                             .getJSONObject("Constructor").getString("constructorId");
                                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                    rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                    rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             ArrayList<String> teamDrivers = new ArrayList<>();
@@ -429,9 +458,9 @@ public class MainActivity extends AppCompatActivity {
 
                                             teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                             smth.setDrivers(teamDrivers);
+                                            smth.setSeason(season);
                                             datumTeams.add(smth);
                                             hideShimmer(rvTeams, sfTeams);
-
                                             teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
                                         }
 
@@ -457,7 +486,7 @@ public class MainActivity extends AppCompatActivity {
                                         String constructorsName = child.child("name").getValue(String.class);
 
                                         DatabaseReference rootRef = database.getReference();
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 ArrayList<String> teamDrivers = new ArrayList<>();
@@ -467,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
                                                 }
                                                 teamsList smth = new teamsList(constructorsName, String.valueOf(currentTeamPlace + 1), "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
-
+                                                smth.setSeason(season);
                                                 hideShimmer(rvTeams, sfTeams);
                                                 datumTeams.add(smth);
                                                 teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
@@ -494,7 +523,6 @@ public class MainActivity extends AppCompatActivity {
                 }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
-
 
     private void getSchedule(String year, LocalDate currentDate){
         ArrayList<String> concludedRoundNumber = new ArrayList<>();
@@ -802,6 +830,19 @@ public class MainActivity extends AppCompatActivity {
                     sf.stopShimmer();
                 })
                 .start();
+    }
+
+    public static boolean checkLightTheme(Context context) {
+        int currentNightMode = context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                return false;
+            case Configuration.UI_MODE_NIGHT_NO:
+                return true;
+            default:
+                return true;
+        }
     }
 
     public static boolean checkConnection(Context context) {

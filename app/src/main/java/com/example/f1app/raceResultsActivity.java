@@ -36,9 +36,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class raceResultsActivity extends AppCompatActivity {
-
-    private ImageButton backButton;
-    private TextView raceTitle;
     private ViewPager2 myViewPager2;
     private viewPagerAdapter adapter ;
 
@@ -48,7 +45,7 @@ public class raceResultsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.race_results_page);
 
-        raceTitle = findViewById(R.id.raceTitle);
+        TextView raceTitle = findViewById(R.id.raceTitle);
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(raceResultsActivity.this));
@@ -73,7 +70,7 @@ public class raceResultsActivity extends AppCompatActivity {
 
             raceTitle.setText(pastRaceName);
 
-            backButton = (ImageButton) findViewById(R.id.backButton);
+            ImageButton backButton = (ImageButton) findViewById(R.id.backButton);
             backButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -87,7 +84,7 @@ public class raceResultsActivity extends AppCompatActivity {
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-            Integer year = Integer.parseInt(mSeason);
+            int year = Integer.parseInt(mSeason);
 
             if (year < 2024){
                 RequestQueue queue = Volley.newRequestQueue(raceResultsActivity.this);

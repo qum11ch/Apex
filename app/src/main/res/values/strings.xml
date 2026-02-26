@@ -303,7 +303,7 @@
 
     <string name="delete_race_text">Are you sure you want to delete this race from saved races list?</string>
     <string name="race_finished_text">Grand-Prix finished</string>
-    <string name="notify_start_text">is start</string>
+    <string name="notify_start_text">starts in 5 minutes</string>
     <string name="notify_end_text">is ended</string>
     <string name="past_season_result">Race Results</string>
     <string name="last_entry_text">Last Entry</string>
@@ -324,10 +324,9 @@
     <string name="predict">predict</string>
     <string name="prediction">prediction</string>
     <string name="predict_button">Get Prediction</string>
-    <string name="predict_text">New functionality: predicting qualification results!</string>
     <string name="predict_quali">Qualifying</string>
     <string name="predict_sprint_quali">Spring Qualifying</string>
-    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2025 Grand Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
+    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2026 Grand Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
     <string name="warning_it">Attention! Getting the prediction may take some time! Approximate waiting time up to 2 minutes depending on your Internet connection!</string>
     <string name="qualifying_text">Qualifying</string>
     <string name="sprint_qualifying_text">Sprint Qualifying</string>

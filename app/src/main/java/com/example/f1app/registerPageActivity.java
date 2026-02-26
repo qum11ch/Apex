@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -8,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -54,6 +54,9 @@ public class registerPageActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(registerPageActivity.this));
         }
+
+        Bundle intentBundle = getIntent().getExtras();
+        String mCurrentSeason = intentBundle.getString("currentSeason");
 
         editTextUsername = findViewById(R.id.signUpUsername);
         editTextEmail = findViewById(R.id.signUpEmail);
@@ -121,8 +124,7 @@ public class registerPageActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-
-        registerButton.setOnClickListener(v -> registerNewUser(driversList, teamList));
+        registerButton.setOnClickListener(v -> registerNewUser(driversList, teamList, mCurrentSeason));
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
@@ -181,7 +183,7 @@ public class registerPageActivity extends AppCompatActivity {
         public void afterTextChanged(Editable editable) {}
     };
 
-    private void registerNewUser(ArrayList<String> driversList, ArrayList<String> teamList) {
+    private void registerNewUser(ArrayList<String> driversList, ArrayList<String> teamList, String currentSeason) {
         registerProgress.setVisibility(View.VISIBLE);
         registerButton.setVisibility(View.INVISIBLE);
 
@@ -214,7 +216,7 @@ public class registerPageActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(registerPageActivity.this, getString(R.string.reqistration_succ_text), Toast.LENGTH_LONG).show();
                             createNewUser(task.getResult().getUser(), username, choiceDriver, choiceTeam);
-                            startActivity(new Intent(registerPageActivity.this, logInPageActivity.class));
+                            startActivity_seasonData(registerPageActivity.this, logInPageActivity.class, currentSeason);
                             finish();
                         } else {
                             registerProgress.setVisibility(View.INVISIBLE);

@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,12 +61,18 @@ public class winnersWDCAdapter extends RecyclerView.Adapter<winnersWDCAdapter.Da
 
         holder.currentPoints.setText(mDriverCurrentPoints);
         holder.maxPoints.setText(mDriverMaxPoints);
+        holder.currentPoints.
+                setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_grey)));
+        holder.maxPoints.
+                setBackgroundTintList(
+                        ColorStateList.valueOf(ContextCompat.getColor(context, R.color.light_grey)));
 
         boolean mCanWin = datum.isCanWin();
         if (mCanWin){
             holder.canWin.setText(R.string.yes_text);
-            holder.canWin.setTextColor(ContextCompat.getColor(context, R.color.sauber));
-            holder.bottomLine.setBackgroundColor(ContextCompat.getColor(context, R.color.sauber));
+            holder.canWin.setTextColor(ContextCompat.getColor(context, R.color.green));
+            holder.bottomLine.setBackgroundColor(ContextCompat.getColor(context, R.color.green));
         }else{
             holder.canWin.setText(R.string.no_text);
             holder.canWin.setTextColor(ContextCompat.getColor(context, R.color.red));

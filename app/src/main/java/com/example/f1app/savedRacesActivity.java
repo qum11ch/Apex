@@ -1,7 +1,7 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
-import static com.example.f1app.MainActivity.hideShimmer;
+import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.View;
@@ -24,6 +23,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -92,6 +93,12 @@ public class savedRacesActivity extends AppCompatActivity {
 
         emptySavedRaceLayout = findViewById(R.id.emptySavedRace_layout);
 
+        ShapeableImageView stripedImage = findViewById(R.id.stripedImage);
+        if (!checkLightTheme(savedRacesActivity.this)){
+            stripedImage.setBackground(ContextCompat.getDrawable(savedRacesActivity.this,
+                    R.drawable.background_striped_lines_item_night));
+        }
+
         //putRaces();
 
         WindowInsetsControllerCompat windowInsetsController =
@@ -124,13 +131,6 @@ public class savedRacesActivity extends AppCompatActivity {
                                                     shimmerFrameLayout.stopShimmer();
                                                 })
                                                 .start();
-                                        //Handler handler = new Handler();
-                                        //handler.postDelayed(()->{
-                                        //    recyclerView.setVisibility(View.GONE);
-                                        //    shimmerFrameLayout.setVisibility(View.GONE);
-                                        //    shimmerFrameLayout.stopShimmer();
-                                        //    emptySavedRaceLayout.setVisibility(View.VISIBLE);
-                                        //},500);
                                     }else {
                                         shimmerFrameLayout.animate()
                                                 .setDuration(500)
@@ -141,13 +141,6 @@ public class savedRacesActivity extends AppCompatActivity {
                                                     shimmerFrameLayout.stopShimmer();
                                                 })
                                                 .start();
-                                        //Handler handler = new Handler();
-                                        //handler.postDelayed(()->{
-                                        //    shimmerFrameLayout.setVisibility(View.GONE);
-                                        //    shimmerFrameLayout.stopShimmer();
-                                        //    emptySavedRaceLayout.setVisibility(View.GONE);
-                                        //    recyclerView.setVisibility(View.VISIBLE);
-                                        //},500);
                                     }
                                     for (DataSnapshot savedRaceSnap: snapshot.child(username).getChildren()){
                                             String raceName = savedRaceSnap.child("raceName").getValue(String.class);

@@ -139,36 +139,31 @@ public class concludedRaceScheduleFragment extends Fragment {
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
 
+            // StorageReference mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            // StorageReference mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            // StorageReference mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
 
-            StorageReference mWinnerImage;
-            StorageReference mSecondImage;
-            StorageReference mThirdImage;
-            if (mYear.equals("2024")){
-                mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_2024.png");
-                mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_2024.png");
-                mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_2024.png");
-            }else{
-                mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + ".png");
-                mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + ".png");
-                mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + ".png");
-            }
+            StorageReference mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_" + mYear + ".png");
+            StorageReference mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_" + mYear +  ".png");
+            StorageReference mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_" + mYear +  ".png");
+
 
             GlideApp.with(requireContext())
                     .load(mWinnerImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(firstPlace_image);
 
             GlideApp.with(requireContext())
                     .load(mSecondImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(secondPlace_image);
 
             GlideApp.with(requireContext())
                     .load(mThirdImage)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.f1)
+                    .error(R.drawable.placeholder_driver)
                     .into(thirdPlace_image);
 
             rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -261,14 +256,12 @@ public class concludedRaceScheduleFragment extends Fragment {
             day_start.setText(mRaceStartDay);
             day_end.setText(mRaceEndDay);
 
-            String currentYear = Integer.toString(currentDate.getYear());
-
             datum = new ArrayList<>();
 
             adapter = new scheduleAdapter(getActivity(), datum, true);
             recyclerView.setAdapter(adapter);
 
-            getRaceSchedule(mRaceName, currentYear);
+            getRaceSchedule(mRaceName, mYear);
 
             CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
@@ -385,6 +378,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                 datum.add(firstPracticeEvent);
 
                 String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
+                Log.e("fatal", raceName + " " + raceQuali + " " + sprintDate);
                 if (sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);

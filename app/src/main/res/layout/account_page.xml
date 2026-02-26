@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorDriverPages">
+    android:background="@color/colorPrimary">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:visibility="gone"
         android:id="@+id/main_content"
@@ -19,6 +19,7 @@
             android:fitsSystemWindows="true"
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
             <com.google.android.material.appbar.CollapsingToolbarLayout
+                app:statusBarScrim="@color/statusBar_color"
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -151,7 +152,7 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorDriverPages"
+            android:background="@color/colorPrimary"
             android:overScrollMode="never"
             app:layout_anchor="@+id/nestedScrollView"
             app:layout_anchorGravity="center"
@@ -239,7 +240,7 @@
                                 android:id="@+id/teamName_layout"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:background="@color/colorDriverPages">
+                                android:background="@color/colorPrimary">
                                 <TextView
                                     android:layout_centerInParent="true"
                                     android:id='@+id/teamName'
