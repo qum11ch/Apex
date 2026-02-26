@@ -38,6 +38,7 @@
                 android:id="@+id/toggleButtons"
                 android:orientation="horizontal">
                 <CheckBox
+                    android:layout_marginEnd="5dp"
                     android:id="@+id/radioButton_2026"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -47,7 +48,6 @@
                     android:textColor="@drawable/toggle_text_color"
                     style="@style/ToggleButton"/>
                 <CheckBox
-                    android:layout_marginStart="5dp"
                     android:id="@+id/radioButton_2025"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

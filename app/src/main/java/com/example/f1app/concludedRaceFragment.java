@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -92,7 +91,7 @@ public class concludedRaceFragment extends Fragment {
 
             String season = getArguments().getString("season");
             String parent = getArguments().getString("parent");
-            String mCurrentSeason = getArguments().getString("season");
+            //String mCurrentSeason = getArguments().getString("season");
             ArrayList<String> concludedRaceRoundNumber = getArguments().getStringArrayList("raceRound");
             adapterType = parent;
 

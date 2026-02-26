@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +34,7 @@ public class driverResultsFragment extends Fragment {
     private CheckBox radioButton_2025, radioButton_2024, radioButton_2026;
     private ShimmerFrameLayout shimmerFrameLayout;
     private NestedScrollView scrollView;
+    private boolean isInitialLoad = false;
 
     public driverResultsFragment() {
         // required empty public constructor.
@@ -86,9 +86,6 @@ public class driverResultsFragment extends Fragment {
         if (!getArguments().isEmpty()) {
             String mDriverName = getArguments().getString("driverName");
             String mDriverFamilyName = getArguments().getString("driverFamilyName");
-            radioButton_2026.setChecked(true);
-
-            getResults("2026", mDriverName, mDriverFamilyName);
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("drivers").child(mDriverName + " " + mDriverFamilyName).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -96,20 +93,50 @@ public class driverResultsFragment extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String mLastEntry = snapshot.child("lastEntry").getValue(String.class);
                     String mFirstEntry = snapshot.child("firstEntry").getValue(String.class);
+                    String status = snapshot.child("status").getValue(String.class);
 
                     String[] mLastGPparse = mLastEntry.split("\\s+");
                     String mLastSeason = mLastGPparse[0];
                     String[] mFirstGPparse = mFirstEntry.split("\\s+");
                     String mFirstSeason = mFirstGPparse[0];
 
-                    if (Integer.valueOf(mFirstSeason) > 2024){
-                        radioButton_2024.setVisibility(View.GONE);
-                    }
-                    if (Integer.valueOf(mFirstSeason) > 2025) {
-                        radioButton_2025.setVisibility(View.GONE);
-                    }
-                    if (Integer.valueOf(mFirstSeason) > 2026){
-                        radioButton_2026.setVisibility(View.GONE);
+
+                    switch(status){
+                        case "retired":
+                        case "reserve":
+                            if (Integer.parseInt(mFirstSeason) > 2024 || Integer.parseInt(mLastSeason) < 2024){
+                                radioButton_2024.setVisibility(View.GONE);
+                            }
+                            if (Integer.parseInt(mFirstSeason) > 2025 || Integer.parseInt(mLastSeason) < 2025) {
+                                radioButton_2025.setVisibility(View.GONE);
+                            }
+                            if (Integer.parseInt(mFirstSeason) > 2026 || Integer.parseInt(mLastSeason) < 2026){
+                                radioButton_2026.setVisibility(View.GONE);
+                            }
+                            switch (mLastSeason){
+                                case "2025":
+                                    radioButton_2025.setChecked(true);
+                                    getResults("2025", mDriverName, mDriverFamilyName);
+                                    break;
+                                case "2024":
+                                    radioButton_2024.setChecked(true);
+                                    getResults("2024", mDriverName, mDriverFamilyName);
+                                    break;
+                            }
+                            break;
+                        default:
+                            if (Integer.parseInt(mFirstSeason) > 2024){
+                                radioButton_2024.setVisibility(View.GONE);
+                            }
+                            if (Integer.parseInt(mFirstSeason) > 2025) {
+                                radioButton_2025.setVisibility(View.GONE);
+                            }
+                            if (Integer.parseInt(mFirstSeason) > 2026){
+                                radioButton_2026.setVisibility(View.GONE);
+                            }
+                            radioButton_2026.setChecked(true);
+                            getResults("2026", mDriverName, mDriverFamilyName);
+                            break;
                     }
 
                     radioButton_2025.setOnClickListener(view1 -> {
@@ -122,7 +149,7 @@ public class driverResultsFragment extends Fragment {
                         radioButton_2026.setChecked(false);
                     });
 
-                    radioButton_2026.setOnClickListener(view1 -> {
+                    radioButton_2026.setOnClickListener(view2 -> {
                         if (!radioButton_2026.isChecked()) {
                             radioButton_2026.setChecked(true);
                             radioButton_2025.setChecked(false);
@@ -132,7 +159,7 @@ public class driverResultsFragment extends Fragment {
                         radioButton_2025.setChecked(false);
                     });
 
-                    radioButton_2024.setOnClickListener(view2 -> {
+                    radioButton_2024.setOnClickListener(view3 -> {
                         if (!radioButton_2024.isChecked()) {
                             radioButton_2025.setChecked(false);
                             radioButton_2026.setChecked(false);
