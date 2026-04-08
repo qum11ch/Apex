@@ -1,28 +1,29 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkLightTheme;
-import static com.example.f1app.driversStandingsAdapter.setTeamColor;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.firebase.storage.FirebaseStorage;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
@@ -51,19 +52,10 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
     public pastSeasonDriversStandingsAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view;
-        switch (viewType) {
-            case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver_winner, parent, false);
-                break;
-            case 2:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver_second, parent, false);
-                break;
-            case 3:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver_third, parent, false);
-                break;
-            default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
-                break;
+        if (viewType == 1) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_driver_first, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.item_driver, parent, false);
         }
         return new DataHolder(view);
     }
@@ -71,52 +63,24 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
     @Override
     public void onBindViewHolder(@NonNull pastSeasonDriversStandingsAdapter.DataHolder holder, int position) {
         driversList datum = dataList.get(position);
-        holder.driverName.setText(datum.getDriverName());
+
+        String driverName = datum.getDriverName();
+        if (driverName.equals("Andrea Kimi")){
+            String[] parts = driverName.split(" ");
+            driverName = parts[1];
+        }
+
+        holder.driverName.setText(driverName);
+
         holder.driverTeam.setText(datum.getDriverTeam());
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
 
         String currentSeason = datum.getCurrentSeason();
+        String darkTeamColor = datum.getTeamColor();
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        String season = datum.getSeason();
+        //String season = datum.getSeason();
 
-        // StorageReference mDriverImage;
-        // if (season.equals("2024")){
-        //     mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_2024.png");
-        // }else{
-        //     mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + ".png");
-        // }
-
-        StorageReference mDriverImage = storageRef.child("drivers/" + datum.getDriverCode().toLowerCase() + "_" + season + ".png");
-
-        String teamId = datum.getConstructorId().toLowerCase();
-        StorageReference mDriverTeamLogo;
-        if (!checkLightTheme(context)){
-            switch(teamId){
-                case "audi":
-                case "alpine":
-                case "cadillac":
-                    mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo_alt.png");
-                    break;
-                default:
-                    mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo.png");
-                    break;
-            }
-        }else{
-            mDriverTeamLogo = storageRef.child("teams/" + teamId.toLowerCase() + "_logo.png");
-        }
-
-        mDriverTeamLogo.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
-                .load(uri)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .skipMemoryCache(true)
-                .error(R.drawable.placeholder)
-                .into(holder.driverTeam_logo)).addOnFailureListener(e -> GlideApp.with(context)
-                        .load(R.drawable.placeholder)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .skipMemoryCache(true)
-                        .into(holder.driverTeam_logo));
+        StorageReference mDriverImage = datum.getImageUrl();
 
         mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
                 .load(uri)
@@ -130,23 +94,8 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
                         .into(holder.driverImage));
 
         holder.driver_placement.setText(datum.getDriverPlacement());
-        String driver_points = datum.getDriverPoints()  + " " + context.getString(R.string.pts_header);
-        holder.driver_points.setText(driver_points);
-        RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
 
-        if (datum.getDriverName().equals("Andrea Kimi")){
-            params.addRule(RelativeLayout.BELOW, R.id.driverName);
-        }else {
-            params.addRule(RelativeLayout.END_OF, R.id.driverName);
-            Resources r = context.getResources();
-            int px = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    5,
-                    r.getDisplayMetrics()
-            );
-            params.setMargins(px, 0, 0, 0);
-        }
-        holder.driverFamilyName.setLayoutParams(params);
+        holder.driver_points.setText(datum.getDriverPoints());
 
         String mTeamId;
         if (datum.getConstructorId().equals("sauber")){
@@ -156,10 +105,48 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
         }
 
         if (mTeamId.equals("audi")){
-            String mTeamColor = "#01E801";
-            holder.line.setBackgroundColor(Color.parseColor(mTeamColor));
-        }else{
-            setTeamColor(mTeamId, holder.line, context);
+            String mTeamColor = "#64A462";
+            int colorRgb = Color.parseColor(mTeamColor);
+            int alpha = 0x66;
+            int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
+
+            int alphaLine = 0xCC;
+            int colorWithAlphaLine = (alphaLine << 24) | (colorRgb & 0x00FFFFFF);
+
+            ViewCompat.setBackgroundTintList(
+                    holder.itemDriver,
+                    ColorStateList.valueOf(colorWithAlpha)
+            );
+
+            holder.itemDriverLine.setBackground(createFrameWithLeftOffset(colorWithAlphaLine, context));
+            ViewCompat.setBackgroundTintList(
+                    holder.stripedLines,
+                    ColorStateList.valueOf(colorWithAlphaLine)
+            );
+        }
+        else{
+            int colorRgb = Color.parseColor("#303030");
+
+            if (darkTeamColor != null){
+                colorRgb = Color.parseColor(darkTeamColor);
+            }
+
+            int alpha = 0x66;
+            int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
+
+            int alphaLine = 0xCC;
+            int colorWithAlphaLine = (alphaLine << 24) | (colorRgb & 0x00FFFFFF);
+
+            ViewCompat.setBackgroundTintList(
+                    holder.itemDriver,
+                    ColorStateList.valueOf(colorWithAlpha)
+            );
+
+            holder.itemDriverLine.setBackground(createFrameWithLeftOffset(colorWithAlphaLine, context));
+            ViewCompat.setBackgroundTintList(
+                    holder.stripedLines,
+                    ColorStateList.valueOf(colorWithAlphaLine)
+            );
         }
 
         holder.constraintLayout.setOnClickListener(v -> {
@@ -177,6 +164,57 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
     }
 
 
+
+    private LayerDrawable createFrameWithLeftOffset(int colorWithAlphaLine, Context context) {
+        int strokeWidth = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 5, context.getResources().getDisplayMetrics()
+        );
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
+                createStrokeShape(strokeWidth, colorWithAlphaLine, context),
+                createInnerTransparentShape(strokeWidth, context)
+        });
+
+        int leftOffset = -strokeWidth;
+        layerDrawable.setLayerInset(0, leftOffset, 0, 0, 0);
+        layerDrawable.setLayerInset(1, strokeWidth, strokeWidth, strokeWidth, strokeWidth);
+
+        return layerDrawable;
+    }
+
+    private GradientDrawable createStrokeShape(int strokeWidth, int strokeColor, Context context) {
+        GradientDrawable stroke = new GradientDrawable();
+        stroke.setShape(GradientDrawable.RECTANGLE);
+        stroke.setStroke(strokeWidth, strokeColor);
+        stroke.setColor(Color.TRANSPARENT);
+
+        int radius20 = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 23, context.getResources().getDisplayMetrics()
+        );
+        stroke.setCornerRadii(new float[]{
+                0, 0,
+                radius20, radius20,
+                radius20, radius20,
+                0, 0
+        });
+        return stroke;
+    }
+
+    private GradientDrawable createInnerTransparentShape(int strokeWidth, Context context) {
+        GradientDrawable inner = new GradientDrawable();
+        inner.setShape(GradientDrawable.RECTANGLE);
+        inner.setColor(Color.TRANSPARENT);
+
+        int innerRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, context.getResources().getDisplayMetrics());
+        inner.setCornerRadii(new float[]{
+                0, 0,
+                innerRadius, innerRadius,
+                innerRadius, innerRadius,
+                0, 0
+        });
+        return inner;
+    }
+
+
     @Override
     public int getItemCount() {
         return dataList.size();
@@ -184,17 +222,18 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
 
     public static class DataHolder extends RecyclerView.ViewHolder {
         TextView driverName, driverTeam, driver_placement, driver_points,
-                driverFamilyName;
-        ImageView driverTeam_logo, driverImage;
+                driverFamilyName, driverPointsText;
+        ShapeableImageView driverImage, stripedLines;
         ConstraintLayout constraintLayout;
-        RelativeLayout leftLayout, driver_layout;
-        View line;
+        RelativeLayout driver_layout;
         CardView cardView;
-
+        RelativeLayout itemDriver;
+        LinearLayout itemDriverLine;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
+            stripedLines = itemView.findViewById(R.id.striped_lines);
+            itemDriverLine = itemView.findViewById(R.id.item_driver_line);
             cardView = itemView.findViewById(R.id.cardView);
-            leftLayout = itemView.findViewById(R.id.leftLayout);
             driver_layout = itemView.findViewById(R.id.driver_layout);
             driverName = itemView.findViewById(R.id.driverName);
             driverFamilyName = itemView.findViewById(R.id.driverFamilyName);
@@ -202,9 +241,10 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
             driver_placement = itemView.findViewById(R.id.driver_placement);
             driver_points = itemView.findViewById(R.id.driver_points);
             constraintLayout = itemView.findViewById(R.id.main_layout);
-            driverTeam_logo = itemView.findViewById(R.id.driverTeam_logo);
+            //driverTeam_logo = itemView.findViewById(R.id.driverTeam_logo);
             driverImage = itemView.findViewById(R.id.driverImage);
-            line = itemView.findViewById(R.id.line);
+            driverPointsText = itemView.findViewById(R.id.driver_points_text);
+            itemDriver = itemView.findViewById(R.id.item_driver);
         }
     }
 }

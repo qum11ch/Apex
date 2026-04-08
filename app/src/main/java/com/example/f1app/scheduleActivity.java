@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -32,9 +31,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -43,15 +46,13 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
 public class scheduleActivity extends AppCompatActivity {
-    Button showDrivers, showTeams, showHomePage, showAccount;
+    ImageButton showDrivers, showTeams, showHomePage, showAccount;
     private Toolbar toolbar;
     private ViewPager2 myViewPager2;
     private CardView cardView;
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
-
-    public scheduleActivity() {
-    }
+    private static final long HOUR = 3600*1000;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,14 +66,14 @@ public class scheduleActivity extends AppCompatActivity {
         }
         setContentView(R.layout.schudule_page);
 
-
         cardView = findViewById(R.id.cardView);
+        cardView.setVisibility(View.GONE);
 
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
 
 
-        getSchedule(currentYear, currentDate);
+        getSchedule(currentYear);
         myViewPager2 = findViewById(R.id.viewPager2);
 
         Bundle intentBundle = getIntent().getExtras();
@@ -80,7 +81,8 @@ public class scheduleActivity extends AppCompatActivity {
 
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
-            getSchedule(currentYear, currentDate);
+            cardView.setVisibility(View.GONE);
+            getSchedule(currentYear);
             swipeLayout.setRefreshing(false);
         });
 
@@ -110,7 +112,7 @@ public class scheduleActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
-    private void getSchedule(String year, LocalDate currentDate){
+    private void getSchedule(String year){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
@@ -127,33 +129,64 @@ public class scheduleActivity extends AppCompatActivity {
                     String dateEnd = ds.child("raceDate").getValue(String.class);
                     String raceName = ds.child("Circuit/raceName").getValue(String.class);
                     String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                    //String raceTime = ds.child("raceTime").getValue(String.class);
+                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
 
+                    boolean isCanceled;
+                    isCanceled = hasCanceled != null;
 
-                    String currentDateString = currentDate.toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
                     boolean future = false;
                     boolean isOnGoing = false;
                     boolean concluded = true;
 
+                    String eventEndTime = ds.child("raceDate").getValue(String.class) +
+                            " " + ds.child("raceTime").getValue(String.class);
+                    String eventStartTime = ds.child("FirstPractice/firstPracticeDate").getValue(String.class) +
+                            " " + ds.child("FirstPractice/firstPracticeTime").getValue(String.class);
+
                     try{
-                        Date start = formatter.parse(dateStart);
-                        Date end = formatter.parse(dateEnd);
-                        Date current = formatter.parse(currentDateString);
-                        if(start.after(current) && end.after(current))
+                        String eventEndTimeString = eventEndTime.replaceAll("\\s+", "T");
+                        String eventStartTimeString = eventStartTime.replaceAll("\\s+", "T");
+
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+                        DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
+
+                        Date currentDate = Calendar.getInstance().getTime();
+
+                        Instant endDateInst = Instant.parse(eventEndTimeString);
+                        ZonedDateTime endDateTime = endDateInst.atZone(ZoneId.systemDefault());
+                        String endDate = endDateTime.format(fullDateFormatter);
+
+                        Instant startDateInst = Instant.parse(eventStartTimeString);
+                        ZonedDateTime startDateTime = startDateInst.atZone(ZoneId.systemDefault());
+                        String startDate = startDateTime.format(fullDateFormatter);
+
+                        Date endValue = formatter.parse(endDate);
+                        Date eventEnd = new Date(endValue.getTime() + 2 * HOUR);
+
+                        Date startValue = formatter.parse(startDate);
+                        Date eventStart = new Date(startValue.getTime());
+
+                        if(eventStart.after(currentDate) && eventEnd.after(currentDate))
                         {
                             concluded = false;
                             future = true;
                         }
-                        else if (current.equals(start) || current.equals(end)){
+                        else if (currentDate.equals(eventStart) || currentDate.equals(eventEnd)){
                             concluded = false;
                             isOnGoing = true;
                         }
-                        else if (current.after(start) && current.before(end)){
+                        else if (currentDate.after(eventStart) && currentDate.before(eventEnd)){
                             concluded = false;
                             isOnGoing = true;
                         }
+
                     } catch (ParseException e){
                         Log.d("ParseExeption", "" + e);
+                    }
+
+                    if (isCanceled){
+                        isOnGoing = false;
                     }
 
                     if(concluded){
@@ -257,6 +290,8 @@ public class scheduleActivity extends AppCompatActivity {
                                 bundle.putString("raceCountry" , raceCountry);
                                 bundle.putString("roundCount" , String.valueOf(round));
                                 bundle.putString("dateStart", dateStart);
+                                bundle.putString("dateEnd", dateEnd);
+                                bundle.putBoolean("isCanceled", false);
                                 intent.putExtras(bundle);
 
                                 scheduleActivity.this.startActivity(intent);

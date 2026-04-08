@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:orientation="vertical"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     android:theme="@style/AppTheme.WhiteStatusBar"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
@@ -8,10 +7,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:layout_weight="1"
         android:id="@+id/content_layout"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="match_parent">
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_width="match_parent"
@@ -48,8 +46,7 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="20dp">
+                android:layout_height="match_parent">
                 <TextView
                     android:textColor="@color/text_color_main"
                     android:textAllCaps="true"
@@ -209,7 +206,6 @@
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
                 <Button
-                    android:visibility="gone"
                     android:textSize="16sp"
                     android:enabled="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
@@ -259,24 +255,21 @@
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold"
                     android:id="@+id/top_drivers_header"/>
                 <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_below="@id/top_drivers_header"
                     android:id="@+id/top_drivers"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/CircuitInfoLayout">
+                    android:orientation="vertical">
                     <androidx.recyclerview.widget.RecyclerView
                         android:overScrollMode="never"
                         android:id="@+id/recyclerView_drivers"
                         android:visibility="gone"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                     <com.facebook.shimmer.ShimmerFrameLayout
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:id="@+id/shimmerDrivers_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -286,9 +279,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical">
-                            <include layout="@layout/shimmer_main" />
-                            <include layout="@layout/shimmer_main" />
-                            <include layout="@layout/shimmer_main" />
+                            <include layout="@layout/shimmer_main_driver" />
+                            <include layout="@layout/shimmer_main_driver" />
+                            <include layout="@layout/shimmer_main_driver" />
                         </LinearLayout>
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
@@ -300,30 +293,29 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
+                    android:textAlignment="textEnd"
                     android:layout_below="@id/top_drivers"
                     android:text="@string/top_3_teams"
                     android:textSize="16sp"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold"
                     android:id="@+id/top_teams_header"/>
                 <LinearLayout
+                    android:layout_marginTop="5dp"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"
                     android:layout_below="@id/top_teams_header"
                     android:id="@+id/top_teams"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/CircuitInfoLayout">
+                    android:orientation="vertical"
+                    android:layout_marginBottom="90dp">
                     <androidx.recyclerview.widget.RecyclerView
                         android:overScrollMode="never"
                         android:id="@+id/recyclerView_teams"
                         android:visibility="gone"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                     <com.facebook.shimmer.ShimmerFrameLayout
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
                         android:id="@+id/shimmerTeams_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -333,14 +325,41 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:orientation="vertical">
-                            <include layout="@layout/shimmer_main" />
-                            <include layout="@layout/shimmer_main" />
-                            <include layout="@layout/shimmer_main" />
+                            <include layout="@layout/shimmer_main_team" />
+                            <include layout="@layout/shimmer_main_team" />
+                            <include layout="@layout/shimmer_main_team" />
                         </LinearLayout>
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    <include layout="@layout/footer_home"/>
-</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal"
+        android:weightSum="5"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="20dp">
+
+        <View android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:clickable="true" android:focusable="true" />
+        <View android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:clickable="true" android:focusable="true" />
+        <View android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:clickable="true" android:focusable="true" />
+        <View android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:clickable="true" android:focusable="true" />
+        <View android:layout_width="0dp" android:layout_height="match_parent"
+            android:layout_weight="1" android:clickable="true" android:focusable="true" />
+    </LinearLayout>
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="20dp"
+        layout="@layout/footer_home"/>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

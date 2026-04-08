@@ -33,25 +33,32 @@
                     android:layout_height="wrap_content">
                     <LinearLayout
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="30dp"
+                        android:layout_marginBottom="10dp"
                         android:id="@+id/date_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
                         <TextView
+                            android:paddingTop="3dp"
                             android:id="@+id/day_start"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
                         <TextView
+                            android:paddingTop="3dp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="center"
                             android:text="@string/dash"
                             android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
                         <TextView
+                            android:paddingTop="3dp"
                             android:id="@+id/day_end"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
@@ -63,41 +70,29 @@
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
                             android:gravity="center"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
-                    </LinearLayout>
-                    <LinearLayout
-                        style="@style/RaceInfoLayout"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_below="@id/date_layout"
-                        android:id="@+id/info_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:id="@+id/infoRaceName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="bottom"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                            android:textSize="12sp"
                             android:textColor="@color/white"
-                            android:textSize="20sp"/>
+                            android:textAllCaps="true"/>
                         <TextView
-                            android:layout_marginStart="10dp"
-                            android:id="@+id/infoSeason"
+                            android:visibility="gone"
+                            android:layout_marginStart="20dp"
+                            android:id="@+id/raceStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:gravity="bottom"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays.White"
-                            android:textSize="20sp"/>
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                            android:textSize="12sp"
+                            android:gravity="center"
+                            android:text="@string/race_canceled_text"
+                            android:textColor="@color/orange"
+                            android:layout_marginEnd="5dp"
+                            android:textAllCaps="true"/>
                     </LinearLayout>
                     <RelativeLayout
                         android:layout_marginTop="10dp"
                         android:paddingBottom="5dp"
-                        android:layout_below="@id/info_layout"
-                        style="@style/CountdownStyle"
+                        android:layout_below="@id/date_layout"
+                        style="@style/RacePodiumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="20dp"
@@ -113,19 +108,13 @@
                             android:textAllCaps="true"
                             android:textAlignment="center"
                             android:id="@+id/countdown_header"/>
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_below="@id/countdown_header"
-                            android:background="@color/white"
-                            android:layout_marginStart="20dp"
-                            android:layout_marginEnd="20dp"
-                            android:id="@+id/line"/>
                         <LinearLayout
+                            android:layout_marginTop="2dp"
                             android:id="@+id/timer_numbers"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_below="@id/line"
+                            android:layout_below="@id/countdown_header"
+                            android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:weightSum="3">
                             <LinearLayout
@@ -149,12 +138,6 @@
                                     android:text="@string/days"
                                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown" />
                             </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/white"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginBottom="10dp"/>
                             <LinearLayout
                                 android:layout_weight="1"
                                 android:layout_width="0dp"
@@ -176,12 +159,6 @@
                                     android:text="@string/hours"
                                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"/>
                             </LinearLayout>
-                            <View
-                                android:layout_width="1dp"
-                                android:layout_height="match_parent"
-                                android:background="@color/white"
-                                android:layout_marginTop="5dp"
-                                android:layout_marginBottom="10dp"/>
                             <LinearLayout
                                 android:layout_weight="1"
                                 android:layout_width="0dp"
@@ -242,8 +219,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="20dp"
                         android:layout_marginBottom="15dp">
                         <androidx.recyclerview.widget.RecyclerView
                             android:overScrollMode="never"
@@ -253,44 +230,44 @@
                     </LinearLayout>
                 </RelativeLayout>
                 <ToggleButton
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/save_toggle_button_style"
                     android:layout_below="@id/schedule_layout"
                     android:id="@+id/saveRace"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:textAlignment="textStart"
-                    android:paddingStart="20dp"
-                    android:saveEnabled="false"
-                    android:paddingEnd="0dp"
-                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:checked="false"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@drawable/toggle_text_color"
-                    android:textSize="22sp"
                     android:textOff="@string/save_race"
                     android:textOn="@string/delete_race"/>
-                <View
-                    android:layout_below="@id/saveRace"
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:layout_marginEnd="30dp"
-                    android:background="@color/grey"
-                    android:id="@+id/lineBetween"/>
                 <Button
-                    android:visibility="gone"
-                    android:layout_marginEnd="20dp"
-                    android:background="@drawable/save_style"
-                    android:layout_below="@id/lineBetween"
+                    android:textSize="16sp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:gravity="center"
+                    android:visibility="visible"
+                    android:background="@drawable/save_toggle_button_style"
+                    android:layout_below="@id/saveRace"
                     android:id="@+id/predict_button"
+                    android:layout_marginBottom="30dp"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:textAlignment="textStart"
-                    android:paddingStart="20dp"
-                    android:saveEnabled="false"
-                    android:paddingEnd="0dp"
-                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@color/text_color_main"
-                    android:textSize="22sp"
                     android:text="@string/predict_button"/>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>

@@ -52,7 +52,12 @@ public class winnersWDCAdapter extends RecyclerView.Adapter<winnersWDCAdapter.Da
     @Override
     public void onBindViewHolder(@NonNull winnersWDCAdapter.DataHolder holder, int position) {
         driversWDCPointsList datum = dataList.get(position);
-        holder.driverName.setText(datum.getDriverName());
+        String driverName = datum.getDriverName();
+        if (driverName.equals("Andrea Kimi")){
+            String[] parts = driverName.split(" ");
+            driverName = parts[1];
+        }
+        holder.driverName.setText(driverName);
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
         holder.placement.setText(datum.getPlacement());
 

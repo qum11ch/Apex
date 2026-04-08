@@ -39,8 +39,9 @@ public class raceCircuitFragment extends Fragment {
     private TextView raceDist;
     private TextView lapRecord_time;
     private TextView lapRecord_driver;
-    private RelativeLayout contentLayout;
+    private RelativeLayout contentLayout, circuitInfoLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
+    private View resultsLine;
 
     public raceCircuitFragment() {
         // required empty public constructor.
@@ -69,13 +70,13 @@ public class raceCircuitFragment extends Fragment {
         lapRecord_time = view.findViewById(R.id.lapRecord_time);
         lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
         ImageView circuitImage = view.findViewById(R.id.circuitImage);
-        RelativeLayout circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
+        circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
         ImageView flag = view.findViewById(R.id.flag);
-        View resultsLine = view.findViewById(R.id.resultsLine);
         Button raceResults_2025 = view.findViewById(R.id.raceResults_2025);
         Button raceResults_2024 = view.findViewById(R.id.raceResults_2024);
         contentLayout = view.findViewById(R.id.content_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+        resultsLine = view.findViewById(R.id.resultsLine);
 
         shimmerFrameLayout.startShimmer();
 
@@ -102,7 +103,7 @@ public class raceCircuitFragment extends Fragment {
                     checkPrevSeason("2024", mRaceName, mCircuitId, mYear, raceResults_2024);
                     raceResults_2025.setVisibility(View.GONE);
                     resultsLine.setVisibility(View.GONE);
-                    params.bottomMargin = (int) (40 * getResources().getDisplayMetrics().density);
+                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
                     circuitInfoLayout.setLayoutParams(params);
                     break;
                 default:
@@ -204,25 +205,42 @@ public class raceCircuitFragment extends Fragment {
                 if (snapshot.hasChildren()){
                     //Log.e("raceCircuit", " " + snapshot + " " + snapshot.exists());
                     //Log.e("raceCircuit", "Has Previous Year Race" + " " + snapshot.hasChildren());
-                    String mPrevGPtext;
-                    if(Locale.getDefault().getLanguage().equals("ru")){
-                        mPrevGPtext = getString(R.string.prev_race_results_text) + " " + season;
-                    }else{
-                        mPrevGPtext = season + " " + getString(R.string.prev_race_results_text);
-                    }
-                    prevSeason.setText(mPrevGPtext);
 
-                    prevSeason.setOnClickListener(view1 -> {
-                        Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putString("raceName", raceName);
-                        bundle.putString("circuitId", circuitId);
-                        bundle.putString("season", season);
-                        intent.putExtras(bundle);
-                        requireContext().startActivity(intent);
-                    });
+                    Boolean isCanceled = snapshot.child("Canceled").getValue(Boolean.class);
+
+                    if (isCanceled == null){
+                        String mPrevGPtext;
+                        if(Locale.getDefault().getLanguage().equals("ru")){
+                            mPrevGPtext = getString(R.string.prev_race_results_text) + " " + season;
+                        }else{
+                            mPrevGPtext = season + " " + getString(R.string.prev_race_results_text);
+                        }
+                        prevSeason.setText(mPrevGPtext);
+
+                        prevSeason.setOnClickListener(view1 -> {
+                            Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                            Bundle bundle = new Bundle();
+                            bundle.putString("raceName", raceName);
+                            bundle.putString("circuitId", circuitId);
+                            bundle.putString("season", season);
+                            intent.putExtras(bundle);
+                            requireContext().startActivity(intent);
+                        });
+                    }else{
+                        prevSeason.setVisibility(View.GONE);
+                        resultsLine.setVisibility(View.GONE);
+
+                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
+                        params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
+                        circuitInfoLayout.setLayoutParams(params);
+                    }
                 }else{
                     prevSeason.setVisibility(View.GONE);
+                    resultsLine.setVisibility(View.GONE);
+
+                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
+                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
+                    circuitInfoLayout.setLayoutParams(params);
                 }
             }
 

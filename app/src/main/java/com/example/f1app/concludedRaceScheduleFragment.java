@@ -5,16 +5,20 @@ import static com.example.f1app.MainActivity.getStringByName;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -72,11 +76,15 @@ public class concludedRaceScheduleFragment extends Fragment {
         ImageView secondPlace_image = view.findViewById(R.id.secondPlace_image);
         ImageView firstPlace_image = view.findViewById(R.id.firstPlace_image);
         ImageView thirdPlace_image = view.findViewById(R.id.thirdPlace_image);
+        ImageView backgroundImage = view.findViewById(R.id.background_img);
+        TextView raceStatus = view.findViewById(R.id.raceStatus);
         TextView day_start = view.findViewById(R.id.day_start);
         TextView day_end = view.findViewById(R.id.day_end);
         TextView month = view.findViewById(R.id.month);
         TextView show_results = view.findViewById(R.id.show_results);
         saveRace = view.findViewById(R.id.saveRace);
+        LinearLayout podiumLayout = view.findViewById(R.id.podium_layout);
+        TextView dash = view.findViewById(R.id.dash);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         recyclerView.setHasFixedSize(true);
@@ -94,20 +102,175 @@ public class concludedRaceScheduleFragment extends Fragment {
             String mRaceEndMonth = getArguments().getString("raceEndMonth");
             //String mRound = getArguments().getString("roundCount");
             //String mCountry = getArguments().getString("raceCountry");
+            String mRaceStartDate = getArguments().getString("dateStart");
+            String mRaceEndDate = getArguments().getString("dateEnd");
+
             mYear = getArguments().getString("gpYear");
             String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
             String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
             String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
+            boolean isCanceled = getArguments().getBoolean("isCanceled");
 
-            show_results.setOnClickListener(view1 -> {
-                Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("raceName", mRaceName);
-                bundle.putString("circuitId", mCircuitId);
-                bundle.putString("season", mYear);
-                intent.putExtras(bundle);
-                requireContext().startActivity(intent);
-            });
+            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
+            AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
+            appBarLayout.setExpanded(true,true);
+
+            View toolbar = view.findViewById(R.id.toolbar);
+
+            if (isCanceled){
+                raceStatus.setText(R.string.race_canceled_text);
+                raceStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.orange));
+                show_results.setVisibility(View.GONE);
+                podiumLayout.setVisibility(View.GONE);
+                backgroundImage.setVisibility(View.GONE);
+
+                day_start.setTextColor(ContextCompat.getColor(getContext(), R.color. text_color_main));
+                day_end.setTextColor(ContextCompat.getColor(getContext(), R.color. text_color_main));
+                dash.setTextColor(ContextCompat.getColor(getContext(), R.color. text_color_main));
+                month.setTextColor(ContextCompat.getColor(getContext(), R.color. text_color_main));
+
+
+                raceStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                day_start.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                day_end.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                dash.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+                month.setTextSize(TypedValue.COMPLEX_UNIT_SP, 16);
+
+                NestedScrollView nestedScrollView = view.findViewById(R.id.nestedScrollView);
+                nestedScrollView.setNestedScrollingEnabled(false);
+            }else{
+                show_results.setVisibility(View.VISIBLE);
+                podiumLayout.setVisibility(View.VISIBLE);
+                backgroundImage.setVisibility(View.VISIBLE);
+
+                raceStatus.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                day_start.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                day_end.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                dash.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+                month.setTextSize(TypedValue.COMPLEX_UNIT_SP, 12);
+
+
+                raceStatus.setTextColor(ContextCompat.getColor(getContext(), R.color.white));
+                day_start.setTextColor(ContextCompat.getColor(getContext(), R.color. white));
+                day_end.setTextColor(ContextCompat.getColor(getContext(), R.color. white));
+                dash.setTextColor(ContextCompat.getColor(getContext(), R.color. white));
+                month.setTextColor(ContextCompat.getColor(getContext(), R.color. white));
+
+                show_results.setOnClickListener(view1 -> {
+                    Intent intent = new Intent(requireContext() , raceResultsActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("raceName", mRaceName);
+                    bundle.putString("circuitId", mCircuitId);
+                    bundle.putString("season", mYear);
+                    intent.putExtras(bundle);
+                    requireContext().startActivity(intent);
+                });
+
+                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                StorageReference storageRef = storage.getReference();
+
+                StorageReference mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_" + mYear + ".png");
+                StorageReference mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_" + mYear + ".png");
+                StorageReference mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_" + mYear + ".png");
+
+                GlideApp.with(requireContext())
+                        .load(mWinnerImage)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .error(R.drawable.placeholder_driver)
+                        .into(firstPlace_image);
+
+                GlideApp.with(requireContext())
+                        .load(mSecondImage)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .error(R.drawable.placeholder_driver)
+                        .into(secondPlace_image);
+
+                GlideApp.with(requireContext())
+                        .load(mThirdImage)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .error(R.drawable.placeholder_driver)
+                        .into(thirdPlace_image);
+
+                rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds: snapshot.getChildren()){
+                            String driver = ds.getKey();
+                            String[] driverFullName = driver.split(" ");
+                            //String driverName;
+                            String driverFamilyName;
+                            if (driver.equals("Andrea Kimi Antonelli")){
+                                //    driverName = driverFullName[1];
+                                driverFamilyName = driverFullName[2];
+                            }else{
+                                //    driverName = driverFullName[0];
+                                driverFamilyName = driverFullName[1];
+                            }
+                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                            firstPlace_code.setText(driverFamilyName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+
+                rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds: snapshot.getChildren()){
+                            String driver = ds.getKey();
+                            String[] driverFullName = driver.split(" ");
+                            String driverName;
+                            String driverFamilyName;
+                            if (driver.equals("Andrea Kimi Antonelli")){
+                                driverName = driverFullName[1];
+                                driverFamilyName = driverFullName[2];
+                            }else{
+                                driverName = driverFullName[0];
+                                driverFamilyName = driverFullName[1];
+                            }
+                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                            secondPlace_code.setText(driverFamilyName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+
+                rootRef.child("drivers").orderByChild("driversCode").equalTo(mThirdPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot ds: snapshot.getChildren()){
+                            String driver = ds.getKey();
+                            String[] driverFullName = driver.split(" ");
+                            //String driverName;
+                            String driverFamilyName;
+                            if (driver.equals("Andrea Kimi Antonelli")){
+                                //    driverName = driverFullName[1];
+                                driverFamilyName = driverFullName[2];
+                            }else{
+                                //    driverName = driverFullName[0];
+                                driverFamilyName = driverFullName[1];
+                            }
+                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
+                            thirdPlace_code.setText(driverFamilyName);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    }
+                });
+            }
 
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
             String pastRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
@@ -133,122 +296,28 @@ public class concludedRaceScheduleFragment extends Fragment {
                 });
             }
 
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-
-            // StorageReference mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            // StorageReference mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            // StorageReference mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
-
-            StorageReference mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_" + mYear + ".png");
-            StorageReference mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_" + mYear +  ".png");
-            StorageReference mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_" + mYear +  ".png");
-
-
-            GlideApp.with(requireContext())
-                    .load(mWinnerImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(firstPlace_image);
-
-            GlideApp.with(requireContext())
-                    .load(mSecondImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(secondPlace_image);
-
-            GlideApp.with(requireContext())
-                    .load(mThirdImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(thirdPlace_image);
-
-            rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds: snapshot.getChildren()){
-                        String driver = ds.getKey();
-                        String[] driverFullName = driver.split(" ");
-                        //String driverName;
-                        String driverFamilyName;
-                        if (driver.equals("Andrea Kimi Antonelli")){
-                        //    driverName = driverFullName[1];
-                            driverFamilyName = driverFullName[2];
-                        }else{
-                        //    driverName = driverFullName[0];
-                            driverFamilyName = driverFullName[1];
-                        }
-                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                        firstPlace_code.setText(driverFamilyName);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                }
-            });
-
-            rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds: snapshot.getChildren()){
-                        String driver = ds.getKey();
-                        String[] driverFullName = driver.split(" ");
-                        String driverName;
-                        String driverFamilyName;
-                        if (driver.equals("Andrea Kimi Antonelli")){
-                            driverName = driverFullName[1];
-                            driverFamilyName = driverFullName[2];
-                        }else{
-                            driverName = driverFullName[0];
-                            driverFamilyName = driverFullName[1];
-                        }
-                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                        secondPlace_code.setText(driverFamilyName);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                }
-            });
-
-            rootRef.child("drivers").orderByChild("driversCode").equalTo(mThirdPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    for (DataSnapshot ds: snapshot.getChildren()){
-                        String driver = ds.getKey();
-                        String[] driverFullName = driver.split(" ");
-                        //String driverName;
-                        String driverFamilyName;
-                        if (driver.equals("Andrea Kimi Antonelli")){
-                        //    driverName = driverFullName[1];
-                            driverFamilyName = driverFullName[2];
-                        }else{
-                        //    driverName = driverFullName[0];
-                            driverFamilyName = driverFullName[1];
-                        }
-                        //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                        thirdPlace_code.setText(driverFamilyName);
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                }
-            });
             infoRaceName.setText(pastRaceName);
 
-            if(mRaceStartMonth.equals(mRaceEndMonth)){
-                month.setText(mRaceStartMonth);
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+            LocalDate dateStart = LocalDate.parse(mRaceStartDate, dateFormatter);
+            LocalDate dateEnd = LocalDate.parse(mRaceEndDate, dateFormatter);
+
+            String monthStartFull = dateStart.format(DateTimeFormatter.ofPattern("MMMM"));
+            String monthEndFull = dateEnd.format(DateTimeFormatter.ofPattern("MMMM"));
+
+            //if(mRaceStartMonth.equals(mRaceEndMonth)){
+            //    month.setText(mRaceStartMonth);
+            //}
+            //else{
+            //    String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
+            //    month.setText(monthAll);
+            //}
+
+            if(monthStartFull.equals(monthEndFull)){
+                month.setText(monthStartFull);
             }
             else{
-                String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
+                String monthAll = monthStartFull + " - " + monthEndFull;
                 month.setText(monthAll);
             }
 
@@ -261,10 +330,6 @@ public class concludedRaceScheduleFragment extends Fragment {
             recyclerView.setAdapter(adapter);
 
             getRaceSchedule(mRaceName, mYear);
-
-            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
-            AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
-            appBarLayout.setExpanded(true,true);
         }
     }
 

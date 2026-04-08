@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import com.google.firebase.storage.StorageReference;
+
 public class driversList {
     private String driverName;
     private String driverFamilyName;
@@ -11,6 +13,9 @@ public class driversList {
     private boolean startSeason;
     private String season;
     private String currentSeason;
+    private String teamColor;
+    private StorageReference imageUrl;
+
 
     public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode, boolean startSeason, String season) {
         this.driverName = driverName;
@@ -23,6 +28,22 @@ public class driversList {
         this.startSeason = startSeason;
         this.season = season;
     }
+    public String getTeamColor() {
+        return teamColor;
+    }
+
+    public void setTeamColor(String teamColor) {
+        this.teamColor = teamColor;
+    }
+
+    public StorageReference getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(StorageReference imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
     public String getDriverName() {
         return driverName;

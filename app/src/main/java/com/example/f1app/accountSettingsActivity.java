@@ -70,6 +70,9 @@ public class accountSettingsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountSettingsActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        String mCurrentSeason = intentBundle.getString("currentSeason");
+
         username = findViewById(R.id.username);
         driverPicker = findViewById(R.id.driver_picker);
         teamPicker = findViewById(R.id.team_picker);
@@ -119,6 +122,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                     rootRef.child("driverLineUp/season").child(currentYear).addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            driversList.clear();
                             for(DataSnapshot teamSnapshot: snapshot.getChildren()){
                                 for(DataSnapshot driverSnaphot: teamSnapshot.child("drivers").getChildren()){
                                     if (!driverSnaphot.getKey().equals(finalChoiceDriver)){
@@ -136,6 +140,8 @@ public class accountSettingsActivity extends AppCompatActivity {
                             driversList.add(finalChoiceDriver);
                             Collections.reverse(driversList);
                             driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
+
+
                         }
 
                         @Override
@@ -148,6 +154,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                     rootRef.child("constructors").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            teamList.clear();
                             for(DataSnapshot teamSnapshot: snapshot.getChildren()){
                                 if (!teamSnapshot.child("name").getValue(String.class).equals(finalChoiceTeam)){
                                     teamList.add(teamSnapshot.child("name").getValue(String.class));
@@ -155,6 +162,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                             }
                             teamPicker.setMinValue(1);
                             teamPicker.setMaxValue(teamList.size());
+
                             Collections.reverse(teamList);
                             if (!finalChoiceTeam.equals(getString(R.string.nobody))){
                                 teamList.add(getString(R.string.nobody));
@@ -162,6 +170,8 @@ public class accountSettingsActivity extends AppCompatActivity {
                             teamList.add(finalChoiceTeam);
                             Collections.reverse(teamList);
                             teamPicker.setDisplayedValues(teamList.toArray(new String[teamList.size()]));
+
+                            Log.e("TEAMSERROR", " Team choice: " + teamList);
                         }
 
                         @Override
@@ -203,72 +213,54 @@ public class accountSettingsActivity extends AppCompatActivity {
         Button cancelButton = deleteDialog.findViewById(R.id.cancel_button);
         Button confirmButton = deleteDialog.findViewById(R.id.confirm_button);
 
-        cancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteDialog.dismiss();
-            }
+        cancelButton.setOnClickListener(view -> deleteDialog.dismiss());
+
+        confirmButton.setOnClickListener(view -> {
+            deleteDialog.dismiss();
+            loginDialog.show();
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteDialog.dismiss();
-                loginDialog.show();
-            }
+        loginButton.setOnClickListener(view -> {
+            deleteUserAccount();
+            loginDialog.dismiss();
+            startActivity(new Intent(accountSettingsActivity.this,
+                    MainActivity.class));
+            finish();
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteUserAccount();
-                loginDialog.dismiss();
-                startActivity(new Intent(accountSettingsActivity.this,
-                        MainActivity.class));
-                finish();
-            }
+        resetPassword.setOnClickListener(view -> {
+            Intent i = new Intent(accountSettingsActivity.this,
+                    resetPageActivity.class);
+            i.putExtra("currentSeason", mCurrentSeason);
+            startActivity(i);
         });
 
-        resetPassword.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(accountSettingsActivity.this,
-                        resetPageActivity.class);
-                startActivity(i);
-            }
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(view -> {
+            Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
+            i.putExtra("currentSeason", mCurrentSeason);
+            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+            overridePendingTransition(0, 0);
         });
 
-        backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
+        saveButton.setOnClickListener(view -> {
+            updateChoices(driversList, teamList);
+            Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
+            i.putExtra("currentSeason", mCurrentSeason);
+            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+            overridePendingTransition(0, 0);
         });
 
-        saveButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                updateChoices(driversList, teamList);
-                Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
-                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                startActivity(i);
-            }
-        });
+        deleteButton.setOnClickListener(view -> deleteDialog.show());
 
-        deleteButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                deleteDialog.show();
-            }
-        });
-
-        changePasswordButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(accountSettingsActivity.this,
-                        changeUserPrivateDataActivity.class));
-            }
+        changePasswordButton.setOnClickListener(view -> {
+            Intent i = new Intent(accountSettingsActivity.this, changeUserPrivateDataActivity.class);
+            i.putExtra("currentSeason", mCurrentSeason);
+            startActivity(i);
         });
 
     }
@@ -371,6 +363,9 @@ public class accountSettingsActivity extends AppCompatActivity {
         }else{
             choiceTeam = teamPickerValue;
         }
+
+        Log.e("TEAMSERROR", " User team choice: " + choiceTeam);
+
 
         String userId = auth.getUid();
 

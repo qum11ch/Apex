@@ -40,30 +40,26 @@
                     android:id="@+id/driver_layout"
                     android:layout_width="match_parent"
                     android:layout_height="100dp"
-                    android:layout_marginTop="85dp"
-                    android:layout_marginBottom="60dp"
+                    android:layout_marginTop="70dp"
                     android:paddingStart="30dp"
                     android:paddingEnd="0dp">
-                    <View
-                        android:id="@+id/line"
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/white" />
+
                     <TextView
                         android:id='@+id/teamNameFull'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="10dp"
                         android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                         android:textColor="@color/white"
-                        android:textSize="30sp" />
+                        android:textSize="30sp"
+                        android:layout_marginBottom="10dp"/>
 
                     <ImageView
                         android:id="@+id/teamLogo"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_below="@id/teamNameFull"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginStart="10dp"
                         android:contentDescription="@string/teamlogo"
                         android:paddingBottom="5dp" />
                 </RelativeLayout>
@@ -71,7 +67,7 @@
                 <ImageView
                     android:id="@+id/team_car"
                     android:layout_width="match_parent"
-                    android:layout_height="320dp"
+                    android:layout_height="250dp"
                     android:layout_gravity="bottom"
                     android:contentDescription="@string/team_car"
                     android:fitsSystemWindows="true"
@@ -104,6 +100,8 @@
                             android:src="@drawable/back_arrow"
                             android:background="@android:color/transparent"/>
                         <TextView
+                            android:textColor="@color/white"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                             android:id="@+id/teamName"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -111,7 +109,6 @@
                             android:gravity="center"
                             android:paddingEnd="10dp"
                             android:paddingStart="0dp"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:layout_marginEnd="45dp"/>

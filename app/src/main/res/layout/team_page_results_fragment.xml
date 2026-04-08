@@ -87,7 +87,6 @@
                     android:layout_marginEnd="10dp"
                     android:weightSum="5">
                     <TextView
-
                         android:textColor="@color/text_color_main"
                         android:id="@+id/raceName_header"
                         android:layout_width="0dp"
@@ -442,10 +441,26 @@
                 <TextView
                     android:paddingTop="3dp"
                     android:paddingBottom="3dp"
-                    style="@style/BottomKeyMapStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/nc_layout"
+                    android:id="@+id/cnd_layout"
+                    android:layout_marginTop="0.5dp"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginEnd="1dp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                    android:textColor="@color/white"
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:text="@string/cnd"
+                    android:background="@color/orange"/>
+                <TextView
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    style="@style/BottomKeyMapStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/cnd_layout"
                     android:textColor="@color/purple"
                     android:textStyle="bold"
                     android:hyphenationFrequency="none"

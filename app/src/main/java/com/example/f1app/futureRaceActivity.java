@@ -56,17 +56,16 @@ public class futureRaceActivity extends AppCompatActivity {
             String mRound = bundle.getString("roundCount");
             String mCountry = bundle.getString("raceCountry");
             String mDate = bundle.getString("dateStart");
+            String mEndDate = bundle.getString("dateEnd");
+            Boolean isCanceled = bundle.getBoolean("isCanceled");
 
             ImageButton backButton;
             if (getIntent().hasExtra("fromNotify")){
                 backButton = findViewById(R.id.backButton);
-                backButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(futureRaceActivity.this, MainActivity.class);
-                        futureRaceActivity.this.startActivity(intent);
-                        overridePendingTransition(0, 0);
-                    }
+                backButton.setOnClickListener(v -> {
+                    Intent intent = new Intent(futureRaceActivity.this, MainActivity.class);
+                    futureRaceActivity.this.startActivity(intent);
+                    overridePendingTransition(0, 0);
                 });
 
                 getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
@@ -79,12 +78,7 @@ public class futureRaceActivity extends AppCompatActivity {
                 });
             }else{
                 backButton = findViewById(R.id.backButton);
-                backButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        finish();
-                    }
-                });
+                backButton.setOnClickListener(v -> finish());
             }
 
 
@@ -103,6 +97,9 @@ public class futureRaceActivity extends AppCompatActivity {
             scheduleBundle.putString("roundCount", mRound);
             scheduleBundle.putString("raceCountry", mCountry);
             scheduleBundle.putString("gpYear", gpYear);
+            scheduleBundle.putBoolean("isCanceled", isCanceled);
+            scheduleBundle.putString("dateStart", mDate);
+            scheduleBundle.putString("dateEnd", mEndDate);
 
             Bundle circuitBundle = new Bundle();
             circuitBundle.putString("circuitId", mCircuitId);

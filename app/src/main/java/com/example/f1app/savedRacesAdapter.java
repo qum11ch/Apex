@@ -89,6 +89,10 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
                 Integer mRound = snapshot.child("round").getValue(Integer.class);
                 String dateStart = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class);
                 String dateEnd = snapshot.child("raceDate").getValue(String.class);
+                Boolean hasCanceled = snapshot.child("Canceled").getValue(Boolean.class);
+
+                boolean isCanceled;
+                isCanceled = hasCanceled != null;
 
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
 
@@ -121,6 +125,8 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
                             bundle.putString("circuitId", mCircuitId);
                             bundle.putString("dateStart", dateStart);
                             bundle.putString("circuitName", mCircuitName);
+                            bundle.putBoolean("isCanceled", isCanceled);
+                            bundle.putString("dateEnd", dateEnd);
                             intent.putExtras(bundle);
                             context.startActivity(intent);
                         }else{
@@ -138,7 +144,8 @@ public class savedRacesAdapter extends RecyclerView.Adapter<savedRacesAdapter.Da
                             bundle.putString("secondPlaceCode", mSecondPlaceCode);
                             bundle.putString("thirdPlaceCode", mThirdPlaceCode);
                             bundle.putString("circuitName", mCircuitName);
-
+                            bundle.putBoolean("isCanceled", isCanceled);
+                            bundle.putString("dateEnd", dateEnd);
                             intent.putExtras(bundle);
                             context.startActivity(intent);
                         }

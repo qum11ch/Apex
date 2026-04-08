@@ -45,6 +45,12 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
 
         futureRaceData datum = dataList.get(position);
 
+        if (datum.isCanceled()){
+            holder.cnd.setVisibility(View.VISIBLE);
+        }else{
+            holder.cnd.setVisibility(View.GONE);
+        }
+
         String round = datum.getFutureRaceRound();
         holder.round.setText(round);
 
@@ -120,7 +126,9 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
             bundle.putString("roundCount" , datum.getFutureRaceRound());
             bundle.putString("raceCountry" , datum.getFutureRaceCountry());
             bundle.putString("circuitId", datum.getCircuitId());
+            bundle.putString("dateEnd", datum.getFutureRaceEndDate());
             bundle.putString("dateStart", datum.getFutureRaceStartDate());
+            bundle.putBoolean("isCanceled", datum.isCanceled());
             intent.putExtras(bundle);
 
             context.startActivity(intent);
@@ -133,11 +141,13 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
     }
 
     public static class DataHolder extends RecyclerView.ViewHolder{
-        TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName;
+        TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
+                cnd;
         ConstraintLayout constraintLayout;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             round = itemView.findViewById(R.id.round);
+            cnd = itemView.findViewById(R.id.cnd_layout);
             day_start = itemView.findViewById(R.id.day_start);
             day_end = itemView.findViewById(R.id.day_end);
             raceMonth = itemView.findViewById(R.id.raceMonth);

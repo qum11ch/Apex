@@ -3,6 +3,15 @@ package com.example.f1app;
 public class concludedRacesData {
     String dateStart, dateEnd, raceName, roundNumber, circuitName, country, locality,
             winnerDriverCode, secondPlaceCode, thirdPlaceCode, season;
+    boolean isCanceled;
+
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        isCanceled = canceled;
+    }
 
     public concludedRacesData(String dateStart, String dateEnd, String raceName, String roundNumber, String circuitName, String country, String locality, String winnerDriverCode, String secondPlaceCode, String thirdPlaceCode, String season) {
         this.dateStart = dateStart;

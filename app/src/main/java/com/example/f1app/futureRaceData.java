@@ -4,6 +4,15 @@ public class futureRaceData {
     private String futureRaceName, futureRaceStartDate, futureRaceEndDate,
             futureCircuitName, futureRaceRound, futureRaceCountry, circuitId,
             locality;
+    boolean isCanceled;
+
+    public boolean isCanceled() {
+        return isCanceled;
+    }
+
+    public void setCanceled(boolean canceled) {
+        isCanceled = canceled;
+    }
 
     public futureRaceData(String futureRaceName, String futureRaceStartDate, String futureRaceEndDate,
                           String futureCircuitName, String futureRaceRound, String futureRaceCountry,

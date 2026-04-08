@@ -26,6 +26,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -55,6 +56,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,7 +65,7 @@ import org.json.JSONObject;
 
 
 public class MainActivity extends AppCompatActivity {
-    Button showDriverButton, showSchedule, showTeams, showAccount;
+    ImageButton showDriverButton, showSchedule, showTeams, showAccount;
     FirebaseDatabase database;
     private LinearLayout futureLayout, pastLayout;
     public static final String APP_PREFERENCES = "mysettings";
@@ -84,6 +87,9 @@ public class MainActivity extends AppCompatActivity {
     private mainPastRaceAdapter pastRaceAdapter;
     private futureRaceAdapter futureRaceAdapter;
     private String currentSeason;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private DatabaseReference rootRef;
 
 
     @Override
@@ -97,6 +103,10 @@ public class MainActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(MainActivity.this));
         }
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
@@ -174,14 +184,23 @@ public class MainActivity extends AppCompatActivity {
                 startActivity_getSeason(logInPageActivity.class));
         String currentYear = Integer.toString(currentDate.getYear());
 
+        Button predict = findViewById(R.id.predict);
+
         DatabaseReference rootRef = database.getReference();
-        rootRef.child("status/season").addListenerForSingleValueEvent(new ValueEventListener() {
+        rootRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                currentSeason = snapshot.getValue(String.class);
+                currentSeason = snapshot.child("season").getValue(String.class);
                 getTeamStanding(currentSeason);
                 getDriversStanding(currentSeason);
                 getSchedule(currentYear, currentDate);
+
+                Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
+                if (enablePredicts){
+                    predict.setVisibility(View.VISIBLE);
+                }else{
+                    predict.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -204,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
 
         mPrefs = getSharedPreferences(APP_PREFERENCES, Activity.MODE_PRIVATE);
         checkNotificationPermission();
-
-        Button predict = findViewById(R.id.predict);
 
         predict.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
@@ -316,7 +333,25 @@ public class MainActivity extends AppCompatActivity {
                                     JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+
+                                    StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + currentSeason + ".png");
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, season);
+                                    smth.setImageUrl(mDriverImage);
+
+                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                            smth.setTeamColor(mTeamColor);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            smth.setTeamColor("#ffffff");
+                                            Log.e(String.valueOf(MainActivity.this), "Team color information getting error:" + error.getMessage());
+                                        }
+                                    });
+
                                     datumDrivers.add(smth);
                                 }
                             }
@@ -339,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
+                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
 
                                         rootRef.child("driverLineUp/season/" + season + "/" + constructorId)
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -374,10 +410,14 @@ public class MainActivity extends AppCompatActivity {
                                                                         driverName = parts[0];
                                                                         driverFamilyName = parts[1];
                                                                     }
-
                                                                     String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
+
+                                                                    StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + currentSeason + ".png");
+
                                                                     driversList smth = new driversList(driverName, driverFamilyName, finalConstructorsName,
                                                                             finalConstructorId, "", String.valueOf(currentDriverPlace), driverCode, true, season);
+                                                                    smth.setImageUrl(mDriverImage);
+                                                                    smth.setTeamColor(teamColor);
                                                                     datumDrivers.add(smth);
                                                                     driverCount.incrementAndGet();
                                                                     driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
@@ -442,6 +482,9 @@ public class MainActivity extends AppCompatActivity {
                                     String constructorId = ConstructorStandings.getJSONObject(j)
                                             .getJSONObject("Constructor").getString("constructorId");
                                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+                                    StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + season + ".png");
+
                                     rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -451,12 +494,27 @@ public class MainActivity extends AppCompatActivity {
                                                 teamDrivers.add(driverFullname);
                                             }
 
-                                            teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
-                                            smth.setDrivers(teamDrivers);
-                                            smth.setSeason(season);
-                                            datumTeams.add(smth);
-                                            hideShimmer(rvTeams, sfTeams);
-                                            teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
+                                            rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+
+                                                    teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                    smth.setDrivers(teamDrivers);
+                                                    smth.setSeason(season);
+                                                    smth.setImageUrl(mTeamCar);
+                                                    smth.setTeamColor(mTeamColor);
+                                                    datumTeams.add(smth);
+                                                    hideShimmer(rvTeams, sfTeams);
+                                                    teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
+
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e(String.valueOf(MainActivity.this), "Team color information getting error:" + error.getMessage());
+                                                }
+                                            });
                                         }
 
                                         @Override
@@ -479,6 +537,9 @@ public class MainActivity extends AppCompatActivity {
                                         final int currentTeamPlace = teamIndex++;
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
+                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
+
+                                        StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + season + ".png");
 
                                         DatabaseReference rootRef = database.getReference();
                                         rootRef.child("driverLineUp/season/" + season + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -492,6 +553,9 @@ public class MainActivity extends AppCompatActivity {
                                                 teamsList smth = new teamsList(constructorsName, String.valueOf(currentTeamPlace + 1), "", constructorId, true);
                                                 smth.setDrivers(teamDrivers);
                                                 smth.setSeason(season);
+                                                smth.setImageUrl(mTeamCar);
+                                                smth.setTeamColor(teamColor);
+
                                                 hideShimmer(rvTeams, sfTeams);
                                                 datumTeams.add(smth);
                                                 teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
@@ -535,15 +599,26 @@ public class MainActivity extends AppCompatActivity {
 
                     String raceName = ds.child("Circuit/raceName").getValue(String.class);
                     String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
 
-                    raceNames.add(raceName);
-                    circuitsId.add(circuitId);
+                    boolean isCanceled;
+                    isCanceled = hasCanceled != null;
 
-                    String currentDateString = currentDate.toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+                    if (!isCanceled){
+                        raceNames.add(raceName);
+                        circuitsId.add(circuitId);
+                    }
                     boolean future = false;
                     boolean isOnGoing = false;
                     boolean concluded = true;
+
+                    String currentDateString = currentDate.toString();
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+
+                    // String eventEndTime = ds.child("raceDate").getValue(String.class) +
+                    //         " " + ds.child("raceTime").getValue(String.class);
+                    // String eventStartTime = ds.child("FirstPractice/firstPracticeDate").getValue(String.class) +
+                    //         " " + ds.child("FirstPractice/firstPracticeTime").getValue(String.class);
 
                     try{
                         Date start = formatter.parse(dateStart);
@@ -562,12 +637,20 @@ public class MainActivity extends AppCompatActivity {
                             concluded = false;
                             isOnGoing = true;
                         }
+
                     } catch (ParseException e){
                         Log.d("ParseExeption", "" + e);
                     }
+
+                    if (isCanceled){
+                        isOnGoing = false;
+                        future = false;
+                    }
+
                     if(concluded){
                         concludedRoundNumber.add(round.toString());
                     }
+
                     if (future || isOnGoing){
                         String newRound;
                         if (isOnGoing){
@@ -615,13 +698,19 @@ public class MainActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot ds : snapshot.getChildren()) {
                     String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
-                    if (!winnerCode.equals("N/A")){
+                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
+
+                    boolean isCanceled;
+                    isCanceled = hasCanceled != null;
+
+                    if (!winnerCode.equals("N/A") || isCanceled){
                         String raceName = ds.child("Circuit/raceName").getValue(String.class);
                         String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                         String dateEnd = ds.child("raceDate").getValue(String.class);
                         String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
                         String secondCode = ds.child("RaceResults/raceSecondCode").getValue(String.class);
                         String thirdCode = ds.child("RaceResults/raceThirdCode").getValue(String.class);
+
                         rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -632,6 +721,7 @@ public class MainActivity extends AppCompatActivity {
                                 concludedRacesData concludedRace = new concludedRacesData(dateStart,
                                         dateEnd, raceName, round, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
                                         thirdCode, currentYear);
+                                concludedRace.setCanceled(isCanceled);
                                 datumPast.add(concludedRace);
 
                                 hideShimmer(rvPast, sfPast);
@@ -672,6 +762,11 @@ public class MainActivity extends AppCompatActivity {
                             String dateEnd = ds.child("raceDate").getValue(String.class);
                             String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
 
+                            Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
+
+                            boolean isCanceled;
+                            isCanceled = hasCanceled != null;
+
                             rootRef.child("circuits/" + circuitId).addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -681,6 +776,7 @@ public class MainActivity extends AppCompatActivity {
                                     futureRaceData futureRaceData = new futureRaceData(raceName, dateStart, dateEnd,
                                             circuitName, round, raceCountry, circuitId);
                                     futureRaceData.setLocality(raceLocation);
+                                    futureRaceData.setCanceled(isCanceled);
                                     datumFuture.add(futureRaceData);
 
                                     hideShimmer(rvFuture, sfFuture);

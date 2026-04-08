@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <shape >
             <corners
-                android:bottomLeftRadius="0dp"
+                android:bottomLeftRadius="8dp"
                 android:bottomRightRadius="8dp"
-                android:topLeftRadius="0dp"
+                android:topLeftRadius="8dp"
                 android:topRightRadius="8dp" />
         </shape>
     </item>
@@ -14,12 +14,12 @@
         android:right="0dp"
         android:bottom="0dp"
         android:left="0dp">
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
+        <shape >
             <solid android:color="@color/colorThirdly"/>
             <corners
-                android:bottomLeftRadius="0dp"
+                android:bottomLeftRadius="10dp"
                 android:bottomRightRadius="10dp"
-                android:topLeftRadius="0dp"
+                android:topLeftRadius="10dp"
                 android:topRightRadius="10dp"/>
         </shape>
     </item>

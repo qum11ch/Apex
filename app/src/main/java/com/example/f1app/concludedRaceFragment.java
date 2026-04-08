@@ -130,12 +130,13 @@ public class concludedRaceFragment extends Fragment {
                 rootRef.child("schedule/season/" + season)
                         .orderByChild("round")
                         .equalTo(Integer.parseInt(raceRound))
-                        .addListenerForSingleValueEvent(new ValueEventListener() {  // ← addListenerForSingleValueEvent!
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                 for (DataSnapshot ds : snapshot.getChildren()) {
                                     String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
-                                    if (winnerCode != null && !winnerCode.equals("N/A")) {
+                                    Boolean isCanceled = ds.child("Canceled").getValue(Boolean.class);
+                                    if ((winnerCode != null && !winnerCode.equals("N/A")) || isCanceled != null) {
                                         String raceName = ds.child("Circuit/raceName").getValue(String.class);
                                         String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                                         String dateEnd = ds.child("raceDate").getValue(String.class);
@@ -156,6 +157,8 @@ public class concludedRaceFragment extends Fragment {
                                                                 circuitName, raceCountry, raceLocation,
                                                                 winnerCode, secondCode, thirdCode, season
                                                         );
+                                                        concludedRace.setCanceled(isCanceled != null);
+
                                                         datum.add(concludedRace);
                                                         if (adapterType.equals("schedule")) {
                                                             concludedAdapter.notifyItemInserted(datum.size() - 1);

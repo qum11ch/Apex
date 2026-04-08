@@ -33,6 +33,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,7 +48,7 @@ import java.util.Locale;
 import java.util.Map;
 
 public class teamsStandingsActivity extends AppCompatActivity {
-    Button showDrivers, showSchedule, showHomePage, showAccount;
+    ImageButton showDrivers, showSchedule, showHomePage, showAccount;
     private View teamStndLine;
     private List<teamsList> datum;
     private RecyclerView recyclerView;
@@ -55,6 +57,9 @@ public class teamsStandingsActivity extends AppCompatActivity {
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private DatabaseReference rootRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,6 +82,10 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         teamsStandings_2024 = findViewById(R.id.teamsStandings_2024);
         teamsStandings_2025 = findViewById(R.id.teamsStandings_2025);
+
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         String buttonText_2024, buttonText_2025;
         if (Locale.getDefault().getLanguage().equals("ru")){
@@ -195,7 +204,9 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                     //        constructorName = "Kick Sauber";
                                     //    }
                                     //}
-                                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+                                    StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
+
                                     rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -204,25 +215,40 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 String driverFullname = driverDataSnapshot.getKey();
                                                 teamDrivers.add(driverFullname);
                                             }
-                                            teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
-                                            smth.setDrivers(teamDrivers);
-                                            smth.setSeason(mCurrentSeason);
-                                            datum.add(smth);
 
-                                            hideShimmer(recyclerView, shimmerFrameLayout);
-                                            teamsStandings_2024.animate()
-                                                    .setDuration(500)
-                                                    .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
+                                            rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                                    teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                    smth.setDrivers(teamDrivers);
+                                                    smth.setSeason(mCurrentSeason);
+                                                    smth.setImageUrl(mTeamCar);
+                                                    smth.setTeamColor(mTeamColor);
+                                                    datum.add(smth);
 
-                                            teamStndLine.animate()
-                                                    .setDuration(500)
-                                                    .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
+                                                    hideShimmer(recyclerView, shimmerFrameLayout);
 
-                                            teamsStandings_2025.animate()
-                                                    .setDuration(500)
-                                                    .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
+                                                    teamsStandings_2024.animate()
+                                                            .setDuration(500)
+                                                            .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
 
-                                            adapter.notifyItemInserted(datum.size() - 1);
+                                                    teamStndLine.animate()
+                                                            .setDuration(500)
+                                                            .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
+
+                                                    teamsStandings_2025.animate()
+                                                            .setDuration(500)
+                                                            .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
+
+                                                    adapter.notifyItemInserted(datum.size() - 1);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e(String.valueOf(teamsStandingsActivity.this), "Team color information getting error:" + error.getMessage());
+                                                }
+                                            });
                                         }
 
                                         @Override
@@ -247,9 +273,11 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                     datum.add(first);
 
                                     for (DataSnapshot child: snapshot.getChildren()) {
-
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
+                                        String teamColor = child.child("darkColor").getValue(String.class);
+
+                                        StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
 
                                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                         rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
@@ -263,6 +291,8 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
                                                 smth.setSeason(mCurrentSeason);
                                                 smth.setDrivers(teamDrivers);
+                                                smth.setImageUrl(mTeamCar);
+                                                smth.setTeamColor(teamColor);
                                                 datum.add(smth);
 
                                                 hideShimmer(recyclerView, shimmerFrameLayout);

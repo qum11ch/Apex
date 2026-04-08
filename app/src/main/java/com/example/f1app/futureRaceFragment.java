@@ -40,7 +40,6 @@ public class futureRaceFragment extends Fragment {
     private int totalItemsToLoad = 0;
 
     public futureRaceFragment() {
-        // required empty public constructor.
     }
 
     @Override
@@ -87,7 +86,7 @@ public class futureRaceFragment extends Fragment {
                 DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                 rootRef.child("schedule/season/" + currentYear).orderByChild("round")
                         .equalTo(Integer.parseInt(raceRound))
-                        .addListenerForSingleValueEvent(new ValueEventListener() {  // ← addListenerForSingleValueEvent!
+                        .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -95,6 +94,10 @@ public class futureRaceFragment extends Fragment {
                                     String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                                     String dateEnd = ds.child("raceDate").getValue(String.class);
                                     String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
+                                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
+
+                                    boolean isCanceled;
+                                    isCanceled = hasCanceled != null;
 
                                     rootRef.child("circuits/" + circuitId)
                                             .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -109,6 +112,8 @@ public class futureRaceFragment extends Fragment {
                                                             circuitName, raceRound, raceCountry, circuitId
                                                     );
                                                     futureRaceDataObj.setLocality(raceLocation);
+                                                    futureRaceDataObj.setCanceled(isCanceled);
+
                                                     datum.add(futureRaceDataObj);
 
                                                     adapter.notifyItemInserted(datum.size() - 1);

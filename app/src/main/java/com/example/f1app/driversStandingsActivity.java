@@ -31,6 +31,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +44,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class driversStandingsActivity extends AppCompatActivity {
-    Button showTeams, showSchedule, showHomePage, showAccount;
+    ImageButton showTeams, showSchedule, showHomePage, showAccount;
     private View driverStndLine;
     private List<driversList> datum;
     private RecyclerView recyclerView;
@@ -51,6 +53,8 @@ public class driversStandingsActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeLayout;
     private Button driversStandings_2024, driversStandings_2025;
     private String mCurrentSeason;
+    private StorageReference storageRef;
+    private DatabaseReference rootRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,9 +76,16 @@ public class driversStandingsActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        recyclerView.setNestedScrollingEnabled(false);
+
         driverStndLine = findViewById(R.id.driverStndLine);
 
         datum = new ArrayList<>();
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
         adapter = new driversStandingsAdapter(driversStandingsActivity.this, datum);
         recyclerView.setAdapter(adapter);
@@ -200,7 +211,25 @@ public class driversStandingsActivity extends AppCompatActivity {
                                     JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+
+                                    StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + currentSeason + ".png");
+
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentSeason);
+                                    smth.setImageUrl(mDriverImage);
+                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                            smth.setTeamColor(mTeamColor);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            smth.setTeamColor("#ffffff");
+                                            Log.e(String.valueOf(driversStandingsActivity.this), "Team color information getting error:" + error.getMessage());
+                                        }
+                                    });
+
                                     datum.add(smth);
                                 }
                             }
@@ -231,6 +260,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
+                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
 
                                         rootRef.child("driverLineUp/season/" + currentSeason + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                             @Override
@@ -253,8 +283,13 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                 driverFamilyName = parts[1];
                                                             }
                                                             String driverCode = dataSnapshot.child("driversCode").getValue(String.class);
+
+                                                            StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + currentSeason + ".png");
+
                                                             driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, "", "", driverCode,
                                                                     true, currentSeason);
+                                                            smth.setImageUrl(mDriverImage);
+                                                            smth.setTeamColor(teamColor);
                                                             datum.add(smth);
 
                                                             hideShimmer(recyclerView, shimmerFrameLayout);
@@ -304,4 +339,5 @@ public class driversStandingsActivity extends AppCompatActivity {
                 }, error -> Toast.makeText(driversStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
+
 }

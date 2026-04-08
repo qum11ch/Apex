@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -153,42 +154,35 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
         holder.secondPlace_code.setText(secondPlace_code);
         holder.thirdPlace_code.setText(thirdPlace_code);
 
-        StorageReference mWinnerImage;
-        StorageReference mSecondImage;
-        StorageReference mThirdImage;
+        if (datum.isCanceled()){
+            holder.podiumNamesLayout.setVisibility(View.GONE);
+            holder.podiumImageLayout.setVisibility(View.GONE);
+            holder.cnd.setVisibility(View.VISIBLE);
+        }else{
+            holder.podiumNamesLayout.setVisibility(View.VISIBLE);
+            holder.podiumImageLayout.setVisibility(View.VISIBLE);
+            holder.cnd.setVisibility(View.GONE);
 
-        //StorageReference mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
-        //StorageReference mSecondImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase()  + "_" + mSeason + ".png");
-        //StorageReference mThirdImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            StorageReference mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            StorageReference mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase()  + "_" + mSeason + ".png");
+            StorageReference mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
 
-        if (mSeason.equals("2024")){
-            mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_2024.png");
-            mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_2024.png");
-            mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_2024.png");
-        }else {
-            mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + ".png");
-            mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + ".png");
-            mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + ".png");
+            GlideApp.with(context)
+                    .load(mWinnerImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.placeholder_driver)
+                    .into(holder.firstPlace_image);
+            GlideApp.with(context)
+                    .load(mSecondImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.placeholder_driver)
+                    .into(holder.secondPlace_image);
+            GlideApp.with(context)
+                    .load(mThirdImage)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.placeholder_driver)
+                    .into(holder.thirdPlace_image);
         }
-
-
-        GlideApp.with(context)
-                .load(mWinnerImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.placeholder_driver)
-                .into(holder.firstPlace_image);
-
-        GlideApp.with(context)
-                .load(mSecondImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.placeholder_driver)
-                .into(holder.secondPlace_image);
-
-        GlideApp.with(context)
-                .load(mThirdImage)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.placeholder_driver)
-                .into(holder.thirdPlace_image);
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context, concludedRaceActivity.class);
@@ -205,6 +199,8 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
             bundle.putString("firstPlaceCode", firstPlace_code);
             bundle.putString("secondPlaceCode", secondPlace_code);
             bundle.putString("thirdPlaceCode", thirdPlace_code);
+            bundle.putBoolean("isCanceled", datum.isCanceled());
+            bundle.putString("dateEnd", datum.getDateEnd());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });
@@ -218,12 +214,16 @@ public class pastSeasonsRacesAdapter extends RecyclerView.Adapter<pastSeasonsRac
 
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
-                secondPlace_code, firstPlace_code, thirdPlace_code;
+                secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
         ShapeableImageView stripedImgFirst, stripedImgSecond, stripedImgThird;
+        LinearLayout podiumImageLayout, podiumNamesLayout;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
+            cnd = itemView.findViewById(R.id.cnd_layout);
+            podiumImageLayout = itemView.findViewById(R.id.podiumImage_layout);
+            podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
             stripedImgFirst = itemView.findViewById(R.id.stripedImg_first);
             stripedImgSecond = itemView.findViewById(R.id.stripedImg_second);
             stripedImgThird = itemView.findViewById(R.id.stripedImg_third);

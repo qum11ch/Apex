@@ -1,29 +1,39 @@
 package com.example.f1app;
 
-import static com.example.f1app.driversStandingsAdapter.setTeamColor;
+import static com.example.f1app.teamsStandingsAdapter.getFamilyName;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
+import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.firebase.storage.FirebaseStorage;
+import com.bumptech.glide.request.target.CustomTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
@@ -42,19 +52,10 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
     @Override
     public DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view;
-        switch (viewType) {
-            case 1:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team_winner, parent, false);
-                break;
-            case 2:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team_second, parent, false);
-                break;
-            case 3:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team_third, parent, false);
-                break;
-            default:
-                view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
-                break;
+        if (viewType == 1) {
+            view = LayoutInflater.from(context).inflate(R.layout.item_team_first, parent, false);
+        } else {
+            view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
         }
         return new DataHolder(view);
     }
@@ -68,52 +69,104 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         teamsList datum = dataList.get(position);
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
-        holder.teamDriverFirst.setText(teamDrivers.get(0));
-        holder.teamDriverSecond.setText(teamDrivers.get(1));
+
+        holder.teamDriverFirst.setText(getFamilyName(teamDrivers.get(0)));
+        holder.teamDriverSecond.setText(getFamilyName(teamDrivers.get(1)));
+
+        holder.team_car.setScaleX(1f);
+        holder.team_car.setImageDrawable(null);
+        holder.team_car.setImageBitmap(null);
 
         String season = datum.getSeason();
         String currentSeason = datum.getCurrentSeason();
+        String darkTeamColor = datum.getTeamColor();
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
+        StorageReference mTeamCar = datum.getImageUrl();
 
-        holder.scrollView.setOnTouchListener(new OnTouch());
+        Log.e("pastSeasonError", "season: " + season);
 
-        switch (season){
-            case "2024":
-                holder.team_car.setScaleX(-1);
-                holder.team_car.setScrollX(185);
-                break;
-            case "2025":
-                switch (datum.getTeamId()){
-                    case "red_bull":
-                    case "alpine":
-                        holder.team_car.setScaleX(-1);
-                        holder.team_car.setScrollX(185);
-                        break;
-                    default:
-                        holder.team_car.setScrollX(-185);
-                        break;
-                }
-                break;
-            case "2026":
-                if (datum.getTeamId().equals("audi")) {
-                    holder.team_car.setScaleX(-1);
-                    holder.team_car.setScrollX(185);
-                } else {
-                    holder.team_car.setScrollX(-185);
-                }
-                break;
-        }
-
-        StorageReference mTeamCar = storageRef.child("teams/" + datum.getTeamId().toLowerCase() + "_" + season + ".png");
         GlideApp.with(context)
-                .load(mTeamCar)
-                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .asBitmap()
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .skipMemoryCache(true)
-                .transition(DrawableTransitionOptions.withCrossFade())
                 .error(R.drawable.placeholder_car)
-                .into(holder.team_car);
+                .load(mTeamCar)
+                .into(new CustomTarget<Bitmap>() {
+                    @Override
+                    public void onResourceReady(@NonNull Bitmap resource,
+                                                @Nullable Transition<? super Bitmap> transition) {
+
+                        int width = resource.getWidth();
+                        int height = resource.getHeight();
+
+                        Bitmap leftHalf = Bitmap.createBitmap(
+                                resource,
+                                0,
+                                0,
+                                width /2,
+                                height
+                        );
+
+                        Bitmap rightHalf = Bitmap.createBitmap(
+                                resource,
+                                width /2,
+                                0,
+                                width /2,
+                                height
+                        );
+
+                        Bitmap displayBitmap = null;
+                        Matrix mirrorMatrix = new Matrix();
+
+                        switch (season){
+                            case "2024":
+                                mirrorMatrix.preScale(-1f, 1f);
+                                displayBitmap = Bitmap.createBitmap(
+                                        rightHalf, 0, 0,
+                                        rightHalf.getWidth(), rightHalf.getHeight(),
+                                        mirrorMatrix, true
+                                );
+                                break;
+                            case "2025":
+                                switch (datum.getTeamId()){
+                                    case "red_bull":
+                                    case "alpine":
+                                        mirrorMatrix.preScale(-1f, 1f);
+                                        displayBitmap = Bitmap.createBitmap(
+                                                rightHalf, 0, 0,
+                                                rightHalf.getWidth(), rightHalf.getHeight(),
+                                                mirrorMatrix, true
+                                        );
+                                        break;
+                                    default:
+                                        holder.team_car.setImageBitmap(leftHalf);
+                                        displayBitmap = leftHalf;
+                                        break;
+                                }
+                                break;
+                            case "2026":
+                                if (datum.getTeamId().equals("audi")) {
+                                    mirrorMatrix.preScale(-1f, 1f);
+                                    displayBitmap = Bitmap.createBitmap(
+                                            rightHalf, 0, 0,
+                                            rightHalf.getWidth(), rightHalf.getHeight(),
+                                            mirrorMatrix, true
+                                    );
+                                } else {
+                                    displayBitmap = leftHalf;
+                                }
+                                break;
+                        }
+
+                        holder.team_car.setImageBitmap(displayBitmap);
+                        holder.team_car.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        holder.team_car.setScaleX(1f);
+                    }
+
+                    @Override
+                    public void onLoadCleared(@Nullable Drawable placeholder) {
+                    }
+                });
 
         holder.teamPosition.setText(datum.getPosition());
         String teamPoints = datum.getPoints() + " " + context.getString(R.string.pts_header);
@@ -130,10 +183,39 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         }
 
         if (teamId.equals("audi")){
-            String mTeamColor = "#01E801";
-            holder.line.setBackgroundColor(Color.parseColor(mTeamColor));
+            String mTeamColor = "#64A462";
+            int colorRgb = Color.parseColor(mTeamColor);
+            int alpha = 0x66;
+            int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
+
+            int alphaLine = 0xCC;
+            int colorWithAlphaLine = (alphaLine << 24) | (colorRgb & 0x00FFFFFF);
+
+            ViewCompat.setBackgroundTintList(
+                    holder.itemTeam,
+                    ColorStateList.valueOf(colorWithAlpha)
+            );
+
+            holder.itemTeamLine.setBackground(createFrameWithLeftOffset(colorWithAlphaLine, context));
         }else{
-            setTeamColor(teamId, holder.line, context);
+            //String mTeamId = datum.getTeamId();
+            int colorRgb = Color.parseColor("#303030");
+
+            if (darkTeamColor != null){
+                colorRgb = Color.parseColor(darkTeamColor);
+            }
+            int alpha = 0x66;
+            int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
+
+            int alphaLine = 0xCC;
+            int colorWithAlphaLine = (alphaLine << 24) | (colorRgb & 0x00FFFFFF);
+
+            ViewCompat.setBackgroundTintList(
+                    holder.itemTeam,
+                    ColorStateList.valueOf(colorWithAlpha)
+            );
+
+            holder.itemTeamLine.setBackground(createFrameWithLeftOffset(colorWithAlphaLine, context));
         }
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , teamPageActivity.class);
@@ -163,18 +245,68 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         return dataList.size();
     }
 
+    private LayerDrawable createFrameWithLeftOffset(int colorWithAlphaLine, Context context) {
+        int strokeWidth = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 5, context.getResources().getDisplayMetrics()
+        );
+        LayerDrawable layerDrawable = new LayerDrawable(new Drawable[]{
+                createStrokeShape(strokeWidth, colorWithAlphaLine, context),
+                createInnerTransparentShape(strokeWidth, context)
+        });
+
+        int leftOffset = -strokeWidth;
+        layerDrawable.setLayerInset(0, leftOffset, 0, 0, 0);
+        layerDrawable.setLayerInset(1, strokeWidth, strokeWidth, strokeWidth, strokeWidth);
+
+        return layerDrawable;
+    }
+
+    private GradientDrawable createStrokeShape(int strokeWidth, int strokeColor, Context context) {
+        GradientDrawable stroke = new GradientDrawable();
+        stroke.setShape(GradientDrawable.RECTANGLE);
+        stroke.setStroke(strokeWidth, strokeColor);
+        stroke.setColor(Color.TRANSPARENT);
+
+        int radius20 = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 23, context.getResources().getDisplayMetrics()
+        );
+        stroke.setCornerRadii(new float[]{
+                0, 0,
+                radius20, radius20,
+                radius20, radius20,
+                0, 0
+        });
+        return stroke;
+    }
+
+    private GradientDrawable createInnerTransparentShape(int strokeWidth, Context context) {
+        GradientDrawable inner = new GradientDrawable();
+        inner.setShape(GradientDrawable.RECTANGLE);
+        inner.setColor(Color.TRANSPARENT);
+
+        int innerRadius = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 15, context.getResources().getDisplayMetrics());
+        inner.setCornerRadii(new float[]{
+                0, 0,
+                innerRadius, innerRadius,
+                innerRadius, innerRadius,
+                0, 0
+        });
+        return inner;
+    }
+
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView teamName, teamPoints, teamPosition,
-                teamDriverFirst, teamDriverSecond;
-        ImageView team_car;
+                teamDriverFirst, teamDriverSecond, teamPointsText;
+        ShapeableImageView team_car;
         ConstraintLayout constraintLayout;
-        RelativeLayout leftLayout, team_layout;
-        View line;
+        RelativeLayout team_layout;
         CardView cardView;
-        HorizontalScrollView scrollView;
+        LinearLayout itemTeam, itemTeamLine;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
-            leftLayout = itemView.findViewById(R.id.left_layout);
+            itemTeamLine = itemView.findViewById(R.id.item_team_line);
+            teamPointsText = itemView.findViewById(R.id.team_points_text);
+            itemTeam = itemView.findViewById(R.id.item_team);
             team_layout = itemView.findViewById(R.id.team_layout);
             cardView = itemView.findViewById(R.id.cardView);
             teamName = itemView.findViewById(R.id.teamName);
@@ -184,17 +316,6 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
             teamDriverSecond = itemView.findViewById(R.id.driverSecond);
             constraintLayout = itemView.findViewById(R.id.main_layout);
             team_car = itemView.findViewById(R.id.team_car);
-            line = itemView.findViewById(R.id.line);
-            scrollView= itemView.findViewById(R.id.horizontal_scroll);
-        }
-    }
-
-    private static class OnTouch implements View.OnTouchListener
-    {
-        @SuppressLint("ClickableViewAccessibility")
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            return true;
         }
     }
 }

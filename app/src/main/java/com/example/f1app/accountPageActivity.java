@@ -57,7 +57,6 @@ public class accountPageActivity extends AppCompatActivity {
     private ProgressBar loadingProgress;
     private Dialog logoutDialog;
     private FirebaseAuth auth;
-    private View line2;
     private RelativeLayout teamName_layout, driver_layout, team_layout, userFavTeam_layout,
             driverName_layout;
     private ImageView teamLogo, teamCar, driverImage, arrow;
@@ -97,8 +96,6 @@ public class accountPageActivity extends AppCompatActivity {
         teamLogo = findViewById(R.id.team_logo);
         teamCar = findViewById(R.id.teamCar);
         driverImage = findViewById(R.id.driver_image);
-
-        line2 = findViewById(R.id.line2);
 
         teamName_layout = findViewById(R.id.teamName_layout);
         team_layout = findViewById(R.id.team_layout);
@@ -144,30 +141,34 @@ public class accountPageActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> {
             Intent i = new Intent(accountPageActivity.this, MainActivity.class);
-            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(i);
             finish();
+            overridePendingTransition(0, 0);
         });
 
         getOnBackPressedDispatcher().addCallback(new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
                 Intent i = new Intent(accountPageActivity.this, MainActivity.class);
-                i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NO_HISTORY);
+                i.setFlags(i.getFlags() |  Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                 startActivity(i);
                 finish();
+                overridePendingTransition(0, 0);
             }
         });
 
         Button savedRace = findViewById(R.id.savedRace);
         savedRace.setOnClickListener(v -> {
             Intent intent = new Intent(accountPageActivity.this, savedRacesActivity.class);
+            intent.putExtra("currentSeason", mCurrentSeason);
             accountPageActivity.this.startActivity(intent);
         });
 
         Button settings = findViewById(R.id.profileSettings);
         settings.setOnClickListener(view -> {
             Intent intent = new Intent(accountPageActivity.this, accountSettingsActivity.class);
+            intent.putExtra("currentSeason", mCurrentSeason);
             accountPageActivity.this.startActivity(intent);
         });
     }
@@ -486,7 +487,6 @@ public class accountPageActivity extends AppCompatActivity {
                                 }
 
                                 String teamColor = "#" + colorValue;
-                                Log.d("TeamInfo", "Loading team: " + teamId + ", color: " + teamColor);
 
                                 displayTeamLayout(teamColor);
                                 loadTeamLogo(storageRef, teamId);
@@ -541,10 +541,15 @@ public class accountPageActivity extends AppCompatActivity {
 
         StorageReference logoRef;
 
-        if (teamId.equals("alpine") || teamId.equals("williams")) {
-            logoRef = storageRef.child("teams/" + teamId + "_logo_alt.png");
-        } else {
-            logoRef = storageRef.child("teams/" + teamId + "_logo.png");
+        switch(teamId){
+            case "alpine":
+            case "williams":
+            case "cadillac":
+            case "audi":
+                logoRef = storageRef.child("teams/" + teamId.toLowerCase() + "_logo_alt.png");
+                break;
+            default:
+                logoRef = storageRef.child("teams/" + teamId.toLowerCase() + "_logo.png");
         }
 
         logoRef.getDownloadUrl()
@@ -563,7 +568,7 @@ public class accountPageActivity extends AppCompatActivity {
         userFavTeam_layout.setOnClickListener(view -> {
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
-            rootRef.child("driverLineUp/season/2025/" + teamId)
+            rootRef.child("driverLineUp/season/" + mCurrentSeason + "/" + teamId)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -607,6 +612,7 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void showNoFavorites() {
+        fanText.setVisibility(View.VISIBLE);
         fanText.setText(getString(R.string.no_fan_of_text));
         collapseDriverLayout();
         collapseTeamLayout();
@@ -615,7 +621,6 @@ public class accountPageActivity extends AppCompatActivity {
     private void collapseDriverLayout() {
         userFavDriverNumber.getLayoutParams().height = 0;
         userFavDriver.getLayoutParams().height = 0;
-        line2.getLayoutParams().height = 0;
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, 0);

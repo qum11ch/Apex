@@ -3,6 +3,7 @@ package com.example.f1app;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -17,11 +18,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
 import com.blongho.country_data.World;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -88,6 +91,9 @@ public class teamStatsFragment extends Fragment {
         tech_layout = view.findViewById(R.id.tech_layout);
         fullTeamName = view.findViewById(R.id.fullTeamName);
         flag = view.findViewById(R.id.flag);
+
+        ShapeableImageView firstDriver_striped = view.findViewById(R.id.striped_first_driver);
+        ShapeableImageView secondDriver_striped = view.findViewById(R.id.striped_second_driver);
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -294,6 +300,16 @@ public class teamStatsFragment extends Fragment {
                     gd1.setCornerRadii(new float[] {0, 0, 30, 30, 0, 0, 0, 0});
                     gd1.setStroke(15, Color.parseColor(mColor));
                     tech_layout.setBackground(gd1);
+
+                    ViewCompat.setBackgroundTintList(
+                            firstDriver_striped,
+                            ColorStateList.valueOf(Color.parseColor(mColor))
+                    );
+
+                    ViewCompat.setBackgroundTintList(
+                            secondDriver_striped,
+                            ColorStateList.valueOf(Color.parseColor(mColor))
+                    );
                 }
 
                 @Override

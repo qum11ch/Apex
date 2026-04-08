@@ -4,12 +4,14 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
@@ -22,6 +24,13 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +48,9 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private DatabaseReference rootRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,10 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
 
             recyclerView = findViewById(R.id.recyclerview_currentDrivers);
             recyclerView.setHasFixedSize(true);
+
+            storage = FirebaseStorage.getInstance();
+            storageRef = storage.getReference();
+            rootRef = FirebaseDatabase.getInstance().getReference();
 
             TextView driversHeader = findViewById(R.id.driversHeader);
 
@@ -131,8 +147,25 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                                     JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+
+                                    StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + seasonYear + ".png");
+
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, seasonYear);
+                                    smth.setImageUrl(mDriverImage);
                                     smth.setCurrentSeason(mCurrentSeason);
+                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                            smth.setTeamColor(mTeamColor);
+                                        }
+
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError error) {
+                                            smth.setTeamColor("#ffffff");
+                                            Log.e(String.valueOf(pastSeasonDriversStandingsActivity.this), "Team color information getting error:" + error.getMessage());
+                                        }
+                                    });
                                     datum.add(smth);
                                 }
                             }

@@ -56,7 +56,12 @@ public class driverResultsAdapter extends RecyclerView.Adapter<driverResultsAdap
         myGrad.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
 
         if (!driverResult.equals("N/C")) {
-            if (driverResult.equals("NP")) {
+            if (driverResult.equals("CND")){
+                myGrad.setColor(ContextCompat.getColor(context, R.color.orange));
+                holder.driverResults.setBackground(myGrad);
+                holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.white));
+                holder.driverResults.setText(context.getResources().getString(R.string.cnd_text));
+            } else if (driverResult.equals("NP")) {
                 myGrad.setColor(ContextCompat.getColor(context, R.color.white));
                 holder.driverResults.setBackground(myGrad);
                 holder.driverResults.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));

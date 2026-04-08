@@ -1,22 +1,26 @@
 package com.example.f1app;
 
-import static com.example.f1app.driversStandingsAdapter.setTeamColor;
-
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.List;
 
@@ -50,55 +54,58 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
     @Override
     public void onBindViewHolder(@NonNull mainDriversStandingsAdapter.DataHolder holder, int position) {
         driversList datum = dataList.get(position);
-        holder.driverName.setText(datum.getDriverName());
-        //holder.driverTeam.setText(datum.getDriverTeam());
         holder.driverFamilyName.setText(datum.getDriverFamilyName());
         holder.driver_placement.setText(datum.getDriverPlacement());
 
         //String currentSeason = datum.getSeason();
+        String darkTeamColor = datum.getTeamColor();
 
-        if (position == dataList.size() - 1){
-            holder.bottomLine.getLayoutParams().height = 0;
+        String driverName = datum.getDriverName();
+        if (driverName.equals("Andrea Kimi")){
+            String[] parts = driverName.split(" ");
+            driverName = parts[1];
         }
+
+        holder.driverName.setText(driverName);
 
         if (datum.isStartSeason()) {
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-            params.addRule(RelativeLayout.END_OF, R.id.driverName);
-            Resources r = context.getResources();
-            int px = (int) TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    5,
-                    r.getDisplayMetrics()
-            );
-            params.setMargins(px, 0, 0, 0);
-            holder.driverFamilyName.setLayoutParams(params);
-
-            holder.driver_points.getLayoutParams().width = 0;
+            holder.driverPointsText.setVisibility(View.GONE);
+            holder.driver_points.setVisibility(View.GONE);
         } else {
-            if (datum.getDriverName().equals("Andrea Kimi")){
-                RelativeLayout.LayoutParams params= new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.addRule(RelativeLayout.BELOW, R.id.driverName);
-                holder.driverFamilyName.setLayoutParams(params);
-            }else {
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.addRule(RelativeLayout.END_OF, R.id.driverName);
-                Resources r = context.getResources();
-                int px = (int) TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        5,
-                        r.getDisplayMetrics()
-                );
-                params.setMargins(px, 0, 0, 0);
-                holder.driverFamilyName.setLayoutParams(params);
-            }
-
-
-            String driver_points = datum.getDriverPoints()  + " " + context.getString(R.string.pts_header);
-            holder.driver_points.setText(driver_points);
+            holder.driver_points.setText(datum.getDriverPoints());
+            holder.driverPointsText.setVisibility(View.VISIBLE);
+            holder.driver_points.setVisibility(View.VISIBLE);
         }
 
-        String mTeamId = datum.getConstructorId();
-        setTeamColor(mTeamId, holder.line, context);
+        holder.driverImage.setImageDrawable(null);
+        StorageReference mDriverImage = datum.getImageUrl();
+
+        mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
+                .load(uri)
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .skipMemoryCache(true)
+                .error(R.drawable.placeholder_driver)
+                .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
+                    .load(R.drawable.placeholder_driver)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .skipMemoryCache(true)
+                    .into(holder.driverImage));
+
+
+        //String mTeamId = datum.getConstructorId();
+        int colorRgb = Color.parseColor("#303030");
+
+        if (darkTeamColor != null){
+            colorRgb = Color.parseColor(darkTeamColor);
+        }
+
+        int alpha = 0xCC;
+        int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
+
+        ViewCompat.setBackgroundTintList(
+                holder.itemDriver,
+                ColorStateList.valueOf(colorWithAlpha)
+        );
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , driverPageActivity.class);
@@ -122,24 +129,25 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
 
     public static class DataHolder extends RecyclerView.ViewHolder {
         TextView driverName, driver_placement, driver_points,
-                driverFamilyName;
+                driverFamilyName, driverPointsText;
         ConstraintLayout constraintLayout;
-        RelativeLayout leftLayout, driver_layout;
-        View line, bottomLine;
+        RelativeLayout driver_layout;
         CardView cardView;
+        LinearLayout itemDriver;
+        ImageView driverImage;
 
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
-            leftLayout = itemView.findViewById(R.id.leftLayout);
             driver_layout = itemView.findViewById(R.id.driver_layout);
             driverName = itemView.findViewById(R.id.driverName);
             driverFamilyName = itemView.findViewById(R.id.driverFamilyName);
             driver_placement = itemView.findViewById(R.id.driver_placement);
             driver_points = itemView.findViewById(R.id.driver_points);
             constraintLayout = itemView.findViewById(R.id.main_layout);
-            line = itemView.findViewById(R.id.line);
-            bottomLine = itemView.findViewById(R.id.bottomLine);
+            itemDriver = itemView.findViewById(R.id.item_driver);
+            driverImage = itemView.findViewById(R.id.driverImage);
+            driverPointsText = itemView.findViewById(R.id.driver_points_text);
         }
     }
 }

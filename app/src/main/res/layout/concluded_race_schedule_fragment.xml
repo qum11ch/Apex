@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <com.google.android.material.appbar.AppBarLayout
+            android:background="@color/colorPrimary"
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,36 +22,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fitsSystemWindows="false"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-                android:background="@drawable/blue_gradient">
-                <ImageView
+                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:adjustViewBounds="true"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/bg_past"/>
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="10dp">
+                    android:layout_height="wrap_content">
+                    <ImageView
+                        android:id="@+id/background_img"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/bg_past"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
                     <LinearLayout
                         android:layout_marginTop="10dp"
-                        android:layout_marginEnd="20dp"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
                         android:id="@+id/date_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:text="@string/race_finished_text"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                            android:textSize="12sp"
-                            android:gravity="center"
-                            android:textColor="@color/white"
-                            android:layout_marginEnd="5dp"
-                            android:textAllCaps="true"/>
+                        android:orientation="horizontal"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
                         <TextView
                             android:paddingTop="3dp"
                             android:id="@+id/day_start"
@@ -59,6 +56,7 @@
                             android:gravity="center"
                             android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
                         <TextView
+                            android:id="@+id/dash"
                             android:paddingTop="3dp"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
@@ -82,52 +80,47 @@
                             android:textSize="12sp"
                             android:textColor="@color/white"
                             android:textAllCaps="true"/>
-                    </LinearLayout>
-                    <LinearLayout
-                        style="@style/RaceInfoLayout"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_below="@id/date_layout"
-                        android:id="@+id/info_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
                         <TextView
-                            android:id="@+id/infoRaceName"
+                            android:layout_marginStart="20dp"
+                            android:id="@+id/raceStatus"
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:gravity="bottom"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                            android:textSize="12sp"
+                            android:gravity="center"
+                            android:text="@string/race_finished_text"
                             android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="10dp"/>
+                            android:layout_marginEnd="5dp"
+                            android:textAllCaps="true"/>
                     </LinearLayout>
                     <LinearLayout
+                        app:layout_constraintTop_toBottomOf="@id/date_layout"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_marginStart="5dp"
                         android:paddingTop="5dp"
                         android:paddingBottom="0dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="1dp"
+                        android:layout_marginEnd="5dp"
                         android:id="@+id/podium_layout"
-                        android:layout_below="@id/info_layout"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         style="@style/RacePodiumStyle"
                         android:orientation="vertical">
                         <TextView
-                            android:layout_width="wrap_content"
+                            android:textAlignment="center"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:id="@+id/infoRaceName"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
-                            android:layout_marginStart="15dp"
-                            android:text="@string/race_podium_text"
-                            android:textColor="@color/white"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                            android:textSize="18sp"
-                            android:id="@+id/podium_info"/>
+                            android:textColor="@color/white"
+                            android:textSize="20sp"
+                            android:paddingStart="0dp"
+                            android:paddingEnd="10dp"/>
                         <LinearLayout
+                            android:layout_marginTop="10dp"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="5dp"
                             android:id="@+id/podiumImage_layout"
@@ -138,10 +131,10 @@
                             android:orientation="horizontal"
                             android:weightSum="3">
                             <RelativeLayout
-                                android:paddingEnd="5dp"
-                                android:paddingStart="5dp"
+                                android:paddingEnd="2.5dp"
+                                android:paddingStart="0dp"
                                 android:layout_width="0dp"
-                                android:layout_height="105dp"
+                                android:layout_height="match_parent"
                                 android:layout_weight="1">
                                 <androidx.cardview.widget.CardView
                                     android:layout_alignParentBottom="true"
@@ -157,20 +150,19 @@
                                         tools:ignore="TooDeepLayout" />
                                 </androidx.cardview.widget.CardView>
                                 <ImageView
-                                    android:layout_centerInParent="true"
                                     android:id="@+id/secondPlace_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="105dp"
+                                    android:layout_height="wrap_content"
                                     android:contentDescription="@string/_2nd_place_driver_image"
                                     android:scaleType="fitCenter"
                                     android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                             <RelativeLayout
-                                android:paddingEnd="5dp"
-                                android:paddingStart="5dp"
+                                android:paddingEnd="2.5dp"
+                                android:paddingStart="2.5dp"
                                 android:layout_width="0dp"
-                                android:layout_height="126dp"
-                                android:layout_weight="1.2">
+                                android:layout_height="match_parent"
+                                android:layout_weight="1.1">
                                 <androidx.cardview.widget.CardView
                                     android:layout_alignParentBottom="true"
                                     android:layout_width="match_parent"
@@ -186,20 +178,19 @@
                                 </androidx.cardview.widget.CardView>
 
                                 <ImageView
-                                    android:layout_centerInParent="true"
                                     android:id="@+id/firstPlace_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="126dp"
+                                    android:layout_height="wrap_content"
                                     android:contentDescription="@string/_1st_place_driver_image"
                                     android:scaleType="fitCenter"
                                     android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                             <RelativeLayout
-                                android:paddingEnd="5dp"
-                                android:paddingStart="5dp"
+                                android:paddingStart="2.5dp"
+                                android:paddingEnd="0dp"
                                 android:layout_width="0dp"
-                                android:layout_height="84dp"
-                                android:layout_weight="0.8">
+                                android:layout_height="match_parent"
+                                android:layout_weight="0.9">
                                 <androidx.cardview.widget.CardView
                                     android:layout_alignParentBottom="true"
                                     android:layout_width="match_parent"
@@ -214,15 +205,16 @@
                                         tools:ignore="TooDeepLayout"/>
                                 </androidx.cardview.widget.CardView>
                                 <ImageView
-                                    android:layout_centerInParent="true"
                                     android:contentDescription="@string/_3rd_place_driver_image"
                                     android:scaleType="fitCenter"
                                     android:id="@+id/thirdPlace_image"
-                                    android:layout_width="84dp"
-                                    android:layout_height="84dp" />
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                         </LinearLayout>
                         <LinearLayout
+                            android:visibility="gone"
                             android:layout_marginStart="5dp"
                             android:layout_marginEnd="5dp"
                             android:layout_marginTop="5dp"
@@ -232,25 +224,27 @@
                             android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:weightSum="3">
+
                             <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_weight="1"
                                 android:id="@+id/secondPlace_info"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="5dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
                                 android:text="@string/_2nd_place_header"
-                                android:gravity="center"
                                 android:textAllCaps="true"
                                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textSize="14sp"
-                                android:textColor="@color/white"/>
+                                android:textColor="@color/white"
+                                android:textSize="14sp" />
+
                             <TextView
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:layout_weight="1.2"
+                                android:layout_weight="1.1"
                                 android:id="@+id/firstPlace_info"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -265,7 +259,7 @@
                             <TextView
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
-                                android:layout_weight="0.8"
+                                android:layout_weight="0.9"
                                 android:id="@+id/thirdPlace_info"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
@@ -288,68 +282,74 @@
                             android:baselineAligned="false"
                             android:orientation="horizontal"
                             android:weightSum="3"
-                            android:layout_marginBottom="5dp">
+                            android:layout_marginBottom="10dp">
                             <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
+                                android:layout_marginStart="0dp"
+                                android:layout_marginEnd="2.5dp"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:id="@+id/secondPlace_code"
                                 android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
                                 android:textAllCaps="true"
                                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
                                 android:textSize="14sp"
-                                android:textColor="@color/silver" />
+                                android:textColor="@color/white" />
                             <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
+                                android:layout_marginStart="2.5dp"
+                                android:layout_marginEnd="2.5dp"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_weight="1.2"
+                                android:layout_weight="1.1"
                                 android:id="@+id/firstPlace_code"
                                 android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
                                 android:textAllCaps="true"
                                 android:textSize="14sp"
                                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textColor="@color/gold"/>
+                                android:textColor="@color/white"/>
                             <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
+                                android:layout_marginStart="2.5dp"
+                                android:layout_marginEnd="0dp"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
-                                android:layout_weight="0.8"
+                                android:layout_weight="0.9"
                                 android:id="@+id/thirdPlace_code"
                                 android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
                                 android:textSize="14sp"
                                 android:textAllCaps="true"
                                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textColor="@color/bronze" />
+                                android:textColor="@color/white" />
                         </LinearLayout>
                     </LinearLayout>
                     <TextView
-                        android:textAllCaps="true"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_below="@id/podium_layout"
-                        style="@style/StinkyBottomStyle"
+                        android:textStyle="normal"
+                        android:textAllCaps="false"
+                        android:layout_marginBottom="100dp"
                         android:id="@+id/show_results"
-                        android:paddingBottom="8dp"
-                        android:paddingTop="5dp"
-                        android:layout_width="match_parent"
+                        style="@style/StickyBottomStyle"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:gravity="center"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
                         android:text="@string/view_results"
                         android:textAppearance="@style/TextStyle.Gram.Bold"
                         android:textColor="@color/white"
-                        android:textSize="14sp"/>
-                </RelativeLayout>
+                        android:textSize="16sp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/podium_layout"/>
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        app:layout_constraintTop_toBottomOf="@id/show_results"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <androidx.core.widget.NestedScrollView
@@ -363,16 +363,17 @@
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
             <RelativeLayout
                 android:paddingBottom="30dp"
-                android:layout_marginTop="20dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="match_parent">
                 <RelativeLayout
+                    android:layout_marginTop="20dp"
                     android:id="@+id/schedule_layout"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="10dp"
                     style="@style/RaceLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <TextView
+                        android:textAllCaps="true"
                         android:layout_marginTop="15dp"
                         android:layout_marginEnd="10dp"
                         android:id="@+id/race_weekend_title"
@@ -386,8 +387,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginEnd="20dp"
                         android:layout_marginBottom="15dp">
                         <androidx.recyclerview.widget.RecyclerView
                             android:overScrollMode="never"
@@ -396,22 +397,26 @@
                             android:id="@+id/recyclerview_schedule"/>
                     </LinearLayout>
                 </RelativeLayout>
+
                 <ToggleButton
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="20dp"
+                    android:textSize="16sp"
+                    android:gravity="center"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
                     android:background="@drawable/save_toggle_button_style"
                     android:layout_below="@id/schedule_layout"
                     android:id="@+id/saveRace"
+                    android:textStyle="bold"
+                    android:elevation="0dp"
+                    android:textAllCaps="true"
+                    style="@style/ButtonStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginBottom="30dp"
-                    android:textAlignment="textStart"
-                    android:paddingStart="30dp"
                     android:checked="false"
-                    android:paddingEnd="0dp"
-                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@drawable/toggle_text_color"
-                    android:textSize="22sp"
                     android:textOff="@string/save_race"
                     android:textOn="@string/delete_race"/>
             </RelativeLayout>

@@ -42,18 +42,11 @@
                     android:id="@+id/driver_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="85dp"
+                    android:layout_marginTop="70dp"
                     android:paddingStart="30dp"
                     android:paddingEnd="0dp">
-                    <View
-                        android:id="@+id/line"
-                        android:layout_width="3dp"
-                        android:layout_height="match_parent"
-                        android:background="@color/white"
-                        android:layout_marginBottom="60dp"/>
                     <TextView
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:layout_marginStart="10dp"
                         android:textColor="@color/white"
                         android:id='@+id/driverfullName'
                         android:layout_width="wrap_content"
@@ -61,8 +54,7 @@
                         android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                         tools:ignore="RelativeOverlap" />
                     <TextView
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:layout_marginStart="10dp"
                         android:layout_below="@id/driverfullName"
                         android:textColor="@color/white"
                         android:id='@+id/driverFamilyName'
@@ -71,23 +63,13 @@
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                     <TextView
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:layout_marginStart="10dp"
                         android:layout_below="@id/driverFamilyName"
                         android:textColor="@color/white"
                         android:id='@+id/driverNumber'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                    <View
-                        android:id="@+id/line2"
-                        android:layout_width="2dp"
-                        android:layout_toEndOf="@id/driverNumber"
-                        android:layout_below="@id/driverFamilyName"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_height="20dp"
-                        android:background="@color/white_alpha" />
                     <TextView
                         android:layout_marginTop="10dp"
                         android:layout_marginStart="20dp"
@@ -107,7 +89,7 @@
                         android:contentDescription="@string/driverimage"
                         android:fitsSystemWindows="true"
                         android:layout_marginEnd="10dp"
-                        android:scaleType="fitEnd"
+                        android:scaleType="centerCrop"
                         app:layout_collapseMode="parallax" />
                 </RelativeLayout>
                 <androidx.appcompat.widget.Toolbar
@@ -133,6 +115,7 @@
                             android:src="@drawable/back_arrow"
                             android:background="@android:color/transparent"/>
                         <TextView
+                            android:textColor="@color/white"
                             android:paddingEnd="10dp"
                             android:paddingStart="0dp"
                             android:id="@+id/driverName"
@@ -140,7 +123,7 @@
                             android:layout_height="match_parent"
                             android:layout_toEndOf="@id/backButton"
                             android:gravity="center_vertical|center"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                             android:textSize="24sp"
                             android:textStyle="bold"
                             android:layout_marginEnd="45dp"/>

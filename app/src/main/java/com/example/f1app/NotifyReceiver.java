@@ -94,6 +94,11 @@ public class NotifyReceiver extends BroadcastReceiver {
                 String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
                 String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
+                Boolean hasCanceled = snapshot.child("Canceled").getValue(Boolean.class);
+
+                boolean isCanceled;
+                isCanceled = hasCanceled != null;
+
                 rootRef.child("circuits/" + circuitId)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
@@ -109,6 +114,8 @@ public class NotifyReceiver extends BroadcastReceiver {
                                 bundle.putString("raceCountry" , raceCountry);
                                 bundle.putString("circuitId", circuitId);
                                 bundle.putString("dateStart", dateStart_string);
+                                bundle.putString("dateEnd", dateEnd_string);
+                                bundle.putBoolean("isCanceled", isCanceled);
                                 bundle.putBoolean("fromNotify", true);
                                 notificationIntent.putExtras(bundle);
 

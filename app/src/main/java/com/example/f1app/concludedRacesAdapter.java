@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -84,6 +85,23 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
         String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
+        //String monthStartFull = dateStart.format(DateTimeFormatter.ofPattern("M"));
+        //String monthEndFull = dateEnd.format(DateTimeFormatter.ofPattern("M"));
+
+        if (datum.isCanceled()){
+            holder.podiumNamesLayout.setVisibility(View.GONE);
+            if (getItemViewType(position) == 1){
+                holder.podiumImageLayout.setVisibility(View.GONE);
+            }
+            holder.cnd.setVisibility(View.VISIBLE);
+        }else {
+            holder.podiumNamesLayout.setVisibility(View.VISIBLE);
+            if (getItemViewType(position) == 1){
+                holder.podiumImageLayout.setVisibility(View.VISIBLE);
+            }
+            holder.cnd.setVisibility(View.GONE);
+        }
+
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
         }
@@ -156,20 +174,9 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             StorageReference mSecondImage;
             StorageReference mThirdImage;
 
-            // mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            // mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            // mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
-
-            if (mSeason.equals("2024")){
-                mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_2024.png");
-                mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_2024.png");
-                mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_2024.png");
-            }else {
-                mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + ".png");
-                mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + ".png");
-                mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + ".png");
-            }
-
+            mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
+            mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
 
             GlideApp.with(context)
                     .load(mWinnerImage)
@@ -202,9 +209,11 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             bundle.putString("roundCount" , datum.getRoundNumber());
             bundle.putString("raceCountry" , datum.getCountry());
             bundle.putString("dateStart", datum.getDateStart());
+            bundle.putString("dateEnd", datum.getDateEnd());
             bundle.putString("firstPlaceCode", firstPlace_code);
             bundle.putString("secondPlaceCode", secondPlace_code);
             bundle.putString("thirdPlaceCode", thirdPlace_code);
+            bundle.putBoolean("isCanceled", datum.isCanceled());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });
@@ -218,9 +227,10 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
 
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
-                secondPlace_code, firstPlace_code, thirdPlace_code;
+                secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
+        LinearLayout podiumNamesLayout, podiumImageLayout;
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);
             if (viewType == 1){
@@ -238,6 +248,9 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
                 secondPlace_image = itemView.findViewById(R.id.secondPlace_image);
                 firstPlace_image = itemView.findViewById(R.id.firstPlace_image);
                 thirdPlace_image = itemView.findViewById(R.id.thirdPlace_image);
+                podiumImageLayout = itemView.findViewById(R.id.podiumImage_layout);
+                podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
+                cnd = itemView.findViewById(R.id.cnd_layout);
             } else{
                 round = itemView.findViewById(R.id.round);
                 day_start = itemView.findViewById(R.id.day_start);
@@ -250,6 +263,8 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
                 firstPlace_code = itemView.findViewById(R.id.firstPlace_code);
                 thirdPlace_code = itemView.findViewById(R.id.thirdPlace_code);
                 constraintLayout = itemView.findViewById(R.id.main_layout);
+                podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
+                cnd = itemView.findViewById(R.id.cnd_layout);
             }
         }
     }

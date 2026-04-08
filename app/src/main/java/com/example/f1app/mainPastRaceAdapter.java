@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -75,6 +76,14 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
 
         String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
         String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
+
+        if (datum.isCanceled()){
+            holder.podiumNamesLayout.setVisibility(View.GONE);
+            holder.cnd.setVisibility(View.VISIBLE);
+        }else {
+            holder.podiumNamesLayout.setVisibility(View.VISIBLE);
+            holder.cnd.setVisibility(View.GONE);
+        }
 
         if(monthStart.equals(monthEnd)){
             holder.raceMonth.setText(monthStart);
@@ -153,6 +162,8 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
             bundle.putString("firstPlaceCode", firstPlace_code);
             bundle.putString("secondPlaceCode", secondPlace_code);
             bundle.putString("thirdPlaceCode", thirdPlace_code);
+            bundle.putBoolean("isCanceled", datum.isCanceled());
+            bundle.putString("dateEnd", datum.getDateEnd());
             intent.putExtras(bundle);
             context.startActivity(intent);
         });
@@ -167,10 +178,13 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
     public static class DataHolder extends RecyclerView.ViewHolder{
 
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
-                secondPlace_code, firstPlace_code, thirdPlace_code;
+                secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
         ConstraintLayout constraintLayout;
+        LinearLayout podiumNamesLayout;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
+            cnd = itemView.findViewById(R.id.cnd_layout);
+            podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
             round = itemView.findViewById(R.id.round);
             day_start = itemView.findViewById(R.id.day_start);
             day_end = itemView.findViewById(R.id.day_end);

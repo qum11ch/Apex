@@ -6,7 +6,7 @@
     <color name="colorPrimary">#222222</color>
     <color name="textColorPrimary">#FFF</color>
     <color name="light_gold">#FFFFBF</color>
-    <color name="gold">#EFBF04</color>
+    <color name="gold">#836800</color>
     <color name="light_bronze">#FFDF9F</color>
     <color name="bronze">#CE8946</color>
     <color name="light_silver">#DFDFDF</color>
@@ -41,5 +41,12 @@
     <color name="green">#5FDA4F</color>
     <color name="dark_status_bar">#FF222222</color>
     <color name="schedule_color">#303030</color>
+    <color name="schedule_color_second">#303030</color>
+    <color name="text_color_schedule">#FFFFFFFF</color>
     <color name="statusBar_color">#222222</color>
+    <color name="orange">#FF8000</color>
+    <color name="raceHeader">#D9212121</color>
+    <color name="footer_line">#FFFFFFFF</color>
+    <color name="footer_icon">#FFFFFFFF</color>
+    <color name="ongoing_color">#EAF0F8</color>
 </resources>

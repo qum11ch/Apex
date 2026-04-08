@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -21,6 +20,7 @@
             style="@style/ItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:weightSum="5">
             <RelativeLayout
@@ -63,12 +63,6 @@
                     android:paddingStart="3dp"
                     android:paddingEnd="3dp"/>
             </RelativeLayout>
-            <View
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/grey" />
             <RelativeLayout
                 android:paddingBottom="10dp"
                 android:layout_width="0dp"

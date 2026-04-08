@@ -55,8 +55,8 @@
     <string name="_2nd_place_header">Второе место</string>
     <string name="_1st_place_header">Победитель</string>
     <string name="_3rd_place_header">Третье место</string>
-    <string name="view_results">просмотреть результаты</string>
-    <string name="race_weekend_text">Гоночный уикенд</string>
+    <string name="view_results">Результаты</string>
+    <string name="race_weekend_text">Формат уикенда</string>
     <string name="confirm_delete">Подтвердить удаление</string>
     <string name="confirm_delete_info">Вы уверены, что хотите удалить свой аккаунт?\nЭто действие нельзя отменить!</string>
     <string name="cancel">Отменить</string>
@@ -75,6 +75,7 @@
     <string name="points_finish">Финишировал в очках</string>
     <string name="purple">Фиолетовый</string>
     <string name="out_of_points_finish">Финишировал вне очков</string>
+    <string name="points_text">Очков</string>
     <string name="pink">Розовый</string>
     <string name="retired">Сход</string>
     <string name="white">Белый</string>
@@ -83,6 +84,7 @@
     <string name="dsq">Дисквалифицирован (ДСК)</string>
     <string name="blank">Пустой</string>
     <string name="wd">Не участвовал (НУ)</string>
+    <string name="cnd">Гран-При Отменено (ОТМ)</string>
     <string name="format">Формат</string>
     <string name="meaning">Значение</string>
     <string name="bold_purple">Полужирный фиолетовый</string>
@@ -141,6 +143,8 @@
     <string name="quali_text">Квал.</string>
     <string name="sprint_text">Спринт</string>
     <string name="seconds_text">с</string>
+    <string name="cnd_text">ОТМ</string>
+    <string name="canceled_text">Отменен</string>
     <string name="dns_text">НС</string>
     <string name="dnf_text">Сход</string>
     <string name="nc_text">НКЛ</string>
@@ -192,8 +196,9 @@
     <string name="lost_connection">Потеря соединения</string>
     <string name="lost_connection_info">Проверьте ваше интернет соединение и попытайтесь снова</string>
     <string name="try_again_button">Попытаться снова</string>
-    <string name="not_concluded">ГП не завершилось (Н/З)</string>
+    <string name="not_concluded">Гран-При не завершилось (Н/З)</string>
     <string name="is_running">идет</string>
+
     <string name="abu_dhabi_grand_prix_text">Гран-при Абу-Даби</string>
     <string name="australian_grand_prix_text">Гран-при Австралии</string>
     <string name="austrian_grand_prix_text">Гран-при Австрии</string>
@@ -251,6 +256,7 @@
     <string name="united_states_grand_prix_locality">США</string>
 
     <string name="times">раз</string>
+
     <string name="yas_marina_text">Яс Марина</string>
     <string name="albert_park_text">Алберт-Парк</string>
     <string name="red_bull_ring_text">Ред Булл Ринг</string>
@@ -278,7 +284,8 @@
     <string name="madring_text">Мадринг</string>
 
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
-    <string name="race_finished_text">Гран-при заверешено</string>
+    <string name="race_finished_text">Заверешено</string>
+    <string name="race_canceled_text">Отменено</string>
     <string name="notify_start_text"> начнется через 5 минут!</string>
     <string name="notify_end_text"> закончилась!</string>
     <string name="past_season_result">Результаты Гран-при в</string>

@@ -16,71 +16,78 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
+            android:id="@+id/item_team"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="5">
-            <RelativeLayout
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/left_layout"
+            android:layout_marginBottom="5dp"
+            style="@style/ButtonStyle"
+            android:weightSum="5"
+            android:backgroundTint="@color/grey">
+
+            <TextView
+                android:layout_weight="0.3"
+                android:gravity="center"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/white"
+                android:id="@+id/team_placement"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5"
-                android:gravity="center">
-                <TextView
-                    android:id="@+id/team_placement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"/>
-            </RelativeLayout>
-            <View
-                android:id="@+id/line"
-                android:layout_marginTop="10dp"
-                android:layout_width="2dp"
-                android:layout_height="match_parent"
-                android:background="@color/text_color_thirdly"
-                android:layout_marginBottom="10dp"/>
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="10dp"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement" />
             <RelativeLayout
+                android:layout_weight="2.5"
+                android:layout_marginBottom="5dp"
                 android:id="@+id/team_layout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:paddingStart="10dp"
-                android:paddingEnd="0dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp">
+                android:layout_marginTop="5dp">
                 <TextView
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
                     android:id="@+id/teamName"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+                <TextView
+                    android:textColor="@color/white"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/teamName"
+                    android:id="@+id/team_points_text"
+                    android:text="@string/points_text"
+                    android:gravity="center"
+                    android:backgroundTint="@color/text_color_thirdly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:paddingStart="0dp"
+                    android:paddingEnd="8dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@id/team_points_text"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/teamName"
+                    android:id="@+id/team_pts"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/text_color_thirdly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textSize="16sp"/>
             </RelativeLayout>
-            <TextView
-                android:id="@+id/team_pts"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:textAllCaps="true"
-                android:layout_marginEnd="5dp"
-                style="@style/PtsStyle"
-                android:backgroundTint="@color/text_color_thirdly"
-                android:layout_width="80dp"
+            <com.google.android.material.imageview.ShapeableImageView
+                android:scaleType="centerCrop"
+                android:layout_weight="2.2"
+                android:id="@+id/team_car"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:textColor="@color/colorPrimary"
-                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                android:textSize="12sp"/>
+                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_custom_corners_buttons"/>
         </LinearLayout>
-        <View
-            android:id="@+id/bottomLine"
-            android:background="@color/text_color_thirdly"
-            android:layout_gravity="bottom"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

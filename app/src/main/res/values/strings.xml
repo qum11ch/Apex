@@ -72,8 +72,8 @@
     <string name="_2nd_place_driver_image" translatable="false">2nd_place_driver_image</string>
     <string name="_1st_place_driver_image" translatable="false">1st_place_driver_image</string>
     <string name="_3rd_place_driver_image" translatable="false">3rd_place_driver_image</string>
-    <string name="view_results">View Results</string>
-    <string name="race_weekend_text">RACE WEEKEND</string>
+    <string name="view_results">Results</string>
+    <string name="race_weekend_text">WEEKEND STRUCTURE</string>
     <string name="confirm_delete">Confirm Delete</string>
     <string name="confirm_delete_info">Are you sure you want to delete your account?\nThat`s irretrievable</string>
     <string name="cancel">Cancel</string>
@@ -102,6 +102,7 @@
     <string name="wd">Withdrawn (WD)</string>
     <string name="format">Format</string>
     <string name="meaning">Meaning</string>
+    <string name="cnd">Grand-Prix canceled (CND)</string>
     <string name="bold_purple">Bold purple</string>
     <string name="statistics_since_debut">Statistics since debut</string>
     <string name="gps_entered">GPs Entered</string>
@@ -165,6 +166,7 @@
     <string name="quali_text">Quali</string>
     <string name="sprint_text">Sprint</string>
     <string name="seconds_text">S</string>
+    <string name="cnd_text">CND</string>
     <string name="dns_text">DNS</string>
     <string name="dnf_text">DNF</string>
     <string name="nc_text">NC</string>
@@ -218,6 +220,8 @@
     <string name="try_again_button">try again</string>
     <string name="not_concluded">GP not concluded (N/C)</string>
     <string name="is_running">is running</string>
+
+    <string name="canceled_text">Canceled</string>
 
     <string name="abu_dhabi_grand_prix_text">Abu Dhabi Grand Prix</string>
     <string name="australian_grand_prix_text">Australian Grand Prix</string>
@@ -300,9 +304,11 @@
     <string name="interlagos_text">Autódromo José Carlos Pace</string>
     <string name="americas_text">Circuit of The Americas</string>
     <string name="madring_text">Circuit de Madring</string>
+    <string name="points_text">Points</string>
 
     <string name="delete_race_text">Are you sure you want to delete this race from saved races list?</string>
-    <string name="race_finished_text">Grand-Prix finished</string>
+    <string name="race_finished_text">Finished</string>
+    <string name="race_canceled_text">Canceled</string>
     <string name="notify_start_text">starts in 5 minutes</string>
     <string name="notify_end_text">is ended</string>
     <string name="past_season_result">Race Results</string>

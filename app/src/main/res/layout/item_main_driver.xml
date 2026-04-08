@@ -16,48 +16,46 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
+            android:id="@+id/item_driver"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:weightSum="5">
-            <RelativeLayout
-                android:layout_marginBottom="10dp"
-                android:layout_marginTop="10dp"
-                android:id="@+id/leftLayout"
-                android:layout_width="0dp"
-                android:gravity="center"
+            android:layout_marginBottom="5dp"
+            style="@style/ButtonStyle"
+            android:backgroundTint="@color/colorPrimary">
+
+            <TextView
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                android:paddingTop="5dp"
+                android:textColor="@color/white"
+                android:id="@+id/driver_placement"
+                android:layout_width="20dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.5">
-                <TextView
-                    android:id="@+id/driver_placement"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:gravity="center"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"/>
-            </RelativeLayout>
-            <View
-                android:id="@+id/line"
-                android:layout_marginTop="10dp"
-                android:layout_width="2dp"
+                android:layout_marginStart="5dp"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement" />
+
+            <ImageView
+                android:paddingTop="5dp"
+                android:layout_gravity="center"
+                android:scaleType="fitStart"
+                android:id="@+id/driverImage"
+                android:layout_width="70dp"
                 android:layout_height="match_parent"
-                android:background="@color/text_color_thirdly"
-                android:layout_marginBottom="10dp"/>
+                android:contentDescription="@string/driverimage" />
+
             <RelativeLayout
-                android:layout_marginBottom="10dp"
+                android:layout_marginBottom="5dp"
+                android:layout_marginEnd="8dp"
                 android:id="@+id/driver_layout"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="4.5"
-                android:paddingStart="10dp"
-                android:paddingEnd="0dp"
-                android:layout_marginTop="10dp">
+                android:layout_marginTop="5dp">
                 <TextView
                     android:id='@+id/driverName'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"/>
                 <TextView
                     android:layout_toEndOf="@id/driverName"
@@ -65,29 +63,37 @@
                     android:id='@+id/driverFamilyName'
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textColor="@color/white"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                <TextView
+                    android:textColor="@color/white"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/driverName"
+                    android:id="@+id/driver_points_text"
+                    android:text="@string/points_text"
+                    android:gravity="center"
+                    android:backgroundTint="@color/text_color_thirdly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textSize="16sp"/>
+                <TextView
+                    android:layout_marginStart="5dp"
+                    android:layout_toEndOf="@id/driver_points_text"
+                    android:textStyle="bold"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/driverName"
+                    android:id="@+id/driver_points"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/text_color_thirdly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textSize="16sp"/>
             </RelativeLayout>
-            <TextView
-                android:id="@+id/driver_points"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                android:gravity="center"
-                android:layout_marginStart="10dp"
-                android:textAllCaps="true"
-                android:layout_marginEnd="5dp"
-                style="@style/PtsStyle"
-                android:backgroundTint="@color/text_color_thirdly"
-                android:layout_width="80dp"
-                android:layout_height="match_parent"
-                android:textColor="@color/colorPrimary"
-                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                android:textSize="12sp"/>
         </LinearLayout>
-        <View
-            android:id="@+id/bottomLine"
-            android:background="@color/text_color_thirdly"
-            android:layout_gravity="bottom"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
+
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

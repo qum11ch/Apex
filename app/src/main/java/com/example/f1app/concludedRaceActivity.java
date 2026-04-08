@@ -62,9 +62,11 @@ public class concludedRaceActivity extends AppCompatActivity {
             String mRound = bundle.getString("roundCount");
             String mCountry = bundle.getString("raceCountry");
             String mDate = bundle.getString("dateStart");
+            String mEndDate = bundle.getString("dateEnd");
             String mFirstPlaceCode = bundle.getString("firstPlaceCode");
             String mSecondPlaceCode = bundle.getString("secondPlaceCode");
             String mThirdPlaceCode = bundle.getString("thirdPlaceCode");
+            Boolean isCanceled = bundle.getBoolean("isCanceled");
 
 
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
@@ -92,14 +94,15 @@ public class concludedRaceActivity extends AppCompatActivity {
                                 scheduleBundle.putString("firstPlaceCode", mFirstPlaceCode);
                                 scheduleBundle.putString("secondPlaceCode", mSecondPlaceCode);
                                 scheduleBundle.putString("thirdPlaceCode", mThirdPlaceCode);
-
+                                scheduleBundle.putBoolean("isCanceled", isCanceled);
+                                scheduleBundle.putString("dateStart", mDate);
+                                scheduleBundle.putString("dateEnd", mEndDate);
 
                                 Bundle circuitBundle = new Bundle();
                                 circuitBundle.putString("circuitId", mCircuitId);
                                 circuitBundle.putString("raceName", mRaceName);
                                 circuitBundle.putString("gpYear", gpYear);
                                 circuitBundle.putString("raceCountry", mCountry);
-
                                 init(scheduleBundle, circuitBundle);
                             }
                         }

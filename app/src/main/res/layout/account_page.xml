@@ -29,30 +29,24 @@
                 app:layout_scrollFlags="scroll|snap|exitUntilCollapsed">
                 <RelativeLayout
                     android:id="@+id/content_header_layout"
-                    android:paddingTop="40dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <View
-                        android:layout_marginTop="30dp"
-                        android:layout_marginStart="30dp"
-                        android:id="@+id/line"
-                        android:layout_width="3dp"
-                        android:layout_height="160dp"
-                        android:layout_marginBottom="30dp"
-                        android:background="@color/white"/>
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="70dp"
+                    android:paddingStart="30dp"
+                    android:paddingEnd="0dp">
                     <TextView
-                        android:layout_marginTop="30dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:text="username"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginBottom="10dp"
                         android:textColor="@color/white"
                         android:id='@+id/username'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                     <TextView
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:visibility="gone"
+                        android:text="@string/fan_of_text"
+                        android:layout_marginStart="10dp"
                         android:textSize="24sp"
                         android:layout_below="@id/username"
                         android:textColor="@color/white"
@@ -61,59 +55,50 @@
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
                     <TextView
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="20dp"
-                        android:layout_toEndOf="@id/line"
+                        android:layout_marginStart="10dp"
                         android:layout_below="@id/fanText"
                         android:textColor="@color/white"
                         android:id='@+id/driverNumber'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                    <View
-                        android:id="@+id/line2"
-                        android:layout_width="2dp"
-                        android:layout_toEndOf="@id/driverNumber"
-                        android:layout_below="@id/fanText"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_height="20dp"
-                        android:background="@color/white_alpha" />
+
                     <TextView
-                        android:layout_marginTop="10dp"
                         android:layout_marginStart="10dp"
-                        android:layout_toEndOf="@id/line2"
                         android:layout_below="@id/fanText"
                         android:textColor="@color/white"
+                        android:layout_toEndOf="@id/driverNumber"
                         android:id='@+id/userFavDriver'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+
                     <ImageView
+                        android:layout_marginStart="10dp"
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="20dp"
                         android:layout_width="30dp"
                         android:id="@+id/team_logo"
                         android:layout_height="30dp"
-                        android:layout_below="@id/userFavDriver"
-                        android:layout_toEndOf="@id/line"
-                        android:contentDescription="@string/team_logo" />
+                        android:layout_below="@id/driverNumber"
+                        android:contentDescription="@string/team_logo"
+                        android:layout_marginBottom="10dp"/>
+
                     <TextView
-                        android:layout_toEndOf="@id/team_logo"
                         android:layout_marginTop="10dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_toEndOf="@id/team_logo"
+                        android:layout_marginStart="5dp"
                         android:layout_below="@id/userFavDriver"
                         android:textColor="@color/white"
                         android:id='@+id/userFavTeam'
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-                </RelativeLayout>
 
+                </RelativeLayout>
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="70dp"
                     android:background="@android:color/transparent"
                     android:fitsSystemWindows="true"
                     app:layout_collapseMode="pin"
@@ -122,8 +107,7 @@
                     <RelativeLayout
                         android:id="@+id/header"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center">
+                        android:layout_height="wrap_content">
                         <ImageButton
                             android:id='@+id/backButton'
                             android:contentDescription="@string/back_arrow"
@@ -134,6 +118,7 @@
                             android:src="@drawable/back_arrow"
                             android:background="@android:color/transparent"/>
                         <TextView
+                            android:textColor="@color/white"
                             android:id="@+id/tabUserName"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
@@ -141,7 +126,7 @@
                             android:gravity="center"
                             android:paddingStart="0dp"
                             android:paddingEnd="50dp"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.ForTab"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                             android:textSize="24sp"
                             android:textStyle="bold"/>
                     </RelativeLayout>
@@ -208,7 +193,8 @@
                                         android:layout_width="match_parent"
                                         android:layout_height="140dp"
                                         style="@style/StripedLinesWhite"
-                                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
+                                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"
+                                        tools:ignore="TooDeepLayout" />
                                     <ImageView
                                         android:layout_marginStart="10dp"
                                         android:layout_marginEnd="10dp"

@@ -65,6 +65,9 @@ public class savedRacesActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(savedRacesActivity.this));
         }
 
+        Bundle intentBundle = getIntent().getExtras();
+        //String mCurrentSeason = intentBundle.getString("currentSeason");
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 

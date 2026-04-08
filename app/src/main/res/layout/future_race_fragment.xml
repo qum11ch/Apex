@@ -3,12 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     tools:context=".futureRaceFragment">
     <androidx.core.widget.NestedScrollView
         android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:overScrollMode="never"
         android:scrollbars="none">
         <LinearLayout
@@ -17,11 +17,10 @@
             android:id="@+id/futureRaceLayout"
             android:orientation="vertical"
             android:layout_marginEnd="10dp"
-            android:paddingBottom="5dp">
+            android:paddingBottom="90dp">
             <androidx.recyclerview.widget.RecyclerView
                 android:clipToPadding = "false"
                 android:paddingTop="10dp"
-                android:paddingBottom="10dp"
                 android:visibility="gone"
                 android:overScrollMode="never"
                 android:layout_width="match_parent"

@@ -115,8 +115,6 @@ public class teamResultsFragment extends Fragment {
 
             assert driversList != null;
 
-            Log.e("fatal", "DriversList: " + mTeamId + " - " + driversList);
-
             loadDriversInfo(driversList, "2026");
             getResults("2026", driversList);
 

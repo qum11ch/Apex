@@ -36,7 +36,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class logInPageActivity extends AppCompatActivity {
     FirebaseAuth auth;
-    Button showDrivers, showSchedule, showTeams, showHomePage;
+    ImageButton showDrivers, showSchedule, showTeams, showHomePage;
     EditText editTextUsername, editTextPassword;
     Button loginButton;
     ProgressBar loginProgress;

@@ -20,7 +20,6 @@
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">18sp</item>
     </style>
-
     <style name="FlatButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/flat</item>
         <item name="android:textColor">@color/colorPrimary</item>
@@ -40,11 +39,6 @@
     <style name="StyledTilEditTextTheme">
         <item name="colorControlNormal">@color/text_color_main</item>
         <item name="colorControlActivated">@color/red</item>
-    </style>
-
-    <style name="error_appearance" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/red</item>
-        <item name="android:textSize">20sp</item>
     </style>
 
     <style name="customRoundedImageView" parent="">
@@ -67,15 +61,11 @@
     </style>
 
     <style name="BackgroundGradient">
-        <item name="android:background">@drawable/blue_gradient</item>
+        <item name="android:background">@drawable/white_gradient</item>
     </style>
 
     <style name="StripedLinesWhite">
         <item name="android:background">@drawable/background_striped_lines_white</item>
-    </style>
-
-    <style name="StripedLinesItems">
-        <item name="android:background">@drawable/background_striped_lines_item_day</item>
     </style>
 
     <style name="LikeToggleButton" parent="android:Widget">
@@ -83,9 +73,6 @@
         <item name="android:disabledAlpha">?android:attr/disabledAlpha</item>
     </style>
 
-    <style name="CountdownStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/rounded_for_countdown</item>
-    </style>
     <style name="FooterStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/footer_style</item>
     </style>
@@ -104,6 +91,11 @@
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
     </style>
+
+    <style name="ItemStyleFlat" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_flat</item>
+    </style>
+
     <style name="PrevResultsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_previous</item>
     </style>
@@ -136,7 +128,7 @@
     <style name="ItemStyleOngoing" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_ongoing</item>
     </style>
-    <style name="StinkyBottomStyle" parent="android:Widget.TextView">
+    <style name="StickyBottomStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/stinky_bottom_style</item>
     </style>
     <style name="PtsStyle" parent="android:Widget.TextView">
@@ -150,12 +142,6 @@
     </style>
     <style name="ShimmerStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/shimmer_style</item>
-    </style>
-    <style name="LayoutStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/layout_style</item>
-    </style>
-    <style name="LayoutStyleBlack" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/layout_style_black</item>
     </style>
     <style name="RaceLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style</item>
@@ -185,9 +171,6 @@
         <item name="android:background">@drawable/statistic_layout_style_transparent</item>
     </style>
 
-    <style name="RaceInfoLayout" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/races_info_style</item>
-    </style>
     <style name="CircuitInfoLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/circuit_info_style</item>
     </style>
@@ -234,17 +217,9 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextStyle.Gram.Regular.SimpleBold">
-        <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
     <style name="TextStyle.Gram.Regular.Simple">
         <item name="android:includeFontPadding">false</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-    <style name="TextStyle.Gram.Regular.ItemStyle">
-        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
     </style>
     <style name="TextStyle.Gram.Regular.Countdown">
@@ -300,9 +275,6 @@
     </style>
     <style name="TextStyle.Audiowide.ForDays">
         <item name="android:textSize">18sp</item>
-    </style>
-    <style name="TextStyle.Audiowide.ForDays.White">
-        <item name="android:textColor">@color/white</item>
     </style>
     <style name="TextStyle.Audiowide.ForPlacement">
         <item name="android:textSize">20sp</item>
@@ -364,15 +336,20 @@
         <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
     </style>
 
-
-    <style name="MyCardView" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
-    </style>
     <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
         <item name="cornerSizeTopLeft">0dp</item>
-        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+
+
+    <style name="ShapeAppearanceOverlay_card_custom_corners_buttons" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 
@@ -388,7 +365,6 @@
     </style>
 
     <style name="TextAppearance.Widget.Event.Toolbar.Title" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
-        <!--Any text styling can be done here-->
         <item name="android:textAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
         <item name="android:textColor">@color/white</item>
     </style>

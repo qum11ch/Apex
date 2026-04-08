@@ -21,11 +21,6 @@
         <item name="colorControlActivated">@color/red</item>
     </style>
 
-    <style name="error_appearance" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/red</item>
-        <item name="android:textSize">20sp</item>
-    </style>
-
     <style name="customRoundedImageView" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">1dp</item>
@@ -49,10 +44,6 @@
         <item name="android:background">@drawable/background_striped_lines_item_night</item>
     </style>
 
-    <style name="StripedLinesItems">
-        <item name="android:background">@drawable/background_striped_lines_item_night</item>
-    </style>
-
     <style name="BackgroundGradient">
         <item name="android:background">@drawable/black_gradient</item>
     </style>
@@ -62,9 +53,6 @@
         <item name="android:disabledAlpha">?android:attr/disabledAlpha</item>
     </style>
 
-    <style name="CountdownStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/rounded_for_countdown</item>
-    </style>
     <style name="FooterStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/footer_style</item>
     </style>
@@ -79,6 +67,9 @@
     </style>
     <style name="ToggleButtonStyle.Checked">
         <item name="backgroundTint">@color/red</item>
+    </style>
+    <style name="ItemStyleFlat" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_flat</item>
     </style>
     <style name="ItemStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style</item>
@@ -102,7 +93,7 @@
     <style name="ItemStyleOngoing" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_ongoing</item>
     </style>
-    <style name="StinkyBottomStyle" parent="android:Widget.TextView">
+    <style name="StickyBottomStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/stinky_bottom_style</item>
     </style>
     <style name="PtsStyle" parent="android:Widget.TextView">
@@ -116,12 +107,6 @@
     </style>
     <style name="ShimmerStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/shimmer_style</item>
-    </style>
-    <style name="LayoutStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/layout_style</item>
-    </style>
-    <style name="LayoutStyleBlack" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/layout_style_black</item>
     </style>
     <style name="RaceLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style</item>
@@ -151,9 +136,6 @@
         <item name="android:background">@drawable/statistic_layout_style_transparent</item>
     </style>
 
-    <style name="RaceInfoLayout" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/races_info_style</item>
-    </style>
     <style name="CircuitInfoLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/circuit_info_style</item>
     </style>
@@ -199,20 +181,10 @@
         <item name="android:textSize">20sp</item>
         <item name="android:textStyle">bold</item>
     </style>
-    <style name="TextStyle.Gram.Regular.SimpleBold">
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">18sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
     <style name="TextStyle.Gram.Regular.Simple">
         <item name="android:includeFontPadding">false</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:textSize">20sp</item>
-        <item name="android:textStyle">normal</item>
-    </style>
-    <style name="TextStyle.Gram.Regular.ItemStyle">
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textSize">14sp</item>
         <item name="android:textStyle">normal</item>
     </style>
     <style name="TextStyle.Gram.Regular.Countdown">
@@ -268,9 +240,6 @@
     </style>
     <style name="TextStyle.Audiowide.ForDays">
         <item name="android:textSize">18sp</item>
-    </style>
-    <style name="TextStyle.Audiowide.ForDays.White">
-        <item name="android:textColor">@color/white</item>
     </style>
     <style name="TextStyle.Audiowide.ForPlacement">
         <item name="android:textSize">20sp</item>
@@ -332,15 +301,18 @@
         <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
     </style>
 
-
-    <style name="MyCardView" parent="@style/Widget.MaterialComponents.CardView">
-        <item name="shapeAppearanceOverlay">@style/ShapeAppearanceOverlay_card_custom_corners</item>
-    </style>
     <style name="ShapeAppearanceOverlay_card_custom_corners" parent="">
         <item name="cornerFamily">rounded</item>
-        <item name="cornerSizeTopRight">10dp</item>
+        <item name="cornerSizeTopRight">20dp</item>
         <item name="cornerSizeTopLeft">0dp</item>
-        <item name="cornerSizeBottomRight">10dp</item>
+        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
+    <style name="ShapeAppearanceOverlay_card_custom_corners_buttons" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopRight">8dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">8dp</item>
         <item name="cornerSizeBottomLeft">0dp</item>
     </style>
 

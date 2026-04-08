@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +46,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private pastSeasonTeamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
-    private String mCurrentSeason;
+    private StorageReference storageRef;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,10 +63,14 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         if(!getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String mSeason = bundle.getString("season");
-            mCurrentSeason = bundle.getString("currentSeason");
+            String mCurrentSeason = bundle.getString("currentSeason");
 
             shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
+
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+            storageRef = storage.getReference();
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
             TextView teamsHeader = findViewById(R.id.teamsHeader);
             String headerText;
@@ -136,6 +142,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                     //if (constructorName.equals("Sauber")){
                                     //        constructorName = "Kick Sauber";
                                     //}
+
+                                    StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + year + ".png");
+
                                     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                                     rootRef.child("driverLineUp/season/" + year + "/" + constructorId).addValueEventListener(new ValueEventListener() {
                                         @Override
@@ -145,13 +154,29 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                                 String driverFullname = driverDataSnapshot.getKey();
                                                 teamDrivers.add(driverFullname);
                                             }
-                                            teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
-                                            smth.setSeason(year);
-                                            smth.setDrivers(teamDrivers);
-                                            smth.setCurrentSeason(mCurrentSeason);
-                                            datum.add(smth);
-                                            hideShimmer(recyclerView, shimmerFrameLayout);
-                                            adapter.notifyItemChanged(datum.size() - 1);
+
+                                            rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
+                                                @Override
+                                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                                    String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                                    teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
+                                                    smth.setSeason(year);
+                                                    smth.setDrivers(teamDrivers);
+                                                    //smth.setSeason(mCurrentSeason);
+                                                    smth.setImageUrl(mTeamCar);
+                                                    smth.setTeamColor(mTeamColor);
+                                                    datum.add(smth);
+
+                                                    hideShimmer(recyclerView, shimmerFrameLayout);
+
+                                                    adapter.notifyItemChanged(datum.size() - 1);
+                                                }
+
+                                                @Override
+                                                public void onCancelled(@NonNull DatabaseError error) {
+                                                    Log.e(String.valueOf(pastSeasonTeamsStandingsActivity.this), "Team color information getting error:" + error.getMessage());
+                                                }
+                                            });
                                         }
 
                                         @Override

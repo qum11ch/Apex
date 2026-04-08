@@ -59,7 +59,8 @@ public class futureRaceScheduleFragment extends Fragment {
     private String mYear;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-
+    private CountDownTimer currentTimer;
+    private volatile boolean isFragmentActive = true;
 
     public futureRaceScheduleFragment() {
         // required empty public constructor.
@@ -83,8 +84,7 @@ public class futureRaceScheduleFragment extends Fragment {
         mns_countdown = view.findViewById(R.id.mns_countdown);
         countdown_header = view.findViewById(R.id.countdown_header);
         Button predictButton = view.findViewById(R.id.predict_button);
-        TextView infoRaceName = view.findViewById(R.id.infoRaceName);
-
+        TextView raceStatus = view.findViewById(R.id.raceStatus);
         saveRace = view.findViewById(R.id.saveRace);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
@@ -104,7 +104,35 @@ public class futureRaceScheduleFragment extends Fragment {
             String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
             //String mRound = getArguments().getString("roundCount");
             //String mCountry = getArguments().getString("raceCountry");
+            String mRaceStartDate = getArguments().getString("dateStart");
+            String mRaceEndDate = getArguments().getString("dateEnd");
             mYear = getArguments().getString("gpYear");
+            boolean isCanceled = getArguments().getBoolean("isCanceled");
+
+            if (isCanceled){
+                raceStatus.setVisibility(View.VISIBLE);
+            }else{
+                raceStatus.setVisibility(View.GONE);
+            }
+
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference rootRef = database.getReference();
+            rootRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
+                    if (enablePredicts){
+                        predictButton.setVisibility(View.VISIBLE);
+                    }else{
+                        predictButton.setVisibility(View.GONE);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+                    Log.e("MainActivityError", error.getMessage());
+                }
+            });
 
             predictButton.setOnClickListener(v -> {
                 Intent i = new Intent(requireContext(), predictResultPage.class);
@@ -113,12 +141,16 @@ public class futureRaceScheduleFragment extends Fragment {
                 startActivity(i);
             });
 
-            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
-            String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
-
             TextView day_start = view.findViewById(R.id.day_start);
             TextView day_end = view.findViewById(R.id.day_end);
             TextView month = view.findViewById(R.id.month);
+
+            DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-M-d");
+            LocalDate dateStart = LocalDate.parse(mRaceStartDate, dateFormatter);
+            LocalDate dateEnd = LocalDate.parse(mRaceEndDate, dateFormatter);
+
+            String monthStartFull = dateStart.format(DateTimeFormatter.ofPattern("MMMM"));
+            String monthEndFull = dateEnd.format(DateTimeFormatter.ofPattern("MMMM"));
 
             fullRaceName_key = mYear + "_" + mRaceName.replace(" ", "");
 
@@ -135,19 +167,18 @@ public class futureRaceScheduleFragment extends Fragment {
                         deleteRace(fullRaceName_key);
                     }
                 });
-            }else{
+            }else {
                 saveRace.setOnClickListener(view1 -> {
                     saveRace.setChecked(false);
                     Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
-            infoRaceName.setText(futureRaceName);
 
-            if(mFutureRaceStartMonth.equals(mFutureRaceEndMonth)){
-                month.setText(mFutureRaceStartMonth);
+            if(monthStartFull.equals(monthEndFull)){
+                month.setText(monthStartFull);
             }
             else{
-                String monthAll = mFutureRaceStartMonth + "-" + mFutureRaceEndMonth;
+                String monthAll = monthStartFull + " - " + monthEndFull;
                 month.setText(monthAll);
             }
 
@@ -168,6 +199,16 @@ public class futureRaceScheduleFragment extends Fragment {
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (currentTimer != null) {
+            currentTimer.cancel();
+            currentTimer = null;
+        }
+        isFragmentActive = false;
     }
 
     private void getRaceSchedule(String raceName, String currentYear){
@@ -332,68 +373,107 @@ public class futureRaceScheduleFragment extends Fragment {
 
     @SuppressLint("SetTextI18n")
     private void countDownStart(LinkedHashMap<String, String> events) {
+        if (!isFragmentActive || !isAdded() || getContext() == null) {
+            return;
+        }
 
-        if (events.isEmpty()){
-            countdown_header.setText(getString(R.string.weekend_ends_text));
-            days_countdown.setText("00");
-            hrs_countdown.setText("00");
-            mns_countdown.setText("00");
-        }else{
-            long milliseconds;
+        if (events.isEmpty()) {
+            if (countdown_header != null) countdown_header.setText(getString(R.string.weekend_ends_text));
+            if (days_countdown != null) days_countdown.setText("00");
+            if (hrs_countdown != null) hrs_countdown.setText("00");
+            if (mns_countdown != null) mns_countdown.setText("00");
+            return;
+        }
 
-            Map.Entry<String, String> entry = events.entrySet().iterator().next();
-            String key = entry.getKey();
-            String value = entry.getValue();
+        Map.Entry<String, String> entry = events.entrySet().iterator().next();
+        String key = entry.getKey();
+        String value = entry.getValue();
 
-            if(!key.equals("first_practice_event")){
-                countdown_header.setText(getString(getStringByName(key + "_text")));
+        if (!key.equals("first_practice_event") && countdown_header != null) {
+            countdown_header.setText(getString(getStringByName(key + "_text")));
+        }
+
+        String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+        try {
+            Date eventStart_date = dateFormat.parse(value);
+            long milliseconds = eventStart_date.getTime();
+            long startTime = System.currentTimeMillis();
+
+            Date endTime = new Date(eventStart_date.getTime() + HOUR);
+            dateFormat.setTimeZone(TimeZone.getDefault());
+            String endTimeEvent2 = dateFormat.format(endTime);
+
+            Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
+            dateFormat.setTimeZone(TimeZone.getDefault());
+            String endTimeEvent3 = dateFormat.format(endTime_sprintQ);
+
+            Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
+            dateFormat.setTimeZone(TimeZone.getDefault());
+            String endTimeEvent4 = dateFormat.format(endTime_race);
+
+            diffStart = milliseconds - startTime;
+
+            switch (key) {
+                case "race_event":
+                    Date eventEnd_date = dateFormat.parse(endTimeEvent4);
+                    diffEnd = eventEnd_date.getTime() - startTime;
+                    break;
+                case "sprint_quali_event":
+                    eventEnd_date = dateFormat.parse(endTimeEvent3);
+                    diffEnd = eventEnd_date.getTime() - startTime;
+                    break;
+                default:
+                    eventEnd_date = dateFormat.parse(endTimeEvent2);
+                    diffEnd = eventEnd_date.getTime() - startTime;
+                    break;
             }
 
-            String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT, Locale.getDefault());
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            try {
-                Date eventStart_date = dateFormat.parse(value);
-                milliseconds = eventStart_date.getTime();
-                long startTime = System.currentTimeMillis();
+            if (diffEnd < 0) {
+                events.remove(key);
+                countDownStart(events);
+                return;
+            }
 
-                Date endTime = new Date(eventStart_date.getTime() + HOUR);
-                dateFormat.setTimeZone(TimeZone.getDefault());
-                String endTimeEvent2 = dateFormat.format(endTime);
+            if (currentTimer != null) {
+                currentTimer.cancel();
+            }
 
-                Date endTime_sprintQ = new Date(eventStart_date.getTime() + SPRINT_QUALI_DIFF);
-                dateFormat.setTimeZone(TimeZone.getDefault());
-                String endTimeEvent3 = dateFormat.format(endTime_sprintQ);
-
-                Date endTime_race = new Date(eventStart_date.getTime() + 2 * HOUR);
-                dateFormat.setTimeZone(TimeZone.getDefault());
-                String endTimeEvent4 = dateFormat.format(endTime_race);
-
-                Date eventEnd_date;
-                diffStart = milliseconds - startTime;
-
-                switch (key) {
-                    case "race_event":
-                        eventEnd_date = dateFormat.parse(endTimeEvent4);
-                        diffEnd = eventEnd_date.getTime() - startTime;
-                        break;
-                    case "sprint_quali_event":
-                        eventEnd_date = dateFormat.parse(endTimeEvent3);
-                        diffEnd = eventEnd_date.getTime() - startTime;
-                        break;
-                    default:
-                        eventEnd_date = dateFormat.parse(endTimeEvent2);
-                        diffEnd = eventEnd_date.getTime() - startTime;
-                        break;
+            currentTimer = new CountDownTimer(diffStart, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    if (!isFragmentActive) return;
+                    String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisUntilFinished));
+                    String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))));
+                    String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))));
+                    days_countdown.setText(daysLeft);
+                    hrs_countdown.setText(hoursLeft);
+                    mns_countdown.setText(minutesLeft);
                 }
 
-                if(diffEnd<0){
-                    events.remove(key);
-                    countDownStart(events);
-                }else{
-                    CountDownTimer mCountDownTimer = new CountDownTimer(diffStart, 1000) {
+                @Override
+                public void onFinish() {
+                    if (!isFragmentActive || !isAdded() || getContext() == null) return;
+                    String eventText = getString(getStringByName(key + "_text"));
+                    String runningText = getString(R.string.is_running);
+                    String countdownHeader;
+                    if (Locale.getDefault().getLanguage().equals("ru")) {
+                        countdownHeader = runningText + " " + eventText;
+                    } else {
+                        countdownHeader = eventText + " " + runningText;
+                    }
+                    if (countdown_header != null) {
+                        countdown_header.setText(countdownHeader);
+                    }
+
+                    if (!isFragmentActive) return;
+
+                    currentTimer = new CountDownTimer(diffEnd, 1000) {
                         @Override
                         public void onTick(long millisUntilFinished) {
+                            if (!isFragmentActive) return;
                             String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisUntilFinished));
                             String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))));
                             String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))));
@@ -404,39 +484,17 @@ public class futureRaceScheduleFragment extends Fragment {
 
                         @Override
                         public void onFinish() {
-                            if (Locale.getDefault().getLanguage().equals("ru")){
-                                String countdownHeader = getString(R.string.is_running) + " " + getString(getStringByName(key + "_text"));
-                                countdown_header.setText(countdownHeader);
-                            }else{
-                                String countdownHeader = getString(getStringByName(key + "_text")) + " " + getString(R.string.is_running);
-                                countdown_header.setText(countdownHeader);
-                            }
-
-                            CountDownTimer mCountDownTimer = new CountDownTimer(diffEnd, 1000) {
-                                @Override
-                                public void onTick(long millisUntilFinished) {
-                                    String daysLeft = String.valueOf(TimeUnit.MILLISECONDS.toDays(millisUntilFinished));
-                                    String hoursLeft = String.valueOf((TimeUnit.MILLISECONDS.toHours(millisUntilFinished) - TimeUnit.DAYS.toHours(TimeUnit.MILLISECONDS.toDays(millisUntilFinished))));
-                                    String minutesLeft = String.valueOf((TimeUnit.MILLISECONDS.toMinutes(millisUntilFinished) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millisUntilFinished))));
-                                    days_countdown.setText(daysLeft);
-                                    hrs_countdown.setText(hoursLeft);
-                                    mns_countdown.setText(minutesLeft);
-                                }
-
-                                @Override
-                                public void onFinish() {
-                                    events.remove(key);
-                                    countDownStart(events);
-                                }
-                            }.start();
+                            if (!isFragmentActive || !isAdded() || getContext() == null) return;
+                            events.remove(key);
+                            countDownStart(events);
                         }
                     }.start();
                 }
-            }catch (ParseException e){
-                e.printStackTrace();
-            }
-        }
+            }.start();
 
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
 
 }

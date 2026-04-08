@@ -96,17 +96,17 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="5dp">
                     <com.google.android.material.imageview.ShapeableImageView
+                        style="@style/StripedLinesWhite"
                         app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        android:background="@drawable/striped_background_grey_white"
                         android:id="@+id/stripedImage"/>
                     <TextView
+                        android:textColor="@color/text_color_schedule"
                         android:paddingStart="10dp"
                         android:paddingEnd="0dp"
                         android:paddingTop="20dp"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                        android:textColor="@color/black"
                         android:textSize="28sp"
                         android:layout_marginEnd="10dp"
                         android:layout_width="match_parent"
@@ -114,12 +114,12 @@
                         android:text="@string/empty_race_list_header"
                         android:id="@+id/header_text"/>
                     <TextView
+                        android:textColor="@color/text_color_schedule"
                         android:layout_below="@id/header_text"
                         android:paddingStart="10dp"
                         android:paddingEnd="0dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                         android:textStyle="bold"
-                        android:textColor="@color/black"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="100dp"
                         android:layout_width="match_parent"

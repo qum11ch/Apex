@@ -42,7 +42,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.time.LocalDate;
 import java.util.Objects;
 
 public class driverPageActivity extends AppCompatActivity {
@@ -121,6 +120,7 @@ public class driverPageActivity extends AppCompatActivity {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                     String driverTeam = snapshot.child("driversTeam").getValue(String.class);
+
                     if (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber")) {
                         driverTeam = "Audi";
                     }
@@ -167,8 +167,7 @@ public class driverPageActivity extends AppCompatActivity {
                                     mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
 
                             TextView retiredText = new TextView(driverPageActivity.this);
-                            View line = findViewById(R.id.line2);
-                            line.setVisibility(View.GONE);
+
                             retiredText.setText(getString(R.string.retired_text));
                             retiredText.setTextAppearance(R.style.TextStyle_GoodTiming_Regular);
                             retiredText.setTextColor(ContextCompat.getColor(driverPageActivity.this,

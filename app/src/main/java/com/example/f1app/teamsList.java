@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import com.google.firebase.storage.StorageReference;
+
 import java.util.ArrayList;
 
 public class teamsList {
@@ -7,6 +9,26 @@ public class teamsList {
     private ArrayList<String> drivers;
     private boolean startSeason;
     private String currentSeason;
+    private String teamColor;
+
+
+    public String getTeamColor() {
+        return teamColor;
+    }
+
+    public void setTeamColor(String teamColor) {
+        this.teamColor = teamColor;
+    }
+
+    public StorageReference getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(StorageReference imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
+    private StorageReference imageUrl;
 
     public String getCurrentSeason(){
         return currentSeason;

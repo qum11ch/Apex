@@ -31,7 +31,9 @@ public class splashNotificationActivity extends Activity {
             String mFutureRaceEndMonth = bundle.getString("futureRaceEndMonth");
             String mRound = bundle.getString("roundCount");
             String mCountry = bundle.getString("raceCountry");
-            String mDate = bundle.getString("dateStart");
+            String mStartDate = bundle.getString("dateStart");
+            String mEndDate = bundle.getString("dateEnd");
+            boolean mIsCanceled = bundle.getBoolean("isCanceled");
 
             Bundle notificationBundle = new Bundle();
             notificationBundle.putString("raceName" , mRaceName);
@@ -42,8 +44,10 @@ public class splashNotificationActivity extends Activity {
             notificationBundle.putString("roundCount" , mRound);
             notificationBundle.putString("raceCountry" , mCountry);
             notificationBundle.putString("circuitId", mCircuitId);
-            notificationBundle.putString("dateStart", mDate);
+            notificationBundle.putString("dateStart", mStartDate);
+            notificationBundle.putString("dateEnd", mEndDate);
             notificationBundle.putBoolean("fromNotify", true);
+            notificationBundle.putBoolean("isCanceled", mIsCanceled);
 
             notificationIntent.putExtras(notificationBundle);
 
