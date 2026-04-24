@@ -195,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
                 getDriversStanding(currentSeason);
                 getSchedule(currentYear, currentDate);
 
-                Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
-                if (enablePredicts){
-                    predict.setVisibility(View.VISIBLE);
-                }else{
-                    predict.setVisibility(View.GONE);
-                }
+                // Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
+                // if (enablePredicts){
+                //     predict.setVisibility(View.VISIBLE);
+                // }else{
+                //     predict.setVisibility(View.GONE);
+                // }
             }
 
             @Override

@@ -117,28 +117,15 @@ public class predictResultPage extends AppCompatActivity {
                     .addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            Integer lastRound = snapshot.child("last_round").getValue(Integer.class);
                             String lastRace = snapshot.child("last_race").getValue(String.class);
                             String year = lastRace.substring(0, 4);
                             if (year.equals(currentSeason)){
-                                String raceName = lastRace.substring(5, lastRace.length());
-
-                                rootRef.child("schedule/season/" + year).child(raceName).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                        Integer roundNumber = snapshot.child("round").getValue(Integer.class);
-                                        getPridiction(gpName, roundNumber, event, currentSeason);
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("predictPageActivity", error.getMessage());
-                                    }
-                                });
+                                getPridiction(gpName, lastRound, event, currentSeason);
                             }else{
                                 getPridiction(gpName, 0, event, currentSeason);
                             }
                         }
-
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
@@ -148,7 +135,8 @@ public class predictResultPage extends AppCompatActivity {
         }
     }
 
-    private void getPridiction(String gpName, Integer lastGPRound, String event, String currentSeason){
+    private void getPridiction(String gpName, Integer lastGPRound, String event,
+                               String currentSeason){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("driverLineUp/season/" + currentSeason)
                 .addValueEventListener(new ValueEventListener() {
@@ -254,12 +242,14 @@ public class predictResultPage extends AppCompatActivity {
                                                             getWeather(lat, lng, eventTime, gpName, driversCodesList.toArray(new String[0]),
                                                                     teamNamesList.toArray(new String[0]),
                                                                     event, finalGpRound, Integer.parseInt(circuitCorners),
-                                                                    Double.parseDouble(circuitLength), isStreetCircuit);
+                                                                    Double.parseDouble(circuitLength), isStreetCircuit,
+                                                                    circuitId);
                                                         }else{
                                                             getWeather(lat, lng, sprintEventTime,gpName, driversCodesList.toArray(new String[0]),
                                                                     teamNamesList.toArray(new String[0]),
                                                                     event, finalGpRound, Integer.parseInt(circuitCorners),
-                                                                    Double.parseDouble(circuitLength), isStreetCircuit);
+                                                                    Double.parseDouble(circuitLength), isStreetCircuit,
+                                                                    circuitId);
                                                         }
                                                     }
                                                     @Override
@@ -287,7 +277,8 @@ public class predictResultPage extends AppCompatActivity {
     private void getWeather(Double lat, Double lon,
                             String eventTime, String gpName,
                             String[] driverCodes, String[] teamNames, String event, int gpRound,
-                            int circuitsCorners, Double circuitsLength, int isStreetCircuit){
+                            int circuitsCorners, Double circuitsLength, int isStreetCircuit,
+                            String circuitId){
 
         String isoDateStr = eventTime.replace(" ", "T");
 
@@ -391,7 +382,7 @@ public class predictResultPage extends AppCompatActivity {
 
                             predictRequest(gpName, Integer.parseInt(year), temp, pressure, humidity, rainfall, driverCodes,
                                     teamNames, event, gpRound, circuitsCorners, circuitsLength,
-                                    isStreetCircuit);
+                                    isStreetCircuit, circuitId);
 
                         } else {
                             Log.e("WeatherPredict", "Time " + finalTargetTime + " not found in response.");
@@ -412,7 +403,8 @@ public class predictResultPage extends AppCompatActivity {
 
     private void predictRequest(String gpName, int year, Double temp, Double pres, Double hum, int rain,
                                 String[] driverCodes, String[] teamNames, String event, int gpRound,
-                                int circuitsCorners, Double circuitsLength, int isStreetCircuit){
+                                int circuitsCorners, Double circuitsLength, int isStreetCircuit,
+                                String circuitId){
         String url = "https://py-functions-qnqkgv3l5a-uc.a.run.app/";
 
         RequestQueue queue = Volley.newRequestQueue(predictResultPage.this);
@@ -429,6 +421,7 @@ public class predictResultPage extends AppCompatActivity {
             requestData.put("circuitCorners", circuitsCorners);
             requestData.put("circuitLength", circuitsLength);
             requestData.put("isStreetCircuit", isStreetCircuit);
+            requestData.put("circuitId", circuitId);
 
             JSONArray drivers = new JSONArray();
 
