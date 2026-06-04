@@ -443,7 +443,7 @@ public class predictResultPage extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
+        Log.i("py_predict_results", "getting predicts");
         Log.i("py_predict_results", " " + requestData.toString());
 
         JsonObjectRequest jsonRequest = new JsonObjectRequest(
@@ -452,6 +452,8 @@ public class predictResultPage extends AppCompatActivity {
                 requestData,
                 response -> {
                     try {
+                        Log.i("py_predict_results", " " + response);
+
                         JSONArray results = response.getJSONArray("results");
                         for(int i = 0; i < results.length(); i++){
                             JSONObject qualiItem =  results.getJSONObject(i);

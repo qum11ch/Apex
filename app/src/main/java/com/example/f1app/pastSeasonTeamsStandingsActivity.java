@@ -47,6 +47,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
     private StorageReference storageRef;
+    private String mCurrentSeason;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         if(!getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String mSeason = bundle.getString("season");
-            String mCurrentSeason = bundle.getString("currentSeason");
+            mCurrentSeason = bundle.getString("currentSeason");
 
             shimmerFrameLayout = findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
@@ -162,7 +163,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                                                     teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                                     smth.setSeason(year);
                                                     smth.setDrivers(teamDrivers);
-                                                    //smth.setSeason(mCurrentSeason);
+                                                    smth.setCurrentSeason(mCurrentSeason);
                                                     smth.setImageUrl(mTeamCar);
                                                     smth.setTeamColor(mTeamColor);
                                                     datum.add(smth);
