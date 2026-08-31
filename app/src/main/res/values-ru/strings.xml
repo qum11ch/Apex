@@ -226,6 +226,7 @@
     <string name="são_paulo_grand_prix_text">Гран-при Сан-Паулу</string>
     <string name="united_states_grand_prix_text">Гран-при США</string>
     <string name="malaysian_grand_prix_text">Гран-при Малазии</string>
+    <string name="bahrain_grand_prix_in_malaysia_text">Гран-при Бахрейна в Малазии</string>
 
 
     <string name="barcelona_grand_prix_locality">Испания</string>
@@ -254,6 +255,7 @@
     <string name="spanish_grand_prix_locality">Испания</string>
     <string name="são_paulo_grand_prix_locality">Бразилия</string>
     <string name="united_states_grand_prix_locality">США</string>
+    <string name="bahrain_grand_prix_in_malaysia_locality">Малазия</string>
 
     <string name="times">раз</string>
 
@@ -282,6 +284,7 @@
     <string name="interlagos_text">Интерлагос</string>
     <string name="americas_text">Трасса Америк</string>
     <string name="madring_text">Мадринг</string>
+    <string name="sepang_text">Сепанг</string>
 
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>

@@ -113,6 +113,10 @@ public class driverResultsFragment extends Fragment {
                                 radioButton_2026.setVisibility(View.GONE);
                             }
                             switch (mLastSeason){
+                                case "2026":
+                                    radioButton_2026.setChecked(true);
+                                    getResults("2026", mDriverName, mDriverFamilyName);
+                                    break;
                                 case "2025":
                                     radioButton_2025.setChecked(true);
                                     getResults("2025", mDriverName, mDriverFamilyName);

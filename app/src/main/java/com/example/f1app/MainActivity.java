@@ -195,12 +195,12 @@ public class MainActivity extends AppCompatActivity {
                 getDriversStanding(currentSeason);
                 getSchedule(currentYear, currentDate);
 
-                // Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
-                // if (enablePredicts){
-                //     predict.setVisibility(View.VISIBLE);
-                // }else{
-                //     predict.setVisibility(View.GONE);
-                // }
+                Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
+                if (enablePredicts){
+                    predict.setVisibility(View.VISIBLE);
+                }else{
+                    predict.setVisibility(View.GONE);
+                }
             }
 
             @Override
@@ -286,8 +286,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void postProgress(int progress) {
-        String strProgress = progress + "/24";
+    private void postProgress(int progress, long totalRounds) {
+        String strProgress = progress + "/" + totalRounds;
         if (progress>10 && progress<=13){
             raceProgressText.setTextColor(getColor(R.color.dark_grey));
         } else if (progress>13) {
@@ -592,6 +592,8 @@ public class MainActivity extends AppCompatActivity {
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                long totalRounds = snapshot.getChildrenCount();
+
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Integer round = ds.child("round").getValue(Integer.class);
                     String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
@@ -664,9 +666,9 @@ public class MainActivity extends AppCompatActivity {
                 if(!concludedRoundNumber.isEmpty()){
                     pastLayout.setVisibility(View.VISIBLE);
                     getPastRace(year, concludedRoundNumber.get(concludedRoundNumber.size()-1));
-                    postProgress(Integer.parseInt(concludedRoundNumber.get(concludedRoundNumber.size()-1)));
+                    postProgress(Integer.parseInt(concludedRoundNumber.get(concludedRoundNumber.size()-1)), totalRounds);
                 }else{
-                    postProgress(0);
+                    postProgress(0, totalRounds);
                     pastLayout.setVisibility(View.GONE);
                     pastRaceHeader.setVisibility(View.GONE);
                 }
