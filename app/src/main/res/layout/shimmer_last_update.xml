@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/fastestLapDriver_layout"
+    android:layout_below="@id/fastestLap_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:weightSum="3">
+    <TextView
+        android:layout_weight="2"
+        style="@style/ShimmerStyle"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:id="@+id/last_update_text"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="5dp"/>
+
+    <TextView
+        android:layout_weight="1"
+        style="@style/ShimmerStyle"
+        android:id="@+id/last_update_time"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="15dp"/>
+</LinearLayout>

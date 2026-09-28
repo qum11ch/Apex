@@ -28,7 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class predictPageActivity extends AppCompatActivity {
+public class neuroPredictionActivity extends AppCompatActivity {
     private NumberPicker numberPicker;
     private RadioGroup radioGroup;
     private Button predictButton;
@@ -37,7 +37,7 @@ public class predictPageActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.predict_page);
+        setContentView(R.layout.neuro_predict_activity);
 
         numberPicker = findViewById(R.id.numberpicker);
         predictButton = findViewById(R.id.predict_button);
@@ -87,14 +87,14 @@ public class predictPageActivity extends AppCompatActivity {
                         predictButton.setOnClickListener(v -> {
                             int selectedId = radioGroup.getCheckedRadioButtonId();
                             if (selectedId == -1) {
-                                Toast.makeText(predictPageActivity.this, "No answer has been selected",
+                                Toast.makeText(neuroPredictionActivity.this, "No answer has been selected",
                                         Toast.LENGTH_SHORT).show();
                             } else {
                                 RadioButton radioButton = findViewById(selectedId);
                                 String value = radioButton.getTag().toString();
                                 String gpName = raceList.get(numberPicker.getValue());
 
-                                Intent i = new Intent(predictPageActivity.this, predictResultPage.class);
+                                Intent i = new Intent(neuroPredictionActivity.this, neuroPredictionResultActivity.class);
                                 i.putExtra("event", value);
                                 i.putExtra("gp", gpName);
                                 i.putExtra("currentSeason", currentSeason);

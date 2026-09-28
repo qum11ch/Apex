@@ -64,6 +64,7 @@
                     android:layout_centerInParent="true"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
+                    android:layout_marginBottom="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/statusBar_color">
@@ -129,6 +130,47 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <include layout="@layout/shimmer_fastest_lap"/>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+                    <RelativeLayout
+                        android:id="@+id/update_date_layout"
+                        android:visibility="gone"
+                        android:layout_below="@id/poleLapDriver_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/last_update_text"
+                            android:text="@string/last_update_text"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginBottom="10dp"
+                            android:layout_marginStart="10dp"
+                            tools:ignore="RelativeOverlap" />
+
+                        <TextView
+                            android:text="16/09/2026 20:26:23"
+                            android:id="@+id/last_update_time"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="15dp"
+                            android:textSize="16sp"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                            android:textColor="@color/white"
+                            tools:ignore="RelativeOverlap" />
+                    </RelativeLayout>
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:visibility="visible"
+                        android:id="@+id/shimmer_layout_last_update"
+                        android:layout_below="@id/shimmer_layout_driver"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+                        <include layout="@layout/shimmer_last_update"/>
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </RelativeLayout>
             </RelativeLayout>

@@ -21,7 +21,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
@@ -33,6 +32,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.functions.HttpsCallableReference;
+
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -43,50 +49,55 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
-public class predictResultPage extends AppCompatActivity {
+public class neuroPredictionResultActivity extends AppCompatActivity {
     private List<raceResultsQualiData> datum;
     private raceResultsQualiAdapter adapter;
     private RecyclerView recyclerView;
-    private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout;
+    private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout, shimmerUpdateLayour;
     private TextView poleLapDriverName;
     private TextView poleLapTime;
     private TextView eventInfo;
+    private TextView updateDate;
+    private RelativeLayout updateDateLayout;
     private RelativeLayout poleLapDriverLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.predict_results_page);
+        setContentView(R.layout.neuro_predictions_results_activity);
 
         recyclerView = findViewById(R.id.quali_results);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(predictResultPage.this);
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(neuroPredictionResultActivity.this);
         recyclerView.setLayoutManager(mLayoutManager);
 
         datum = new ArrayList<>();
-        adapter = new raceResultsQualiAdapter(predictResultPage.this, datum);
+        adapter = new raceResultsQualiAdapter(neuroPredictionResultActivity.this, datum);
         recyclerView.setAdapter(adapter);
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
         RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
-        if (!checkLightTheme(predictResultPage.this)){
-            fastestLapLayout.setBackground(ContextCompat.getDrawable(predictResultPage.this, R.drawable.background_striped_lines_item_night));
+        if (!checkLightTheme(neuroPredictionResultActivity.this)){
+            fastestLapLayout.setBackground(ContextCompat.getDrawable(neuroPredictionResultActivity.this, R.drawable.background_striped_lines_item_night));
         }
 
         poleLapDriverName = findViewById(R.id.poleLapDriverName);
         poleLapTime = findViewById(R.id.poleLapTime);
         eventInfo = findViewById(R.id.event_info);
+        updateDate = findViewById(R.id.last_update_time);
         poleLapDriverLayout = findViewById(R.id.poleLapDriver_layout);
+        updateDateLayout = findViewById(R.id.update_date_layout);
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerDriverLayout = findViewById(R.id.shimmer_layout_driver);
+        shimmerUpdateLayour = findViewById(R.id.shimmer_layout_last_update);
         shimmerDriverLayout.startShimmer();
         shimmerFrameLayout.startShimmer();
+        shimmerUpdateLayour.startShimmer();
 
         TextView q1TimeText = findViewById(R.id.Q1_time);
         TextView q2TimeText = findViewById(R.id.Q2_time);
@@ -121,9 +132,9 @@ public class predictResultPage extends AppCompatActivity {
                             String lastRace = snapshot.child("last_race").getValue(String.class);
                             String year = lastRace.substring(0, 4);
                             if (year.equals(currentSeason)){
-                                getPridiction(gpName, lastRound, event, currentSeason);
+                                getPrediction(gpName, lastRound, event, currentSeason);
                             }else{
-                                getPridiction(gpName, 0, event, currentSeason);
+                                getPrediction(gpName, 0, event, currentSeason);
                             }
                         }
 
@@ -135,7 +146,7 @@ public class predictResultPage extends AppCompatActivity {
         }
     }
 
-    private void getPridiction(String gpName, Integer lastGPRound, String event,
+    private void getPrediction(String gpName, Integer lastGPRound, String event,
                                String currentSeason){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("driverLineUp/season/" + currentSeason)
@@ -295,7 +306,7 @@ public class predictResultPage extends AppCompatActivity {
         targetTime = time.substring(0, targetTime.length() - 3);
         String targetDatetime = date + "T" + targetTime;
 
-        RequestQueue queue = Volley.newRequestQueue(predictResultPage.this);
+        RequestQueue queue = Volley.newRequestQueue(neuroPredictionResultActivity.this);
 
         String url;
         ZonedDateTime oneYearEarlier;
@@ -393,159 +404,346 @@ public class predictResultPage extends AppCompatActivity {
                         Log.e("predictPageActivity", "Wheather error " + e.getMessage());
                     }
                 }, error -> {
-                    Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d ("fatal", " " + error.getMessage());
+                    Toast.makeText(neuroPredictionResultActivity.this, "Wheather error " + error.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.d ("fatal", "Wheather error  " + error.getMessage());
         });
 
         queue.add(jsonObjectRequest);
     }
 
 
-    private void predictRequest(String gpName, int year, Double temp, Double pres, Double hum, int rain,
-                                String[] driverCodes, String[] teamNames, String event, int gpRound,
-                                int circuitsCorners, Double circuitsLength, int isStreetCircuit,
-                                String circuitId){
-        String url = "https://py-functions-qnqkgv3l5a-uc.a.run.app/";
+    private void predictRequest(
+            String gpName,
+            int year,
+            Double temp,
+            Double pres,
+            Double hum,
+            int rain,
+            String[] driverCodes,
+            String[] teamNames,
+            String event,
+            int gpRound,
+            int circuitsCorners,
+            Double circuitsLength,
+            int isStreetCircuit,
+            String circuitId
+    ) {
+        Map<String, Object> requestData = new HashMap<>();
 
-        RequestQueue queue = Volley.newRequestQueue(predictResultPage.this);
+        requestData.put("year", year);
+        requestData.put("airTemp", temp);
+        requestData.put("pressure", pres);
+        requestData.put("humidity", hum);
+        requestData.put("rainfall", rain);
+        requestData.put("event", event);
+        requestData.put("gpRound", gpRound);
+        requestData.put("circuitCorners", circuitsCorners);
+        requestData.put("circuitLength", circuitsLength);
+        requestData.put("isStreetCircuit", isStreetCircuit);
+        requestData.put("circuitId", circuitId);
 
-        JSONObject requestData = new JSONObject();
-        try {
-            requestData.put("year", year);
-            requestData.put("airTemp", temp);
-            requestData.put("pressure", pres);
-            requestData.put("humidity", hum);
-            requestData.put("rainfall", rain);
-            requestData.put("event", event);
-            requestData.put("gpRound", gpRound);
-            requestData.put("circuitCorners", circuitsCorners);
-            requestData.put("circuitLength", circuitsLength);
-            requestData.put("isStreetCircuit", isStreetCircuit);
-            requestData.put("circuitId", circuitId);
+        ArrayList<Map<String, String>> drivers = new ArrayList<>();
 
-            JSONArray drivers = new JSONArray();
-
-            for (String code : driverCodes) {
-                JSONObject d = new JSONObject();
-                d.put("Driver", code);
-                drivers.put(d);
-            }
-            requestData.put("drivers", drivers);
-
-            JSONArray teams = new JSONArray();
-            for (String name : teamNames) {
-                JSONObject t = new JSONObject();
-                t.put("Team", name);
-                teams.put(t);
-            }
-            requestData.put("teams", teams);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for (String code : driverCodes) {
+            Map<String, String> driver = new HashMap<>();
+            driver.put("Driver", code);
+            drivers.add(driver);
         }
-        Log.i("py_predict_results", "getting predicts");
-        Log.i("py_predict_results", " " + requestData.toString());
 
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(
-                Request.Method.POST,
-                url,
-                requestData,
-                response -> {
-                    try {
-                        Log.i("py_predict_results", " " + response);
+        requestData.put("drivers", drivers);
 
-                        JSONArray results = response.getJSONArray("results");
-                        for(int i = 0; i < results.length(); i++){
-                            JSONObject qualiItem =  results.getJSONObject(i);
-                            String driverCode = qualiItem.getString("Driver");
-                            String driverTeam = qualiItem.getString("Team");
-                            String Q1_time = qualiItem.getString(event + "1");
-                            String Q2_time = qualiItem.getString(event + "2");
-                            String Q3_time = qualiItem.getString(event + "3");
+        ArrayList<Map<String, String>> teams = new ArrayList<>();
 
+        for (String name : teamNames) {
+            Map<String, String> team = new HashMap<>();
+            team.put("Team", name);
+            teams.add(team);
+        }
 
-                            if (i == 0){
-                                String fullDriverName = getDriverName(driverCode);
-                                String[] parseDriverName = fullDriverName.split(" ");
-                                String driverName;
-                                String driverFamilyName;
-                                if (fullDriverName.equals("Andrea Kimi Antonelli")){
-                                    driverName = parseDriverName[1];
-                                    driverFamilyName = parseDriverName[2];
-                                }else{
-                                    driverName = parseDriverName[0];
-                                    driverFamilyName = parseDriverName[1];
-                                }
-                                String abrDriverName = driverName.substring(0,1) + ". " + driverFamilyName;
+        requestData.put("teams", teams);
 
-                                poleLapDriverName.setText(abrDriverName);
-                                poleLapTime.setText(Q3_time);
+        Log.i("py_predict_results", "Calling Firebase Callable Function");
 
-                                String eventType;
-                                if (event.equals("Q")){
-                                    eventType = getString(R.string.qualifying_text);
-                                }else{
-                                    eventType = getString(R.string.sprint_qualifying_text);
+        FirebaseFunctions functions = FirebaseFunctions.getInstance("us-central1");
+
+        HttpsCallableReference callable = functions.getHttpsCallable("py_functions_callable");
+
+        callable.call(requestData)
+                .addOnSuccessListener(
+                        result -> {
+                            try {
+                                Object rawData = result.getData();
+
+                                if (!(rawData instanceof Map)) {
+                                    throw new JSONException(
+                                            "Callable response is not an object"
+                                    );
                                 }
 
-                                String preprocessedGPName = gpName.toLowerCase();
-                                preprocessedGPName = preprocessedGPName.replace(" ", "_");
-                                String localizedGpName = getString(getStringByName(preprocessedGPName + "_text"));
-                                String fullEventName = year + " " + localizedGpName + " " + eventType;
-                                eventInfo.setText(fullEventName);
+                                Map<?, ?> responseMap = (Map<?, ?>) rawData;
 
-                                shimmerDriverLayout.animate()
-                                        .setDuration(500)
-                                        .withEndAction(() -> {
-                                            poleLapDriverLayout.setVisibility(View.VISIBLE);
-                                            shimmerDriverLayout.setVisibility(View.GONE);
-                                            shimmerDriverLayout.stopShimmer();
-                                        })
-                                        .start();
-                            }
+                                Object updatedAtValue = responseMap.get("updated_at");
 
-                            if (Q2_time.equals("null")){
-                                Q2_time = "--";
-                            }
-                            if (Q1_time.equals("null")){
-                                Q1_time = "--";
-                            }
-                            if (Q3_time.equals("null")){
-                                Q3_time = "--";
-                            }
+                                String updateDateText = updatedAtValue == null ? "" : String.valueOf(updatedAtValue);
 
-                            int position = i + 1;
+                                Object dataValue = responseMap.get("data");
 
-                            String teamId = getTeamId(driverTeam);
-                            raceResultsQualiData predictResults = new raceResultsQualiData(Integer.toString(position),
-                                    teamId, driverCode, Q1_time, Q2_time, Q3_time, Integer.toString(year));
-                            datum.add(predictResults);
+                                Object staleValue = responseMap.get("stale");
+
+                                boolean isStale = Boolean.TRUE.equals(staleValue);
+
+                                if (isStale) {
+                                    Toast.makeText(
+                                            neuroPredictionResultActivity.this,
+                                            "Показан сохранённый прогноз. Данные обновляются.",
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                }
+
+                                if (!(dataValue instanceof List)) {
+                                    throw new JSONException(
+                                            "Response data is not a list"
+                                    );
+                                }
+
+                                List<?> resultList = (List<?>) dataValue;
+
+                                Log.i("py_predict_results", "Result: " + resultList);
+
+                                datum.clear();
+
+                                for (int i = 0; i < resultList.size(); i++) {
+                                    Object item = resultList.get(i);
+
+                                    if (!(item instanceof Map)) {
+                                        continue;
+                                    }
+
+                                    Map<?, ?> qualiItem = (Map<?, ?>) item;
+
+                                    String driverCode = readString(qualiItem, "Driver");
+
+                                    String driverTeam = readString(qualiItem, "Team");
+
+                                    String q1Time = readNullableString(qualiItem, event + "1");
+
+                                    String q2Time = readNullableString(qualiItem, event + "2");
+
+                                    String q3Time = readNullableString(qualiItem, event + "3");
+
+                                    if (q1Time.isEmpty()) {
+                                        q1Time = "--";
+                                    }
+
+                                    if (q2Time.isEmpty()) {
+                                        q2Time = "--";
+                                    }
+
+                                    if (q3Time.isEmpty()) {
+                                        q3Time = "--";
+                                    }
+
+                                    if (i == 0) {
+                                        setPoleDriver(
+                                                driverCode,
+                                                q3Time,
+                                                gpName,
+                                                event,
+                                                year,
+                                                updateDateText
+                                        );
+                                    }
+
+                                    int position = i + 1;
+                                    String teamId = getTeamId(driverTeam);
+
+                                    raceResultsQualiData
+                                            predictResults =
+                                            new raceResultsQualiData(
+                                                    Integer.toString(position),
+                                                    teamId,
+                                                    driverCode,
+                                                    q1Time,
+                                                    q2Time,
+                                                    q3Time,
+                                                    Integer.toString(year)
+                                            );
+
+                                    datum.add(predictResults);
+                                }
+
+                                hideShimmer(recyclerView, shimmerFrameLayout);
+
+                                adapter.notifyDataSetChanged();
+
+                            } catch (Exception error) {
+                                Log.e("py_predict_results",
+                                        "Response parsing error",
+                                        error
+                                );
+
+                                Toast.makeText(
+                                        neuroPredictionResultActivity.this,
+                                        "Ошибка обработки прогноза",
+                                        Toast.LENGTH_SHORT
+                                ).show();
+                            }
                         }
+                )
+                .addOnFailureListener(
+                        error -> {
+                            Log.e(
+                                    "py_predict_results",
+                                    "Callable function failed",
+                                    error
+                            );
 
-                        hideShimmer(recyclerView, shimmerFrameLayout);
-                        adapter.notifyItemChanged(datum.size() - 1);
-                    } catch (JSONException e) {
-                        throw new RuntimeException(e);
-                    }
-                },
-                error -> {
-                    if (error.networkResponse != null) {
-                        String errorText = "Code: " + error.networkResponse.statusCode + "Data: " +  new String(error.networkResponse.data);
-                        Log.d("fatal", " " + errorText);
-                        Toast.makeText(predictResultPage.this, errorText, Toast.LENGTH_SHORT).show();
-                    }else{
-                        Toast.makeText(predictResultPage.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                }
+                            hideShimmer(recyclerView, shimmerFrameLayout
+                            );
+
+                            String message = error.getMessage();
+
+                            if (message == null || message.isEmpty()) {
+                                message = "Не удалось получить прогноз";
+                            }
+
+                            Toast.makeText(
+                                    neuroPredictionResultActivity.this,
+                                    message,
+                                    Toast.LENGTH_LONG
+                            ).show();
+                        }
+                );
+    }
+
+    private static String readString(
+            Map<?, ?> map,
+            String key
+    ) {
+        Object value = map.get(key);
+
+        if (value == null) {
+            return "";
+        }
+
+        return String.valueOf(value);
+    }
+
+    private static String readNullableString(
+            Map<?, ?> map,
+            String key
+    ) {
+        Object value = map.get(key);
+
+        if (value == null) {
+            return "";
+        }
+
+        String stringValue = String.valueOf(value);
+
+        if (stringValue.equals("null")
+                || stringValue.equals("NaN")) {
+            return "";
+        }
+
+        return stringValue;
+    }
+
+    private void setPoleDriver(
+            String driverCode,
+            String q3Time,
+            String gpName,
+            String event,
+            int year,
+            String updateDateRawText
+    ) {
+        String fullDriverName =
+                getDriverName(driverCode);
+
+        if (fullDriverName == null
+                || fullDriverName.trim().isEmpty()) {
+            return;
+        }
+
+        String[] nameParts =
+                fullDriverName.split(" ");
+
+        String driverName;
+        String familyName;
+
+        if (fullDriverName.equals(
+                "Andrea Kimi Antonelli"
+        )) {
+            driverName = nameParts[1];
+            familyName = nameParts[2];
+        } else {
+            driverName = nameParts[0];
+            familyName = nameParts[nameParts.length - 1];
+        }
+
+        String abbreviatedName =
+                driverName.substring(0, 1)
+                        + ". "
+                        + familyName;
+
+        poleLapDriverName.setText(
+                abbreviatedName
         );
 
-        jsonRequest.setRetryPolicy(new DefaultRetryPolicy(
-                20000,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
-                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-        ));
+        poleLapTime.setText(q3Time);
 
-        queue.add(jsonRequest);
+        String eventType;
+
+        if (event.equals("Q")) {
+            eventType =
+                    getString(
+                            R.string.qualifying_text
+                    );
+        } else {
+            eventType =
+                    getString(
+                            R.string.sprint_qualifying_text
+                    );
+        }
+
+        String normalizedGpName = gpName.toLowerCase().replace(" ", "_");
+
+        String localizedGpName = getString( getStringByName( normalizedGpName + "_text") );
+
+        String fullEventName = year + " " + localizedGpName + " " + eventType;
+
+        eventInfo.setText(fullEventName);
+
+        String updateDateText = formatDateForUser(updateDateRawText);
+        updateDate.setText(updateDateText);
+
+        shimmerUpdateLayour.animate()
+                .setDuration(500)
+                .withEndAction(() -> {
+                    updateDateLayout
+                            .setVisibility(View.VISIBLE);
+
+                    shimmerUpdateLayour
+                            .setVisibility(View.GONE);
+
+                    shimmerUpdateLayour
+                            .stopShimmer();
+                })
+                .start();
+
+        shimmerDriverLayout.animate()
+                .setDuration(500)
+                .withEndAction(() -> {
+                    poleLapDriverLayout
+                            .setVisibility(View.VISIBLE);
+
+                    shimmerDriverLayout
+                            .setVisibility(View.GONE);
+
+                    shimmerDriverLayout
+                            .stopShimmer();
+                })
+                .start();
     }
 
     public static Integer isStreetCircuit(String circuitId){
@@ -556,6 +754,29 @@ public class predictResultPage extends AppCompatActivity {
         }else{
             return 0;
         }
+    }
+
+    private String formatDateForUser(String utcDateTime) {
+        if (utcDateTime == null
+                || utcDateTime.trim().isEmpty()) {
+            return "";
+        }
+
+        ZonedDateTime dateTime =
+                ZonedDateTime.parse(utcDateTime);
+
+        ZonedDateTime userDateTime =
+                dateTime.withZoneSameInstant(
+                        ZoneId.systemDefault()
+                );
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern(
+                        "dd-MM-yyyy HH:mm:ss",
+                        Locale.getDefault()
+                );
+
+        return userDateTime.format(formatter);
     }
 
     public static ArrayList<String> correctTeamNames(ArrayList<String> teamIds){

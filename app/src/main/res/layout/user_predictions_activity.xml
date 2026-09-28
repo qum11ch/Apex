@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:clipToPadding="true">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/colorPrimary">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="20dp"
+            android:text="Мои прогнозы"
+            android:textColor="@color/text_color_main"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/userPredictionsEmptyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="24dp"
+            android:text="Вы ещё не сделали прогнозов"
+            android:textColor="@color/text_color_main"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/userPredictionStatsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="12dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Моя статистика"
+                android:textColor="@color/text_color_main"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/totalPointsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Всего очков: 0"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/predictionsCountText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Прогнозов: 0"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/correctPredictionsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Угадано: 0"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/rankText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Место: пока нет"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/chartContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginBottom="12dp"
+            android:orientation="vertical">
+
+            <com.github.mikephil.charting.charts.PieChart
+                android:id="@+id/predictionResultsChart"
+                android:layout_width="match_parent"
+                android:layout_height="220dp" />
+
+            <LinearLayout
+                android:id="@+id/chartLegend"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:orientation="horizontal" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/userPredictionsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:padding="12dp" />
+
+    </LinearLayout>
+</ScrollView>

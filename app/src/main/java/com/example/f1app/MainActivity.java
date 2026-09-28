@@ -166,6 +166,19 @@ public class MainActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager4 = new LinearLayoutManager(this);
         rvTeams.setLayoutManager(linearLayoutManager4);
 
+        Button openPredictionsButton = findViewById(R.id.predictionsPageButton);
+
+        openPredictionsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, predictionsActivity.class);
+            startActivity(intent);
+        });
+
+        Button openUsersPredictionsButton = findViewById(R.id.userPredictionsButton);
+
+        openUsersPredictionsButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, userPredictionsActivity.class);
+            startActivity(intent);
+        });
 
         showDriverButton = findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(v ->
@@ -195,12 +208,12 @@ public class MainActivity extends AppCompatActivity {
                 getDriversStanding(currentSeason);
                 getSchedule(currentYear, currentDate);
 
-                Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
-                if (enablePredicts){
-                    predict.setVisibility(View.VISIBLE);
-                }else{
-                    predict.setVisibility(View.GONE);
-                }
+                // Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
+                // if (enablePredicts){
+                //     predict.setVisibility(View.VISIBLE);
+                // }else{
+                //     predict.setVisibility(View.GONE);
+                // }
             }
 
             @Override
@@ -225,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
         checkNotificationPermission();
 
         predict.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, predictPageActivity.class);
+            Intent intent = new Intent(MainActivity.this, neuroPredictionActivity.class);
             intent.putExtra("currentSeason", currentSeason);
             MainActivity.this.startActivity(intent);
 

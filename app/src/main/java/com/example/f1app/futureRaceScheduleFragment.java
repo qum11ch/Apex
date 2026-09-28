@@ -135,7 +135,7 @@ public class futureRaceScheduleFragment extends Fragment {
             });
 
             predictButton.setOnClickListener(v -> {
-                Intent i = new Intent(requireContext(), predictResultPage.class);
+                Intent i = new Intent(requireContext(), neuroPredictionResultActivity.class);
                 i.putExtra("event", "Q");
                 i.putExtra("gp", mRaceName);
                 startActivity(i);

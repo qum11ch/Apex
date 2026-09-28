@@ -212,6 +212,11 @@ public class driversStandingsActivity extends AppCompatActivity {
                                     String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
                                     String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
 
+                                    if (currentSeason.equals("2026") && driverCode.toLowerCase().equals("law")){
+                                        constructorId = "rb";
+                                        constructorsName = "RB F1 Team";
+                                    }
+
                                     StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + currentSeason + ".png");
 
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentSeason);

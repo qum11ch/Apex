@@ -84,9 +84,19 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"/>
-        <activity android:name=".predictPageActivity"/>
-        <activity android:name=".predictResultPage"/>
+        <activity android:name=".neuroPredictionActivity"/>
+        <activity android:name=".neuroPredictionResultActivity"/>
         <activity android:name=".winnersWDCActivity"/>
+        <activity
+            android:name=".userPredictionsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".predictionsActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".predictionFormActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
