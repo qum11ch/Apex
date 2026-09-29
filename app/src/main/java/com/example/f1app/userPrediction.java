@@ -25,7 +25,17 @@ public class userPrediction {
 
     private String result;
 
+    private String optionType;
+
     public userPrediction() {
+    }
+
+    public String getOptionType() {
+        return optionType;
+    }
+
+    public void setOptionType(String optionType) {
+        this.optionType = optionType;
     }
 
     public String getPredictionId() {

@@ -395,6 +395,7 @@ public class userPredictionsActivity extends AppCompatActivity {
         item.setType(getStringValue(predictionSnapshot, "type"));
         item.setSeason(getStringValue(predictionSnapshot, "season"));
         item.setRaceId(getStringValue(predictionSnapshot, "raceId"));
+        item.setOptionType(getStringValue(predictionSnapshot, "optionType"));
 
         item.setRaceName(getStringValue(predictionSnapshot, "raceName"));
 
