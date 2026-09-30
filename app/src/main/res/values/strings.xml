@@ -354,4 +354,24 @@
     <string name="sprint_events_text">Sprint Events:</string>
     <string name="max_points_events_text">Maximum points that can be earned:</string>
     <string name="winner_wdc_info_text">Here you can find out which drivers can theoretically still win the WDC. This is done by calculating the maximum number of points each driver can accumulate by the end of the season and comparing it with the current results of the leaders.</string>
+
+
+    <string name="prediction_weekend_round">%1$s • Round %2$d</string>
+    <string name="prediction_season">Season %1$s</string>
+
+    <string name="prediction_answer_prefix">Your answer: %1$s</string>
+    <string name="prediction_answer_unknown">Selected option</string>
+    <string name="prediction_boolean_answer">Yes / No</string>
+    <string name="prediction_head_to_head_answer">%1$s vs %2$s</string>
+
+    <string name="prediction_status_correct">Status: correct</string>
+    <string name="prediction_status_incorrect">Status: incorrect</string>
+    <string name="prediction_status_tie">Status: tie</string>
+    <string name="prediction_status_pending">Status: awaiting result</string>
+
+    <string name="prediction_points_awarded">Points awarded: %1$s</string>
+    <string name="prediction_points_possible">Possible points: %1$s</string>
+
+    <string name="prediction_category_season">Season</string>
+    <string name="prediction_category_weekend">Race weekend</string>
 </resources>

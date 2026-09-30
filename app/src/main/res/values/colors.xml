@@ -51,4 +51,8 @@
     <color name="footer_line">#8c8c8c</color>
     <color name="footer_icon">#8c8c8c</color>
     <color name="ongoing_color">#C7C7C7</color>
+    <color name="correct_predict_color">#66bb6a</color>
+    <color name="incorrect_predict_color">#ef5350</color>
+    <color name="pending_predict_color">#90a4ae</color>
+    <color name="tie_predict_color">#ffb74d</color>
 </resources>

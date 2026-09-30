@@ -328,4 +328,23 @@
     <string name="sprint_events_text">Спринт Гран-при:</string>
     <string name="max_points_events_text">Максимум очков можно набрать:</string>
     <string name="winner_wdc_info_text">Здесь Вы можете узнать, какие гонщики теоретически еще могут побороться за титул чемпиона мира в личном зачете. Для этого рассчитывается максимально возможное количество очков, которое гонщик может набрать к концу сезона, и сравнивается с текущими результатами лидеров.</string>
+
+    <string name="prediction_weekend_round">%1$s • Раунд %2$d</string>
+    <string name="prediction_season">Сезон %1$s</string>
+
+    <string name="prediction_answer_prefix">Ваш ответ: %1$s</string>
+    <string name="prediction_answer_unknown">Выбранный вариант</string>
+    <string name="prediction_boolean_answer">Да / Нет</string>
+    <string name="prediction_head_to_head_answer">%1$s vs %2$s</string>
+
+    <string name="prediction_status_correct">Статус: угадано</string>
+    <string name="prediction_status_incorrect">Статус: не угадано</string>
+    <string name="prediction_status_tie">Статус: ничья</string>
+    <string name="prediction_status_pending">Статус: ожидает результата</string>
+
+    <string name="prediction_points_awarded">Начислено очков: %1$s</string>
+    <string name="prediction_points_possible">Возможные очки: %1$s</string>
+
+    <string name="prediction_category_season">Сезонный</string>
+    <string name="prediction_category_weekend">Гоночный уикенд</string>
 </resources>

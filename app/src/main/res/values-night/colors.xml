@@ -49,4 +49,8 @@
     <color name="footer_line">#FFFFFFFF</color>
     <color name="footer_icon">#FFFFFFFF</color>
     <color name="ongoing_color">#EAF0F8</color>
+    <color name="correct_predict_color">#81c784</color>
+    <color name="incorrect_predict_color">#e57373</color>
+    <color name="pending_predict_color">#b0bec5</color>
+    <color name="tie_predict_color">#ffb74d</color>
 </resources>

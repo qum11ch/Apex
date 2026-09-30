@@ -2,22 +2,26 @@ package com.example.f1app;
 
 public class userPredictionStats {
 
-    private Long totalPoints;
+    private Double totalPoints;
     private Long predictionsCount;
     private Long correctPredictions;
     private Long incorrectPredictions;
     private Long pendingPredictions;
-    private Long rank;
+    private Long tiePredictions;
 
     public userPredictionStats() {
     }
 
-    public Long getTotalPoints() {
+    public Double getTotalPoints() {
         return totalPoints;
     }
 
     public Long getPredictionsCount() {
         return predictionsCount;
+    }
+
+    public Long getTiePredictions(){
+        return tiePredictions;
     }
 
     public Long getCorrectPredictions() {
@@ -30,9 +34,5 @@ public class userPredictionStats {
 
     public Long getPendingPredictions() {
         return pendingPredictions;
-    }
-
-    public Long getRank() {
-        return rank;
     }
 }

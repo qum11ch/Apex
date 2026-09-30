@@ -32,10 +32,14 @@ import java.util.Map;
 
 public class predictionFormActivity extends AppCompatActivity {
 
-    private final List<PredictionOptionItem> options = new ArrayList<>();
+    private final List<predictionOption> options = new ArrayList<>();
+
+    private String predictionType;
+    private String optionType;
+    private String predictionSeason;
+    private Integer predictionRaceRound;
 
     private String predictionId;
-    private String optionType = "driver";
     private String selectedOptionId;
     private String selectedOptionTitle;
 
@@ -96,33 +100,53 @@ public class predictionFormActivity extends AppCompatActivity {
                             return;
                         }
 
-                        String title = snapshot.child("title").getValue(String.class);
-                        String description = snapshot.child("description").getValue(String.class);
-                        String raceName = snapshot.child("raceName").getValue(String.class);
-                        String storedOptionType = snapshot.child("optionType")
+                        predictionType = snapshot.child("predictionType")
                                 .getValue(String.class);
 
-                        optionType = storedOptionType == null
-                                || storedOptionType.trim().isEmpty()
-                                ? "driver"
-                                : storedOptionType.trim().toLowerCase(Locale.ROOT);
+                        optionType = snapshot.child("optionType").getValue(String.class);
 
-                        predictionTitle.setText(title == null ? "" : title);
+                        String category = snapshot.child("category").getValue(String.class);
 
-                        if (raceName != null && !raceName.isEmpty()) {
-                            eventName.setText(raceName);
-                        } else if (description != null) {
-                            eventName.setText(description);
+                        predictionSeason = snapshot.child("season").getValue(String.class);
+
+                        predictionRaceRound = snapshot.child("raceRound")
+                                .getValue(Integer.class);
+
+                        LocalizedText title =
+                                snapshot.child("title").getValue(LocalizedText.class);
+                        LocalizedText description =
+                                snapshot.child("description").getValue(LocalizedText.class);
+
+                        predictionTitle.setText(getLocalizedText(title));
+
+                        if ("weekend".equals(category)
+                                && predictionSeason != null
+                                && predictionRaceRound != null) {
+                            eventName.setText(predictionSeason + " • Раунд " + predictionRaceRound);
+                        } else {
+                            eventName.setText(getLocalizedText(description));
                         }
 
-                        if (!optionType.equals("driver")
-                                && !optionType.equals("constructor")) {
-                            statusText.setText("Неизвестный тип варианта");
+                        if (optionType == null || predictionType == null) {
+                            statusText.setText(
+                                    "Неполная структура прогноза"
+                            );
                             saveButton.setEnabled(false);
                             return;
                         }
 
-                        loadOptions();
+                        if ("boolean".equals(optionType)) {
+                            loadBooleanOptions();
+                        } else if (isHeadToHead(predictionType)) {
+                            loadHeadToHeadOptions(snapshot);
+                        } else if ("constructor".equals(optionType)) {
+                            loadConstructors();
+                        } else if ("driver".equals(optionType)){
+                            loadDrivers();
+                        } else{
+                            statusText.setText("Неизвестный тип варианта");
+                            saveButton.setEnabled(false);
+                        }
                     }
 
                     @Override
@@ -133,70 +157,114 @@ public class predictionFormActivity extends AppCompatActivity {
                 });
     }
 
-    private void loadOptions() {
-        String root = optionType.equals("constructor")
-                ? "constructors"
-                : "drivers";
-
-        rootRef.child(root).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                options.clear();
-
-                for (DataSnapshot child : snapshot.getChildren()) {
-                    PredictionOptionItem item = new PredictionOptionItem();
-                    item.setId(child.getKey());
-
-                    if (optionType.equals("constructor")) {
-                        item.setId(readString(child, "constructorId", child.getKey()));
-                        item.setTitle(readString(child, "name", child.getKey()));
-                        options.add(item);
-                    } else {
-                        String status = readString(child, "status", "");
-                        String code = readString(child, "driversCode", child.getKey());
-                        String name = readString(child, "driverName", child.getKey());
-
-                        if (!"active".equals(status)) {
-                            continue;
-                        }
-
-                        item.setId(code);
-                        item.setTitle(name);
-                        options.add(item);
-                    }
-                }
-
-                options.sort(Comparator.comparing(
-                        PredictionOptionItem::getTitle,
-                        String.CASE_INSENSITIVE_ORDER
-                ));
-
-                if (options.isEmpty()) {
-                    answerPicker.setVisibility(View.GONE);
-                    saveButton.setEnabled(false);
-                    statusText.setText(optionType.equals("constructor")
-                            ? "Нет доступных команд"
-                            : "Нет доступных пилотов");
-                    return;
-                }
-
-                setupOptionPicker();
-                loadSavedAnswer();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                saveButton.setEnabled(false);
-                statusText.setText(optionType.equals("constructor")
-                        ? "Не удалось загрузить команды"
-                        : "Не удалось загрузить пилотов");
-            }
-        });
+    private boolean isHeadToHead(String type) {
+        return "race_head_to_head".equals(type)
+                || "qualifying_head_to_head".equals(type)
+                || "team_points_head_to_head".equals(type);
     }
 
-    private String readString(DataSnapshot snapshot, String child, String fallback) {
-        String value = snapshot.child(child).getValue(String.class);
-        return value == null || value.trim().isEmpty() ? fallback : value;
+    private void loadDrivers() {
+        rootRef.child("drivers")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        options.clear();
+
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            String status = child.child("status")
+                                    .getValue(String.class);
+
+                            String id = child.child("driversCode")
+                                    .getValue(String.class);
+
+                            String title = child.child("driverName")
+                                    .getValue(String.class);
+
+                            if (!"active".equals(status)
+                                    || id == null
+                                    || title == null) {
+                                continue;
+                            }
+
+                            options.add(new predictionOption(id, title));
+                        }
+
+                        options.sort(Comparator.comparing(
+                                predictionOption::getTitle,
+                                String.CASE_INSENSITIVE_ORDER
+                        ));
+
+                        setupOptionPicker();
+                        loadSavedAnswer();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        statusText.setText("Не удалось загрузить пилотов");
+                        saveButton.setEnabled(false);
+                    }
+                });
+    }
+
+    private void loadConstructors() {
+        rootRef.child("constructors")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        options.clear();
+
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            String id = child.child("constructorId")
+                                    .getValue(String.class);
+
+                            String title = child.child("name")
+                                    .getValue(String.class);
+
+                            if (id == null || title == null) {
+                                continue;
+                            }
+
+                            options.add(new predictionOption(id, title));
+                        }
+
+                        options.sort(Comparator.comparing(
+                                predictionOption::getTitle,
+                                String.CASE_INSENSITIVE_ORDER
+                        ));
+
+                        setupOptionPicker();
+                        loadSavedAnswer();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        statusText.setText("Не удалось загрузить команды");
+                        saveButton.setEnabled(false);
+                    }
+                });
+    }
+
+
+    private String getLocalizedText(LocalizedText text) {
+        if (text == null) {
+            return "";
+        }
+
+        boolean isRussian = "ru".equals(Locale.getDefault().getLanguage());
+
+        if (isRussian) {
+            if (text.getRu() != null && !text.getRu().trim().isEmpty()) {
+                return text.getRu();
+            }
+
+            return text.getEn() == null ? "" : text.getEn();
+        }
+
+        if (text.getEn() != null && !text.getEn().trim().isEmpty()) {
+            return text.getEn();
+        }
+
+        return text.getRu() == null ? "" : text.getRu();
     }
 
     private void setupOptionPicker() {
@@ -224,9 +292,9 @@ public class predictionFormActivity extends AppCompatActivity {
             return;
         }
 
-        PredictionOptionItem item = options.get(index);
-        selectedOptionId = item.getId();
-        selectedOptionTitle = item.getTitle();
+        predictionOption option = options.get(index);
+        selectedOptionId = option.getId();
+        selectedOptionTitle = option.getTitle();
         statusText.setText(selectedOptionTitle);
     }
 
@@ -289,26 +357,42 @@ public class predictionFormActivity extends AppCompatActivity {
         savedAnswerText.setVisibility(View.VISIBLE);
 
         StringBuilder text = new StringBuilder();
+
         text.append("Ваш текущий прогноз: ")
                 .append(answer.getOptionTitle() == null
                         ? answer.getOptionId()
                         : answer.getOptionTitle());
 
         if (answer.getSubmittedAt() != null) {
-            SimpleDateFormat formatter = new SimpleDateFormat(
-                    "dd.MM.yyyy HH:mm",
-                    Locale.getDefault()
-            );
+            SimpleDateFormat formatter =
+                    new SimpleDateFormat(
+                            "dd.MM.yyyy HH:mm",
+                            Locale.getDefault()
+                    );
+
             text.append("\nВыбран: ")
-                    .append(formatter.format(new java.util.Date(
-                            answer.getSubmittedAt()
-                    )));
+                    .append(formatter.format(
+                            new java.util.Date(
+                                    answer.getSubmittedAt()
+                            )
+                    ));
+        }
+
+        String result = answer.getResult();
+
+        if ("correct".equals(result)) {
+            text.append("\nПравильно");
+        } else if ("incorrect".equals(result)) {
+            text.append("\nНеправильно");
+        } else if ("tie".equals(result)) {
+            text.append("\nНичья — начислена половина очков");
+        } else {
+            text.append("\nРезультат ещё не определён");
         }
 
         if (answer.getPoints() != null) {
-            text.append("\nОчки: ").append(answer.getPoints());
-        } else {
-            text.append("\nРезультат ещё не определён");
+            text.append("\nОчки: ")
+                    .append(answer.getPoints());
         }
 
         savedAnswerText.setText(text.toString());
@@ -323,9 +407,15 @@ public class predictionFormActivity extends AppCompatActivity {
         }
 
         if (selectedOptionId == null || selectedOptionTitle == null) {
-            statusText.setText(optionType.equals("constructor")
-                    ? "Выберите команду"
-                    : "Выберите пилота");
+            if ("boolean".equals(optionType)) {
+                statusText.setText("Выберите Да или Нет");
+            } else if (isHeadToHead(predictionType)) {
+                statusText.setText("Выберите одного из двух пилотов");
+            } else if ("constructor".equals(optionType)) {
+                statusText.setText("Выберите команду");
+            } else {
+                statusText.setText("Выберите пилота");
+            }
             return;
         }
 
@@ -356,24 +446,42 @@ public class predictionFormActivity extends AppCompatActivity {
         saveProgress.setVisibility(saving ? View.VISIBLE : View.INVISIBLE);
     }
 
-    private static class PredictionOptionItem {
-        private String id;
-        private String title;
+    private void loadHeadToHeadOptions(DataSnapshot snapshot) {
+        options.clear();
 
-        public String getId() {
-            return id;
+        String driverAId = snapshot.child("driverAId")
+                .getValue(String.class);
+
+        String driverATitle = snapshot.child("driverATitle")
+                .getValue(String.class);
+
+        String driverBId = snapshot.child("driverBId")
+                .getValue(String.class);
+
+        String driverBTitle = snapshot.child("driverBTitle")
+                .getValue(String.class);
+
+        if (driverAId == null || driverATitle == null
+                || driverBId == null || driverBTitle == null) {
+            statusText.setText("Некорректное head-to-head событие");
+            saveButton.setEnabled(false);
+            return;
         }
 
-        public void setId(String id) {
-            this.id = id;
-        }
+        options.add(new predictionOption(driverAId, driverATitle));
+        options.add(new predictionOption(driverBId, driverBTitle));
 
-        public String getTitle() {
-            return title;
-        }
+        setupOptionPicker();
+        loadSavedAnswer();
+    }
 
-        public void setTitle(String title) {
-            this.title = title;
-        }
+    private void loadBooleanOptions() {
+        options.clear();
+
+        options.add(new predictionOption("yes", getString(R.string.yes_text)));
+        options.add(new predictionOption("no", getString(R.string.no_text)));
+
+        setupOptionPicker();
+        loadSavedAnswer();
     }
 }

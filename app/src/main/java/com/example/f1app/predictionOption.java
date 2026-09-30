@@ -2,27 +2,30 @@ package com.example.f1app;
 
 public class predictionOption {
 
+    private String id;
     private String title;
-    private String value;
-    private boolean enabled;
-    private int sortOrder;
 
     public predictionOption() {
+    }
+
+    public predictionOption(String id, String title) {
+        this.id = id;
+        this.title = title;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public String getValue() {
-        return value;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public int getSortOrder() {
-        return sortOrder;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

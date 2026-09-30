@@ -67,28 +67,33 @@ public class predictionsActivity
 
                             if (item == null) {continue;}
 
-                            item.setId(child.getKey());
+                            item.setPredictionId(child.getKey());
 
                             if (item.getStatus() != null && !"open".equals(item.getStatus())) {
                                 continue;
                             }
 
-                            if (item.getDeadline() > 0 && item.getDeadline() <= now) {
+                            Long deadline = item.getDeadline();
+
+                            if (deadline == null || deadline <= now) {
                                 continue;
                             }
 
                             predictions.add(item);
                         }
 
-                        Collections.sort(predictions, Comparator
-                                        .comparingLong(predictionListItem::getDeadline));
+                        Collections.sort(
+                                predictions,
+                                Comparator.comparing(
+                                        predictionListItem::getDeadline,
+                                        Comparator.nullsLast(Long::compareTo)
+                                )
+                        );
 
                         adapter.notifyDataSetChanged();
 
                         boolean isEmpty = predictions.isEmpty();
-
                         emptyText.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-
                         recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
 
                     }
@@ -108,7 +113,7 @@ public class predictionsActivity
     private void openPrediction(predictionListItem item) {
         Intent intent = new Intent(this, predictionFormActivity.class);
 
-        intent.putExtra("predictionId", item.getId());
+        intent.putExtra("predictionId", item.getPredictionId());
         startActivity(intent);
     }
 }
