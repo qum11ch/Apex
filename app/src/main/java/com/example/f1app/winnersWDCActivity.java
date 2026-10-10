@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.MainActivity.hideShimmer;
@@ -41,7 +42,7 @@ import java.util.List;
 public class winnersWDCActivity extends AppCompatActivity {
     private static final int POINTS_FOR_SPRINT = 8 + 25;
     private static final int POINTS_FOR_CONVENTIONAL = 25;
-    private List<driversWDCPointsList> datum;
+    private List<winnersWdcList> datum;
     private RecyclerView recyclerView;
     private TextView round, raceName, convEventsCount, sprintEventsCount, maxPointsCount;
     private ShimmerFrameLayout shimmerFrameLayout;
@@ -51,6 +52,12 @@ public class winnersWDCActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.winners_wdc_page);
+
+        if (!checkConnection(getApplicationContext())){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(winnersWDCActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(winnersWDCActivity.this));
+        }
 
         recyclerView = findViewById(R.id.recyclerview_winnersWDC);
         recyclerView.setHasFixedSize(true);
@@ -174,31 +181,68 @@ public class winnersWDCActivity extends AppCompatActivity {
                             for (int i = 0; i < StandingsLists.length(); i++) {
                                 JSONArray DriverStandings = StandingsLists.getJSONObject(i)
                                         .getJSONArray("DriverStandings");
+                                datum.clear();
+
                                 int leaderPoints = 0;
+                                boolean separatorAdded = false;
+
                                 for (int j = 0; j < DriverStandings.length(); j++) {
-                                    String pointsText = DriverStandings.getJSONObject(j).getString("points");
-                                    int points = Integer.parseInt(pointsText);
-                                    String placement = DriverStandings.getJSONObject(j).getString("positionText");
-                                    String driverName = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("givenName");
-                                    String driverFamilyName = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("familyName");
+                                    JSONObject driverObject = DriverStandings.getJSONObject(j);
 
-                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                    String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
+                                    int points = Integer.parseInt(
+                                            driverObject.getString("points")
+                                    );
 
-                                    if (j == 0){
+                                    String placement = driverObject.getString("positionText");
+
+                                    String driverName =
+                                            driverObject.getJSONObject("Driver")
+                                                    .getString("givenName");
+
+                                    String driverFamilyName =
+                                            driverObject.getJSONObject("Driver")
+                                                    .getString("familyName");
+
+                                    JSONArray constructors =
+                                            driverObject.getJSONArray("Constructors");
+
+                                    JSONObject constructor =
+                                            constructors.getJSONObject(
+                                                    constructors.length() - 1
+                                            );
+
+                                    String constructorsName = constructor.getString("name");
+
+                                    String constructorId =
+                                            constructor.getString("constructorId");
+
+                                    if (j == 0) {
                                         leaderPoints = points;
                                     }
 
                                     int driverMaxPoints = points + maxPoints;
+
                                     boolean canWin = driverMaxPoints > leaderPoints;
 
-                                    driversWDCPointsList smth = new driversWDCPointsList(driverName,
-                                            driverFamilyName, constructorsName, constructorId,
-                                            season, points, driverMaxPoints, canWin, placement);
-                                    datum.add(smth);
+                                    driversWDCPointsList smth =
+                                            new driversWDCPointsList(
+                                                    driverName,
+                                                    driverFamilyName,
+                                                    constructorsName,
+                                                    constructorId,
+                                                    season,
+                                                    points,
+                                                    driverMaxPoints,
+                                                    canWin,
+                                                    placement
+                                            );
+
+                                    if (!canWin && !separatorAdded) {
+                                        datum.add(winnersWdcList.separator());
+                                        separatorAdded = true;
+                                    }
+
+                                    datum.add(winnersWdcList.driver(smth));
                                 }
                             }
                             hideShimmer(recyclerView, shimmerFrameLayout);
@@ -235,7 +279,7 @@ public class winnersWDCActivity extends AppCompatActivity {
                                                             driversWDCPointsList smth = new driversWDCPointsList(driverName,
                                                                     driverFamilyName, constructorsName, constructorId,
                                                                     season, 0, maxPoints, true, String.valueOf(placementHolder[0]));
-                                                            datum.add(smth);
+                                                            datum.add(winnersWdcList.driver(smth));
                                                             hideShimmer(recyclerView, shimmerFrameLayout);
                                                             adapter.notifyItemChanged(datum.size() - 1);
                                                             placementHolder[0]++;

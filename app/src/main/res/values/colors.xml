@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#090e27</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimary">#FFF</color>
+    <color name="colorPredicts">#dedede</color>
     <color name="textColorPrimary">#FFF</color>
     <color name="light_gold">#FFFFBF</color>
     <color name="gold">#836800</color>
@@ -27,11 +28,12 @@
     <color name="dark_grey">#38393e</color>
     <color name="darkest_grey">#222222</color>
     <color name="dark_blue">#090e27</color>
-    <color name="red">#ee0000</color>
+    <color name="red">#a1000b</color>
     <color name="brown">#71423C</color>
     <color name="light_grey">#f2f2f2</color>
     <color name="text_color_main">#FF000000</color>
     <color name="text_color_secondary">#8c8c8c</color>
+    <color name="stroke_option_color">#d9d9d9</color>
     <color name="text_color_thirdly">#38393e</color>
     <color name="colorSecondary">#8c8c8c</color>
     <color name="colorThirdly">#f2f2f2</color>
@@ -55,4 +57,18 @@
     <color name="incorrect_predict_color">#ef5350</color>
     <color name="pending_predict_color">#90a4ae</color>
     <color name="tie_predict_color">#ffb74d</color>
+    <color name="pending_status_text">#607D8B</color>
+    <color name="can_win_true">#50C94D</color>
+    <color name="can_win_false">#FFF4F4</color>
+    <color name="prediction_option_color">#8c8c8c</color>
+    <color name="prediction_red_text_color">#ee0000</color>
+    <color name="prediction_points_color">#FFFFFFFF</color>
+    <color name="logout_button_color">#a1000b</color>
+    <color name="account_settings_color">#090e27</color>
+    <color name="account_settings_input_color">#dedede</color>
+    <color name="account_settings_header_color">#090e27</color>
+    <color name="account_settings_button_color">#8c8c8c</color>
+    <color name="header_color">#a1000b</color>
+    <color name="header_color_gradient">#a1000b</color>
+    <color name="separator_header">#a1000b</color>
 </resources>

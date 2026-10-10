@@ -1,119 +1,330 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:clipToPadding="true">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    tools:context=".userPredictionsActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/colorPrimary">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:text="Мои прогнозы"
-            android:textColor="@color/text_color_main"
-            android:textSize="24sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/userPredictionsEmptyText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="24dp"
-            android:text="Вы ещё не сделали прогнозов"
-            android:textColor="@color/text_color_main"
-            android:visibility="gone" />
-
+        android:layout_height="match_parent"
+        android:orientation="vertical">
         <LinearLayout
-            android:id="@+id/userPredictionStatsLayout"
+            android:id="@+id/header"
+            android:orientation="horizontal"
+            android:paddingTop="40dp"
+            android:paddingBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:background="@color/header_color">
+
+            <ImageButton
+                android:visibility="visible"
+                android:id="@+id/backButton"
+                android:layout_width="48dp"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/back_arrow"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:src="@drawable/back_arrow" />
 
             <TextView
-                android:layout_width="match_parent"
+                android:textStyle="bold"
+                android:id="@+id/usersPredictionHeader"
+                android:text="@string/user_predictions_header"
+                android:layout_gravity="center"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Моя статистика"
-                android:textColor="@color/text_color_main"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/totalPointsText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="Всего очков: 0"
-                android:textColor="@color/text_color_main"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/predictionsCountText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Прогнозов: 0"
-                android:textColor="@color/text_color_main"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/correctPredictionsText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Угадано: 0"
-                android:textColor="@color/text_color_main"
-                android:textSize="16sp" />
-
-            <TextView
-                android:id="@+id/rankText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Место: пока нет"
-                android:textColor="@color/text_color_main"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/chartContainer"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginBottom="12dp"
-            android:orientation="vertical"
-            android:gravity="center_horizontal"
-            android:clipToPadding="false"
-            android:clipChildren="false">
-
-            <com.github.mikephil.charting.charts.PieChart
-                android:id="@+id/predictionResultsChart"
-                android:layout_width="match_parent"
-                android:layout_height="220dp" />
-
-            <LinearLayout
-                android:id="@+id/chartLegend"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical" />
+                android:textColor="@color/white"
+                android:textSize="22sp"/>
 
+            <Space
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="visible"/>
         </LinearLayout>
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userPredictionsRecyclerView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:padding="12dp" />
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/userPredictionsScrollView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:paddingBottom="24dp"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/pageContent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/userStatsLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_marginEnd="15dp"
+                            style="@style/PredictionsLayout"
+                            android:id="@+id/userPredictionStatsLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:layout_marginTop="10dp">
+
+                            <TextView
+                                android:gravity="center"
+                                android:layout_marginTop="15dp"
+                                android:layout_marginEnd="10dp"
+                                android:textAllCaps="true"
+                                android:id="@+id/statsHeader"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="@string/user_predictions_stats_text"
+                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="130dp"
+                                android:layout_marginTop="20dp">
+                                <TextView
+                                    android:textColor="@color/text_color_main"
+                                    android:textStyle="normal"
+                                    android:id="@+id/predictionsCount_info"
+                                    android:layout_width="wrap_content"
+                                    android:layout_marginStart="10dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/user_predictions_stats_predictions"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+                                <TextView
+                                    android:textColor="@color/text_color_main"
+                                    android:layout_alignParentEnd="true"
+                                    android:layout_marginStart="20dp"
+                                    android:id="@+id/predictionsCountText"
+                                    android:textSize="22sp"
+                                    android:layout_width="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                                    android:layout_height="wrap_content"/>
+                            </RelativeLayout>
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="130dp">
+
+                                <TextView
+                                    android:textColor="@color/text_color_main"
+                                    android:textStyle="normal"
+                                    android:id="@+id/correctPredictions_info"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/user_predictions_stats_correct"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+                                <TextView
+                                    android:layout_alignParentEnd="true"
+                                    android:id="@+id/correctPredictionsText"
+                                    android:layout_marginStart="20dp"
+                                    android:textSize="22sp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                                    android:textColor="@color/text_color_main"/>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="130dp">
+
+                                <TextView
+                                    android:textColor="@color/text_color_main"
+                                    android:textStyle="normal"
+                                    android:id="@+id/totalPoints_info"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/user_predictions_stats_points"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+                                <TextView
+                                    android:layout_alignParentEnd="true"
+                                    android:id="@+id/totalPointsText"
+                                    android:textSize="22sp"
+                                    android:layout_marginStart="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                                    android:textColor="@color/text_color_main"/>
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="20dp">
+                                <TextView
+                                    android:textStyle="normal"
+                                    android:layout_centerVertical="true"
+                                    android:id="@+id/seasonRank_info"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
+                                    android:textColor="@color/text_color_main"/>
+                                <TextView
+                                    android:layout_toEndOf="@id/seasonRank_info"
+                                    android:id="@+id/seasonRank"
+                                    android:layout_marginStart="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                                    android:textColor="@color/text_color_main"
+                                    android:textSize="30sp" />
+                            </RelativeLayout>
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginTop="5dp"
+                                android:layout_marginEnd="20dp">
+
+                                <TextView
+                                    android:textStyle="normal"
+                                    android:layout_centerVertical="true"
+                                    android:id="@+id/globalRank_info"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
+                                    android:textColor="@color/text_color_main"/>
+                                <TextView
+                                    android:layout_toEndOf="@id/globalRank_info"
+                                    android:id="@+id/globalRank"
+                                    android:layout_marginStart="20dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
+                                    android:textColor="@color/text_color_main"
+                                    android:textSize="30sp" />
+                            </RelativeLayout>
+
+                            <LinearLayout
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginBottom="20dp"
+                                android:id="@+id/chartContainer"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="12dp"
+                                android:clipChildren="false"
+                                android:clipToPadding="false"
+                                android:gravity="center_horizontal"
+                                android:orientation="vertical">
+
+                                <com.github.mikephil.charting.charts.PieChart
+                                    android:id="@+id/predictionResultsChart"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="190dp" />
+
+                                <LinearLayout
+                                    android:id="@+id/chartLegend"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="4dp"
+                                    android:gravity="center_horizontal"
+                                    android:orientation="vertical" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:textAlignment="center"
+                        android:layout_marginTop="20dp"
+                        android:id="@+id/predsHeader"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:text="@string/user_predictions_preds_rv_text"
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+                    <FrameLayout
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/predictionsLoadingContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp">
+
+                        <TextView
+                            android:id="@+id/userPredictionsEmptyText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:text="@string/user_predictions_stats_empty"
+                            android:textColor="@color/text_color_main"
+                            android:visibility="gone"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                            android:textStyle="normal"/>
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/userPredictionsRecyclerView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clipToPadding="false"
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never"
+                            android:paddingBottom="10dp"
+                            android:scrollingCache="true"
+                            android:visibility="gone"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <include layout="@layout/shimmer_user_prediction" />
+
+                                <include layout="@layout/shimmer_user_prediction" />
+
+                            </LinearLayout>
+
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+
+                    </FrameLayout>
+
+                </LinearLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
     </LinearLayout>
-</ScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

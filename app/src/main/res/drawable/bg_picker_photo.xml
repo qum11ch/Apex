@@ -1,0 +1,6 @@
+<!-- res/drawable/bg_picker_photo.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#F2F4F7" />
+    <corners android:radius="14dp" />
+</shape>

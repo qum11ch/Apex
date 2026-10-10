@@ -53,24 +53,36 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </RelativeLayout>
-            <ImageView
-                android:contentDescription="@string/flag_image"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:id="@+id/circuitImage"
-                android:layout_marginTop="40dp"
-                android:layout_marginBottom="40dp"
-                android:layout_below="@id/race_info_layout"
+            <androidx.cardview.widget.CardView
+                android:id="@+id/circuit_card"
                 android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="fitCenter"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/race_info_layout"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="10dp"
+                app:cardBackgroundColor="@color/account_settings_input_color"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="0dp"
+                app:cardPreventCornerOverlap="true">
+
+                <ImageView
+                    android:layout_margin="5dp"
+                    android:id="@+id/circuitImage"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:adjustViewBounds="true"
+                    android:scaleType="fitCenter"
+                    android:contentDescription="@string/flag_image" />
+            </androidx.cardview.widget.CardView>
             <RelativeLayout
                 android:id="@+id/circuitInfo_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/circuitImage">
+                android:layout_below="@id/circuit_card">
                 <RelativeLayout
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="10dp"
                     android:id="@+id/length_layout"
                     style="@style/CircuitLayout"
                     android:paddingTop="20dp"
@@ -108,7 +120,7 @@
                     android:id="@+id/circuitInfo_1"
                     android:baselineAligned="false"
                     android:paddingStart="10dp"
-                    android:paddingEnd="20dp"
+                    android:paddingEnd="10dp"
                     android:layout_below="@id/length_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -160,7 +172,7 @@
                 <RelativeLayout
                     android:paddingBottom="5dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="10dp"
                     style="@style/CircuitInfoLayout"
                     android:layout_below="@id/circuitInfo_1"
                     android:id="@+id/circuitInfo_2"
@@ -195,7 +207,7 @@
                 <LinearLayout
                     android:paddingBottom="5dp"
                     android:layout_marginStart="10dp"
-                    android:layout_marginEnd="20dp"
+                    android:layout_marginEnd="10dp"
                     android:orientation="vertical"
                     style="@style/CircuitInfoLayout"
                     android:layout_below="@id/circuitInfo_2"
@@ -239,12 +251,12 @@
                 android:layout_height="60dp"
                 android:textAppearance="@style/TextStyle.Gram.Bold"
                 android:id="@+id/raceResults_2025"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="10dp"/>
             <View
                 android:layout_below="@id/raceResults_2025"
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
-                android:layout_marginEnd="20dp"
+                android:layout_marginEnd="10dp"
                 android:background="@color/grey"
                 android:id="@+id/resultsLine"/>
             <Button
@@ -261,7 +273,7 @@
                 android:layout_height="60dp"
                 android:textAppearance="@style/TextStyle.Gram.Bold"
                 android:id="@+id/raceResults_2024"
-                android:layout_marginEnd="20dp"/>
+                android:layout_marginEnd="10dp"/>
         </RelativeLayout>
         <com.facebook.shimmer.ShimmerFrameLayout
             android:visibility="visible"

@@ -21,8 +21,22 @@
     <string name="pole_position">Pole position</string>
     <string name="team">Team</string>
     <string name="save_race">Save Race</string>
-    <string name="settings">Settings</string>
+    <string name="settings">Account Settings</string>
+    <string name="account_data">Account data</string>
+    <string name="change_avatar">Change avatar</string>
     <string name="saved_race">Saved Races</string>
+
+    <string name="profile_avatar">Profile avatar</string>
+    <string name="change_email">Change email</string>
+    <string name="change_password">Change password</string>
+    <string name="current_email">Current email</string>
+    <string name="new_email_text">New email</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="repeat_password">Repeat password</string>
+    <string name="saved_text">Saved</string>
+    <string name="save_text">Save</string>
+
     <string name="logout">Logout</string>
     <string name="logout_text">Logout!</string>
     <string name="teams_header">Teams standings</string>
@@ -49,10 +63,13 @@
     <string name="three" translatable="false">3</string>
     <string name="dash" translatable="false">-</string>
     <string name="is_ongoing">is ongoing</string>
-    <string name="favourite_team">favourite team</string>
-    <string name="favorite_team_has_not_yet_been_chosen">Favorite team has not yet been chosen</string>
-    <string name="favourite_driver">favourite driver</string>
-    <string name="favorite_driver_has_not_yet_been_chosen">Favorite driver has not yet been chosen</string>
+    <string name="favourite_team">Team</string>
+    <string name="favorite_team_has_not_yet_been_chosen">Team not been chosen</string>
+    <string name="favourite_driver">Driver</string>
+    <string name="favorite_driver_has_not_yet_been_chosen">Driver not been chosen</string>
+    <string name="choose">Choose</string>
+    <string name="account_fav_text">Favorite</string>
+    <string name="favorite_image">Driver or team image</string>
     <string name="front_arrow" translatable="false">front_arrow</string>
     <string name="team_car" translatable="false">team_car</string>
     <string name="back_arrow" translatable="false">back_arrow</string>
@@ -116,8 +133,13 @@
     <string name="days">days</string>
     <string name="hours">hours</string>
     <string name="minutes">minutes</string>
-    <string name="dialog_login">please login</string>
+    <string name="dialog_login">Please login</string>
     <string name="dialog_login_info">We need to verify that this is your account</string>
+
+    <string name="dialog_change_email_title">Please enter your password</string>
+    <string name="dialog_change_email_description">Enter your new password and current password</string>
+    <string name="dialog_change_password_description">Enter your old and new password</string>
+
     <string name="forgot_password">Forgot password?</string>
     <string name="reset_password_button">reset password</string>
     <string name="reset_password_info">Provide your account`s email for which you want to reset your password</string>
@@ -185,7 +207,7 @@
     <string name="sprint_quali_event_text">Sprint Qualifying</string>
     <string name="prev_race_results_text">Race Results</string>
     <string name="saved_race_text">Saved: \n</string>
-    <string name="fan_of_text">Fan Of</string>
+    <string name="created_at_text">Registered From</string>
     <string name="no_fan_of_text">Has no favourite driver and team</string>
     <string name="nobody">Nobody</string>
     <string name="reqistration_succ_text">Registration successful!</string>
@@ -220,6 +242,8 @@
     <string name="try_again_button">try again</string>
     <string name="not_concluded">GP not concluded (N/C)</string>
     <string name="is_running">is running</string>
+
+    <string name="change_text">Change</string>
 
     <string name="canceled_text">Canceled</string>
 
@@ -311,6 +335,9 @@
     <string name="sepang_text">Sepang International Circuit</string>
 
     <string name="points_text">Points</string>
+    <string name="points_text_lowered">points</string>
+    <string name="predictions_text_lowered">predictions</string>
+    <string name="races_saved_text_lowered">races saved</string>
 
     <string name="delete_race_text">Are you sure you want to delete this race from saved races list?</string>
     <string name="race_finished_text">Finished</string>
@@ -335,43 +362,174 @@
     <string name="footer_splash_screen" translatable="false">This application is unofficial and is not associated in any way with the Formula 1 companies. F1, FORMULA ONE, FORMULA 1, FIA FORMULA ONE WORLD CHAMPIONSHIP, GRAND PRIX and related marks are trade marks of Formula One Licensing B.V.</string>
     <string name="predict">predict</string>
     <string name="prediction">prediction</string>
-    <string name="predict_button">Get Prediction</string>
+    <string name="predict_button">Neural Prediction</string>
     <string name="predict_quali">Qualifying</string>
     <string name="predict_sprint_quali">Spring Qualifying</string>
-    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2026 Grand Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
+    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2026 Grand-Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
     <string name="warning_it">Attention! Getting the prediction may take some time! Approximate waiting time up to 2 minutes depending on your Internet connection!</string>
     <string name="qualifying_text">Qualifying</string>
     <string name="sprint_qualifying_text">Sprint Qualifying</string>
     <string name="yes_text">Yes</string>
     <string name="no_text">No</string>
-    <string name="actual_points_text">Actual Points</string>
-    <string name="max_points_text">Max Points</string>
-    <string name="can_win_wdc_text">Can Win WDC</string>
+    <string name="actual_points_text">Current</string>
+    <string name="max_points_text">Max</string>
+    <string name="can_win_wdc_text">Can Win</string>
     <string name="winners_wdc_button_text">Who Can Win WDC</string>
-    <string name="winners_wdc_header">Drivers who can still win the WDC</string>
+    <string name="winners_wdc_header">WDC Contenders</string>
     <string name="remaining_events_text">Events left:</string>
     <string name="conventional_events_text">Conventional Events:</string>
     <string name="sprint_events_text">Sprint Events:</string>
     <string name="max_points_events_text">Maximum points that can be earned:</string>
-    <string name="winner_wdc_info_text">Here you can find out which drivers can theoretically still win the WDC. This is done by calculating the maximum number of points each driver can accumulate by the end of the season and comparing it with the current results of the leaders.</string>
+    <string name="winner_wdc_info_text">For each driver, the maximum possible points until the end of the season are calculated. If this total exceeds the leader`s current points, the driver remains in contention for the title.</string>
+    <string name="winner_wdc_zero_chances">Zero Chance To Win WDC</string>
 
+
+    <string name="prediction_button_text">Submit a prediction</string>
+    <string name="user_prediction_button_text">My Predictions</string>
 
     <string name="prediction_weekend_round">%1$s • Round %2$d</string>
     <string name="prediction_season">Season %1$s</string>
 
-    <string name="prediction_answer_prefix">Your answer: %1$s</string>
+    <string name="prediction_answer_prefix">Your Answer</string>
     <string name="prediction_answer_unknown">Selected option</string>
     <string name="prediction_boolean_answer">Yes / No</string>
     <string name="prediction_head_to_head_answer">%1$s vs %2$s</string>
 
-    <string name="prediction_status_correct">Status: correct</string>
-    <string name="prediction_status_incorrect">Status: incorrect</string>
-    <string name="prediction_status_tie">Status: tie</string>
-    <string name="prediction_status_pending">Status: awaiting result</string>
+    <string name="prediction_status_correct">Correct</string>
+    <string name="prediction_status_incorrect">Incorrect</string>
+    <string name="prediction_status_tie">Tie</string>
+    <string name="prediction_status_pending">Awaiting result</string>
 
     <string name="prediction_points_awarded">Points awarded: %1$s</string>
     <string name="prediction_points_possible">Possible points: %1$s</string>
 
     <string name="prediction_category_season">Season</string>
     <string name="prediction_category_weekend">Race weekend</string>
+
+    <string name="prediction_null_id">Error: Prediction ID is missing</string>
+    <string name="prediction_not_found">Error: Prediction not found</string>
+    <string name="predictions_broken_structure">Error: Incomplete prediction structure</string>
+    <string name="prediction_unknown_option_type">Error: Unknown option type</string>
+    <string name="prediction_load_error">Error loading prediction</string>
+    <string name="prediction_drivers_error">Failed to load drivers</string>
+    <string name="prediction_constructors_error">Failed to load constructors</string>
+    <string name="prediction_choice">Your current prediction: </string>
+    <string name="prediction_result_correct">Correct</string>
+    <string name="prediction_result_incorrect">Incorrect</string>
+    <string name="prediction_result_tie">Tie - half points awarded</string>
+    <string name="prediction_result_pending">Result pending</string>
+    <string name="prediction_points_text">Points</string>
+    <string name="prediction_submitted_text">Selected </string>
+    <string name="prediction_option_text_boolean">Select Yes or No</string>
+    <string name="prediction_option_text_head_drivers">Select one of the two drivers</string>
+    <string name="prediction_option_text_head_constructors">Select one of the two constructors</string>
+    <string name="prediction_option_text_constructor">Select a team</string>
+    <string name="prediction_option_text_driver">Select a driver</string>
+    <string name="prediction_save_text">Prediction saved</string>
+    <string name="prediction_head_error">Error: Invalid head-to-head event</string>
+    <string name="prediction_list_empty">There are no active predictions yet</string>
+
+    <string name="deadline_text">Predictions close on: </string>
+    <string name="user_prediction_deadline_text">Changeable until </string>
+    <string name="prediction_deadline_text">Submission deadline</string>
+    <string name="deadline_null">Not set</string>
+    <string name="prediction_type_champion">Champion</string>
+    <string name="prediction_type_winner">Winner</string>
+    <string name="prediction_type_race_head">Race Head-To-Head</string>
+    <string name="prediction_type_quali_head">Qualification Head-To-Head</string>
+    <string name="prediction_type_team_points_head">Team Points Head-To-Head</string>
+    <string name="prediction_type_safety_car">Safety Car</string>
+    <string name="prediction_type_rain">Rain</string>
+    <string name="prediction_type_boolean">Yes/No</string>
+
+    <string name="prediction_choose_text">Choose One Option</string>
+
+    <string name="prediction_option_type_driver">Drivers</string>
+    <string name="prediction_option_type_constructor">Teams</string>
+    <string name="prediction_option_type_boolean">Yes/No</string>
+
+    <string name="users_not_found">User not found</string>
+    <string name="new_email_error">This email is already in use</string>
+    <string name="email_confirming_text">An email has been sent to your new address. Please confirm it using the link provided</string>
+    <string name="confirmation_email_error">Failed to send confirmation email</string>
+    <string name="password_error">Incorrect current password</string>
+    <string name="password_changed">Password changed successfully</string>
+    <string name="password_change_error">Failed to change password</string>
+    <string name="delete_user_error">Failed to delete account</string>
+    <string name="email_enter">Enter email</string>
+    <string name="email_error">Invalid email address</string>
+    <string name="password_enter">Enter current password</string>
+    <string name="six_simbols_minimum">Minimum 6 characters</string>
+    <string name="passwords_not_equals">Passwords do not match</string>
+    <string name="account_load_error">Failed to load profile</string>
+    <string name="photo_load_error">Failed to load photo</string>
+    <string name="email_confirming_success">New email confirmed successfully</string>
+    <string name="user_account_load">Failed to load user data</string>
+    <string name="user_driver_error">Failed to load driver</string>
+    <string name="user_team_error">Failed to load team</string>
+    <string name="team_not_found">Team not found</string>
+    <string name="render_error">Rendering error</string>
+    <string name="empty_team_data">Incomplete team data</string>
+    <string name="car_load_error">Failed to load car</string>
+    <string name="team_roster_error">Failed to load team roster</string>
+    <string name="choose_driver">Select driver</string>
+    <string name="choose_team">Select team</string>
+    <string name="driver_description">Formula 1 driver</string>
+    <string name="team_description">Formula 1 team</string>
+    <string name="data_rules_error">Access denied to this data</string>
+
+
+    <string name="user_prediction_delete_dialog_title">Delete prediction?</string>
+    <string name="user_prediction_delete_dialog_description">Your answer will be deleted. You can submit it again while the prediction is open.</string>
+
+    <string name="user_predictions_header">My predictions</string>
+    <string name="user_predictions_stats_text">Statistic</string>
+    <string name="user_predictions_stats_empty">No predictions made yet</string>
+    <string name="user_predictions_preds_rv_text">Your predictions</string>
+    <string name="user_predictions_account_error">Please log in to view your predictions</string>
+    <string name="user_predictions_empty">You haven\'t made any predictions yet</string>
+    <string name="user_predictions_stats_points">Points Total:</string>
+    <string name="user_predictions_stats_predictions">Predictions Total:</string>
+    <string name="user_predictions_stats_correct">Correct:</string>
+    <string name="user_predictions_stats_globalRank">Global Rank:</string>
+    <string name="user_predictions_stats_seasonRank">Position in the season \"%1$s\":</string>
+    <string name="user_predictions_stats_no_global_rank">No global rank available</string>
+    <string name="user_predictions_stats_no_season_rank">No season \"%1$s\" rank available</string>
+    <string name="prediction_correct_text">Correct</string>
+    <string name="prediction_incorrect_text">Incorrect</string>
+    <string name="prediction_pending_text">Pending</string>
+    <string name="prediction_tie_text">Tie</string>
+    <string name="none_results_text">No\nresults</string>
+    <string name="accuracy_text">%\naccuracy</string>
+    <string name="user_predictions_update_ban">This prediction can no longer be changed</string>
+    <string name="user_predictions_recognition_error">Failed to identify prediction</string>
+    <string name="user_predictions_delete_success">Prediction successfully deleted</string>
+    <string name="user_predictions_delete_error">Failed to delete answer</string>
+
+
+    <string name="predictions_header">Predictions</string>
+
+    <string name="neuro_prediction_stale">Showing saved prediction. Data is updating.</string>
+    <string name="neuro_prediction_parse_error">Prediction processing error</string>
+    <string name="neuro_prediction_response_error">Failed to retrieve prediction</string>
+    <string name="neuro_prediction_missing_option">Select a qualification type to generate prediction</string>
+
+    <string name="neuro_prediction_progress_finish">Prediction is ready</string>
+    <string name="neuro_prediction_progress_error">Error: </string>
+    <string name="neuro_prediction_progress_start">Processing request</string>
+    <string name="neuro_prediction_progress_data_start">Preparing event data...</string>
+    <string name="neuro_prediction_progress_data_finish">Event data received</string>
+    <string name="neuro_prediction_progress_data_error">failed to retrieve event data</string>
+    <string name="neuro_prediction_progress_weather_start">Loading weather data...</string>
+    <string name="neuro_prediction_progress_weather_finish">Weather data received</string>
+    <string name="neuro_prediction_progress_weather_error">failed to retrieve weather data</string>
+    <string name="neuro_prediction_progress_weather_pending">Waiting for weather service response...</string>
+    <string name="neuro_prediction_progress_model_start">Calculating prediction...</string>
+    <string name="neuro_prediction_progress_model_put">Sending data to model...</string>
+    <string name="neuro_prediction_progress_model_pending">Waiting for model results...</string>
+    <string name="neuro_prediction_progress_model_processing">Processing completed prediction...</string>
+    <string name="neuro_prediction_progress_model_results">Processing results list...</string>
+    <string name="neuro_prediction_progress_model_table">Updating table...</string>
+    <string name="neuro_prediction_progress_model_error">failed to calculate prediction</string>
+
 </resources>

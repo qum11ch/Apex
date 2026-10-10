@@ -51,6 +51,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference rootRef;
-
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,8 @@ public class MainActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         rootRef = FirebaseDatabase.getInstance().getReference();
+
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         LocalDate currentDate = LocalDate.now();
         database = FirebaseDatabase.getInstance();
@@ -175,14 +179,24 @@ public class MainActivity extends AppCompatActivity {
 
         Button openUsersPredictionsButton = findViewById(R.id.userPredictionsButton);
 
-        openUsersPredictionsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, userPredictionsActivity.class);
-            startActivity(intent);
-        });
+        if (currentUser == null) {
+            openUsersPredictionsButton.setVisibility(View.GONE);
+        } else {
+            openUsersPredictionsButton.setVisibility(View.VISIBLE);
+
+            openUsersPredictionsButton.setOnClickListener(v -> {
+                Intent intent = new Intent(
+                        MainActivity.this,
+                        userPredictionsActivity.class
+                );
+                startActivity(intent);
+            });
+        }
 
         showDriverButton = findViewById(R.id.showDriver);
-        showDriverButton.setOnClickListener(v ->
-                startActivity_getSeason(driversStandingsActivity.class));
+        showDriverButton.setOnClickListener(v -> {
+                    startActivity_getSeason(driversStandingsActivity.class);
+                });
 
         showSchedule = findViewById(R.id.showSchedule);
         showSchedule.setOnClickListener(v ->
@@ -195,35 +209,44 @@ public class MainActivity extends AppCompatActivity {
         showAccount = findViewById(R.id.showAccount);
         showAccount.setOnClickListener(v ->
                 startActivity_getSeason(logInPageActivity.class));
+
         String currentYear = Integer.toString(currentDate.getYear());
 
         Button predict = findViewById(R.id.predict);
 
         DatabaseReference rootRef = database.getReference();
-        rootRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                currentSeason = snapshot.child("season").getValue(String.class);
-                getTeamStanding(currentSeason);
-                getDriversStanding(currentSeason);
-                getSchedule(currentYear, currentDate);
 
-                // Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
-                // if (enablePredicts){
-                //     predict.setVisibility(View.VISIBLE);
-                // }else{
-                //     predict.setVisibility(View.GONE);
-                // }
-            }
+        rootRef.child("status")
+                .addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                getTeamStanding(currentYear);
-                getDriversStanding(currentYear);
-                getSchedule(currentYear, currentDate);
-                Log.e("MainActivityError", error.getMessage());
-            }
-        });
+                                currentSeason = snapshot.child("season").getValue(String.class);
+
+                                if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                                    showError("Сезон не найден в Firebase");
+                                    return;
+                                }
+
+                                predict.setVisibility(View.VISIBLE);
+
+                                getTeamStanding(currentSeason);
+                                getDriversStanding(currentSeason);
+                                getSchedule(currentYear, currentDate);
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                showError(error.getMessage());
+                                Log.e(
+                                        "MainActivity",
+                                        "status request failed: "
+                                                + error.getMessage()
+                                );
+                            }
+                        }
+                );
 
         winnersWDC.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, winnersWDCActivity.class);
@@ -245,25 +268,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void startActivity_getSeason(Class<?> className){
-        DatabaseReference rootRef = database.getReference();
-        rootRef.child("status/season").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String currentSeason = snapshot.getValue(String.class);
-                Intent intent = new Intent(MainActivity.this, className);
-                Bundle bundle = new Bundle();
-                bundle.putString("currentSeason" , currentSeason);
-                intent.putExtras(bundle);
-                MainActivity.this.startActivity(intent);
-                overridePendingTransition(0, 0);
-            }
+    private void startActivity_getSeason(Class<?> target) {
+        String season = currentSeason;
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("MainActivityError", error.getMessage());
-            }
-        });
+        if (season == null || season.trim().isEmpty()) {
+            season = "2026";
+        }
+
+        Intent intent = new Intent(this, target);
+        intent.putExtra("currentSeason", season);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
     }
 
     private void checkNotificationPermission() {
@@ -317,6 +332,10 @@ public class MainActivity extends AppCompatActivity {
         },500);
     }
 
+    public void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
     private void getDriversStanding(String season){
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
@@ -361,6 +380,7 @@ public class MainActivity extends AppCompatActivity {
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
                                             smth.setTeamColor("#ffffff");
+                                            showError("Team color information getting error:" + error.getMessage());
                                             Log.e(String.valueOf(MainActivity.this), "Team color information getting error:" + error.getMessage());
                                         }
                                     });
@@ -442,6 +462,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                                 @Override
                                                                 public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                                    showError(databaseError.getMessage());
                                                                     Log.e("driverStandingsError", databaseError.getMessage());
                                                                 }
                                                             });
@@ -450,6 +471,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                     @Override
                                                     public void onCancelled(@NonNull DatabaseError error) {
+                                                        showError(error.getMessage());
                                                         Log.e("driverStandingsError", error.getMessage());
                                                     }
                                                 });
@@ -458,12 +480,14 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
+                                    showError(error.getMessage());
                                     Log.e("driverStandingsError", error.getMessage());
                                 }
                             });
 
                         }
                     } catch (JSONException e) {
+                        showError(e.getMessage());
                         e.printStackTrace();
                     }
                 }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
@@ -525,6 +549,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                 @Override
                                                 public void onCancelled(@NonNull DatabaseError error) {
+                                                    showError("Team color information getting error:" + error.getMessage());
                                                     Log.e(String.valueOf(MainActivity.this), "Team color information getting error:" + error.getMessage());
                                                 }
                                             });
@@ -532,6 +557,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         @Override
                                         public void onCancelled(@NonNull DatabaseError error) {
+                                            showError(error.getMessage());
                                             Log.e("MainActivityTeams", error.getMessage());
                                         }
                                     });
@@ -575,6 +601,7 @@ public class MainActivity extends AppCompatActivity {
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
+                                                showError(error.getMessage());
                                                 Log.e("MainActivityTeams", error.getMessage());
                                             }
                                         });
@@ -584,12 +611,14 @@ public class MainActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
+                                    showError(error.getMessage());
                                     Log.e("MainActivityTeams", error.getMessage());
                                 }
                             });
 
                         }
                     } catch (JSONException e) {
+                        showError(e.getMessage());
                         Log.e("MainActivityTeams", " " + e.getMessage());
                     }
                 }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
@@ -654,6 +683,7 @@ public class MainActivity extends AppCompatActivity {
                         }
 
                     } catch (ParseException e){
+                        showError(e.getMessage());
                         Log.d("ParseExeption", "" + e);
                     }
 
@@ -701,6 +731,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                showError(error.getMessage());
                 Log.e("scheduleActivityFirebaseError", error.getMessage());
             }
         });
@@ -744,6 +775,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
+                                showError(error.getMessage());
                                 Log.e("MainActivityTeams", error.getMessage());
                             }
                         });
@@ -753,6 +785,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
+                showError(error.getMessage());
                 Log.e("MainActivityTeams", error.getMessage());
             }
         });
@@ -799,6 +832,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {
+                                    showError("getFutureRace error" + error.getMessage());
                                     Toast.makeText(MainActivity.this, "MainActivity getFutureRace error" + error.getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             });
@@ -808,6 +842,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
+                        showError("getFutureRace error" + error.getMessage());
                         Toast.makeText(MainActivity.this, "MainActivity getFutureRace error" + error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -864,6 +899,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError error) {
+                    showError("getRaceSchedule error" + error.getMessage());
                     Log.e("futureActivityFirebaseError", error.getMessage());
                 }
             });
@@ -908,6 +944,7 @@ public class MainActivity extends AppCompatActivity {
                         stringForSharedPrefs += "%" + key + "$" + value + "$" + eventEndStr_date;
 
                     }catch(ParseException e){
+                        showError(e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -936,6 +973,14 @@ public class MainActivity extends AppCompatActivity {
                     sf.stopShimmer();
                 })
                 .start();
+    }
+
+    public static void showShimmer(RecyclerView recyclerView, ShimmerFrameLayout shimmer) {
+        recyclerView.setVisibility(View.GONE);
+
+        shimmer.setAlpha(1f);
+        shimmer.setVisibility(View.VISIBLE);
+        shimmer.startShimmer();
     }
 
     public static boolean checkLightTheme(Context context) {

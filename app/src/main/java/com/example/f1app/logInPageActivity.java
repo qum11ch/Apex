@@ -56,7 +56,10 @@ public class logInPageActivity extends AppCompatActivity {
         }
 
         Bundle intentBundle = getIntent().getExtras();
-        String mCurrentSeason = intentBundle.getString("currentSeason");
+
+        String mCurrentSeason = intentBundle != null
+                ? intentBundle.getString("currentSeason")
+                : null;
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -74,7 +77,11 @@ public class logInPageActivity extends AppCompatActivity {
         til_password = findViewById(R.id.password_layout);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if(user!=null){
+
+        Log.d("AUTH_CHECK", "currentUser = " +
+                (user == null ? "null" : user.getUid()));
+
+        if(!(user == null)){
             startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, mCurrentSeason);
             finish();
         }

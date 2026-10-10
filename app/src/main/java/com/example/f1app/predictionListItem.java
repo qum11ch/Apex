@@ -19,10 +19,10 @@ public class predictionListItem {
 
     private String constructorId;
 
-    private String driverAId;
-    private String driverATitle;
-    private String driverBId;
-    private String driverBTitle;
+    private String sideAId;
+    private String sideATitle;
+    private String sideBId;
+    private String sideBTitle;
 
     public predictionListItem() {
     }
@@ -123,36 +123,36 @@ public class predictionListItem {
         constructorId = value;
     }
 
-    public String getDriverAId() {
-        return driverAId;
+    public String getSideAId() {
+        return sideAId;
     }
 
-    public void setDriverAId(String value) {
-        driverAId = value;
+    public String getSideATitle() {
+        return sideATitle;
     }
 
-    public String getDriverATitle() {
-        return driverATitle;
+    public String getSideBId() {
+        return sideBId;
     }
 
-    public void setDriverATitle(String value) {
-        driverATitle = value;
+    public String getSideBTitle() {
+        return sideBTitle;
     }
 
-    public String getDriverBId() {
-        return driverBId;
+    public void setSideAId(String sideAId) {
+        this.sideAId = sideAId;
     }
 
-    public void setDriverBId(String value) {
-        driverBId = value;
+    public void setSideATitle(String sideATitle) {
+        this.sideATitle = sideATitle;
     }
 
-    public String getDriverBTitle() {
-        return driverBTitle;
+    public void setSideBId(String sideBId) {
+        this.sideBId = sideBId;
     }
 
-    public void setDriverBTitle(String value) {
-        driverBTitle = value;
+    public void setSideBTitle(String sideBTitle) {
+        this.sideBTitle = sideBTitle;
     }
 
     public boolean isWeekend() {

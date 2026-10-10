@@ -7,193 +7,267 @@
     android:background="@color/colorPrimary"
     tools:context=".registerPageActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/header"
-        android:layout_width="match_parent"
         android:paddingTop="40dp"
         android:paddingBottom="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/red">
+        android:background="@color/account_settings_header_color">
+
         <ImageButton
-            android:layout_marginTop="2dp"
-            android:id='@+id/backButton'
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
-            android:paddingEnd="30dp"
-            android:paddingStart="0dp"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:src="@drawable/back_arrow"
-            android:background="@color/red"/>
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:src="@drawable/back_arrow" />
+
         <TextView
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:textColor="@color/white"
+            android:layout_gravity="center"
             android:textAllCaps="true"
-            android:text="@string/settings"
-            android:id="@+id/raceHeader"
-            android:layout_width="match_parent"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
-    </RelativeLayout>
+            android:text="@string/settings"
+            android:textColor="@color/white"
+            android:textSize="22sp"/>
+
+        <Space
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+    </LinearLayout>
     <ScrollView
         android:layout_below="@id/header"
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <RelativeLayout
-            android:layout_marginTop="100dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:paddingBottom="24dp"
+        android:fillViewport="true">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:id="@+id/username_header"
-                android:layout_marginStart="20dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <androidx.cardview.widget.CardView
                 android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:id="@+id/avatarCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                android:textColor="@color/text_color_main"
-                android:text="@string/usernameText"/>
-            <TextView
-                android:layout_below="@id/username_header"
-                android:id="@+id/username"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-            <TextView
-                android:textColor="@color/text_color_main"
-                android:paddingStart="5dp"
-                android:paddingEnd="0dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginTop="30dp"
-                android:text="@string/driver_choice_text"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                app:np_textColor="@color/text_color_main"
-                android:layout_below="@id/username"
-                android:id="@+id/choiceDriver_hint"/>
-            <com.shawnlin.numberpicker.NumberPicker
-                android:id="@+id/driver_picker"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/choiceDriver_hint"
-                android:layout_centerInParent="true"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                app:np_dividerColor="@android:color/transparent"
-                app:np_dividerType="underline"
-                app:np_itemSpacing="50dp"
-                app:np_orientation="horizontal"
-                app:np_selectedTextColor="@color/text_color_main"
-                app:np_textColor="@color/text_color_main"
-                app:np_selectedTextSize="20sp"
-                app:np_textSize="14sp" />
-            <TextView
-                android:textColor="@color/text_color_main"
-                android:paddingStart="5dp"
-                android:paddingEnd="0dp"
-                android:layout_marginTop="25dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:text="@string/choiceTeam_text"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                android:layout_below="@id/driver_picker"
-                android:id="@+id/choiceTeam_hint"/>
-            <com.shawnlin.numberpicker.NumberPicker
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:layout_centerInParent="true"
-                android:layout_width="match_parent"
-                app:np_orientation="horizontal"
-                app:np_dividerColor="@android:color/transparent"
-                app:np_selectedTextSize="20sp"
-                app:np_textSize="14sp"
-                app:np_dividerType="underline"
-                app:np_selectedTextColor="@color/text_color_main"
-                app:np_textColor="@color/text_color_main"
-                app:np_itemSpacing="50dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/choiceTeam_hint"
-                android:id="@+id/team_picker"/>
-            <LinearLayout
-                android:layout_marginTop="30dp"
-                android:id="@+id/buttons_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/team_picker"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:orientation="horizontal"
-                android:weightSum="2">
-                <Button
-                    android:textSize="12sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:id="@+id/changePasswordButton"
-                    android:text="@string/change_private_data"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"/>
-                <Button
-                    android:layout_marginStart="5dp"
-                    android:textSize="12sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/colorPrimary"
-                    android:textStyle="bold"
-                    android:backgroundTint="@color/text_color_thirdly"
-                    android:elevation="0dp"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:id="@+id/deleteAccountButton"
-                    android:text="@string/delete_account"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"/>
-            </LinearLayout>
-            <FrameLayout
-                android:layout_below="@id/buttons_layout"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:id="@+id/saveLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <ProgressBar
-                    android:backgroundTint="@color/red"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_gravity="center_horizontal"
-                    android:visibility="invisible"
-                    android:id="@+id/saveProgress"
-                    android:indeterminate="true"
-                    android:indeterminateTintMode="src_atop"
-                    android:indeterminateTint="@color/red"/>
-                <Button
-                    android:textSize="16sp"
-                    android:enabled="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:id="@+id/saveButton"
-                    android:text="@string/save_button_text"
-                    android:textAllCaps="true"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/account_settings_color"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="0dp">
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    style="@style/ButtonStyle"/>
-            </FrameLayout>
-        </RelativeLayout>
+                    android:orientation="horizontal"
+                    android:padding="20dp">
+
+                    <FrameLayout
+                        android:id="@+id/avatarContainer"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp">
+
+                        <ImageView
+                            android:id="@+id/avatarImage"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/avatar_bg"
+                            android:scaleType="centerCrop" />
+
+                        <TextView
+                            android:id="@+id/avatarInitial"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:textSize="38sp"
+                            android:textStyle="bold" />
+                    </FrameLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="20dp"
+                        android:orientation="vertical">
+                        <TextView
+                            android:textColor="@color/white"
+                            android:id="@+id/username"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                        <Button
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="0dp"
+                            android:paddingBottom="0dp"
+                            style="@style/ButtonStyle"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            android:minHeight="30dp"
+                            android:backgroundTint="@color/account_settings_input_color"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                            android:id="@+id/changeAvatarButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:text="@string/change_avatar"
+                            android:textColor="@color/text_color_thirdly"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="28dp"
+                android:text="@string/account_data"
+                android:textColor="@color/text_color_main"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/account_settings_input_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/emailText"
+                            android:textSize="13sp"
+                            android:textColor="@color/grey" />
+
+                        <TextView
+                            android:textColor="@color/text_color_main"
+                            android:id="@+id/currentEmail"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <Button
+                        android:textColor="@color/text_color_main"
+                        android:id="@+id/changeEmailButton"
+                        android:background="@android:color/transparent"
+                        android:textAllCaps="false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/change_text" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <androidx.cardview.widget.CardView
+                android:background="@color/colorPredicts"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/account_settings_input_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/passwordText"
+                            android:textSize="13sp"
+                            android:textColor="@color/grey" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:text="••••••••"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+
+                    <Button
+                        android:textColor="@color/text_color_main"
+                        android:id="@+id/changePasswordButton"
+                        android:background="@android:color/transparent"
+                        android:textAllCaps="false"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="@string/change_text" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            <Button
+                android:id="@+id/logoutButton"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="28dp"
+                android:textSize="12sp"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                android:text="@string/logout"
+                android:textColor="@color/logout_button_color"
+                android:textStyle="bold"
+                android:elevation="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                style="@style/LogoutButtonStyle"/>
+
+            <Button
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="28dp"
+                android:textSize="12sp"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                android:textColor="@color/colorPrimary"
+                android:textStyle="bold"
+                android:backgroundTint="@color/text_color_thirdly"
+                android:elevation="0dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/deleteAccountButton"
+                android:text="@string/delete_account"
+                android:textAllCaps="true"
+                style="@style/ButtonStyle"/>
+
+        </LinearLayout>
     </ScrollView>
 </RelativeLayout>

@@ -1,50 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/userPredictionTitle"
+    android:layout_height="wrap_content">
+    <FrameLayout
+        android:id="@+id/swipeBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:background="@drawable/bg_swipe_delete"
+        android:visibility="invisible"
+        app:layout_constraintTop_toTopOf="@id/cardView"
+        app:layout_constraintBottom_toBottomOf="@id/cardView"
+        app:layout_constraintEnd_toEndOf="parent">
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="24dp"
+            android:src="@drawable/delete_white" />
+    </FrameLayout>
+    <androidx.cardview.widget.CardView
+        android:outlineProvider="none"
+        android:stateListAnimator="@null"
+        app:cardUseCompatPadding="false"
+        app:cardPreventCornerOverlap="false"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="0dp"
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/text_color_main"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <RelativeLayout
+            android:id="@+id/content_layout"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:baselineAligned="false"
+            style="@style/ItemStylePreds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp">
 
-    <TextView
-        android:id="@+id/userPredictionEvent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp" />
+            <RelativeLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/userPredictionPoints"
+                    style="@style/ResultsStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_height="wrap_content"
+                    android:minHeight="20dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textColor="@color/white"
+                    android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/userPredictionAnswer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="16sp" />
+                <TextView
+                    android:layout_marginEnd="8dp"
+                    android:textStyle="normal"
+                    android:id="@+id/userPredictionEvent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignTop="@id/userPredictionPoints"
+                    android:layout_toStartOf="@id/userPredictionPoints"
+                    android:textSize="13sp"
+                    android:textColor="@color/prediction_red_text_color"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+            </RelativeLayout>
 
-    <TextView
-        android:id="@+id/userPredictionStatus"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp" />
+            <TextView
+                android:lineSpacingMultiplier="1.15"
+                android:textColor="@color/text_color_main"
+                android:layout_marginTop="5dp"
+                android:gravity="start"
+                android:textAlignment="viewStart"
+                android:layout_below="@id/header"
+                android:id="@+id/userPredictionTitle"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"/>
 
-    <TextView
-        android:id="@+id/userPredictionPoints"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="6dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"
-        android:textStyle="bold" />
+            <LinearLayout
+                android:id="@+id/userAnswer"
+                android:layout_below="@id/userPredictionTitle"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="3dp">
+                <TextView
+                    android:textStyle="normal"
+                    android:id="@+id/userPredictionAnswer_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/prediction_answer_prefix"
+                    android:textColor="@color/text_color_schedule"
+                    android:textSize="16sp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"/>
 
-</LinearLayout>
+                <TextView
+                    android:textStyle="bold"
+                    android:layout_marginStart="5dp"
+                    android:id="@+id/userPredictionAnswer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="16sp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"/>
+
+            </LinearLayout>
+            <TextView
+                android:layout_below="@id/userAnswer"
+                android:id="@+id/userPredictionStatus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_schedule"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+            <TextView
+                android:visibility="gone"
+                android:layout_below="@id/userPredictionStatus"
+                android:textStyle="normal"
+                android:layout_marginTop="5dp"
+                android:id="@+id/userPredictionDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

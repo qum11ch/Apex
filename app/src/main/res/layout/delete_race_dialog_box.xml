@@ -50,6 +50,8 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp">
             <Button
+
+                android:textAllCaps="true"
                 android:id="@+id/cancel_button"
                 style="@style/declineButtonStyle"
                 android:layout_width="0dp"

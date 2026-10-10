@@ -4,20 +4,26 @@ import static com.example.f1app.MainActivity.checkConnection;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,8 +31,8 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -37,22 +43,34 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.shawnlin.numberpicker.NumberPicker;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.List;
 
 public class accountSettingsActivity extends AppCompatActivity {
-    ImageButton backButton;
-    EditText loginUsername, loginPassword;
-    Button saveButton, deleteButton, changePasswordButton, loginButton;
-    FirebaseAuth auth;
-    TextView username;
-    TextInputLayout til_password;
-    NumberPicker driverPicker, teamPicker;
-    Dialog deleteDialog, loginDialog;
-    ProgressBar loginProgress, saveProgress;
+    private Button changeAvatarButton;
+    private Button loginButton;
+
+    private FirebaseAuth auth;
+
+    private TextView username;
+    private TextView currentEmail;
+    private TextView avatarInitial;
+
+    private ImageView avatarImage;
+
+    private Dialog deleteDialog;
+    private Dialog loginDialog;
+
+    private EditText loginPassword;
+
+    private TextInputLayout tilPassword;
+
+    private ProgressBar loginProgress;
+
+    private String mCurrentSeason;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,326 +89,811 @@ public class accountSettingsActivity extends AppCompatActivity {
         }
 
         Bundle intentBundle = getIntent().getExtras();
-        String mCurrentSeason = intentBundle.getString("currentSeason");
+
+        mCurrentSeason = intentBundle != null
+                ? intentBundle.getString("currentSeason")
+                : null;
 
         username = findViewById(R.id.username);
-        driverPicker = findViewById(R.id.driver_picker);
-        teamPicker = findViewById(R.id.team_picker);
-        saveButton = findViewById(R.id.saveButton);
-        deleteButton = findViewById(R.id.deleteAccountButton);
-        changePasswordButton = findViewById(R.id.changePasswordButton);
-        saveProgress = findViewById(R.id.saveProgress);
+        currentEmail = findViewById(R.id.currentEmail);
 
+        avatarImage = findViewById(R.id.avatarImage);
+        avatarInitial = findViewById(R.id.avatarInitial);
 
-        LocalDate currentDate = LocalDate.now();
-        String currentYear = Integer.toString(currentDate.getYear());
+        changeAvatarButton = findViewById(R.id.changeAvatarButton);
+        Button changeEmailButton = findViewById(R.id.changeEmailButton);
+        Button changePasswordButton = findViewById(R.id.changePasswordButton);
+
+        Button deleteButton = findViewById(R.id.deleteAccountButton);
+        Button logoutButton = findViewById(R.id.logoutButton);
+        ImageButton backButton = findViewById(R.id.backButton);
 
         auth = FirebaseAuth.getInstance();
+
         FirebaseUser user = auth.getCurrentUser();
-        String userId = user.getUid();
-
-
-        ArrayList<String> driversList = new ArrayList<>();
-        ArrayList<String> teamList = new ArrayList<>();
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId").equalTo(userId)
-                .addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot userSnap: snapshot.getChildren()){
-                    String choiceDriver = " ", choiceTeam = " ";
-                    String choiceTeam_dbData = userSnap.child("choiceTeam").getValue(String.class);
-                    String choiceDriver_dbData = userSnap.child("choiceDriver").getValue(String.class);
-                    if (choiceDriver_dbData.equals("null")){
-                        choiceDriver = getString(R.string.nobody);
-                    }else{
-                        choiceDriver = choiceDriver_dbData;
-                    }
-
-                    if (choiceTeam_dbData.equals("null")){
-                        choiceTeam = getString(R.string.nobody);
-                    }else{
-                        choiceTeam = choiceTeam_dbData;
-                    }
-                    String mUsername = userSnap.getKey();
-
-                    username.setText(mUsername);
-
-                    DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                    String finalChoiceDriver = choiceDriver;
-                    rootRef.child("driverLineUp/season").child(currentYear).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            driversList.clear();
-                            for(DataSnapshot teamSnapshot: snapshot.getChildren()){
-                                for(DataSnapshot driverSnaphot: teamSnapshot.child("drivers").getChildren()){
-                                    if (!driverSnaphot.getKey().equals(finalChoiceDriver)){
-                                        driversList.add(driverSnaphot.getKey());
-                                    }
-                                }
-                            }
-                            driverPicker.setMinValue(1);
-                            driverPicker.setMaxValue(driversList.size());
-                            Collections.sort(driversList, String.CASE_INSENSITIVE_ORDER);
-                            Collections.reverse(driversList);
-                            if (!finalChoiceDriver.equals(getString(R.string.nobody))){
-                                driversList.add(getString(R.string.nobody));
-                            }
-                            driversList.add(finalChoiceDriver);
-                            Collections.reverse(driversList);
-                            driverPicker.setDisplayedValues(driversList.toArray(new String[driversList.size()]));
-
-
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("accountSettingPageActivity", "Error while getting drivers. Error:" + error.getMessage());
-                        }
-                    });
-
-                    String finalChoiceTeam = choiceTeam;
-                    rootRef.child("constructors").addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            teamList.clear();
-                            for(DataSnapshot teamSnapshot: snapshot.getChildren()){
-                                if (!teamSnapshot.child("name").getValue(String.class).equals(finalChoiceTeam)){
-                                    teamList.add(teamSnapshot.child("name").getValue(String.class));
-                                }
-                            }
-                            teamPicker.setMinValue(1);
-                            teamPicker.setMaxValue(teamList.size());
-
-                            Collections.reverse(teamList);
-                            if (!finalChoiceTeam.equals(getString(R.string.nobody))){
-                                teamList.add(getString(R.string.nobody));
-                            }
-                            teamList.add(finalChoiceTeam);
-                            Collections.reverse(teamList);
-                            teamPicker.setDisplayedValues(teamList.toArray(new String[teamList.size()]));
-
-                            Log.e("TEAMSERROR", " Team choice: " + teamList);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("accountSettingPageActivity", "Error while getting constructors. Error:" + error.getMessage());
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("accountSettingPageActivity", "Error while getting user. Error:" + error.getMessage());
-            }
-        });
-
-        deleteDialog = new Dialog(accountSettingsActivity.this);
-        deleteDialog.setContentView(R.layout.delete_dialog_box);
-        deleteDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        deleteDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
-        deleteDialog.setCancelable(false);
-
-        loginDialog = new Dialog(accountSettingsActivity.this);
-        loginDialog.setContentView(R.layout.login_dialog_box);
-        loginDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        loginDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
-        loginDialog.setCancelable(true);
-
-        loginUsername = loginDialog.findViewById(R.id.loginUsername);
-        loginPassword = loginDialog.findViewById(R.id.loginPassword);
-        til_password = loginDialog.findViewById(R.id.password_layout);
-        TextView resetPassword = loginDialog.findViewById(R.id.resetPassword);
-        loginButton = loginDialog.findViewById(R.id.loginButton);
-        loginProgress = loginDialog.findViewById(R.id.loginProgress);
-
-        loginUsername.addTextChangedListener(textWatcher);
-        loginPassword.addTextChangedListener(textWatcher);
-
-        Button cancelButton = deleteDialog.findViewById(R.id.cancel_button);
-        Button confirmButton = deleteDialog.findViewById(R.id.confirm_button);
-
-        cancelButton.setOnClickListener(view -> deleteDialog.dismiss());
-
-        confirmButton.setOnClickListener(view -> {
-            deleteDialog.dismiss();
-            loginDialog.show();
-        });
-
-        loginButton.setOnClickListener(view -> {
-            deleteUserAccount();
-            loginDialog.dismiss();
-            startActivity(new Intent(accountSettingsActivity.this,
-                    MainActivity.class));
+        if (user == null) {
             finish();
-        });
-
-        resetPassword.setOnClickListener(view -> {
-            Intent i = new Intent(accountSettingsActivity.this,
-                    resetPageActivity.class);
-            i.putExtra("currentSeason", mCurrentSeason);
-            startActivity(i);
-        });
-
-        backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(view -> {
-            Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
-            i.putExtra("currentSeason", mCurrentSeason);
-            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-            finish();
-            overridePendingTransition(0, 0);
-        });
-
-        saveButton.setOnClickListener(view -> {
-            updateChoices(driversList, teamList);
-            Intent i = new Intent(accountSettingsActivity.this, accountPageActivity.class);
-            i.putExtra("currentSeason", mCurrentSeason);
-            i.setFlags(i.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(i);
-            finish();
-            overridePendingTransition(0, 0);
-        });
-
-        deleteButton.setOnClickListener(view -> deleteDialog.show());
-
-        changePasswordButton.setOnClickListener(view -> {
-            Intent i = new Intent(accountSettingsActivity.this, changeUserPrivateDataActivity.class);
-            i.putExtra("currentSeason", mCurrentSeason);
-            startActivity(i);
-        });
-
-    }
-
-    private TextWatcher textWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String mLoginUsername = loginUsername.getText().toString().trim();
-            String mLoginPassword = loginPassword.getText().toString().trim();
-
-            if(mLoginPassword.length()<6 && !mLoginPassword.isEmpty()){
-                til_password.setError(getString(R.string.invalid_password_text));
-            }else{
-                til_password.setError(null);
-            }
-
-            if(!mLoginUsername.isEmpty()&&mLoginPassword.length()>5){
-                loginButton.setEnabled(true);
-            }
-        }
-
-        @Override
-        public void afterTextChanged(Editable editable) {}
-    };
-
-    private void deleteUserAccount() {
-        loginProgress.setVisibility(View.VISIBLE);
-        loginButton.setVisibility(View.INVISIBLE);
-
-        String username = loginUsername.getText().toString().trim();
-        String password = loginPassword.getText().toString().trim();
-
-        if (username.isEmpty() || password.isEmpty()) {
-            Toast.makeText(accountSettingsActivity.this, getString(R.string.empty_credentials_text),
-                    Toast.LENGTH_LONG).show();
             return;
         }
 
-        if(til_password.getError() != null) {
-            Toast.makeText(accountSettingsActivity.this,  getString(R.string.all_fields_text),
-                    Toast.LENGTH_LONG).show();
-        }else{
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            AuthCredential credential = EmailAuthProvider
-                    .getCredential(user.getEmail(), password);
-            user.reauthenticate(credential)
-                    .addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-                            if(task.isSuccessful()){
-                                user.delete()
-                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<Void> task) {
-                                                if (task.isSuccessful()) {
-                                                    rootRef.child("users").child(username)
-                                                            .removeValue();
-                                                    Toast.makeText(accountSettingsActivity.this,
-                                                            getString(R.string.delete_account_text),
-                                                            Toast.LENGTH_LONG).show();
-                                                }else{
-                                                    Toast.makeText(accountSettingsActivity.this,
-                                                            getString(R.string.smth_wrong_text),
-                                                            Toast.LENGTH_LONG).show();
-                                                }
-                                            }
-                                        });
+        username.setText(getString(R.string.usernameText));
+        currentEmail.setText(user.getEmail());
 
-                            }else{
-                                loginProgress.setVisibility(View.INVISIBLE);
-                                loginButton.setVisibility(View.VISIBLE);
-                                Toast.makeText(accountSettingsActivity.this,
-                                        getString(R.string.auth_fail_text),
-                                        Toast.LENGTH_LONG).show();
+        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
+            avatarInitial.setText(
+                    user.getEmail()
+                            .substring(0, 1)
+                            .toUpperCase()
+            );
+        }
+
+        loadUserProfile();
+        loadAvatarIfExists(user);
+
+        deleteDialog = new Dialog(accountSettingsActivity.this);
+        deleteDialog.setContentView(R.layout.delete_dialog_box);
+        if (deleteDialog.getWindow() != null) {
+            deleteDialog.getWindow().setLayout(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            deleteDialog.getWindow().setBackgroundDrawable(
+                    getDrawable(R.drawable.custom_dialog_bg)
+            );
+        }
+        deleteDialog.setCancelable(false);
+
+        loginDialog = new Dialog(accountSettingsActivity.this);
+        loginDialog.setContentView(R.layout.dialog_login);
+
+        if (loginDialog.getWindow() != null) {
+            loginDialog.getWindow().setLayout(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+
+            loginDialog.getWindow().setBackgroundDrawable(
+                    getDrawable(R.drawable.custom_dialog_bg)
+            );
+        }
+
+        loginDialog.setCancelable(true);
+
+        loginPassword = loginDialog.findViewById(R.id.loginPassword);
+        tilPassword = loginDialog.findViewById(R.id.password_layout);
+        loginButton = loginDialog.findViewById(R.id.loginButton);
+        loginProgress = loginDialog.findViewById(R.id.loginProgress);
+
+        loginButton.setOnClickListener(v ->
+                deleteAccountAfterReauthentication()
+        );
+
+        Button cancelButton = deleteDialog.findViewById(R.id.cancel_button);
+
+        Button confirmButton = deleteDialog.findViewById(R.id.confirm_button);
+
+        confirmButton.setOnClickListener(view -> {
+            deleteDialog.dismiss();
+            loginPassword.setText("");
+            tilPassword.setError(null);
+            loginProgress.setVisibility(View.GONE);
+            loginButton.setEnabled(true);
+            loginDialog.show();
+        });
+
+        cancelButton.setOnClickListener(view -> deleteDialog.dismiss());
+
+        backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(view -> {
+            Intent i = new Intent(
+                    accountSettingsActivity.this,
+                    accountPageActivity.class
+            );
+
+            i.putExtra("currentSeason", mCurrentSeason);
+            i.setFlags(
+                    i.getFlags()
+                            | Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
+            );
+
+            startActivity(i);
+            finish();
+            overridePendingTransition(0, 0);
+        });
+
+        backButton.setOnClickListener(view -> {
+            finish();
+            overridePendingTransition(0, 0);
+        });
+
+        getOnBackPressedDispatcher().addCallback(
+                this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        finish();
+                        overridePendingTransition(0, 0);
+                    }
+                }
+        );
+
+        deleteButton.setOnClickListener(view -> deleteDialog.show());
+
+        changeAvatarButton.setOnClickListener(v -> {
+            PickVisualMediaRequest request =
+                    new PickVisualMediaRequest.Builder()
+                            .setMediaType(
+                                    ActivityResultContracts.PickVisualMedia
+                                            .ImageOnly.INSTANCE
+                            )
+                            .build();
+
+            avatarPicker.launch(request);
+        });
+
+        changeEmailButton.setOnClickListener(v ->
+                showChangeEmailDialog()
+        );
+
+        changePasswordButton.setOnClickListener(v ->
+                showChangePasswordDialog()
+        );
+
+        deleteButton.setOnClickListener(v ->
+                deleteDialog.show()
+        );
+
+        logoutButton.setOnClickListener(v ->
+                logout()
+        );
+
+
+    }
+
+    private void logout() {
+        auth.signOut();
+
+        Intent intent = new Intent(
+                accountSettingsActivity.this,
+                logInPageActivity.class
+        );
+
+        intent.putExtra("currentSeason", mCurrentSeason);
+
+        intent.setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_CLEAR_TASK
+        );
+
+        startActivity(intent);
+        finish();
+    }
+
+    private void changeEmail(
+            String newEmail,
+            String currentPassword,
+            AlertDialog dialog,
+            ProgressBar progress,
+            Button saveButton) {
+
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null || user.getEmail() == null) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            showError(getString(R.string.users_not_found));
+            return;
+        }
+
+        if (newEmail.equalsIgnoreCase(user.getEmail())) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            showError(getString(R.string.new_email_error));
+            return;
+        }
+
+        AuthCredential credential =
+                EmailAuthProvider.getCredential(
+                        user.getEmail(),
+                        currentPassword
+                );
+
+        user.reauthenticate(credential)
+                .addOnSuccessListener(unused ->
+                        user.verifyBeforeUpdateEmail(newEmail)
+                                .addOnSuccessListener(unused2 -> {
+                                    progress.setVisibility(View.GONE);
+                                    saveButton.setEnabled(true);
+                                    dialog.dismiss();
+
+                                    Toast.makeText(
+                                            this,
+                                            getString(R.string.email_confirming_text),
+                                            Toast.LENGTH_LONG
+                                    ).show();
+                                })
+                                .addOnFailureListener(error -> {
+                                    progress.setVisibility(View.GONE);
+                                    saveButton.setEnabled(true);
+
+                                    Log.e(
+                                            "ChangeEmail",
+                                            "Email verification failed",
+                                            error
+                                    );
+
+                                    showError(
+                                            getString(R.string.confirmation_email_error)
+                                    );
+                                })
+                )
+                .addOnFailureListener(error -> {
+                    progress.setVisibility(View.GONE);
+                    saveButton.setEnabled(true);
+                    showError(getString(R.string.password_error));
+                });
+    }
+
+
+    private void updateEmailInDatabase(String newEmail) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) return;
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("users")
+                .orderByChild("userId")
+                .equalTo(user.getUid())
+                .addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(
+                                    @NonNull DataSnapshot snapshot) {
+
+                                for (DataSnapshot userSnapshot :
+                                        snapshot.getChildren()) {
+
+                                    userSnapshot.getRef()
+                                            .child("userEmail")
+                                            .setValue(newEmail);
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(
+                                    @NonNull DatabaseError error) {
+                            }
+                        });
+    }
+
+
+    private void changePassword(
+            String currentPassword,
+            String newPassword,
+            AlertDialog dialog,
+            ProgressBar progress,
+            Button saveButton) {
+
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null || user.getEmail() == null) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            showError(getString(R.string.users_not_found));
+            return;
+        }
+
+        AuthCredential credential =
+                EmailAuthProvider.getCredential(
+                        user.getEmail(),
+                        currentPassword
+                );
+
+        user.reauthenticate(credential)
+                .addOnSuccessListener(unused ->
+                        user.updatePassword(newPassword)
+                                .addOnSuccessListener(unused2 -> {
+                                    progress.setVisibility(View.GONE);
+                                    saveButton.setEnabled(true);
+                                    dialog.dismiss();
+
+                                    Toast.makeText(
+                                            this,
+                                            getString(R.string.password_changed),
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                })
+                                .addOnFailureListener(error -> {
+                                    progress.setVisibility(View.GONE);
+                                    saveButton.setEnabled(true);
+                                    showError(
+                                            getString(R.string.password_change_error)
+                                    );
+                                })
+                )
+                .addOnFailureListener(error -> {
+                    progress.setVisibility(View.GONE);
+                    saveButton.setEnabled(true);
+                    showError(getString(R.string.password_error));
+                });
+    }
+    private final ActivityResultLauncher<PickVisualMediaRequest> avatarPicker =
+            registerForActivityResult(
+                    new ActivityResultContracts.PickVisualMedia(),
+                    uri -> {
+                        if (uri != null) {
+                            uploadAvatar(uri);
+                        }
+                    }
+            );
+
+    private void loadAvatarIfExists(FirebaseUser user) {
+        if (user == null) return;
+
+        StorageReference avatarRef =
+                FirebaseStorage.getInstance()
+                        .getReference()
+                        .child("profileImages")
+                        .child(user.getUid())
+                        .child("avatar.jpg");
+
+        avatarRef.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    avatarImage.setVisibility(View.VISIBLE);
+                    avatarInitial.setVisibility(View.GONE);
+
+                    GlideApp.with(this)
+                            .load(uri)
+                            .circleCrop()
+                            .into(avatarImage);
+                })
+                .addOnFailureListener(error -> {
+                    avatarImage.setVisibility(View.GONE);
+                    avatarInitial.setVisibility(View.VISIBLE);
+                });
+    }
+
+    private void deleteUserData(FirebaseUser user) {
+        StorageReference avatarRef =
+                FirebaseStorage.getInstance()
+                        .getReference()
+                        .child("profileImages")
+                        .child(user.getUid())
+                        .child("avatar.jpg");
+
+        avatarRef.delete()
+                .addOnCompleteListener(task ->
+                        deleteRealtimeProfile(user)
+                );
+    }
+
+    private void deleteRealtimeProfile(FirebaseUser user) {
+        DatabaseReference usersRef =
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .child("users");
+
+        usersRef.orderByChild("userId")
+                .equalTo(user.getUid())
+                .addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(
+                                    @NonNull DataSnapshot snapshot) {
+
+                                List<Task<Void>> deleteTasks =
+                                        new ArrayList<>();
+
+                                for (DataSnapshot userSnapshot :
+                                        snapshot.getChildren()) {
+
+                                    deleteTasks.add(
+                                            userSnapshot.getRef()
+                                                    .removeValue()
+                                    );
+                                }
+
+                                Tasks.whenAllComplete(deleteTasks)
+                                        .addOnSuccessListener(tasks ->
+                                                deleteFirebaseUser(user)
+                                        );
+                            }
+
+                            @Override
+                            public void onCancelled(
+                                    @NonNull DatabaseError error) {
+                                showError(getString(R.string.delete_user_error));
                             }
                         }
-                    });
+                );
+    }
+
+    private void deleteFirebaseUser(FirebaseUser user) {
+        user.delete()
+                .addOnSuccessListener(unused -> {
+                    auth.signOut();
+
+                    Toast.makeText(
+                            this,
+                            R.string.delete_account_text,
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    Intent intent = new Intent(
+                            accountSettingsActivity.this,
+                            logInPageActivity.class
+                    );
+
+                    intent.setFlags(
+                            Intent.FLAG_ACTIVITY_NEW_TASK
+                                    | Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    );
+
+                    startActivity(intent);
+                    finish();
+                })
+                .addOnFailureListener(error ->
+                        showError(getString(R.string.delete_user_error)));
+    }
+
+    private void showChangeEmailDialog() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_change_email, null);
+
+        EditText newEmailInput = view.findViewById(R.id.newEmailInput);
+        EditText currentPasswordInput = view.findViewById(R.id.currentPasswordEmailInput);
+        TextInputLayout newEmailLayout = view.findViewById(R.id.newEmailLayout);
+        TextInputLayout passwordLayout = view.findViewById(R.id.currentPasswordEmailLayout);
+        ProgressBar progress = view.findViewById(R.id.emailProgress);
+        Button cancel = view.findViewById(R.id.cancelEmailButton);
+        Button save = view.findViewById(R.id.saveEmailButton);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .create();
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
+
+
+        save.setOnClickListener(v -> {
+            String email = newEmailInput.getText()
+                    .toString()
+                    .trim();
+
+            String password = currentPasswordInput.getText()
+                    .toString()
+                    .trim();
+
+            if (email.isEmpty()) {
+                newEmailLayout.setError(getString(R.string.email_enter));
+                return;
+            }
+
+            if (!android.util.Patterns.EMAIL_ADDRESS
+                    .matcher(email)
+                    .matches()) {
+                newEmailLayout.setError(getString(R.string.email_error));
+                return;
+            }
+
+            if (password.isEmpty()) {
+                passwordLayout.setError(getString(R.string.password_enter));
+                return;
+            }
+
+            getSharedPreferences(
+                    "account_settings",
+                    MODE_PRIVATE
+            )
+                    .edit()
+                    .putString("pending_email", email)
+                    .apply();
+
+            newEmailLayout.setError(null);
+            passwordLayout.setError(null);
+
+            progress.setVisibility(View.VISIBLE);
+            save.setEnabled(false);
+
+            changeEmail(email, password, dialog, progress, save);
+        });
+
+        dialog.setOnShowListener(d -> {
+            if (dialog.getWindow() != null) {
+                dialog.getWindow().setBackgroundDrawableResource(
+                        android.R.color.transparent
+                );
+            }
+        });
+
+        dialog.show();
+    }
+
+    private void showChangePasswordDialog() {
+        View view = getLayoutInflater().inflate(R.layout.dialog_change_password, null);
+
+        EditText currentPasswordInput = view.findViewById(R.id.currentPasswordInput);
+        EditText newPasswordInput = view.findViewById(R.id.newPasswordInput);
+        EditText repeatPasswordInput = view.findViewById(R.id.repeatPasswordInput);
+        TextInputLayout currentPasswordLayout = view.findViewById(R.id.currentPasswordLayout);
+
+        TextInputLayout newPasswordLayout = view.findViewById(R.id.newPasswordLayout);
+        TextInputLayout repeatPasswordLayout = view.findViewById(R.id.repeatPasswordLayout);
+
+        ProgressBar progress = view.findViewById(R.id.passwordProgress);
+        Button cancel = view.findViewById(R.id.cancelPasswordButton);
+        Button save = view.findViewById(R.id.savePasswordButton);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setView(view)
+                .create();
+
+        cancel.setOnClickListener(v -> dialog.dismiss());
+
+        save.setOnClickListener(v -> {
+            String currentPassword = currentPasswordInput
+                    .getText()
+                    .toString();
+
+            String newPassword = newPasswordInput
+                    .getText()
+                    .toString();
+
+            String repeatPassword = repeatPasswordInput
+                    .getText()
+                    .toString();
+
+            boolean valid = true;
+
+            if (currentPassword.length() < 6) {
+                currentPasswordLayout.setError(
+                        getString(R.string.password_enter)
+                );
+                valid = false;
+            } else {
+                currentPasswordLayout.setError(null);
+            }
+
+            if (newPassword.length() < 6) {
+                newPasswordLayout.setError(
+                        getString(R.string.six_simbols_minimum)
+                );
+                valid = false;
+            } else {
+                newPasswordLayout.setError(null);
+            }
+
+            if (!newPassword.equals(repeatPassword)) {
+                repeatPasswordLayout.setError(
+                        getString(R.string.passwords_not_equals)
+                );
+                valid = false;
+            } else {
+                repeatPasswordLayout.setError(null);
+            }
+
+            if (!valid) return;
+
+            progress.setVisibility(View.VISIBLE);
+            save.setEnabled(false);
+
+            changePassword(
+                    currentPassword,
+                    newPassword,
+                    dialog,
+                    progress,
+                    save
+            );
+        });
+
+        dialog.show();
+
+        Window window = dialog.getWindow();
+        if (window != null) {
+            int width = (int) (getResources()
+                    .getDisplayMetrics().widthPixels * 0.92f);
+
+            window.setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(
+                            android.graphics.Color.TRANSPARENT
+                    )
+            );
+
+            window.getDecorView().setPadding(0, 0, 0, 0);
+            window.setLayout(
+                    width,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
         }
     }
 
-    private void updateChoices(ArrayList<String> driversList, ArrayList<String> teamList){
-        saveProgress.setVisibility(View.VISIBLE);
-        saveButton.setVisibility(View.INVISIBLE);
-        String driverPickerValue = driversList.get(driverPicker.getValue() - 1);
-        String choiceDriver = " ";
-        String choiceTeam = " ";
-        String teamPickerValue = teamList.get(teamPicker.getValue() - 1);
-        if (driverPickerValue.equals(getString(R.string.nobody))){
-            choiceDriver = "null";
-        }else{
-            choiceDriver = driverPickerValue;
+    private void deleteAccountAfterReauthentication() {
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null || user.getEmail() == null) {
+            showError(getString(R.string.users_not_found));
+            return;
         }
 
-        if (teamPickerValue.equals(getString(R.string.nobody))){
-            choiceTeam = "null";
-        }else{
-            choiceTeam = teamPickerValue;
+        String password = loginPassword.getText()
+                .toString()
+                .trim();
+
+        if (password.length() < 6) {
+            tilPassword.setError(
+                    getString(R.string.invalid_password_text)
+            );
+            return;
         }
 
-        Log.e("TEAMSERROR", " User team choice: " + choiceTeam);
+        loginProgress.setVisibility(View.VISIBLE);
+        loginButton.setEnabled(false);
+
+        AuthCredential credential =
+                EmailAuthProvider.getCredential(
+                        user.getEmail(),
+                        password
+                );
+
+        user.reauthenticate(credential)
+                .addOnSuccessListener(unused ->
+                        deleteUserData(user)
+                )
+                .addOnFailureListener(error -> {
+                    loginProgress.setVisibility(View.GONE);
+                    loginButton.setEnabled(true);
+                    showError(getString(R.string.auth_fail_text));
+                });
+    }
+
+    private void loadUserProfile() {
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) {
+            finish();
+            return;
+        }
+
+        currentEmail.setText(user.getEmail());
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("users")
+                .orderByChild("userId")
+                .equalTo(user.getUid())
+                .addListenerForSingleValueEvent(
+                        new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+
+                                    String name = userSnapshot.getKey();
+
+                                    username.setText(name);
+
+                                    if (name != null &&
+                                            !name.isEmpty()) {
+                                        avatarInitial.setText(
+                                                name.substring(0, 1)
+                                                        .toUpperCase()
+                                        );
+                                    }
+
+                                    break;
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError error) {
+                                showError(
+                                        getString(R.string.account_load_error)
+                                );
+                            }
+                        }
+                );
+    }
+
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
 
 
-        String userId = auth.getUid();
+    private void uploadAvatar(Uri uri) {
+        FirebaseUser user = auth.getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        String finalChoiceTeam = choiceTeam;
-        String finalChoiceDriver = choiceDriver;
-        rootRef.child("users").orderByChild("userId").equalTo(userId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot userSnap: snapshot.getChildren()){
-                    String username = userSnap.getKey();
-                    rootRef.child("users").child(username)
-                            .child("choiceTeam").setValue(finalChoiceTeam);
-                    rootRef.child("users").child(username)
-                            .child("choiceDriver").setValue(finalChoiceDriver);
-                }
-            }
+        if (user == null) {
+            showError(getString(R.string.users_not_found));
+            return;
+        }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                saveProgress.setVisibility(View.INVISIBLE);
-                saveButton.setVisibility(View.VISIBLE);
-                Log.e("accountSettingPageActivity", "Error while getting user. Error:" + error.getMessage());
-            }
-        });
+        changeAvatarButton.setEnabled(false);
+
+        StorageReference avatarRef =
+                FirebaseStorage.getInstance()
+                        .getReference()
+                        .child("profileImages")
+                        .child(user.getUid())
+                        .child("avatar.jpg");
+
+        avatarRef.putFile(uri)
+                .addOnSuccessListener(task ->
+                        avatarRef.getDownloadUrl()
+                                .addOnSuccessListener(downloadUri -> {
+                                    avatarImage.setVisibility(View.VISIBLE);
+                                    avatarInitial.setVisibility(View.GONE);
+
+                                    GlideApp.with(this)
+                                            .load(downloadUri)
+                                            .circleCrop()
+                                            .into(avatarImage);
+
+                                    changeAvatarButton.setEnabled(true);
+                                    Toast.makeText(
+                                            this,
+                                            R.string.saved_text,
+                                            Toast.LENGTH_SHORT
+                                    ).show();
+                                })
+                )
+                .addOnFailureListener(error -> {
+                    changeAvatarButton.setEnabled(true);
+                    showError(getString(R.string.photo_load_error));
+                });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (auth == null) return;
+
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) return;
+
+        user.reload()
+                .addOnSuccessListener(unused -> {
+                    FirebaseUser refreshedUser =
+                            auth.getCurrentUser();
+
+                    if (refreshedUser == null) return;
+
+                    String actualEmail =
+                            refreshedUser.getEmail();
+
+                    currentEmail.setText(actualEmail);
+
+                    String pendingEmail =
+                            getSharedPreferences(
+                                    "account_settings",
+                                    MODE_PRIVATE
+                            )
+                                    .getString(
+                                            "pending_email",
+                                            null
+                                    );
+
+                    if (pendingEmail != null &&
+                            pendingEmail.equalsIgnoreCase(actualEmail)) {
+
+                        updateEmailInDatabase(actualEmail);
+
+                        getSharedPreferences(
+                                "account_settings",
+                                MODE_PRIVATE
+                        )
+                                .edit()
+                                .remove("pending_email")
+                                .apply();
+
+                        Toast.makeText(
+                                this,
+                                getString(R.string.email_confirming_success),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                    }
+                });
     }
 }

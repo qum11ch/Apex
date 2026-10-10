@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.content.Intent;
@@ -38,6 +39,12 @@ public class neuroPredictionActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.neuro_predict_activity);
+
+        if (!checkConnection(getApplicationContext())){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(neuroPredictionActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionActivity.this));
+        }
 
         numberPicker = findViewById(R.id.numberpicker);
         predictButton = findViewById(R.id.predict_button);
@@ -87,7 +94,8 @@ public class neuroPredictionActivity extends AppCompatActivity {
                         predictButton.setOnClickListener(v -> {
                             int selectedId = radioGroup.getCheckedRadioButtonId();
                             if (selectedId == -1) {
-                                Toast.makeText(neuroPredictionActivity.this, "No answer has been selected",
+                                Toast.makeText(neuroPredictionActivity.this,
+                                        getString(R.string.neuro_prediction_missing_option),
                                         Toast.LENGTH_SHORT).show();
                             } else {
                                 RadioButton radioButton = findViewById(selectedId);

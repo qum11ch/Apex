@@ -206,6 +206,7 @@
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
                 <Button
+                    android:visibility="gone"
                     android:textSize="16sp"
                     android:enabled="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
@@ -258,25 +259,28 @@
                     android:id="@+id/predictionsPageButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Пользовательские прогнозы"/>
+                    android:text="@string/prediction_button_text"/>
+
                 <Button
-                    android:textSize="16sp"
-                    android:enabled="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center"
-                    android:layout_below="@id/predictionsPageButton"
+                    android:visibility="gone"
                     android:id="@+id/userPredictionsButton"
+                    style="@style/ButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Мои прогнозы"/>
+                    android:layout_below="@id/predictionsPageButton"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="9dp"
+                    android:layout_marginEnd="10dp"
+                    android:elevation="0dp"
+                    android:enabled="true"
+                    android:gravity="center"
+                    android:text="@string/user_prediction_button_text"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/white"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
                 <TextView
                     android:textColor="@color/text_color_main"
                     android:textAllCaps="true"

@@ -1,6 +1,9 @@
 package com.example.f1app;
 
+import static com.example.f1app.userPredictionAdapter.formatPoints;
+
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +11,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.text.SimpleDateFormat;
@@ -45,18 +49,41 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Context context = holder.itemView.getContext();
+
         predictionListItem item = predictions.get(position);
 
         holder.title.setText(item.getLocalizedTitle());
-        holder.description.setText(
-                getDescriptionText(item)
-        );
 
-        holder.category.setText(getMetaText(holder, item));
-        holder.deadline.setText("Дедлайн: " + formatDate(item.getDeadline()));
-        holder.points.setText("Очки: " + item.getPoints().intValue());
-        holder.openButton.setOnClickListener(v -> listener.onPredictionClick(item));
+        String descriptionText = getDescriptionText(item);
+
+        if (!"null".equals(descriptionText)){
+            holder.description.setVisibility(View.VISIBLE);
+            holder.description.setText(getDescriptionText(item));
+        }else{
+            holder.description.setVisibility(View.GONE);
+        }
+
+        holder.category.setText(getMetaText(context, holder, item));
+
+        String deadlineText = context.getString(R.string.deadline_text)
+                + " " + formatDate(context, item.getDeadline());
+        holder.deadline.setText(deadlineText);
+
+        String pointsText = formatPoints(item.getPoints())
+                + " " + context.getString(R.string.pts_header);
+        holder.points.setText(pointsText);
+
         holder.itemView.setOnClickListener(v -> listener.onPredictionClick(item));
+
+        int backgroundColor = ContextCompat.getColor(context, R.color.prediction_points_color);
+        int strokeColor = ContextCompat.getColor(context, R.color.grey);
+
+        GradientDrawable drawable = (GradientDrawable) holder.points.getBackground().mutate();
+        drawable.setColor(backgroundColor);
+        drawable.setStroke(dpToPx(1, context), strokeColor);
+        holder.points.setBackground(drawable);
+
     }
 
     @Override
@@ -64,19 +91,17 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
         return predictions.size();
     }
 
-    private String getMetaText(ViewHolder holder, predictionListItem item) {
+    private String getMetaText(Context context, ViewHolder holder, predictionListItem item) {
         StringBuilder text = new StringBuilder();
 
-        text.append(getCategoryTitle(
-                holder.itemView.getContext(),
-                item.getCategory()));
+        text.append(getCategoryTitle(holder.itemView.getContext(), item.getCategory()));
 
-        if (item.isWeekend()
-                && item.getSeason() != null
-                && item.getRaceRound() != null) {
+        if (item.isWeekend() && item.getSeason() != null && item.getRaceRound() != null) {
+            String weekendRoundText = " • " + context.getText(R.string.round) + " ";
+
             text.append(" • ")
                     .append(item.getSeason())
-                    .append(" • Раунд ")
+                    .append(weekendRoundText)
                     .append(item.getRaceRound());
         } else if (item.getSeason() != null) {
             text.append(" • ")
@@ -84,6 +109,7 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
         }
 
         String typeTitle = getPredictionTypeTitle(
+                context,
                 item.getPredictionType()
         );
 
@@ -91,86 +117,66 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
             text.append(" • ").append(typeTitle);
         }
 
+        String optionTypeTitle = getOptionTypeTitle(context, item.getOptionType());
+
+        if (!optionTypeTitle.isEmpty()) {
+            text.append(" • ").append(optionTypeTitle);
+        }
+
         return text.toString();
     }
 
-
-    private String getPredictionTypeTitle(String predictionType) {
-        if ("champion".equals(predictionType)) {
-            return "Чемпион";
+    private String getOptionTypeTitle(Context context, String optionType) {
+        if ("driver".equals(optionType)) {
+            return context.getString(R.string.prediction_option_type_driver);
         }
 
-        if ("winner".equals(predictionType)) {
-            return "Победитель";
+        if ("constructor".equals(optionType)) {
+            return context.getString(R.string.prediction_option_type_constructor);
         }
 
-        if ("race_head_to_head".equals(predictionType)) {
-            return "Гоночное противостояние";
-        }
-
-        if ("qualifying_head_to_head".equals(predictionType)) {
-            return "Квалификационное противостояние";
-        }
-
-        if ("team_points_head_to_head".equals(predictionType)) {
-            return "Очковое противостояние";
-        }
-
-        if ("safety_car".equals(predictionType)) {
-            return "Safety Car";
-        }
-
-        if ("rain".equals(predictionType)) {
-            return "Дождь";
-        }
-
-        if ("boolean_prediction".equals(predictionType)) {
-            return "Да / Нет";
+        if ("boolean".equals(optionType)) {
+            return context.getString(R.string.prediction_option_type_boolean);
         }
 
         return "";
     }
 
-    private String getDescriptionText(predictionListItem item) {
-        String description = item.getLocalizedDescription();
 
-        if (item.isHeadToHead()) {
-            String matchup = safe(item.getDriverATitle())
-                    + " vs "
-                    + safe(item.getDriverBTitle());
-
-            if (description.isEmpty()) {
-                return matchup;
-            }
-
-            return description + "\n" + matchup;
+    private String getPredictionTypeTitle(Context context, String predictionType) {
+        if ("champion".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_champion);
         }
 
-        if (item.isBooleanPrediction()) {
-            if (description.isEmpty()) {
-                return "Да / Нет";
-            }
+        if ("winner".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_winner);
         }
 
-        return description;
-    }
-
-    private String safe(String value) {
-        return value == null ? "" : value;
-    }
-
-    private String formatDate(Long timestamp) {
-        if (timestamp == null || timestamp <= 0) {
-            return "не установлен";
+        if ("race_head_to_head".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_race_head);
         }
 
-        SimpleDateFormat formatter =
-                new SimpleDateFormat(
-                        "dd.MM.yyyy HH:mm",
-                        Locale.getDefault()
-                );
+        if ("qualifying_head_to_head".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_quali_head);
+        }
 
-        return formatter.format(new Date(timestamp));
+        if ("team_points_head_to_head".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_team_points_head);
+        }
+
+        if ("safety_car".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_safety_car);
+        }
+
+        if ("rain".equals(predictionType)) {
+            return context.getString(R.string.prediction_type_rain);
+        }
+
+        if ("boolean_prediction".equals(predictionType)) {
+            return context.getString(R.string.prediction_option_text_boolean);
+        }
+
+        return "";
     }
 
     private String getCategoryTitle(
@@ -192,13 +198,40 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
         return category == null ? "" : category;
     }
 
+    private String getDescriptionText(predictionListItem item) {
+        if (item.isHeadToHead()) {
+            String sideATitle = safe(item.getSideATitle());
+            String sideBTitle = safe(item.getSideBTitle());
+
+            return sideATitle + " vs " + sideBTitle;
+        }
+        return "null";
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
+    }
+
+    private String formatDate(Context context, Long timestamp) {
+        if (timestamp == null || timestamp <= 0) {
+            return context.getString(R.string.deadline_null);
+        }
+
+        SimpleDateFormat formatter =
+                new SimpleDateFormat(
+                        "dd.MM.yyyy HH:mm",
+                        Locale.getDefault()
+                );
+
+        return formatter.format(new Date(timestamp));
+    }
+
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView title;
         TextView description;
         TextView category;
         TextView deadline;
         TextView points;
-        Button openButton;
 
         ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -207,7 +240,12 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
             category = itemView.findViewById(R.id.predictionItemCategory);
             deadline = itemView.findViewById(R.id.predictionItemDeadline);
             points = itemView.findViewById(R.id.predictionItemPoints);
-            openButton = itemView.findViewById(R.id.openPredictionButton);
         }
+    }
+
+    private int dpToPx(int dp, Context context) {
+        return Math.round(
+                dp * context.getResources().getDisplayMetrics().density
+        );
     }
 }

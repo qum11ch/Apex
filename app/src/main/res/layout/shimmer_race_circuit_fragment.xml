@@ -24,7 +24,7 @@
             android:id="@+id/raceName"
             android:textStyle="bold"
             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAllCaps="true"/>
         <TextView
@@ -32,10 +32,11 @@
             style="@style/ShimmerStyle"
             android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
             android:id="@+id/circuitName"
-            android:layout_width="200dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
     <View
+        android:layout_centerHorizontal="true"
         style="@style/ShimmerStyle"
         android:id="@+id/shimmer_circuitImage"
         android:layout_marginStart="10dp"
@@ -44,14 +45,14 @@
         android:layout_marginBottom="40dp"
         android:layout_below="@id/shimmer_info_layout"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="300dp" />
     <RelativeLayout
         android:id="@+id/shimmer_circuitInfo_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/shimmer_circuitImage">
         <LinearLayout
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:id="@+id/length_layout"
             style="@style/CircuitLayout"
             android:paddingTop="20dp"
@@ -78,7 +79,7 @@
             android:id="@+id/shimmer_circuitInfo_1"
             android:baselineAligned="false"
             android:paddingStart="10dp"
-            android:paddingEnd="20dp"
+            android:paddingEnd="10dp"
             android:layout_below="@id/length_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -131,7 +132,7 @@
         </LinearLayout>
         <RelativeLayout
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             style="@style/CircuitInfoLayout"
             android:layout_below="@id/shimmer_circuitInfo_1"
             android:id="@+id/circuitInfo_2"
@@ -154,7 +155,7 @@
         </RelativeLayout>
         <LinearLayout
             android:layout_marginStart="10dp"
-            android:layout_marginEnd="20dp"
+            android:layout_marginEnd="10dp"
             android:orientation="vertical"
             style="@style/CircuitInfoLayout"
             android:layout_below="@id/circuitInfo_2"

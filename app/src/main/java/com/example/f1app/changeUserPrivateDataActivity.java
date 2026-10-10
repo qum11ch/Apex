@@ -76,7 +76,7 @@ public class changeUserPrivateDataActivity extends AppCompatActivity {
         userEmail.setText(mUserEmail);
 
         loginDialog = new Dialog(changeUserPrivateDataActivity.this);
-        loginDialog.setContentView(R.layout.login_dialog_box);
+        loginDialog.setContentView(R.layout.dialog_login);
         loginDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         loginDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
         loginDialog.setCancelable(true);

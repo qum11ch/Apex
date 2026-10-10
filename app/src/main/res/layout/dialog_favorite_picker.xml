@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@color/colorPrimary"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="15dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+        <TextView
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+            android:id="@+id/pickerTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/text_color_main"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="12dp" />
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/favoritePager"
+            android:layout_width="match_parent"
+            android:layout_height="360dp"
+            android:clipToPadding="false"
+            android:clipChildren="false" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+            <TextView
+                android:id="@+id/pageIndicator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey"
+                android:textSize="13sp" />
+        </LinearLayout>
+        <Button
+            android:layout_marginTop="20dp"
+            android:id="@+id/cancelPicker"
+            style="@style/ButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:layout_marginEnd="5dp"
+            android:backgroundTint="@color/red"
+            android:text="@string/save_text"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+            android:textColor="@color/white"
+            android:textSize="14sp" />
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

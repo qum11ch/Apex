@@ -1,132 +1,140 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView
-    android:backgroundTint="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:backgroundTint="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="15dp"
     app:cardElevation="15dp">
-    <RelativeLayout
+    <LinearLayout
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
         <TextView
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
             android:textAllCaps="true"
             android:gravity="center"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_width="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:id="@+id/login_header"
-            android:text="@string/dialog_login"
+            android:id="@+id/dialogTitle"
+            android:text="@string/change_email"
+            android:textColor="@color/text_color_main"
+            android:textStyle="bold"
+            android:textSize="21sp"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
         <TextView
-            android:textColor="@color/text_color_main"
-            android:gravity="center"
+            android:layout_marginBottom="10dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:id="@+id/login_text"
-            android:layout_below="@id/login_header"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="10dp"
-            android:layout_width="wrap_content"
+            android:id="@+id/dialogDescription"
+            android:layout_marginTop="13dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/dialog_login_info"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-            android:layout_gravity="center"
-            android:textAlignment="center"/>
+            android:textColor="@color/grey"
+            android:text="@string/dialog_change_email_description"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
+
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_below="@id/login_text"
             android:theme="@style/StyledTilEditTextTheme"
             app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
             app:hintTextColor="@color/text_color_main"
             app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
             app:errorTextColor="@color/red"
-            android:id="@+id/username_layout"
+            android:id="@+id/newEmailLayout"
             android:layout_width="match_parent"
-            android:layout_marginTop="20dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_height="wrap_content"
-            app:errorEnabled="true"
-            android:hint="@string/usernameText"
-            app:hintEnabled="true">
+            android:hint="@string/emailText">
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/newEmailInput"
                 android:backgroundTint="@color/text_color_main"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:inputType="textEmailAddress"
                 android:theme="@style/StyledTilEditTextTheme"
-                android:id="@+id/loginUsername"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.textfield.TextInputLayout
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:theme="@style/StyledTilEditTextTheme"
             app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
             app:hintTextColor="@color/text_color_main"
             app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
             app:errorTextColor="@color/red"
-            android:id="@+id/password_layout"
-            android:layout_below="@id/username_layout"
+            android:id="@+id/currentPasswordEmailLayout"
             android:layout_width="match_parent"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_height="wrap_content"
-            app:passwordToggleEnabled="true"
+            app:endIconMode="password_toggle"
             app:errorEnabled="true"
             app:hintEnabled="true"
             android:hint="@string/passwordText">
             <com.google.android.material.textfield.TextInputEditText
                 android:backgroundTint="@color/text_color_main"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:id="@+id/currentPasswordEmailInput"
                 android:inputType="textPassword"
                 android:theme="@style/StyledTilEditTextTheme"
-                android:id="@+id/loginPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
-            <TextView
-                android:gravity="end"
-                android:textColor="@color/red"
-                android:textAppearance="@style/TextStyle.Gram.Bold"
-                android:textSize="20sp"
-                android:id="@+id/resetPassword"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/forgot_password" />
         </com.google.android.material.textfield.TextInputLayout>
-        <FrameLayout
-            android:layout_below="@id/password_layout"
-            android:id="@+id/loginButton_layout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginTop="10dp">
+            android:orientation="vertical">
             <ProgressBar
-                android:backgroundTint="@color/red"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:id="@+id/emailProgress"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:visibility="gone"
                 android:layout_gravity="center_horizontal"
-                android:visibility="invisible"
-                android:id="@+id/loginProgress"
-                android:indeterminate="true"
-                android:indeterminateTintMode="src_atop"
+                android:layout_marginBottom="8dp"
                 android:indeterminateTint="@color/red"/>
-            <Button
-                android:textSize="18sp"
-                android:enabled="false"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                android:elevation="0dp"
+
+            <LinearLayout
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="20dp"
+                android:id="@+id/emailButtons"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/loginButton"
-                android:text="@string/loginButton"
-                style="@style/ButtonStyle"/>
-        </FrameLayout>
-    </RelativeLayout>
+                android:weightSum="2"
+                android:orientation="horizontal">
+                <Button
+                    android:maxHeight="30dp"
+                    android:textAllCaps="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="14sp"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cancelEmailButton"
+                    android:text="@string/cancel"
+                    style="@style/declineButtonStyle"/>
+                <Button
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/saveEmailButton"
+                    android:text="@string/save_text"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/red"
+                    style="@style/ButtonStyle"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
 </androidx.cardview.widget.CardView>

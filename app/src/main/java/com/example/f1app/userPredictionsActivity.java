@@ -1,29 +1,42 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkConnection;
+import static com.example.f1app.MainActivity.hideShimmer;
+import static com.example.f1app.MainActivity.showShimmer;
+import static com.example.f1app.userPredictionAdapter.formatPoints;
+
+import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.TextUtils;
-import android.text.style.StyleSpan;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.github.mikephil.charting.charts.PieChart;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -41,7 +54,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 
-import android.graphics.Color;
 import android.widget.Toast;
 
 import com.google.firebase.functions.FirebaseFunctions;
@@ -50,6 +62,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 public class userPredictionsActivity extends AppCompatActivity {
     private final List<userPrediction> userPredictions = new ArrayList<>();
@@ -61,55 +74,153 @@ public class userPredictionsActivity extends AppCompatActivity {
     private DatabaseReference rootRef;
     private FirebaseUser currentUser;
 
-    private TextView totalPointsText;
-    private TextView predictionsCountText;
-    private TextView correctPredictionsText;
-    private TextView rankText;
+    private TextView totalPointsTextView;
+    private TextView predictionsCountTextView;
+    private TextView correctPredictionsTextView;
+    private TextView seasonRankTextView;
+    private TextView seasonRankInfo;
+    private TextView globalRankTextView;
+    private TextView globalRankInfo;
     private PieChart predictionResultsChart;
     private LinearLayout chartLegend;
     private FirebaseFunctions functions;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ShimmerFrameLayout shimmerLayout;
+    private RecyclerView recyclerView;
+
+    private String currentPredictionSeason;
+    private Dialog deleteDialog;
+
+    private Button deletePrediction, cancelDelete;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        EdgeToEdge.enable(this);
         setContentView(R.layout.user_predictions_activity);
+
+        if (!checkConnection(getApplicationContext())){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(userPredictionsActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(userPredictionsActivity.this));
+        }
+
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
 
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         functions = FirebaseFunctions.getInstance();
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        RecyclerView recyclerView = findViewById(R.id.userPredictionsRecyclerView);
+        recyclerView = findViewById(R.id.userPredictionsRecyclerView);
+        shimmerLayout = findViewById(R.id.shimmer_layout);
+        swipeRefreshLayout = findViewById(R.id.swipe_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new userPredictionAdapter(userPredictions, this::openPrediction);
         recyclerView.setAdapter(adapter);
         attachSwipeActions(userPredictionsActivity.this, recyclerView);
 
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.incorrect_predict_color,
+                R.color.correct_predict_color,
+                R.color.tie_predict_color
+        );
+
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
+
+        swipeRefreshLayout.setOnRefreshListener(() -> {
+            if (isLoading) {
+                swipeRefreshLayout.setRefreshing(false);
+                return;
+            }
+
+            loadUserAnswers(this);
+
+            if (currentPredictionSeason != null) {
+                loadUserStats(
+                        this,
+                        currentPredictionSeason
+                );
+            }
+        });
+
         emptyText = findViewById(R.id.userPredictionsEmptyText);
-        totalPointsText = findViewById(R.id.totalPointsText);
-        predictionsCountText = findViewById(R.id.predictionsCountText);
-        correctPredictionsText = findViewById(R.id.correctPredictionsText);
-        rankText = findViewById(R.id.rankText);
+        totalPointsTextView = findViewById(R.id.totalPointsText);
+        predictionsCountTextView = findViewById(R.id.predictionsCountText);
+        correctPredictionsTextView = findViewById(R.id.correctPredictionsText);
+        seasonRankTextView = findViewById(R.id.seasonRank);
+        seasonRankInfo = findViewById(R.id.seasonRank_info);
+        globalRankTextView = findViewById(R.id.globalRank);
+        globalRankInfo = findViewById(R.id.globalRank_info);
         predictionResultsChart = findViewById(R.id.predictionResultsChart);
+
 
         chartLegend = findViewById(R.id.chartLegend);
 
         if (currentUser == null) {
-            showEmpty("Войдите в аккаунт, чтобы увидеть прогнозы");
+            showEmpty(userPredictionsActivity.this.getString(R.string.user_predictions_account_error));
             return;
         }
 
-        loadUserStats(userPredictionsActivity.this);
-        loadUserAnswers();
+        rootRef.child("status/predictions_season")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        String season = snapshot.getValue(String.class);
+
+                        if (season == null || !season.matches("\\d{4}")) {
+
+                            season = String.valueOf(java.util
+                                            .Calendar.getInstance().get(java.util.Calendar.YEAR));
+                        }
+
+                        currentPredictionSeason = season;
+
+                        loadUserStats(userPredictionsActivity.this, currentPredictionSeason);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        currentPredictionSeason = String
+                                .valueOf(
+                                        java.util.Calendar.getInstance()
+                                                .get(java.util.Calendar.YEAR));
+
+                        loadUserStats(userPredictionsActivity.this, currentPredictionSeason);
+
+                        Toast.makeText(
+                                userPredictionsActivity.this,
+                                error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        loadUserAnswers(userPredictionsActivity.this);
+
+        deleteDialog = new Dialog(this);
+        deleteDialog.setContentView(R.layout.delete_prediction_dialog_box);
+        deleteDialog.setCancelable(false);
+        deleteDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        deleteDialog.getWindow().setBackgroundDrawable(getDrawable(R.drawable.custom_dialog_bg));
+
+        cancelDelete = deleteDialog.findViewById(R.id.cancel_button);
+        deletePrediction = deleteDialog.findViewById(R.id.confirm_button);
     }
 
-    private void loadUserAnswers() {
+    private void loadUserAnswers(Context context) {
         if (currentUser == null || isLoading) {
             return;
         }
 
         isLoading = true;
+
+        showShimmer(recyclerView, shimmerLayout);
+
         userPredictions.clear();
         adapter.notifyDataSetChanged();
 
@@ -120,9 +231,10 @@ public class userPredictionsActivity extends AppCompatActivity {
                         userPredictions.clear();
 
                         if (!snapshot.exists()) {
+                            userPredictions.clear();
                             adapter.notifyDataSetChanged();
-                            showEmpty("Вы ещё не сделали прогнозов");
 
+                            finishLoading();
                             return;
                         }
 
@@ -133,7 +245,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                         }
 
                         if (answerSnapshots.isEmpty()) {
-                            showEmpty("Вы ещё не сделали прогнозов");
+                            finishLoading();
                             return;
                         }
 
@@ -143,49 +255,113 @@ public class userPredictionsActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        showEmpty("Ошибка загрузки прогнозов");
+                        isLoading = false;
+
+                        if (swipeRefreshLayout != null) {
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+
+                        showEmpty(context.getString(R.string.prediction_load_error));
+
+                        recyclerView.setVisibility(View.GONE);
+
+                        shimmerLayout.stopShimmer();
+                        shimmerLayout.setVisibility(View.GONE);
                     }
                 });
     }
 
-    private void loadUserStats(Context context) {
+    private void loadUserStats(Context context, String currentPredictionsSeason) {
+
         if (currentUser == null) {
             return;
         }
 
-        rootRef.child("userPredictionStats").child(currentUser.getUid())
+        if (currentPredictionsSeason == null || currentPredictionsSeason.trim().isEmpty()) {
+            currentPredictionsSeason = String
+                    .valueOf(java.util.Calendar.getInstance().get(java.util.Calendar.YEAR));
+
+            currentPredictionSeason = currentPredictionsSeason;
+        }
+
+        final String season = currentPredictionsSeason;
+
+        String userId = currentUser.getUid();
+
+        rootRef.child("userPredictionStats").child(userId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (!snapshot.exists()) {
-                            showEmptyStats();
+                            showEmptyStats(season);
                             return;
                         }
 
                         userPredictionStats stats = snapshot.getValue(userPredictionStats.class);
 
                         if (stats == null) {
-                            showEmptyStats();
+                            showEmptyStats(season);
                             return;
                         }
 
-                        Double totalPoints = valueOrZeroDouble(stats.getTotalPoints());
+                        String totalPoints = formatPoints(stats.getTotalPoints());
                         long predictionsCount = valueOrZero(stats.getPredictionsCount());
                         long correctPredictions = valueOrZero(stats.getCorrectPredictions());
                         long incorrectPredictions = valueOrZero(stats.getIncorrectPredictions());
                         long pendingPredictions = valueOrZero(stats.getPendingPredictions());
                         long tiePredictions = valueOrZero(stats.getTiePredictions());
-                        // Long rank = stats.getRank();
 
-                        totalPointsText.setText("Всего очков: " + totalPoints);
-                        predictionsCountText.setText("Прогнозов: " + predictionsCount);
-                        correctPredictionsText.setText("Угадано: " + correctPredictions);
+                        totalPointsTextView.setText(totalPoints);
+                        predictionsCountTextView.setText(String.valueOf(predictionsCount));
+                        correctPredictionsTextView.setText(String.valueOf(correctPredictions));
 
-                        // if (rank == null || rank <= 0) {
-                        //     rankText.setText("Место: пока нет");
-                        // } else {
-                        //     rankText.setText("Место: " + rank);
-                        // }
+                        getRanks(
+                                userId,
+                                season,
+                                new RankCallback() {
+                                    @Override
+                                    public void onSuccess(HashMap<String, Integer> ranks) {
+                                        int seasonRank = ranks.get("season");
+                                        int globalRank = ranks.get("global");
+
+                                        if (seasonRank <= 0) {
+                                            String seasonRankText = getString(
+                                                    R.string.user_predictions_stats_no_season_rank,
+                                                    season);
+                                            seasonRankInfo.setText(seasonRankText);
+                                            seasonRankTextView.setVisibility(View.GONE);
+                                        } else {
+                                            String seasonRankText = getString(
+                                                    R.string.user_predictions_stats_seasonRank,
+                                                    season);
+                                            seasonRankInfo.setText(seasonRankText);
+                                            seasonRankTextView.setVisibility(View.VISIBLE);
+                                            seasonRankTextView.setText(seasonRank);
+                                        }
+
+                                        if (globalRank <= 0) {
+                                            String globalRankText = getString(
+                                                    R.string.user_predictions_stats_no_global_rank);
+                                            globalRankInfo.setText(globalRankText);
+                                            globalRankTextView.setVisibility(View.GONE);
+                                        } else {
+                                            globalRankInfo.setText(getString(
+                                                    R.string.user_predictions_stats_globalRank));
+                                            globalRankTextView.setVisibility(View.VISIBLE);
+                                            globalRankTextView.setText(globalRank);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onError(DatabaseError error) {
+                                        Toast.makeText(
+                                                userPredictionsActivity.this,
+                                                error.getMessage(),
+                                                Toast.LENGTH_SHORT
+                                        ).show();
+                                    }
+                                }
+                        );
 
                         renderPredictionResultsChart(context, correctPredictions,
                                 incorrectPredictions, pendingPredictions, tiePredictions);
@@ -193,7 +369,7 @@ public class userPredictionsActivity extends AppCompatActivity {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        showEmptyStats();
+                        showEmptyStats(season);
                     }
                 });
     }
@@ -202,15 +378,81 @@ public class userPredictionsActivity extends AppCompatActivity {
         return value == null ? 0 : value;
     }
 
-    private double valueOrZeroDouble(Double value) {
-        return value == null ? 0.0 : value;
+    public interface RankCallback {
+        void onSuccess(HashMap<String, Integer> ranks);
+        void onError(DatabaseError error);
     }
 
-    private void showEmptyStats() {
-        totalPointsText.setText("Всего очков: 0");
-        predictionsCountText.setText("Прогнозов: 0");
-        correctPredictionsText.setText("Угадано: 0");
-        rankText.setText("Место: пока нет");
+    private void getRanks(String uId, String currentPredictionsSeason, RankCallback callback) {
+        if (currentPredictionsSeason == null || currentPredictionsSeason.trim().isEmpty()) {
+            HashMap<String, Integer> rank = new HashMap<>();
+            rank.put("season", 0);
+            rank.put("global", 0);
+
+            callback.onSuccess(rank);
+            return;
+        }
+
+        rootRef.child("leaderboard")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        HashMap<String, Integer> rank = new HashMap<>();
+
+                        DataSnapshot seasonLeaderboard =
+                                snapshot.child(currentPredictionsSeason).child(uId);
+
+                        DataSnapshot globalLeaderboard = snapshot.child("global").child(uId);
+
+                        int seasonRank = 0;
+
+                        if (seasonLeaderboard.exists()) {
+                            Integer value = seasonLeaderboard.child("rank").getValue(Integer.class);
+
+                            if (value != null) {
+                                seasonRank = value;
+                            }
+                        }
+
+                        int globalRank = 0;
+
+                        if (globalLeaderboard.exists()) {
+                            Integer value =
+                                    globalLeaderboard.child("rank").getValue(Integer.class);
+
+                            if (value != null) {
+                                globalRank = value;
+                            }
+                        }
+
+                        rank.put("season", seasonRank);
+                        rank.put("global", globalRank);
+
+                        callback.onSuccess(rank);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        callback.onError(error);
+                    }
+                });
+    }
+
+    private void showEmptyStats(String currentPredictionsSeason) {
+        totalPointsTextView.setText("0");
+        predictionsCountTextView.setText("0");
+        correctPredictionsTextView.setText("0");
+
+        String seasonRankText = getString(
+                R.string.user_predictions_stats_no_season_rank,
+                currentPredictionsSeason);
+        seasonRankInfo.setText(seasonRankText);
+        seasonRankTextView.setVisibility(View.GONE);
+
+        String globalRankText = getString(
+                R.string.user_predictions_stats_no_global_rank);
+        globalRankInfo.setText(globalRankText);
+        globalRankTextView.setVisibility(View.GONE);
 
         predictionResultsChart.setVisibility(View.GONE);
         chartLegend.removeAllViews();
@@ -222,22 +464,22 @@ public class userPredictionsActivity extends AppCompatActivity {
         ArrayList<Integer> colors = new ArrayList<>();
 
         if (correct > 0) {
-            entries.add(new PieEntry(correct, "Угадано"));
+            entries.add(new PieEntry(correct, getString(R.string.prediction_correct_text)));
             colors.add(ContextCompat.getColor(context, R.color.correct_predict_color));
         }
 
         if (incorrect > 0) {
-            entries.add(new PieEntry(incorrect, "Не угадано"));
+            entries.add(new PieEntry(incorrect, getString(R.string.prediction_incorrect_text)));
             colors.add(ContextCompat.getColor(context, R.color.incorrect_predict_color));
         }
 
         if (pending > 0) {
-            entries.add(new PieEntry(pending, "Ожидают"));
+            entries.add(new PieEntry(pending, getString(R.string.prediction_pending_text)));
             colors.add(ContextCompat.getColor(context, R.color.pending_predict_color));
         }
 
         if (tie > 0) {
-            entries.add(new PieEntry(tie, "Ничья"));
+            entries.add(new PieEntry(tie, getString(R.string.prediction_tie_text)));
             colors.add(ContextCompat.getColor(context, R.color.tie_predict_color));
         }
 
@@ -290,79 +532,74 @@ public class userPredictionsActivity extends AppCompatActivity {
         long completed = correct + incorrect;
 
         if (completed == 0) {
-            return "Нет\nрезультатов";
+            return getString(R.string.none_results_text);
         }
 
         int accuracy = (int) Math.round(correct * 100.0 / completed);
-        return accuracy + "%\nточность";
+        return accuracy + getString(R.string.accuracy_text);
     }
 
-    private void renderChartLegend(Context context,
-                                   long correct,
-                                   long incorrect,
-                                   long pending,
-                                   long tie) {
-
+    private void renderChartLegend(Context context, long correct,
+                                   long incorrect, long pending, long tie) {
         chartLegend.removeAllViews();
 
-        chartLegend.post(() -> {
-            int availableWidth =
-                    chartLegend.getWidth()
-                            - chartLegend.getPaddingLeft()
-                            - chartLegend.getPaddingRight();
+        ArrayList<LegendData> items = new ArrayList<>();
 
-            if (availableWidth <= 0) {
-                return;
-            }
+        if (correct > 0) {
+            items.add(new LegendData(getString(R.string.prediction_correct_text),
+                    correct,
+                    ContextCompat.getColor(
+                            context,
+                            R.color.correct_predict_color)
+            ));
+        }
 
-            ArrayList<LegendData> items = new ArrayList<>();
+        if (incorrect > 0) {
+            items.add(new LegendData(
+                    getString(R.string.prediction_incorrect_text),
+                    incorrect,
+                    ContextCompat.getColor(
+                            context,
+                            R.color.incorrect_predict_color
+                    )
+            ));
+        }
 
-            if (correct > 0) {
-                items.add(new LegendData(
-                        "Угадано",
-                        correct,
-                        ContextCompat.getColor(
-                                context,
-                                R.color.correct_predict_color
-                        )
-                ));
-            }
+        if (pending > 0) {
+            items.add(new LegendData(
+                    getString(R.string.prediction_pending_text),
+                    pending,
+                    ContextCompat.getColor(
+                            context,
+                            R.color.pending_predict_color
+                    )
+            ));
+        }
 
-            if (incorrect > 0) {
-                items.add(new LegendData(
-                        "Не угадано",
-                        incorrect,
-                        ContextCompat.getColor(
-                                context,
-                                R.color.incorrect_predict_color
-                        )
-                ));
-            }
+        if (tie > 0) {
+            items.add(new LegendData(
+                    getString(R.string.prediction_tie_text),
+                    tie,
+                    ContextCompat.getColor(
+                            context,
+                            R.color.tie_predict_color
+                    )
+            ));
+        }
 
-            if (pending > 0) {
-                items.add(new LegendData(
-                        "Ожидают",
-                        pending,
-                        ContextCompat.getColor(
-                                context,
-                                R.color.pending_predict_color
-                        )
-                ));
-            }
+        if (items.isEmpty()) {
+            return;
+        }
 
-            if (tie > 0) {
-                items.add(new LegendData(
-                        "Ничья",
-                        tie,
-                        ContextCompat.getColor(
-                                context,
-                                R.color.tie_predict_color
-                        )
-                ));
-            }
+        int availableWidth = chartLegend.getWidth()
+                - chartLegend.getPaddingLeft()
+                - chartLegend.getPaddingRight();
 
-            buildLegendRows(context, items, availableWidth);
-        });
+        if (availableWidth <= 0) {
+            availableWidth = getResources().getDisplayMetrics().widthPixels;
+        }
+
+        buildLegendRows(context, items, availableWidth);
     }
 
     private static class LegendData {
@@ -484,7 +721,8 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         TextView titleView = new TextView(this);
 
-        titleView.setText(title + ": ");
+        String rawText = title + ": ";
+        titleView.setText(rawText);
         titleView.setTextSize(
                 TypedValue.COMPLEX_UNIT_SP,
                 14
@@ -641,21 +879,32 @@ public class userPredictionsActivity extends AppCompatActivity {
     }
 
     private void finishLoading() {
-        userPredictions.sort(
-                Comparator.comparing(
-                        userPrediction::getDeadline,
-                        Comparator.nullsLast(Long::compareTo)
-                )
+        userPredictions.sort(Comparator
+                .comparing(userPrediction::getDeadline, Comparator.nullsLast(Long::compareTo))
         );
+
         adapter.notifyDataSetChanged();
 
         isLoading = false;
 
-        if (userPredictions.isEmpty()) {
-            showEmpty("Вы ещё не сделали прогнозов");
-        } else {
-            emptyText.setVisibility(View.GONE);
+        if (swipeRefreshLayout != null) {
+            swipeRefreshLayout.setRefreshing(false);
         }
+
+        if (userPredictions.isEmpty()) {
+            showEmpty(getString(R.string.user_predictions_empty));
+
+            recyclerView.setVisibility(View.GONE);
+
+            shimmerLayout.stopShimmer();
+            shimmerLayout.setVisibility(View.GONE);
+
+            return;
+        }
+
+        emptyText.setVisibility(View.GONE);
+
+        hideShimmer(recyclerView, shimmerLayout);
     }
 
     private void showEmpty(String text) {
@@ -670,20 +919,24 @@ public class userPredictionsActivity extends AppCompatActivity {
     }
 
     private void attachSwipeActions(Context context, RecyclerView recyclerView) {
-        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(0,
-                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+        ItemTouchHelper.SimpleCallback callback = new ItemTouchHelper.SimpleCallback(
+                0,
+                ItemTouchHelper.LEFT) {
+
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
+            public boolean onMove(
+                    @NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    @NonNull RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 int position = viewHolder.getBindingAdapterPosition();
-
-                if (position == RecyclerView.NO_POSITION) {return;}
+                if (position == RecyclerView.NO_POSITION || position >= userPredictions.size()) {
+                    return;
+                }
 
                 userPrediction prediction = adapter.getItem(position);
 
@@ -694,46 +947,90 @@ public class userPredictionsActivity extends AppCompatActivity {
 
                 if (!prediction.canBeChanged()) {
                     adapter.notifyItemChanged(position);
-                    Toast.makeText(userPredictionsActivity.this,
-                            "Этот прогноз уже нельзя изменить", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(
+                            userPredictionsActivity.this,
+                            getString(R.string.user_predictions_update_ban),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                    return;
+                }
+                showDeleteConfirmation(
+                        context,
+                        prediction,
+                        position
+                );
+
+                adapter.notifyItemChanged(position);
+            }
+
+            @Override
+            public void onChildDraw(
+                    @NonNull Canvas canvas,
+                    @NonNull RecyclerView recyclerView,
+                    @NonNull RecyclerView.ViewHolder viewHolder,
+                    float dX, float dY,
+                    int actionState,
+                    boolean isCurrentlyActive) {
+
+                if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE) {
                     return;
                 }
 
-                if (direction == ItemTouchHelper.LEFT) {
-                    openPredictionForEdit(prediction);
+                View card = viewHolder.itemView.findViewById(R.id.cardView);
+                View bg = viewHolder.itemView.findViewById(R.id.swipeBackground);
+
+                float distance = Math.min(Math.max(0f, -dX), dpToPx(110)); // длина свайпа, всегда >= 0
+                card.setTranslationX(-distance);
+
+                if (distance > 0) {
+                    bg.setVisibility(View.VISIBLE);
+                    int radius = dpToPx(16); // радиус карточки
+                    int w = Math.round(distance) + radius;
+                    ViewGroup.LayoutParams lp = bg.getLayoutParams();
+                    if (lp.width != w) {
+                        lp.width = w;
+                        bg.setLayoutParams(lp);
+                    }
                 } else {
-                    showDeleteConfirmation(context, prediction, position);
+                    bg.setVisibility(View.INVISIBLE);
                 }
-                adapter.notifyItemChanged(position);
+            }
+
+            @Override
+            public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                return 0.2f;
+            }
+
+            @Override
+            public void onChildDrawOver(@NonNull Canvas c, @NonNull RecyclerView rv,
+                                        @NonNull RecyclerView.ViewHolder vh,
+                                        float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            }
+
+            @Override
+            public void clearView(@NonNull RecyclerView rv, @NonNull RecyclerView.ViewHolder vh) {
+                super.clearView(rv, vh);
+                View card = vh.itemView.findViewById(R.id.cardView);
+                card.setTranslationX(0f);
+                vh.itemView.findViewById(R.id.swipeBackground).setVisibility(View.INVISIBLE);
             }
         };
+
         new ItemTouchHelper(callback).attachToRecyclerView(recyclerView);
     }
 
-    private void openPredictionForEdit(userPrediction prediction) {
-        Intent intent = new Intent(this, predictionFormActivity.class);
-        intent.putExtra("predictionId", prediction.getPredictionId());
-        intent.putExtra("editMode", true);
-        startActivity(intent);
-    }
-
     private void showDeleteConfirmation(Context context, userPrediction prediction, int position) {
-        new AlertDialog.Builder(this).setTitle("Удалить прогноз?")
-                .setMessage("Ваш ответ будет удалён. " +
-                        "Вы сможете отправить его заново, " +
-                        "пока прогноз открыт.")
-                .setNegativeButton(
-                        "Отмена",
-                        (dialog, which) ->
-                                adapter.notifyItemChanged(position))
-                .setPositiveButton(
-                        "Удалить",
-                        (dialog, which) ->
-                                deletePredictionAnswer(context, prediction, position)
-                )
-                .setOnCancelListener(dialog ->
-                        adapter.notifyItemChanged(position))
-                .show();
+        deleteDialog.show();
+
+        deletePrediction.setOnClickListener(v ->{
+                    deleteDialog.dismiss();
+                    deletePredictionAnswer(context, prediction, position);
+                });
+
+        cancelDelete.setOnClickListener(v -> {
+            deleteDialog.dismiss();
+            adapter.notifyItemChanged(position);
+        });
     }
 
     private void deletePredictionAnswer(Context context, userPrediction prediction, int position) {
@@ -747,8 +1044,8 @@ public class userPredictionsActivity extends AppCompatActivity {
         if (predictionId == null || predictionId.trim().isEmpty()) {
             adapter.notifyItemChanged(position);
 
-            Toast.makeText(this, "Не удалось определить прогноз", Toast.LENGTH_SHORT)
-                    .show();
+            Toast.makeText(this, getString(R.string.user_predictions_recognition_error),
+                            Toast.LENGTH_SHORT).show();
 
             return;
         }
@@ -756,8 +1053,7 @@ public class userPredictionsActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("predictionId", predictionId);
 
-        functions
-                .getHttpsCallable("deleteUserPrediction")
+        functions.getHttpsCallable("deleteUserPrediction")
                 .call(data)
                 .addOnSuccessListener(result -> {
                     int currentPosition = findPredictionPosition(predictionId);
@@ -767,11 +1063,11 @@ public class userPredictionsActivity extends AppCompatActivity {
                         adapter.notifyItemRemoved(currentPosition);
                     }
 
-                    loadUserStats(context);
+                    loadUserStats(context, currentPredictionSeason);
 
                     Toast.makeText(
                             this,
-                            "Ответ удалён",
+                            getString(R.string.user_predictions_delete_success),
                             Toast.LENGTH_SHORT
                     ).show();
                 })
@@ -780,7 +1076,7 @@ public class userPredictionsActivity extends AppCompatActivity {
 
                     Toast.makeText(
                             this,
-                            "Не удалось удалить ответ",
+                            error.getMessage(),
                             Toast.LENGTH_SHORT
                     ).show();
                 });
@@ -801,9 +1097,10 @@ public class userPredictionsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (currentUser != null && adapter != null && !isLoading) {
-            loadUserAnswers();
-            loadUserStats(userPredictionsActivity.this);
+        if (currentUser != null && adapter != null) {
+            isLoading = false;
+            loadUserAnswers(this);
+            loadUserStats(this, currentPredictionSeason);
         }
     }
 }

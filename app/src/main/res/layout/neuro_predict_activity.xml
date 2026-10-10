@@ -10,7 +10,7 @@
         android:paddingTop="40dp"
         android:paddingBottom="20dp"
         android:layout_height="wrap_content"
-        android:background="@color/red">
+        android:background="@color/header_color">
         <ImageButton
             android:layout_marginTop="2dp"
             android:id='@+id/backButton'
@@ -20,19 +20,24 @@
             android:layout_width="100dp"
             android:layout_height="30dp"
             android:src="@drawable/back_arrow"
-            android:background="@color/red"/>
+            android:background="@android:color/transparent"/>
         <TextView
             android:paddingStart="40dp"
             android:paddingEnd="40dp"
             android:textColor="@color/white"
             android:textAllCaps="true"
             android:text="@string/predict"
-            android:id="@+id/teamsHeader"
+            android:id="@+id/header_predictions"
             android:layout_width="match_parent"
             android:gravity="center"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
     </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/header"
+        android:background="@color/separator_header"/>
     <androidx.core.widget.NestedScrollView
         android:layout_below="@id/header"
         android:layout_width="match_parent"

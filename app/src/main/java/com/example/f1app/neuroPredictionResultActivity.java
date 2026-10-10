@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.MainActivity.hideShimmer;
@@ -8,6 +9,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +38,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableReference;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -51,6 +56,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import com.example.f1app.BuildConfig;
+
+
 public class neuroPredictionResultActivity extends AppCompatActivity {
     private List<raceResultsQualiData> datum;
     private raceResultsQualiAdapter adapter;
@@ -62,6 +70,10 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     private TextView updateDate;
     private RelativeLayout updateDateLayout;
     private RelativeLayout poleLapDriverLayout;
+    private LinearLayout loadingWeatherLayout;
+    private ProgressBar weatherProgress;
+    private TextView loadingWeatherText;
+    private TextView loadingWeatherPercent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +92,12 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
+        if (!checkConnection(getApplicationContext())){
+            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(neuroPredictionResultActivity.this));
+        }else{
+            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionResultActivity.this));
+        }
+
         RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
         if (!checkLightTheme(neuroPredictionResultActivity.this)){
             fastestLapLayout.setBackground(ContextCompat.getDrawable(neuroPredictionResultActivity.this, R.drawable.background_striped_lines_item_night));
@@ -91,6 +109,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         updateDate = findViewById(R.id.last_update_time);
         poleLapDriverLayout = findViewById(R.id.poleLapDriver_layout);
         updateDateLayout = findViewById(R.id.update_date_layout);
+
+        loadingWeatherLayout = findViewById(R.id.loading_weather_layout);
+        weatherProgress = findViewById(R.id.weather_progress);
+        loadingWeatherText = findViewById(R.id.loading_weather_text);
+        loadingWeatherPercent = findViewById(R.id.loading_weather_percent);
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerDriverLayout = findViewById(R.id.shimmer_layout_driver);
@@ -112,6 +135,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
             String gpName = bundle.getString("gp");
             String event = bundle.getString("event");
             String currentSeason = bundle.getString("currentSeason");
+
+            setProgressStage(0, getString(R.string.neuro_prediction_progress_start));
 
             if (event.equals("SQ")){
                 q1TimeText.setText(R.string.sq1_header);
@@ -148,9 +173,12 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
     private void getPrediction(String gpName, Integer lastGPRound, String event,
                                String currentSeason){
+
+        setProgressStage(0, getString(R.string.neuro_prediction_progress_data_start));
+
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("driverLineUp/season/" + currentSeason)
-                .addValueEventListener(new ValueEventListener() {
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         ArrayList<String> driversList = new ArrayList<>();
@@ -249,6 +277,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                                         Double lat = snapshot.child("lat").getValue(Double.class);
                                                         Double lng = snapshot.child("lng").getValue(Double.class);
 
+                                                        setProgressStage(15, getString(R.string.neuro_prediction_progress_data_finish));
+
                                                         if (event.equals("Q")){
                                                             getWeather(lat, lng, eventTime, gpName, driversCodesList.toArray(new String[0]),
                                                                     teamNamesList.toArray(new String[0]),
@@ -266,6 +296,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                                     @Override
                                                     public void onCancelled(@NonNull DatabaseError error) {
                                                         Log.e("predictPageActivity", error.getMessage());
+                                                        showProgressError(getString(R.string.neuro_prediction_progress_data_error));
                                                     }
                                                 });
 
@@ -273,6 +304,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
                                         Log.e("predictPageActivity", error.getMessage());
+                                        showProgressError(getString(R.string.neuro_prediction_progress_data_error));
                                     }
                                 });
 
@@ -281,17 +313,19 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                         Log.e("predictPageActivity", error.getMessage());
+                        showProgressError(getString(R.string.neuro_prediction_progress_data_error));
                     }
                 });
     }
 
-    private void getWeather(Double lat, Double lon,
+    private void getWeatherOld(Double lat, Double lon,
                             String eventTime, String gpName,
                             String[] driverCodes, String[] teamNames, String event, int gpRound,
                             int circuitsCorners, Double circuitsLength, int isStreetCircuit,
                             String circuitId){
 
         String isoDateStr = eventTime.replace(" ", "T");
+        Log.i("WeatherDate", " " + eventTime);
 
         ZonedDateTime targetDate = ZonedDateTime.parse(isoDateStr);
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
@@ -411,6 +445,167 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest);
     }
 
+    private void getWeather(
+            Double lat,
+            Double lon,
+            String eventTime,
+            String gpName,
+            String[] driverCodes,
+            String[] teamNames,
+            String event,
+            int gpRound,
+            int circuitsCorners,
+            Double circuitsLength,
+            int isStreetCircuit,
+            String circuitId
+    ) {
+
+        setProgressStage(15, getString(R.string.neuro_prediction_progress_weather_start));
+
+        String isoDateStr = eventTime.replace(" ", "T");
+        ZonedDateTime targetDateTime = ZonedDateTime.parse(isoDateStr);
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC);
+        LocalDate eventDate = targetDateTime.toLocalDate();
+
+        int seasonYear = eventDate.getYear();
+
+        long daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), eventDate);
+
+        boolean usePreviousYear = daysBetween > 15;
+
+        LocalDate weatherDate;
+
+        if (usePreviousYear) {
+            weatherDate = eventDate.minusYears(1);
+        } else {
+            weatherDate = eventDate;
+        }
+
+        String weatherDateString = weatherDate.toString();
+
+        String targetTime = targetDateTime.toLocalTime().format(
+                DateTimeFormatter.ofPattern(
+                        "HH:mm:ss"
+                )
+        );
+
+        String apiKey = BuildConfig.VISUAL_CROSSING_API_KEY;
+
+        if (apiKey == null || apiKey.isEmpty()) {
+            Log.e(
+                    "WeatherPredict",
+                    "VISUAL_CROSSING_API_KEY не найден"
+            );
+            return;
+        }
+
+        String url =
+                "https://weather.visualcrossing.com"
+                        + "/VisualCrossingWebServices/rest/services/timeline/"
+                        + lat
+                        + ","
+                        + lon
+                        + "/"
+                        + weatherDateString
+                        + "?unitGroup=metric"
+                        + "&include=hours"
+                        + "&timezone=Z"
+                        + "&key="
+                        + apiKey
+                        + "&contentType=json";
+
+        Log.d("WeatherPredict", "URL: " + url);
+
+        Log.d("WeatherPredict", "Искомое время: " + targetTime);
+
+        RequestQueue queue = Volley.newRequestQueue(neuroPredictionResultActivity.this);
+
+        JsonObjectRequest request =
+                new JsonObjectRequest(
+                        Request.Method.GET,
+                        url,
+                        null,
+                        response -> {
+                            try {
+                                JSONObject hourlyDay =
+                                        response.getJSONArray("days").getJSONObject(0);
+
+                                JSONArray hours =
+                                        hourlyDay.getJSONArray("hours");
+
+                                JSONObject selectedHour = null;
+
+                                for (int i = 0; i < hours.length(); i++) {
+                                    JSONObject hour = hours.getJSONObject(i);
+
+                                    String apiTime = hour.getString("datetime");
+
+                                    if (apiTime.equals(targetTime)) {
+                                        selectedHour = hour;
+                                        break;
+                                    }
+                                }
+
+                                if (selectedHour == null) {
+                                    Log.e("WeatherPredict",
+                                            "Время " + targetTime + " не найдено");
+
+                                    return;
+                                }
+
+                                setProgressStage(
+                                        45,
+                                        getString(R.string.neuro_prediction_progress_weather_finish)
+                                );
+
+                                double temp = selectedHour.getDouble("temp");
+
+                                double pressure = selectedHour.getDouble("pressure");
+                                double humidity = selectedHour.getDouble("humidity");
+                                double precipitation = selectedHour.getDouble("precip");
+
+                                int rainfall = precipitation > 0.0 ? 1 : 0;
+
+                                predictRequest(
+                                        gpName,
+                                        seasonYear,
+                                        temp,
+                                        pressure,
+                                        humidity,
+                                        rainfall,
+                                        driverCodes,
+                                        teamNames,
+                                        event,
+                                        gpRound,
+                                        circuitsCorners,
+                                        circuitsLength,
+                                        isStreetCircuit,
+                                        circuitId
+                                );
+
+                            } catch (JSONException e) {
+                                Log.e("WeatherPredict", "Ошибка обработки JSON", e);
+                            }
+                        },
+                        error -> {
+                            Log.e("WeatherPredict", "Ошибка получения погоды", error
+                            );
+
+                            Toast.makeText(
+                                    neuroPredictionResultActivity.this,
+                                    "Ошибка получения погоды",
+                                    Toast.LENGTH_SHORT
+                            ).show();
+
+                            showProgressError(
+                                    getString(R.string.neuro_prediction_progress_weather_error));
+                        }
+                );
+
+        setProgressStage(35, getString(R.string.neuro_prediction_progress_weather_pending));
+        queue.add(request);
+    }
+
 
     private void predictRequest(
             String gpName,
@@ -428,6 +623,12 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
             int isStreetCircuit,
             String circuitId
     ) {
+
+        setProgressStage(
+                45,
+                getString(R.string.neuro_prediction_progress_model_start)
+        );
+
         Map<String, Object> requestData = new HashMap<>();
 
         requestData.put("year", year);
@@ -462,15 +663,30 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
         requestData.put("teams", teams);
 
+        setProgressStage(
+                60,
+                getString(R.string.neuro_prediction_progress_model_put)
+        );
+
         Log.i("py_predict_results", "Calling Firebase Callable Function");
 
         FirebaseFunctions functions = FirebaseFunctions.getInstance("us-central1");
 
         HttpsCallableReference callable = functions.getHttpsCallable("py_functions_callable");
 
+        setProgressStage(
+                75,
+                getString(R.string.neuro_prediction_progress_model_pending)
+        );
+
         callable.call(requestData)
                 .addOnSuccessListener(
                         result -> {
+                            setProgressStage(
+                                    85,
+                                    getString(R.string.neuro_prediction_progress_model_processing)
+                            );
+
                             try {
                                 Object rawData = result.getData();
 
@@ -480,14 +696,15 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     );
                                 }
 
+                                setProgressStage(
+                                        90,
+                                        getString(R.string.neuro_prediction_progress_model_results)
+                                );
+
                                 Map<?, ?> responseMap = (Map<?, ?>) rawData;
-
                                 Object updatedAtValue = responseMap.get("updated_at");
-
                                 String updateDateText = updatedAtValue == null ? "" : String.valueOf(updatedAtValue);
-
                                 Object dataValue = responseMap.get("data");
-
                                 Object staleValue = responseMap.get("stale");
 
                                 boolean isStale = Boolean.TRUE.equals(staleValue);
@@ -495,7 +712,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 if (isStale) {
                                     Toast.makeText(
                                             neuroPredictionResultActivity.this,
-                                            "Показан сохранённый прогноз. Данные обновляются.",
+                                            getString(R.string.neuro_prediction_stale),
                                             Toast.LENGTH_LONG
                                     ).show();
                                 }
@@ -512,6 +729,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 datum.clear();
 
+                                setProgressStage(
+                                        98,
+                                        getString(R.string.neuro_prediction_progress_model_table)
+                                );
+
                                 for (int i = 0; i < resultList.size(); i++) {
                                     Object item = resultList.get(i);
 
@@ -522,13 +744,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     Map<?, ?> qualiItem = (Map<?, ?>) item;
 
                                     String driverCode = readString(qualiItem, "Driver");
-
                                     String driverTeam = readString(qualiItem, "Team");
-
                                     String q1Time = readNullableString(qualiItem, event + "1");
-
                                     String q2Time = readNullableString(qualiItem, event + "2");
-
                                     String q3Time = readNullableString(qualiItem, event + "3");
 
                                     if (q1Time.isEmpty()) {
@@ -576,6 +794,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 adapter.notifyDataSetChanged();
 
+                                finishProgress();
+
                             } catch (Exception error) {
                                 Log.e("py_predict_results",
                                         "Response parsing error",
@@ -584,9 +804,13 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 Toast.makeText(
                                         neuroPredictionResultActivity.this,
-                                        "Ошибка обработки прогноза",
+                                        getString(R.string.neuro_prediction_parse_error),
                                         Toast.LENGTH_SHORT
                                 ).show();
+
+                                showProgressError(
+                                        getString(R.string.neuro_prediction_parse_error)
+                                );
                             }
                         }
                 )
@@ -604,7 +828,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                             String message = error.getMessage();
 
                             if (message == null || message.isEmpty()) {
-                                message = "Не удалось получить прогноз";
+                                message = getString(R.string.neuro_prediction_response_error);
                             }
 
                             Toast.makeText(
@@ -612,6 +836,10 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     message,
                                     Toast.LENGTH_LONG
                             ).show();
+
+                            showProgressError(
+                                    getString(R.string.neuro_prediction_progress_model_error)
+                            );
                         }
                 );
     }
@@ -883,5 +1111,68 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         teamIds.put("Audi", "audi");
 
         return teamIds.get(teamName);
+    }
+
+    private void setProgressStage(
+            int progress,
+            String message
+    ) {
+        if (loadingWeatherLayout == null
+                || weatherProgress == null
+                || loadingWeatherText == null
+                || loadingWeatherPercent == null) {
+            return;
+        }
+
+        loadingWeatherLayout.setVisibility(
+                View.VISIBLE
+        );
+
+        weatherProgress.setMax(100);
+        weatherProgress.setProgress(progress);
+
+        loadingWeatherPercent.setText(
+                progress + "%"
+        );
+
+        loadingWeatherText.setText(
+                message
+        );
+    }
+
+    private void finishProgress() {
+        weatherProgress.setProgress(100);
+
+        loadingWeatherPercent.setText("100%");
+        loadingWeatherText.setText(getString(R.string.neuro_prediction_progress_finish));
+
+        loadingWeatherLayout.postDelayed(
+                () -> loadingWeatherLayout.setVisibility(View.GONE),
+                500
+        );
+    }
+
+    private void showProgressError(
+            String message
+    ) {
+        if (loadingWeatherLayout != null) {
+            loadingWeatherLayout.setVisibility(
+                    View.VISIBLE
+            );
+        }
+
+        if (weatherProgress != null) {
+            weatherProgress.setProgress(0);
+        }
+
+        if (loadingWeatherText != null) {
+            loadingWeatherText.setText(getString(R.string.neuro_prediction_progress_error));
+        }
+
+        Toast.makeText(
+                neuroPredictionResultActivity.this,
+                message,
+                Toast.LENGTH_SHORT
+        ).show();
     }
 }

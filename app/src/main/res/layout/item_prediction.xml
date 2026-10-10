@@ -1,51 +1,106 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_marginBottom="12dp"
-    android:orientation="vertical"
-    android:padding="16dp">
-
-    <TextView
-        android:id="@+id/predictionItemTitle"
+    android:layout_height="wrap_content">
+    <androidx.cardview.widget.CardView
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent"
+        app:cardCornerRadius="0dp"
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+        <RelativeLayout
+            android:id="@+id/content_layout"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:baselineAligned="false"
+            style="@style/ItemStylePreds"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp">
+            <RelativeLayout
+                android:id="@+id/header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/predictionItemDescription"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="15sp" />
+                <TextView
+                    android:id="@+id/predictionItemPoints"
+                    style="@style/ResultsStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_height="wrap_content"
+                    android:minHeight="20dp"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textColor="@color/text_color_secondary"
+                    android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/predictionItemCategory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:textSize="14sp" />
+                <TextView
+                    android:id="@+id/predictionItemCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignTop="@id/predictionItemPoints"
+                    android:layout_toStartOf="@id/predictionItemPoints"
+                    android:layout_marginEnd="8dp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textColor="@color/prediction_red_text_color"
+                    android:textSize="13sp"
+                    android:textStyle="normal" />
 
-    <TextView
-        android:id="@+id/predictionItemDeadline"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="14sp" />
+            </RelativeLayout>
 
-    <TextView
-        android:id="@+id/predictionItemPoints"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:textSize="14sp" />
+            <TextView
+                android:lineSpacingMultiplier="1.15"
+                android:gravity="start"
+                android:textAlignment="viewStart"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/header"
+                android:id="@+id/predictionItemTitle"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                android:textColor="@color/text_color_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="18sp"/>
 
-    <Button
-        android:id="@+id/openPredictionButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:text="Сделать прогноз" />
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:layout_below="@id/predictionItemTitle"
+                android:id="@+id/predictionItemDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="normal"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"/>
 
-</LinearLayout>
+            <TextView
+                android:layout_below="@id/predictionItemDescription"
+                android:textStyle="normal"
+                android:layout_marginTop="5dp"
+                android:id="@+id/predictionItemDeadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+        </RelativeLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

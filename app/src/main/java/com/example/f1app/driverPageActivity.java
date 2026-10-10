@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -140,7 +141,7 @@ public class driverPageActivity extends AppCompatActivity {
                     params.topMargin = 10;
                     params.leftMargin = 75;
 
-                    RelativeLayout parentLayout = findViewById(R.id.driver_layout);
+                    LinearLayout parentLayout = findViewById(R.id.driver_layout);
                     switch(Objects.requireNonNull(status)){
                         case ("active"):
                             mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + "_" + mCurrentSeason + ".png");

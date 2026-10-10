@@ -5,35 +5,40 @@
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/header"
-        android:layout_width="match_parent"
         android:paddingTop="40dp"
         android:paddingBottom="20dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/red">
+        android:background="@color/header_color">
+
         <ImageButton
-            android:layout_marginTop="2dp"
-            android:id='@+id/backButton'
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
-            android:paddingEnd="30dp"
-            android:paddingStart="0dp"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:src="@drawable/back_arrow"
-            android:background="@color/red"/>
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:src="@drawable/back_arrow" />
+
         <TextView
-            android:paddingStart="60dp"
-            android:paddingEnd="60dp"
+            android:layout_gravity="center"
             android:textAllCaps="true"
-            android:textColor="@color/white"
-            android:text="@string/saved_race"
-            android:id="@+id/raceHeader"
-            android:layout_width="match_parent"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
-            android:layout_height="wrap_content"
-            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
-    </RelativeLayout>
+            android:text="@string/saved_race"
+            android:textColor="@color/white"
+            android:textSize="22sp"/>
+
+        <Space
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+    </LinearLayout>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
         android:layout_below="@id/header"

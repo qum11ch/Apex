@@ -20,6 +20,11 @@
         <item name="android:textColor">@color/colorPrimary</item>
         <item name="android:textSize">18sp</item>
     </style>
+
+    <style name="LogoutButtonStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/logout_button</item>
+    </style>
+
     <style name="FlatButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/flat</item>
         <item name="android:textColor">@color/colorPrimary</item>
@@ -92,6 +97,10 @@
         <item name="android:background">@drawable/item_style</item>
     </style>
 
+    <style name="ItemStylePreds" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/item_style_preds</item>
+    </style>
+
     <style name="ItemStyleFlat" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_flat</item>
     </style>
@@ -146,6 +155,12 @@
     <style name="RaceLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style</item>
     </style>
+    <style name="PredictionsLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/predictions_layout_style</item>
+    </style>
+    <style name="PredictionStatusLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/predictions_status_layout_style</item>
+    </style>
     <style name="RaceLayoutInverted" parent="android:Widget.TextView">
         <item name="android:background">@drawable/race_layout_style_inverted</item>
     </style>
@@ -157,6 +172,9 @@
     </style>
     <style name="StatisticLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/statistic_layout_style</item>
+    </style>
+    <style name="PredictionItemLayout" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/prediction_item_layout_style</item>
     </style>
     <style name="SavedRacesLayout" parent="android:Widget.TextView">
         <item name="android:background">@drawable/statistic_layout_style_light_grey</item>
@@ -319,11 +337,16 @@
         <item name="tabIndicatorHeight">4dp</item>
         <item name="tabPaddingStart">6dp</item>
         <item name="tabPaddingEnd">6dp</item>
-        <item name="tabBackground">@color/red</item>
+        <item name="tabBackground">@color/header_color_gradient</item>
         <item name="tabTextAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
         <item name="tabSelectedTextColor">@color/white</item>
         <item name="tabSelectedTextAppearance">@style/TextStyle.Gram.Bold.ForTab</item>
     </style>
+
+    <style name="AppTabLayout.NotGradient">
+        <item name="tabBackground">@color/header_color</item>
+    </style>
+
     <style name="AppTabLayoutPages" parent="Widget.Design.TabLayout">
         <item name="tabIndicatorColor">@color/white</item>
         <item name="tabIndicatorHeight">4dp</item>

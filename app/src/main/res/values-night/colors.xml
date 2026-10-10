@@ -4,7 +4,9 @@
     <color name="colorPrimaryDark">#FFF</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimary">#222222</color>
+    <color name="colorPredicts">#38393e</color>
     <color name="textColorPrimary">#FFF</color>
+    <color name="stroke_option_color">#38393e</color>
     <color name="light_gold">#FFFFBF</color>
     <color name="gold">#836800</color>
     <color name="light_bronze">#FFDF9F</color>
@@ -35,7 +37,7 @@
     <color name="colorSecondary">#FFFF</color>
     <color name="colorThirdly">#262626</color>
     <color name="colorDriverPages">#080c23</color>
-    <color name="accountButtons">#FFFF</color>
+    <color name="accountButtons">#38393e</color>
     <color name="progressBarColor">#FFFF</color>
     <color name="toggleButtonColor">#222222</color>
     <color name="green">#5FDA4F</color>
@@ -51,6 +53,18 @@
     <color name="ongoing_color">#EAF0F8</color>
     <color name="correct_predict_color">#81c784</color>
     <color name="incorrect_predict_color">#e57373</color>
+    <color name="pending_status_text">#607D8B</color>
     <color name="pending_predict_color">#b0bec5</color>
     <color name="tie_predict_color">#ffb74d</color>
+    <color name="prediction_option_color">#38393e</color>
+    <color name="prediction_red_text_color">#8c8c8c</color>
+    <color name="prediction_points_color">#38393e</color>
+    <color name="logout_button_color">#a1000b</color>
+    <color name="account_settings_color">#38393e</color>
+    <color name="account_settings_input_color">#303030</color>
+    <color name="account_settings_header_color">#38393e</color>
+    <color name="account_settings_button_color">#8c8c8c</color>
+    <color name="header_color">#222222</color>
+    <color name="header_color_gradient">#38393E</color>
+    <color name="separator_header">#FFFFFFFF</color>
 </resources>
