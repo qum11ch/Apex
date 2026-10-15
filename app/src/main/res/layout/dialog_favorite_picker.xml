@@ -13,15 +13,102 @@
         android:orientation="vertical"
         android:padding="20dp">
         <TextView
+            android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:id="@+id/pickerTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/text_color_main"
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textStyle="bold"
             android:layout_marginBottom="12dp" />
+        <LinearLayout
+            android:layout_marginBottom="8dp"
+            android:id="@+id/passwordBox"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:background="@drawable/bg_input_box_picker"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/pickerSearchLayout"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                app:boxStrokeColor="@color/text_color_main"
+                android:background="@android:color/transparent"
+                app:endIconTint="@color/text_color_secondary"
+                app:boxBackgroundMode="none"
+                app:endIconMode="clear_text"
+                android:hint="@string/favorite_search_hint"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:hintEnabled="false">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:textCursorDrawable="@null"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    android:id="@+id/pickerSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="@color/text_color_main"
+                    android:textColorHint="@color/text_color_secondary"
+                    android:textSize="16sp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+        <Button
+            style="@style/ButtonStyle"
+            android:backgroundTint="@color/account_settings_input_color"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+            android:id="@+id/toggleFiltersButton"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:minHeight="48dp"
+            android:layout_marginBottom="8dp"
+            android:gravity="start|center_vertical"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:text="@string/picker_filters"
+            android:textAllCaps="false"
+            android:textColor="@color/text_color_schedule"
+            android:textSize="14sp"
+            android:visibility="gone" />
+        <LinearLayout
+            android:id="@+id/driverFiltersScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:id="@+id/driverFiltersLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+        </LinearLayout>
+        <TextView
+            android:id="@+id/filterMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:gravity="center"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp"
+            android:visibility="gone" />
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/favoritePager"
             android:layout_width="match_parent"
@@ -44,16 +131,15 @@
         <Button
             android:layout_marginTop="20dp"
             android:id="@+id/cancelPicker"
-            style="@style/ButtonStyle"
+            style="@style/declineButtonStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:layout_marginEnd="5dp"
-            android:backgroundTint="@color/red"
-            android:text="@string/save_text"
+            android:textColor="@color/dark_grey"
+            android:text="@string/cancel"
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-            android:textColor="@color/white"
             android:textSize="14sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

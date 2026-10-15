@@ -33,7 +33,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_centerInParent="true">
+                    android:layout_above="@id/space"
+                    android:layout_centerHorizontal="true">
 
                     <TextView
                         android:id="@+id/day_start"
@@ -54,21 +55,28 @@
                         android:gravity="center"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                 </LinearLayout>
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/space"/>
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:textAllCaps="true"
+                    android:backgroundTint="@color/month_color"
                     android:id="@+id/raceMonth"
                     style="@style/PtsStyle"
                     android:layout_width="match_parent"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="3dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/header_layout"
-                    android:layout_centerInParent="true"
+                    android:layout_below="@id/space"
+                    android:layout_centerHorizontal="true"
                     android:textAlignment="center"
                     android:paddingStart="3dp"
                     android:paddingEnd="3dp"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                    android:textColor="@color/grey" />
+                    android:textColor="@color/footer_icon" />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
@@ -81,8 +89,7 @@
                     android:id="@+id/roundLayout"
                     android:layout_width="match_parent"
                     android:layout_marginEnd="8dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="wrap_content">
                     <TextView
                         android:textAllCaps="true"
                         android:text="@string/round"
@@ -94,7 +101,7 @@
                         android:gravity="center_vertical"
                         android:paddingEnd="5dp"
                         android:paddingStart="0dp"
-                        android:textColor="@color/red"
+                        android:textColor="@color/round_color"
                         android:textSize="14sp"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"/>
 
@@ -108,7 +115,7 @@
                         android:paddingStart="0dp"
                         android:paddingEnd="10dp"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                        android:textColor="@color/red"
+                        android:textColor="@color/round_color"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -141,6 +148,7 @@
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:id="@+id/raceName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

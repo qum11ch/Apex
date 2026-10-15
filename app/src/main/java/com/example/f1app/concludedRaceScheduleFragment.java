@@ -1,7 +1,10 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.teamPageActivity.showMessage;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,7 +50,7 @@ public class concludedRaceScheduleFragment extends Fragment {
     private TextView firstPlace_code;
     private TextView thirdPlace_code;
     private scheduleAdapter adapter;
-    private ToggleButton saveRace;
+    private ToggleButton saveRaceButton;
     private LocalDate currentDate;
     private String fullRaceName_key, mRaceName, mYear;
 
@@ -82,12 +85,12 @@ public class concludedRaceScheduleFragment extends Fragment {
         TextView day_end = view.findViewById(R.id.day_end);
         TextView month = view.findViewById(R.id.month);
         TextView show_results = view.findViewById(R.id.show_results);
-        saveRace = view.findViewById(R.id.saveRace);
+        saveRaceButton = view.findViewById(R.id.saveRace);
         LinearLayout podiumLayout = view.findViewById(R.id.podium_layout);
         TextView dash = view.findViewById(R.id.dash);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
-        recyclerView.setHasFixedSize(true);
+        // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
@@ -279,20 +282,20 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             currentDate = LocalDate.now();
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user!=null){
-                isSaved(fullRaceName_key);
-                saveRace.setOnClickListener(view2 -> {
-                    if(saveRace.isChecked()){
-                        saveRace(currentDate);
-                    }else{
-                        deleteRace(fullRaceName_key);
-                    }
-                });
-            }else{
-                saveRace.setOnClickListener(view3 -> {
-                    saveRace.setChecked(false);
-                    Toast.makeText(requireContext(), getString(R.string.race_save_error_login_text), Toast.LENGTH_LONG).show();
 
+            if (user!=null){
+                isSavedRace(fullRaceName_key, saveRaceButton, getContext());
+                saveRaceButton.setOnClickListener(view2 -> {
+                    if(saveRaceButton.isChecked()){
+                        saveRace(currentDate,
+                                fullRaceName_key,
+                                mRaceName,
+                                mYear,
+                                saveRaceButton,
+                                getContext());
+                    }else{
+                        deleteRace(fullRaceName_key, saveRaceButton, getContext());
+                    }
                 });
             }
 
@@ -333,93 +336,128 @@ public class concludedRaceScheduleFragment extends Fragment {
         }
     }
 
-    private void saveRace(LocalDate currentDate){
+    public static void saveRace(LocalDate currentDate,
+                                String fullRaceName_key,
+                                String raceName,
+                                String raceSeason,
+                                ToggleButton toggleButton,
+                                Context context) {
+
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
-                            DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
-                            String saveDate = currentDate.format(formatterUpdate);
-                            savedRacesData savedRacesData = new savedRacesData(mRaceName, mYear, saveDate);
-                            rootRef.child("savedRaces").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    if(snapshot.getChildrenCount()<32){
-                                        rootRef.child("savedRaces").child(username).child(fullRaceName_key).setValue(savedRacesData);
-                                        Toast.makeText(requireContext(), getString(R.string.race_save_succ_text), Toast.LENGTH_LONG).show();
-                                    }else{
-                                        Toast.makeText(requireContext(), getString(R.string.race_save_error_limit_text), Toast.LENGTH_LONG).show();
-                                    }
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                                }
-                            });
-                        }
+        if (user == null) {
+            toggleButton.setOnClickListener(view -> {
+                toggleButton.setChecked(false);
+            });
+
+            showMessage(context, context.getString(R.string.race_save_error_login_text));
+            return;
+        }
+
+        String uid = user.getUid();
+
+        DatabaseReference savedRacesRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("savedRaces")
+                .child(uid);
+
+        DateTimeFormatter formatterUpdate = DateTimeFormatter.ofPattern("d/MM/uuuu");
+        String saveDate = currentDate.format(formatterUpdate);
+        savedRacesData savedRacesData = new savedRacesData(raceName, raceSeason, saveDate);
+
+        savedRacesRef.child(fullRaceName_key).setValue(savedRacesData)
+                .addOnSuccessListener(unused ->
+                        showMessage(
+                                context,
+                                context.getString(R.string.race_save_succ_text))
+                ).addOnFailureListener(error -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
+                    showMessage(
+                            context,
+                            context.getString(R.string.smth_wrong_text)
+                    );
                 });
     }
 
-    private void deleteRace(String fullRaceName_key){
+    public static void deleteRace(String fullRaceName_key,
+                                    ToggleButton toggleButton, Context context) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId").equalTo(user.getUid())
-                .addValueEventListener(new ValueEventListener() {
+        if (user == null) {
+            toggleButton.setOnClickListener(view -> {
+                toggleButton.setChecked(false);
+            });
+
+            showMessage(context, context.getString(R.string.race_save_error_login_text));
+            return;
+        }
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("savedRaces")
+                .child(user.getUid())
+                .child(fullRaceName_key)
+                .removeValue()
+                .addOnSuccessListener(unused -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
+                    }
+
+                    showMessage(context,
+                            context.getString(R.string.race_delete_succ_text));
+                })
+                .addOnFailureListener(error -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
+                    }
+
+                    Log.e(
+                            context.getPackageName(),
+                            "Failed to delete race",
+                            error
+                    );
+
+                    showMessage(context,
+                            context.getString(R.string.smth_wrong_text));
+                });
+    }
+
+    public static void isSavedRace(String fullRaceName_key,
+                                   ToggleButton toggleButton,
+                                   Context context){
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            toggleButton.setChecked(false);
+            return;
+        }
+
+        String uid = user.getUid();
+
+        DatabaseReference savedRacesRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("savedRaces")
+                .child(uid);
+
+        savedRacesRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot userSnap: snapshot.getChildren()){
-                    String username = userSnap.getKey();
-                    rootRef.child("savedRaces").child(username).child(fullRaceName_key).removeValue();
-                    Toast.makeText(requireContext(), getString(R.string.race_delete_succ_text), Toast.LENGTH_LONG).show();
-                    //saveRace.setChecked(false);
-                }
+                toggleButton.setChecked(snapshot.hasChild(fullRaceName_key));
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                Log.e("Firebase", "Ошибка чтения: " + error.getMessage());
             }
         });
-    }
-
-    private void isSaved(String fullRaceName_key){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
-                            rootRef.child("savedRaces").child(username).addValueEventListener(new ValueEventListener() {
-                                @Override
-                                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    saveRace.setChecked(snapshot.hasChild(fullRaceName_key));
-                                }
-                                @Override
-                                public void onCancelled(@NonNull DatabaseError error) {
-                                    Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                                }
-                            });
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
     }
 
     private void getRaceSchedule(String raceName, String currentYear){

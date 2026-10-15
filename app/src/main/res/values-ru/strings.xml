@@ -1,18 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="login_text">Войти</string>
-    <string name="register_header">Зарегистрироваться</string>
-    <string name="usernameText">Логин</string>
-    <string name="username_hint">Логин*</string>
+    <string name="register_header">Регистрация</string>
+    <string name="register_description">Создайте аккаунт, чтобы получить доступ к расширенному функционалу приложения</string>
+    <string name="usernameText">Имя профиля</string>
+    <string name="username_hint">Имя профиля*</string>
+    <string name="loginText">Логин</string>
+    <string name="login_hint">Логин*</string>
+    <string name="login_hint_full">Введите ваш логин</string>
     <string name="passwordText">Пароль</string>
     <string name="password_hint">Пароль*</string>
+    <string name="password_hint_full">Введите ваш пароль</string>
+    <string name="new_password_hint_full">Введите новый пароль</string>
+    <string name="repeat_password_hint_full">Повторите новый пароль</string>
+    <string name="emeail_hint_full">Введите email аккаунта</string>
     <string name="emailText">Email</string>
     <string name="email_hint">Email*</string>
     <string name="loginButton">ВОЙТИ</string>
+    <string name="avatarText">Фото профиля</string>
     <string name="registerButton">ЗАРЕГИСТРИРОВАТЬСЯ</string>
     <string name="singUpText1">Нет аккаунта?</string>
     <string name="singUpText2">Зарегистрироваться</string>
-    <string name="footer_driver">Гонщики</string>
+    <string name="footer_driver">Пилоты</string>
     <string name="footer_teams">Команды</string>
     <string name="footer_schedule">Расписание</string>
     <string name="footer_homePage">Главная</string>
@@ -24,7 +33,30 @@
     <string name="settings">Настройки аккаунта</string>
     <string name="saved_race">Сохраненные гонки</string>
     <string name="account_data">Данные аккаунта</string>
+
+    <string name="change_username">Изменить имя профиля</string>
     <string name="change_avatar">Изменить аватар</string>
+
+    <string name="choose_username_title">Выберите имя профиля</string>
+    <string name="choose_username_description">Ваш логин останется прежним. Выбранное имя профиля будет видно другим пользователям.</string>
+    <string name="public_username_text">Имя профиля</string>
+    <string name="new_username_text">Новое имя профиля</string>
+    <string name="public_username_hint">Введите имя профиля</string>
+
+    <string name="no_results_text">Результаты пока недоступны</string>
+
+    <string name="favorite_search_hint">Поиск по имени или названию</string>
+    <string name="favorite_search_driver_hint">Поиск пилота</string>
+    <string name="favorite_search_team_hint">Поиск команды</string>
+
+    <string name="favorite_no_drivers_found">Пилоты не найдены. Измените поиск или фильтры.</string>
+    <string name="favorite_no_teams_found">Команды не найдены. Измените поисковый запрос.</string>
+
+    <string name="picker_filters">Показать фильтры</string>
+    <string name="picker_filters_collapsed">Показать фильтры</string>
+    <string name="picker_filters_expanded">Скрыть фильтры</string>
+    <string name="picker_filters_count_collapsed">Показать фильтры (%1$d)</string>
+    <string name="picker_filters_count_expanded">Скрыть фильтры (%1$d)</string>
 
     <string name="profile_avatar">Аватар профиля</string>
     <string name="change_email">Изменить почту</string>
@@ -77,7 +109,7 @@
     <string name="confirm_delete_info">Вы уверены, что хотите удалить свой аккаунт?\nЭто действие нельзя отменить!</string>
     <string name="cancel">Отменить</string>
     <string name="delete_button_text">удалить</string>
-    <string name="driver_results">Результаты гонщика</string>
+    <string name="driver_results">Результаты пилота</string>
     <string name="_2025_season">Сезон 2025</string>
     <string name="_2024_season">Сезон 2024</string>
     <string name="_2026_season">Сезон 2026</string>
@@ -119,6 +151,7 @@
     <string name="points_earned">Очков заработано</string>
     <string name="drivers_championships">Чемпион мира</string>
     <string name="date_of_birth">Дата рождения</string>
+    <string name="date_of_death">Дата смерти</string>
     <string name="empty_race_list_future">Возвращайтесь в новом сезоне, чтобы просмотреть результаты Гран-при!</string>
     <string name="grand_prix_weekend">Уикенд Гран-При</string>
     <string name="days">дней</string>
@@ -195,7 +228,7 @@
     <string name="prev_race_results_text">Результат гонки в</string>
     <string name="saved_race_text">Сохранено: \n</string>
     <string name="created_at_text">В приложении с </string>
-    <string name="no_fan_of_text">Не имеет любимого гонщика и команду</string>
+    <string name="no_fan_of_text">Не имеет любимого пилота и команду</string>
     <string name="nobody">Никто</string>
     <string name="reqistration_succ_text">Успешная регистрация!</string>
     <string name="reqistration_fail_text">Регистрация невозможна! Попробуйте снова позже.</string>
@@ -214,18 +247,18 @@
     <string name="reset_password_text">Ссылка на восстановление пароля была отправлена на ваш email</string>
     <string name="age_text">год</string>
     <string name="age_alt_text" translatable="false">лет</string>
-    <string name="driver_delete_succ_text">больше не ваш любимый гонщик!</string>
-    <string name="driver_save_succ_text">теперь ваш любимый гонщик!</string>
+    <string name="driver_delete_succ_text">больше не ваш любимый пилот!</string>
+    <string name="driver_save_succ_text">теперь ваш любимый пилот!</string>
     <string name="team_delete_succ_text">больше не ваша любимая команда!</string>
     <string name="team_save_succ_text">теперь ваша любимая команда!</string>
     <string name="race_delete_succ_text">Это Гран-при было удалено из сохраненных!</string>
     <string name="race_save_succ_text">Это Гран-при было сохранено!</string>
     <string name="race_save_error_limit_text">Вы можете иметь максимум 32 сохраненных Гран-при. Пожалуйста, почистите свои сохраненные Гран-при!</string>
     <string name="race_save_error_login_text">Вы должны войти в аккаунт прежде чем сохранять Гран-при</string>
-    <string name="driver_save_error_login_text">Вы должны войти в аккаунт прежде чем назначить любимого гонщика</string>
+    <string name="driver_save_error_login_text">Вы должны войти в аккаунт прежде чем назначить любимого пилота</string>
     <string name="team_save_error_login_text">Вы должны войти в аккаунт прежде чем назначить любимую команду</string>
     <string name="lost_connection">Потеря соединения</string>
-    <string name="lost_connection_info">Проверьте ваше интернет соединение и попытайтесь снова</string>
+    <string name="lost_connection_info">Проверьте ваше интернет-соединение и попытайтесь снова</string>
     <string name="try_again_button">Попытаться снова</string>
     <string name="not_concluded">Гран-При не завершилось (Н/З)</string>
     <string name="is_running">идет</string>
@@ -259,6 +292,8 @@
     <string name="united_states_grand_prix_text">Гран-при США</string>
     <string name="malaysian_grand_prix_text">Гран-при Малазии</string>
     <string name="bahrain_grand_prix_in_malaysia_text">Гран-при Бахрейна в Малазии</string>
+    <string name="argentine_grand_prix_text">Гран-при Аргентины</string>
+    <string name="san_marino_grand_prix_text">Гран-при Сан-Марино</string>
 
 
     <string name="barcelona_grand_prix_locality">Испания</string>
@@ -334,7 +369,7 @@
     <string name="top_3_teams">Лидеры Командного зачета</string>
     <string name="weekend_ends_text">Уикенд ГП окончен</string>
     <string name="last_text">Последняя</string>
-    <string name="retired_text">В отставке</string>
+    <string name="retired_text">Завершил карьеру</string>
     <string name="reserve_text">Запасной пилот</string>
     <string name="wrong_email">Пользователя с таким email нет! Неправильный Email!</string>
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
@@ -343,7 +378,7 @@
     <string name="prediction">прогнозирование</string>
     <string name="predict_quali">Квалификация</string>
     <string name="predict_sprint_quali">Спринт Квалификация</string>
-    <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2026 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков гонщика В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
+    <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2026 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков пилота В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
     <string name="warning_it">Внимание! Получение прогноза может занять некоторое время! Примерное время ожидания до 2 минут в зависимости от Вашего Интернет-соединения!</string>
     <string name="qualifying_text">Квалификация</string>
     <string name="sprint_qualifying_text">Спринт Квалификация</string>
@@ -452,6 +487,9 @@
     <string name="choose_team">Выбрать команду</string>
     <string name="driver_description">пилот Формулы-1</string>
     <string name="team_description">Команда Формулы-1</string>
+    <string name="driver_active_text">Действующий</string>
+    <string name="driver_retired_text">Бывший </string>
+    <string name="driver_reserve_text">Резервный</string>
     <string name="data_rules_error">Нет доступа к этим данным</string>
 
     <string name="user_prediction_delete_dialog_title">Удалить прогноз?</string>

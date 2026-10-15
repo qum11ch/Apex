@@ -1,14 +1,23 @@
 <resources>
     <string name="app_name" translatable="false">Apex</string>
     <string name="login_text">Login</string>
-    <string name="register_header">Register</string>
+    <string name="register_header">Registration</string>
+    <string name="register_description">Create an account to unlock advanced features</string>
     <string name="usernameText">Username</string>
     <string name="username_hint">Username*</string>
+    <string name="loginText">Username</string>
+    <string name="login_hint_full">Enter your login</string>
+    <string name="login_hint">Username*</string>
     <string name="passwordText">Password</string>
+    <string name="password_hint_full">Enter your password</string>
+    <string name="new_password_hint_full">Enter your new password</string>
+    <string name="repeat_password_hint_full">Repeat your new password</string>
+    <string name="emeail_hint_full">Enter your email</string>
     <string name="password_hint">Password*</string>
     <string name="emailText">Email</string>
     <string name="email_hint">Email*</string>
     <string name="loginButton">LOG IN</string>
+    <string name="avatarText">Account Photo</string>
     <string name="registerButton">SIGN IN</string>
     <string name="singUpText1">Don`t have account?</string>
     <string name="singUpText2">Sign Up</string>
@@ -24,7 +33,29 @@
     <string name="settings">Account Settings</string>
     <string name="account_data">Account data</string>
     <string name="change_avatar">Change avatar</string>
+    <string name="change_username">Change username</string>
     <string name="saved_race">Saved Races</string>
+
+    <string name="choose_username_title">Choose your public nickname</string>
+    <string name="choose_username_description">Your login will remain the same. The chosen nickname will be visible to other users.</string>
+    <string name="public_username_text">Public nickname</string>
+    <string name="new_username_text">New nickname</string>
+    <string name="public_username_hint">Enter nickname</string>
+
+    <string name="no_results_text">Results are not available yet</string>
+
+    <string name="favorite_search_hint">Search by name</string>
+    <string name="favorite_search_driver_hint">Search drivers</string>
+    <string name="favorite_search_team_hint">Search teams</string>
+
+    <string name="favorite_no_drivers_found">No drivers found. Change your search or filters.</string>
+    <string name="favorite_no_teams_found">No teams found. Change your search query.</string>
+
+    <string name="picker_filters">Show filters</string>
+    <string name="picker_filters_collapsed">Show filters</string>
+    <string name="picker_filters_expanded">Hide filters</string>
+    <string name="picker_filters_count_collapsed">Show filters (%1$d)</string>
+    <string name="picker_filters_count_expanded">Hide filters (%1$d)</string>
 
     <string name="profile_avatar">Profile avatar</string>
     <string name="change_email">Change email</string>
@@ -128,6 +159,7 @@
     <string name="points_earned">Points earned</string>
     <string name="drivers_championships">Drivers` Championships</string>
     <string name="date_of_birth">Date of birth</string>
+    <string name="date_of_death">Date of death</string>
     <string name="empty_race_list_future">Come back in a new season to get a new schedule and all of the results</string>
     <string name="grand_prix_weekend">grand prix weekend</string>
     <string name="days">days</string>
@@ -234,9 +266,9 @@
     <string name="team_delete_succ_text">is not longer your favourite team!</string>
     <string name="team_save_succ_text">is your new favourite team!</string>
     <string name="race_save_error_limit_text">You can have maximum 32 saved races. Please clear your saved races list!</string>
-    <string name="race_save_error_login_text">You need to login to save races</string>
-    <string name="driver_save_error_login_text">You need to login to set your favourite driver</string>
-    <string name="team_save_error_login_text">You need to login to set your favourite team</string>
+    <string name="race_save_error_login_text">You need to Log In to save races</string>
+    <string name="driver_save_error_login_text">You need to Log In to set your favourite driver</string>
+    <string name="team_save_error_login_text">You need to Log In to set your favourite team</string>
     <string name="lost_connection">lost connection</string>
     <string name="lost_connection_info">Check your internet connection and try again</string>
     <string name="try_again_button">try again</string>
@@ -275,6 +307,8 @@
     <string name="united_states_grand_prix_text">United States Grand Prix</string>
     <string name="bahrain_grand_prix_in_malaysia_text">Bahrain Grand Prix in Malaysia</string>
     <string name="malaysian_grand_prix_text">Malaysian Grand Prix</string>
+    <string name="argentine_grand_prix_text">Argentine Grand Prix</string>
+    <string name="san_marino_grand_prix_text">San Marino Grand Prix</string>
 
     <string name="abu_dhabi_grand_prix_locality">Abu Dhabi</string>
     <string name="australian_grand_prix_locality">Australia</string>
@@ -475,6 +509,9 @@
     <string name="choose_driver">Select driver</string>
     <string name="choose_team">Select team</string>
     <string name="driver_description">Formula 1 driver</string>
+    <string name="driver_active_text">Active</string>
+    <string name="driver_retired_text">Ex-</string>
+    <string name="driver_reserve_text">Reserve</string>
     <string name="team_description">Formula 1 team</string>
     <string name="data_rules_error">Access denied to this data</string>
 

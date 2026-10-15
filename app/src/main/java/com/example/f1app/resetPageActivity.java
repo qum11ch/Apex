@@ -10,7 +10,9 @@ import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -18,16 +20,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class resetPageActivity extends AppCompatActivity {
-    FirebaseAuth auth;
-    EditText userEmail;
-    Button resetButton, backButton;
-    ProgressBar resetProgress;
-    TextInputLayout til_email;
-    String email;
+    private FirebaseAuth auth;
+    private EditText userEmail;
+    private Button resetButton, backButton;
+    private ProgressBar resetProgress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         EdgeToEdge.enable(this);
@@ -46,8 +46,6 @@ public class resetPageActivity extends AppCompatActivity {
         userEmail = findViewById(R.id.userEmail);
         resetButton = findViewById(R.id.resetPassword);
 
-        til_email = findViewById(R.id.email_layout);
-
         resetProgress = findViewById(R.id.resetProgress);
 
         resetButton.setOnClickListener(v -> loginUserAccount(mCurrentSeason));
@@ -56,10 +54,6 @@ public class resetPageActivity extends AppCompatActivity {
 
         backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
-
-        WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-        windowInsetsController.setAppearanceLightStatusBars(true);
     }
 
     private final TextWatcher textWatcher = new TextWatcher() {
@@ -68,12 +62,14 @@ public class resetPageActivity extends AppCompatActivity {
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            email = userEmail.getText().toString().trim();
+            String value = s.toString().trim();
 
-            if(!Patterns.EMAIL_ADDRESS.matcher(email).matches() && !email.isEmpty()){
-                til_email.setError(getString(R.string.invalid_email_text));
-            }else{
-                til_email.setError(null);
+            if (value.isEmpty()) {
+                setEmailError(null);
+            } else if (!Patterns.EMAIL_ADDRESS.matcher(value).matches()) {
+                setEmailError(getString(R.string.invalid_email_text));
+            } else {
+                setEmailError(null);
             }
         }
 
@@ -82,35 +78,62 @@ public class resetPageActivity extends AppCompatActivity {
     };
 
     private void loginUserAccount(String currentSeason) {
-        resetButton.setVisibility(View.INVISIBLE);
-        resetProgress.setVisibility(View.VISIBLE);
-
         String emailAddress = userEmail.getText().toString().trim();
 
         if (emailAddress.isEmpty()) {
-            resetProgress.setVisibility(View.INVISIBLE);
-            resetButton.setVisibility(View.VISIBLE);
-            Toast.makeText(this, getString(R.string.empty_credentials_text), Toast.LENGTH_LONG).show();
+            setEmailError(getString(R.string.empty_credentials_text));
             return;
         }
 
-        if(til_email.getError()==null){
-            auth = FirebaseAuth.getInstance();
-
-            auth.sendPasswordResetEmail(emailAddress)
-                    .addOnSuccessListener(unesed -> {
-                        Toast.makeText(resetPageActivity.this, getString(R.string.reset_password_text), Toast.LENGTH_SHORT).show();
-                        startActivity_seasonData(resetPageActivity.this, logInPageActivity.class, currentSeason);
-                        finish();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(resetPageActivity.this, getString(R.string.wrong_email), Toast.LENGTH_LONG).show();
-                        resetButton.setVisibility(View.VISIBLE);
-                        resetProgress.setVisibility(View.INVISIBLE);
-                    });
-        }else{
-            resetProgress.setVisibility(View.INVISIBLE);
-            resetButton.setVisibility(View.VISIBLE);
+        if (!Patterns.EMAIL_ADDRESS.matcher(emailAddress).matches()) {
+            setEmailError(getString(R.string.invalid_email_text));
+            return;
         }
+
+        resetButton.setVisibility(View.INVISIBLE);
+        resetProgress.setVisibility(View.VISIBLE);
+
+        auth = FirebaseAuth.getInstance();
+        auth.sendPasswordResetEmail(emailAddress)
+                .addOnSuccessListener(unused -> {
+                    Toast.makeText(
+                            resetPageActivity.this,
+                            getString(R.string.reset_password_text),
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    startActivity_seasonData(
+                            resetPageActivity.this,
+                            logInPageActivity.class,
+                            currentSeason
+                    );
+                    finish();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(
+                            resetPageActivity.this,
+                            getString(R.string.wrong_email),
+                            Toast.LENGTH_LONG
+                    ).show();
+
+                    resetButton.setVisibility(View.VISIBLE);
+                    resetProgress.setVisibility(View.INVISIBLE);
+                });
+    }
+
+    private void setEmailError(String message) {
+        LinearLayout box = findViewById(R.id.emailBox);
+        TextView error = findViewById(R.id.emailError);
+
+        boolean hasError = message != null && !message.isEmpty();
+
+        box.setBackgroundResource(
+                hasError
+                        ? R.drawable.bg_input_box_error
+                        : R.drawable.bg_input_box
+        );
+
+        error.setText(hasError ? message : "");
+        error.setVisibility(hasError ? View.VISIBLE : View.GONE);
     }
 }

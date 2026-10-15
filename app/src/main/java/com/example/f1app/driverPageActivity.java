@@ -2,16 +2,16 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
+import static com.example.f1app.teamPageActivity.deleteChoice;
+import static com.example.f1app.teamPageActivity.isFavouriteValue;
+import static com.example.f1app.teamPageActivity.saveChoice;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -37,38 +37,52 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class driverPageActivity extends AppCompatActivity {
-    private TextView teamName, driverNumber, driverfullName,
-            driverFamilyName, driverName;
+
+    private static final int EARLIEST_AVAILABLE_SEASON = 2018;
+
+    private TextView teamName;
+    private TextView driverNumber;
+    private TextView driverFullName;
+    private TextView driverFamilyName;
+    private TextView driverName;
+
     private ProgressBar progressBar;
     private CoordinatorLayout contentLayout;
+
     private ImageView driverImage;
     private ToggleButton likeButton;
 
+    private String currentDriverFullName;
+
+    private TextView driverStatus;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.driver_page);
+
         EdgeToEdge.enable(this);
+        setContentView(R.layout.driver_page);
 
         contentLayout = findViewById(R.id.content_layout);
         progressBar = findViewById(R.id.progressBar);
-        driverfullName = findViewById(R.id.driverfullName);
+
+        driverFullName = findViewById(R.id.driverfullName);
         driverFamilyName = findViewById(R.id.driverFamilyName);
         driverImage = findViewById(R.id.driver_image);
         driverNumber = findViewById(R.id.driverNumber);
         driverName = findViewById(R.id.driverName);
         teamName = findViewById(R.id.teamName);
         likeButton = findViewById(R.id.like_button);
+        driverStatus = findViewById(R.id.driverStatus);
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finishAfterTransition());
@@ -82,281 +96,575 @@ public class driverPageActivity extends AppCompatActivity {
         }else{
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(driverPageActivity.this));
         }
-        //LocalDate currentDate = LocalDate.now();
-        //String currentYear = Integer.toString(currentDate.getYear());
 
-        if(!getIntent().getExtras().isEmpty()){
-            Bundle bundle = getIntent().getExtras();
-            String mDriverName = bundle.getString("driverName");
-            String mDriverFamilyName = bundle.getString("driverFamilyName");
-            //String mDriverTeam = bundle.getString("driverTeam");
-            String mDriverCode = bundle.getString("driverCode");
-            //String mTeamId = bundle.getString("driverTeamId");
-            String mCurrentSeason = bundle.getString("currentSeason");
+        Bundle bundle = getIntent().getExtras();
 
-            String driver = mDriverName + " " + mDriverFamilyName;
+        if (bundle == null) {
+            finish();
+            return;
+        }
 
-            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-            if (user!=null){
-                isFavourite(driver);
-                likeButton.setOnClickListener(view -> {
-                    if(likeButton.isChecked()){
-                        saveDriver(driver);
-                    }else{
-                        deleteDriver(driver);
-                    }
-                });
-            }else{
-                likeButton.setOnClickListener(view -> {
-                    likeButton.setChecked(false);
-                    Toast.makeText(driverPageActivity.this, getString(R.string.driver_save_error_login_text), Toast.LENGTH_LONG).show();
-                });
-            }
+        String mDriverName = bundle.getString("driverName");
+        String mDriverFamilyName = bundle.getString("driverFamilyName");
+        String mDriverCode = bundle.getString("driverCode");
+        String mCurrentSeason = bundle.getString("currentSeason");
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
+        if (mDriverName == null || mDriverFamilyName == null ||
+                mDriverCode == null || mCurrentSeason == null) {
+            finish();
+            return;
+        }
 
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("drivers").child(driver).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String driverTeam = snapshot.child("driversTeam").getValue(String.class);
+        currentDriverFullName = mDriverName + " " + mDriverFamilyName;
+        setupFavouriteButton(currentDriverFullName);
 
-                    if (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber")) {
-                        driverTeam = "Audi";
-                    }
-                    String mDriverNumber = snapshot.child("permanentNumber").getValue(String.class);
-                    String lastEntry = snapshot.child("lastEntry").getValue(String.class);
-                    String status = snapshot.child("status").getValue(String.class);
-                    String[] lastEntryParse = lastEntry.split("\\s+");
-                    String lastDriverSeason = lastEntryParse[0];
-                    StorageReference mDriverImage = null;
+        loadDriverData(
+                currentDriverFullName,
+                mDriverName,
+                mDriverFamilyName,
+                mDriverCode,
+                mCurrentSeason
+        );
 
-                    ViewGroup.LayoutParams upperParams = teamName.getLayoutParams();
-                    RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
-                            upperParams.width,
-                            upperParams.height
-                    );
-                    params.addRule(RelativeLayout.BELOW, R.id.teamName);
-                    params.topMargin = 10;
-                    params.leftMargin = 75;
+        setupToolbar(currentDriverFullName);
+    }
 
-                    LinearLayout parentLayout = findViewById(R.id.driver_layout);
-                    switch(Objects.requireNonNull(status)){
-                        case ("active"):
-                            mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + "_" + mCurrentSeason + ".png");
-                            teamName.setText(driverTeam);
-                            break;
-                        case ("reserve"):
-                            //mDriverImage = storageRef.child("drivers/" + mDriverCode.toLowerCase() + ".png");
-                            mDriverImage = storageRef.child("drivers/" +
-                                    mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
+    private void loadDriverData(
+            String driverFullName,
+            String mDriverName,
+            String mDriverFamilyName,
+            String mDriverCode,
+            String mCurrentSeason) {
 
-                            teamName.setText(driverTeam);
-                            TextView reservedText = new TextView(driverPageActivity.this);
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("drivers")
+                .child(driverFullName)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
 
-                            reservedText.setText(getString(R.string.reserve_text));
-                            reservedText.setTextAppearance(R.style.TextStyle_GoodTiming_Regular);
-                            reservedText.setTextColor(ContextCompat.getColor(driverPageActivity.this,
-                                    R.color.light_bronze));
-                            reservedText.setTextSize(20);
-                            reservedText.setLayoutParams(params);
-                            parentLayout.addView(reservedText);
-                            break;
-                        case ("retired"):
-                            mDriverImage = storageRef.child("drivers/" +
-                                    mDriverCode.toLowerCase() + "_" + lastDriverSeason + ".png");
+                        if (!snapshot.exists()) {
+                            showError(
+                                    getString(
+                                            R.string.user_driver_error
+                                    )
+                            );
 
-                            TextView retiredText = new TextView(driverPageActivity.this);
+                            finish();
+                            return;
+                        }
 
-                            retiredText.setText(getString(R.string.retired_text));
-                            retiredText.setTextAppearance(R.style.TextStyle_GoodTiming_Regular);
-                            retiredText.setTextColor(ContextCompat.getColor(driverPageActivity.this,
-                                    R.color.red));
-                            retiredText.setTextSize(22);
-                            retiredText.setLayoutParams(params);
-                            parentLayout.addView(retiredText);
-                            break;
-                    }
+                        String driverTeam =
+                                snapshot.child("driversTeam")
+                                        .getValue(String.class);
 
-                    driverfullName.setText(mDriverName);
-                    driverFamilyName.setText(mDriverFamilyName);
-                    driverNumber.setText(mDriverNumber);
+                        String driverNumberText = snapshot.child("permanentNumber")
+                                .getValue(String.class);
 
-                    String finalDriverTeam = driverTeam;
-                    rootRef.child("constructors").orderByChild("name").equalTo(driverTeam).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for(DataSnapshot teamSnaps: snapshot.getChildren()){
-                                String mDriverTeamId = teamSnaps.getKey();
-                                Bundle driverPageBundle = new Bundle();
-                                driverPageBundle.putString("driverName", mDriverName);
-                                driverPageBundle.putString("driverFamilyName", mDriverFamilyName);
-                                driverPageBundle.putString("driverTeam", finalDriverTeam);
-                                driverPageBundle.putString("driverCode", mDriverCode);
-                                driverPageBundle.putString("driverTeamId", mDriverTeamId);
-                                driverPageBundle.putString("currentSeason", mCurrentSeason);
-                                init(driverPageBundle);
+                        displayDriverNumber(driverNumberText);
+
+                        String lastEntry =
+                                snapshot.child("lastEntry")
+                                        .getValue(String.class);
+
+                        String status =
+                                snapshot.child("status")
+                                        .getValue(String.class);
+
+                        String driverId = snapshot.child("driverId")
+                                .getValue(String.class);
+
+                        if (driverTeam == null
+                                || lastEntry == null
+                                || status == null) {
+                            showError(
+                                    getString(
+                                            R.string.user_driver_error
+                                    )
+                            );
+
+                            return;
+                        }
+
+                        if (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber")) {
+                            driverTeam = "Audi";
+                        }
+
+                        int latestSeason = extractYear(lastEntry);
+
+                        if (latestSeason == -1) {
+                            Log.e(
+                                    "DriverPage",
+                                    "Invalid lastEntry: " + lastEntry
+                            );
+
+                            try {
+                                latestSeason = Integer.parseInt(mCurrentSeason);
+                            } catch (NumberFormatException error) {
+                                showError(
+                                        getString(
+                                                R.string.user_driver_error
+                                        )
+                                );
+
+                                return;
                             }
                         }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("ERROR_DRIVERPAGE", " " + error.getMessage());}
-                    });
+                        driverFullNameView()
+                                .setText(mDriverName);
 
-                    GlideApp.with(getApplicationContext())
-                            .load(mDriverImage)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .error(R.drawable.placeholder_driver)
-                            .into(driverImage);
-                }
+                        driverFamilyName.setText(mDriverFamilyName);
+                        // driverNumber.setText(driverNumberText);
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("driverPageActivity firebase error: ", error.getMessage());
-                }
-            });
+                        applyDriverStatus(
+                                status,
+                                driverTeam
+                        );
 
+                        loadDriverImage(driverId, mDriverCode, latestSeason);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-
-            if (!checkLightTheme(driverPageActivity.this)){
-                collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
-            }
-
-            AppBarLayout appBarLayout = findViewById(R.id.appbar);
-            appBarLayout.setExpanded(true,true);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                boolean isShow = true;
-                int scrollRange = -1;
-
-                @Override
-                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    if (scrollRange == -1) {
-                        scrollRange = appBarLayout.getTotalScrollRange();
+                        loadConstructorAndInit(
+                                driverTeam,
+                                mDriverName,
+                                mDriverFamilyName,
+                                mDriverCode,
+                                mCurrentSeason,
+                                latestSeason
+                        );
                     }
-                    if (scrollRange + verticalOffset == 0) {
-                        driverName.setText(driver);
-                        if (!checkLightTheme(driverPageActivity.this)){
-                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.darkest_grey));
-                        }else{
-                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                        if (isFinishing() || isDestroyed()) {
+                            return;
                         }
-                        isShow = true;
-                    } else if (isShow) {
-                        driverName.setText(" ");
-                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
-                        isShow = false;
+
+                        Log.e(
+                                "DriverPage",
+                                "Failed to load driver",
+                                error.toException()
+                        );
+
+                        showError(
+                                getString(R.string.user_driver_error)
+                        );
                     }
-                }
-            });
+                });
+    }
+
+    private TextView driverFullNameView() {
+        return driverFullName;
+    }
+
+    private int extractYear(String lastEntry) {
+        if (lastEntry == null || lastEntry.trim().isEmpty()) {
+            return -1;
+        }
+
+        Matcher matcher = Pattern
+                .compile("\\b(\\d{4})\\b")
+                .matcher(lastEntry);
+
+        if (!matcher.find()) {
+            return -1;
+        }
+
+        try {
+            return Integer.parseInt(matcher.group(1));
+        } catch (NumberFormatException error) {
+            return -1;
         }
     }
 
-    private void saveDriver(String driverName){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void applyDriverStatus(String status, String driverTeam) {
+        teamName.setText(driverTeam != null ? driverTeam : "");
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        driverStatus.setText("");
+        driverStatus.setVisibility(View.GONE);
+
+        if ("reserve".equals(status)) {
+            driverStatus.setText(R.string.reserve_text);
+
+            driverStatus.setTextColor(
+                    ContextCompat.getColor(
+                            this,
+                            R.color.light_bronze
+                    )
+            );
+
+            driverStatus.setVisibility(View.VISIBLE);
+
+        } else if ("retired".equals(status)) {
+            driverStatus.setText(R.string.retired_text);
+
+            driverStatus.setTextColor(
+                    ContextCompat.getColor(
+                            this,
+                            R.color.red
+                    )
+            );
+
+            driverStatus.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private void loadDriverImage(
+            String driverCode,
+            int latestSeason) {
+
+        if (driverCode == null
+                || driverCode.trim().isEmpty()
+                || latestSeason == -1) {
+
+            showDriverImagePlaceholder();
+            return;
+        }
+
+        String imagePath =
+                "drivers/"
+                        + driverCode.toLowerCase()
+                        + "_"
+                        + latestSeason
+                        + ".png";
+
+        StorageReference imageReference =
+                FirebaseStorage.getInstance()
+                        .getReference()
+                        .child(imagePath);
+
+        imageReference.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    GlideApp.with(getApplicationContext())
+                            .load(uri)
+                            .transition(
+                                    DrawableTransitionOptions
+                                            .withCrossFade()
+                            )
+                            .diskCacheStrategy(
+                                    DiskCacheStrategy.ALL
+                            )
+                            .error(R.drawable.placeholder_driver)
+                            .into(driverImage);
+                })
+                .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    Log.w(
+                            "DriverPage",
+                            "Driver image not found: "
+                                    + imagePath,
+                            error
+                    );
+
+                    showDriverImagePlaceholder();
+                });
+    }
+
+    private void loadDriverImage(
+            String driverId,
+            String driverCode,
+            int year) {
+
+        if (driverId != null && !driverId.trim().isEmpty()) {
+            String preferredPath =
+                    "drivers/" + driverId.trim() + "_" + year + ".png";
+
+            FirebaseStorage.getInstance()
+                    .getReference()
+                    .child(preferredPath)
+                    .getDownloadUrl()
+                    .addOnSuccessListener(uri -> {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+
+                        GlideApp.with(this)
+                                .load(uri)
+                                .placeholder(R.drawable.placeholder_driver)
+                                .error(R.drawable.placeholder_driver)
+                                .into(driverImage);
+                    })
+                    .addOnFailureListener(error -> {
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+
+                        loadDriverImage(driverCode, year);
+                    });
+
+        } else {
+            loadDriverImage(driverCode, year);
+        }
+    }
+
+    private void showDriverImagePlaceholder() {
+        driverImage.setImageResource(
+                R.drawable.placeholder_driver
+        );
+    }
+
+    private void loadConstructorAndInit(
+            String driverTeam,
+            String mDriverName,
+            String mDriverFamilyName,
+            String mDriverCode,
+            String mCurrentSeason,
+            int latestSeason) {
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("constructors")
+                .orderByChild("name")
+                .equalTo(driverTeam)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
 
-                            rootRef.child("users").child(username).child("choiceDriver").setValue(driverName);
-                            Toast.makeText(driverPageActivity.this, driverName + " " + getString(R.string.driver_save_succ_text), Toast.LENGTH_LONG).show();
-                            isFavourite(driverName);
+                        if (isFinishing() || isDestroyed()) {
+                            return;
                         }
+
+                        String driverTeamId = null;
+
+                        for (DataSnapshot teamSnapshot :
+                                snapshot.getChildren()) {
+
+                            driverTeamId =
+                                    teamSnapshot.getKey();
+
+                            break;
+                        }
+
+                        init(
+                                createDriverPageBundle(
+                                        mDriverName,
+                                        mDriverFamilyName,
+                                        driverTeam,
+                                        mDriverCode,
+                                        driverTeamId,
+                                        mCurrentSeason,
+                                        latestSeason
+                                )
+                        );
                     }
+
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    public void onCancelled(
+                            @NonNull DatabaseError error) {
+
+                        if (isFinishing() || isDestroyed()) {
+                            return;
+                        }
+
+                        Log.e(
+                                "DriverPage",
+                                "Failed to load constructor",
+                                error.toException()
+                        );
+
+                        init(
+                                createDriverPageBundle(
+                                        mDriverName,
+                                        mDriverFamilyName,
+                                        driverTeam,
+                                        mDriverCode,
+                                        null,
+                                        mCurrentSeason,
+                                        latestSeason
+                                )
+                        );
                     }
                 });
     }
 
-    private void deleteDriver(String driverName){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId").equalTo(user.getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
-                            rootRef.child("users").child(username).child("choiceDriver").setValue("null");
-                            Toast.makeText(driverPageActivity.this, driverName + " " + getString(R.string.driver_delete_succ_text), Toast.LENGTH_LONG).show();
-                            isFavourite(driverName);
-                        }
-                    }
+    private Bundle createDriverPageBundle(
+            String driverName,
+            String driverFamilyName,
+            String driverTeam,
+            String driverCode,
+            String driverTeamId,
+            String currentSeason,
+            int latestSeason) {
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
+        Bundle bundle = new Bundle();
+
+        bundle.putString("driverName", driverName);
+        bundle.putString("driverFamilyName", driverFamilyName);
+        bundle.putString("driverTeam", driverTeam);
+        bundle.putString("driverCode", driverCode);
+        bundle.putString("currentSeason", currentSeason);
+
+        bundle.putInt("latestSeason", latestSeason);
+        bundle.putInt("earliestSeason", EARLIEST_AVAILABLE_SEASON);
+
+        if (driverTeamId != null
+                && !driverTeamId.trim().isEmpty()) {
+
+            bundle.putString("driverTeamId", driverTeamId);
+        }
+
+        return bundle;
     }
 
-    private void isFavourite(String driverName){
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    private void setupFavouriteButton(String driverFullName) {
+        FirebaseUser user =
+                FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        if (user == null) {
+            likeButton.setOnClickListener(view -> {
+                likeButton.setChecked(false);
+
+                Toast.makeText(
+                        driverPageActivity.this,
+                        getString(
+                                R.string.driver_save_error_login_text
+                        ),
+                        Toast.LENGTH_LONG
+                ).show();
+            });
+
+            return;
+        }
+
+        isFavouriteValue("choiceDriver", driverFullName,
+                likeButton, driverPageActivity.this);
+
+        likeButton.setOnClickListener(view -> {
+            if(likeButton.isChecked()){
+                saveChoice("choiceDriver", driverFullName,
+                        likeButton, driverPageActivity.this);
+            }else{
+                deleteChoice("choiceDriver", driverFullName,
+                        likeButton, driverPageActivity.this);
+            }
+        });
+    }
+
+    private void setupToolbar(String driverFullName) {
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+
+        if (!checkLightTheme(driverPageActivity.this)) {
+            collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
+        }
+
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        appBarLayout.setExpanded(true, true);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                    boolean isShow = true;
+                    int scrollRange = -1;
+
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String choiceDriver = userSnap.child("choiceDriver").getValue(String.class);
-                            likeButton.setChecked(choiceDriver.equals(driverName));
+                    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                        if (scrollRange == -1) {
+                            scrollRange = appBarLayout.getTotalScrollRange();
+                        }
+                        if (scrollRange + verticalOffset == 0) {
+                            driverName.setText(driverFullName);
+                            if (!checkLightTheme(driverPageActivity.this)) {
+                                toolbar.setBackgroundColor(
+                                        ContextCompat.getColor(getApplicationContext(), R.color.darkest_grey));
+                            } else {
+                                toolbar.setBackgroundColor(
+                                        ContextCompat.getColor(getApplicationContext(), R.color.dark_blue));
+                            }
+                            isShow = true;
+                        } else if (isShow) {
+                            driverName.setText(" ");
+                            toolbar.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                            getApplicationContext(),
+                                            android.R.color.transparent
+                                    )
+                            );
+                            isShow = false;
                         }
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
+                }
+        );
     }
 
     private void init(Bundle driverPageBundle) {
-        ViewPager2 myViewPager2 = findViewById(R.id.viewPager2);
-        viewPagerAdapter adapter = new viewPagerAdapter(this);
-        driverStatsFragment driverStatsFragment = new driverStatsFragment();
-        driverStatsFragment.setArguments(driverPageBundle);
-        adapter.addFragment(driverStatsFragment);
-        driverResultsFragment driverResultsFragment = new driverResultsFragment();
-        driverResultsFragment.setArguments(driverPageBundle);
-        adapter.addFragment(driverResultsFragment);
-        myViewPager2.setAdapter(adapter);
+        ViewPager2 viewPager =
+                findViewById(R.id.viewPager2);
 
+        viewPagerAdapter adapter =
+                new viewPagerAdapter(this);
 
-        View child = myViewPager2.getChildAt(0);
+        driverStatsFragment statsFragment =
+                new driverStatsFragment();
+
+        statsFragment.setArguments(driverPageBundle);
+        adapter.addFragment(statsFragment);
+
+        driverResultsFragment resultsFragment =
+                new driverResultsFragment();
+
+        resultsFragment.setArguments(driverPageBundle);
+        adapter.addFragment(resultsFragment);
+
+        viewPager.setAdapter(adapter);
+
+        View child = viewPager.getChildAt(0);
+
         if (child instanceof RecyclerView) {
             child.setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
 
         TabLayout tabLayout = findViewById(R.id.tab_layout);
         tabLayout.setTag("sticky");
-        TabLayoutMediator tabLayoutMediator= new TabLayoutMediator(tabLayout, myViewPager2, (tab, position) -> {
-            if (position == 0){
-                tab.setText(R.string.stats_text);
-            }
-            else{
-                tab.setText(R.string.results_text);
-            }
-        });
-        tabLayoutMediator.attach();
+
+        new TabLayoutMediator(
+                tabLayout,
+                viewPager,
+                (tab, position) -> {
+                    if (position == 0) {
+                        tab.setText(R.string.stats_text);
+                    } else {
+                        tab.setText(R.string.results_text);
+                    }
+                }
+        ).attach();
 
         progressBar.animate()
                 .setDuration(500)
                 .withEndAction(() -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
                     contentLayout.setVisibility(View.VISIBLE);
                     progressBar.setVisibility(View.GONE);
                 })
                 .start();
+    }
+
+    private void displayDriverNumber(String number) {
+        boolean hasNumber =
+                number != null
+                        && !number.trim().isEmpty()
+                        && !"null".equalsIgnoreCase(number.trim());
+
+        driverNumber.setText(hasNumber ? number.trim() : "");
+
+        driverNumber.setVisibility(
+                hasNumber ? View.VISIBLE : View.GONE
+        );
+    }
+
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

@@ -60,7 +60,7 @@ public class winnersWDCActivity extends AppCompatActivity {
         }
 
         recyclerView = findViewById(R.id.recyclerview_winnersWDC);
-        recyclerView.setHasFixedSize(true);
+        // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 

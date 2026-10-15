@@ -83,7 +83,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             teamsHeader.setText(headerText);
 
             recyclerView = findViewById(R.id.recyclerview_currentTeams);
-            recyclerView.setHasFixedSize(true);
+            // recyclerView.setHasFixedSize(true);
             LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager3);
 

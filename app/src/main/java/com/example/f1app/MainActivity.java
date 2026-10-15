@@ -157,10 +157,10 @@ public class MainActivity extends AppCompatActivity {
         sfDrivers.startShimmer();
         sfTeams.startShimmer();
 
-        rvFuture.setHasFixedSize(true);
-        rvPast.setHasFixedSize(true);
-        rvDrivers.setHasFixedSize(true);
-        rvTeams.setHasFixedSize(true);
+        // rvFuture.setHasFixedSize(true);
+        // rvPast.setHasFixedSize(true);
+        // rvDrivers.setHasFixedSize(true);
+        // rvTeams.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         rvFuture.setLayoutManager(linearLayoutManager);
         LinearLayoutManager linearLayoutManager2 = new LinearLayoutManager(this);

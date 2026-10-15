@@ -67,4 +67,7 @@
     <color name="header_color">#222222</color>
     <color name="header_color_gradient">#38393E</color>
     <color name="separator_header">#FFFFFFFF</color>
+    <color name="round_color">#FFFFFFFF</color>
+    <color name="month_color">#303030</color>
+    <color name="search_bar_picker">#FFFF</color>
 </resources>

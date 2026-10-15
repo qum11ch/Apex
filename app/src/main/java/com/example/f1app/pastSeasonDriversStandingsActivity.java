@@ -73,7 +73,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
             shimmerFrameLayout.startShimmer();
 
             recyclerView = findViewById(R.id.recyclerview_currentDrivers);
-            recyclerView.setHasFixedSize(true);
+            // recyclerView.setHasFixedSize(true);
 
             storage = FirebaseStorage.getInstance();
             storageRef = storage.getReference();

@@ -24,17 +24,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_centerVertical="true"
-                    app:strokeColor="@color/grey"
-                    android:scaleType="centerCrop"
-                    app:shapeAppearanceOverlay="@style/customRoundedImageView"
-                    android:id="@+id/flag"
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/flagLayout"
                     android:layout_width="100dp"
-                    android:layout_height="75dp" />
+                    android:layout_height="75dp"
+                    android:backgroundTint="@color/colorPrimary"
+                    app:cardElevation="0dp"
+                    app:cardPreventCornerOverlap="true">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/flag"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:adjustViewBounds="true"
+                        android:scaleType="fitCenter"
+                        android:padding="0.5dp"
+                        app:shapeAppearanceOverlay="@style/customRoundedImageView"
+                        app:strokeColor="@color/grey"
+                        app:strokeWidth="0.5dp" />
+                </androidx.cardview.widget.CardView>
                 <TextView
                     android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@id/flag"
+                    android:layout_toEndOf="@id/flagLayout"
                     android:id="@+id/raceName"
                     android:textStyle="bold"
                     android:gravity="bottom"
@@ -44,7 +55,7 @@
                     android:textAllCaps="true"/>
                 <TextView
                     android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@id/flag"
+                    android:layout_toEndOf="@id/flagLayout"
                     android:textStyle="normal"
                     android:layout_marginTop="3dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"

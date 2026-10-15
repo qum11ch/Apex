@@ -25,6 +25,10 @@
         <item name="android:background">@drawable/logout_button</item>
     </style>
 
+    <style name="RegistrationStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/registration_drawable</item>
+    </style>
+
     <style name="FlatButtonStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/flat</item>
         <item name="android:textColor">@color/colorPrimary</item>
@@ -60,6 +64,16 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">32dp</item>
         <item name="android:background">@drawable/toggle_background</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingLeft">8dp</item>
+        <item name="android:paddingRight">8dp</item>
+    </style>
+
+    <style name="ToggleButtonPicker" parent="@android:style/Widget.CompoundButton.RadioButton">
+        <item name="android:foreground">?android:attr/selectableItemBackground</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">32dp</item>
+        <item name="android:background">@drawable/picker_toggle_background</item>
         <item name="android:button">@null</item>
         <item name="android:paddingLeft">8dp</item>
         <item name="android:paddingRight">8dp</item>
@@ -142,6 +156,12 @@
     </style>
     <style name="PtsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/pts_style</item>
+    </style>
+    <style name="MonthStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/month_style</item>
+    </style>
+    <style name="FirstMonthStyle" parent="android:Widget.TextView">
+        <item name="android:background">@drawable/month_style_first</item>
     </style>
     <style name="ResultsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/results_style</item>

@@ -3,6 +3,8 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -88,18 +90,16 @@ public class teamPageActivity extends AppCompatActivity {
 
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user!=null){
-                isFavourite(mTeamName);
+                isFavouriteValue("choiceTeam", mTeamName,
+                        likeButton,teamPageActivity.this);
                 likeButton.setOnClickListener(view -> {
                     if(likeButton.isChecked()){
-                        saveTeam(mTeamName);
+                        saveChoice("choiceTeam", mTeamName,
+                                likeButton, teamPageActivity.this);
                     }else{
-                        deleteTeam(mTeamName);
+                        deleteChoice("choiceTeam", mTeamName,
+                                likeButton, teamPageActivity.this);
                     }
-                });
-            }else{
-                likeButton.setOnClickListener(view -> {
-                    likeButton.setChecked(false);
-                    Toast.makeText(teamPageActivity.this, getString(R.string.team_save_error_login_text), Toast.LENGTH_LONG).show();
                 });
             }
 
@@ -201,67 +201,159 @@ public class teamPageActivity extends AppCompatActivity {
         }
     }
 
-    private void saveTeam(String teamName){
+    public static void saveChoice(String field, String valueOrNull,
+                           ToggleButton toggleButton, Context context) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
+        if (user == null) {
+            toggleButton.setOnClickListener(view -> {
+                toggleButton.setChecked(false);
+            });
 
-                            rootRef.child("users").child(username).child("choiceTeam").setValue(teamName);
-                            Toast.makeText(teamPageActivity.this, teamName + " " + getString(R.string.team_save_succ_text), Toast.LENGTH_LONG).show();
-                        }
+            if ("choiceTeam".equals(field)) {
+                showMessage(context, context.getString(R.string.team_save_error_login_text));
+            }
+
+            if ("choiceDriver".equals(field)) {
+                showMessage(context, context.getString(R.string.driver_save_error_login_text));
+            }
+
+            return;
+        }
+
+        String uid = user.getUid();
+
+        DatabaseReference userRef =
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .child("users")
+                        .child(uid);
+
+        userRef.child(field)
+                .setValue(valueOrNull)
+                .addOnSuccessListener(unused -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
                     }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+
+                    if ("choiceTeam".equals(field)) {
+                        showMessage(context,
+                                valueOrNull + " " + context.getString(R.string.team_save_succ_text));
                     }
+
+                    if ("choiceDriver".equals(field)) {
+                        showMessage(context,
+                                valueOrNull + " " + context.getString(R.string.driver_save_succ_text));
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
+                    }
+
+                    showMessage(
+                            context,
+                            context.getString(R.string.smth_wrong_text)
+                    );
                 });
     }
 
-    private void deleteTeam(String teamName){
+    public static void showMessage(Context context, String message) {
+        Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
+    }
+
+    public static void deleteChoice(String field, String valueOrNull,
+                                    ToggleButton toggleButton, Context context) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId").equalTo(user.getUid())
-                .addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String username = userSnap.getKey();
-                            rootRef.child("users").child(username).child("choiceTeam").setValue("null");
-                            Toast.makeText(teamPageActivity.this, teamName + " " + getString(R.string.team_delete_succ_text), Toast.LENGTH_LONG).show();
-                        }
+
+        if (user == null) {
+            toggleButton.setOnClickListener(view -> {
+                toggleButton.setChecked(false);
+            });
+
+            if ("choiceTeam".equals(field)) {
+                showMessage(context, context.getString(R.string.team_save_error_login_text));
+            }
+
+            if ("choiceDriver".equals(field)) {
+                showMessage(context, context.getString(R.string.driver_save_error_login_text));
+            }
+
+            return;
+        }
+
+        String uid = user.getUid();
+
+        DatabaseReference userRef =
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .child("users")
+                        .child(uid);
+
+        userRef.child(field)
+                .setValue(null)
+                .addOnSuccessListener(unused -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
                     }
 
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
+                    if ("choiceTeam".equals(field)) {
+                        showMessage(context,
+                                valueOrNull + " " + context.getString(R.string.team_delete_succ_text));
                     }
+
+                    if ("choiceDriver".equals(field)) {
+                        showMessage(context,
+                                valueOrNull + " " + context.getString(R.string.driver_delete_succ_text));
+                    }
+                })
+                .addOnFailureListener(error -> {
+                    if (context instanceof Activity
+                            && (((Activity) context).isFinishing()
+                            || ((Activity) context).isDestroyed())) {
+                        return;
+                    }
+
+                    showMessage(context,context.getString(R.string.smth_wrong_text));
                 });
     }
 
-    private void isFavourite(String teamName){
+    public static void isFavouriteValue(String field, String valueOrNull,
+                                        ToggleButton toggleButton, Context context){
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("users").orderByChild("userId")
-                .equalTo(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot userSnap: snapshot.getChildren()){
-                            String choiceTeam = userSnap.child("choiceTeam").getValue(String.class);
-                            likeButton.setChecked(choiceTeam.equals(teamName));
-                        }
-                    }
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
+        if (user == null) {
+            toggleButton.setChecked(false);
+            return;
+        }
+
+        String uid = user.getUid();
+
+        DatabaseReference userRef =
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .child("users")
+                        .child(uid);
+
+        userRef.child(field).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                String choice = snapshot.getValue(String.class);
+                toggleButton.setChecked(valueOrNull.equals(choice));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                toggleButton.setChecked(false);
+                Log.e("Firebase", "Ошибка чтения: " + error.getMessage());
+            }
+        });
     }
 
     private void init(Bundle teamPageBundle) {

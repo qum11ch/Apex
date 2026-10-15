@@ -75,7 +75,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         shimmerFrameLayout.startShimmer();
 
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
-        recyclerView.setHasFixedSize(true);
+        // recyclerView.setHasFixedSize(true);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         recyclerView.setNestedScrollingEnabled(false);
 

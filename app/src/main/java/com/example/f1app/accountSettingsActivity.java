@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,7 +34,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,27 +46,32 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class accountSettingsActivity extends AppCompatActivity {
+
     private Button changeAvatarButton;
     private Button loginButton;
+    private Button changeUsernameButton;
 
     private FirebaseAuth auth;
 
     private TextView username;
     private TextView currentEmail;
+    private TextView currentLogin;
     private TextView avatarInitial;
 
     private ImageView avatarImage;
 
     private Dialog deleteDialog;
     private Dialog loginDialog;
+    private Dialog changeUsernameDialog;
 
     private EditText loginPassword;
 
-    private TextInputLayout tilPassword;
+    private LinearLayout passwordBox;
+    private TextView loginPasswordError;
 
     private ProgressBar loginProgress;
 
@@ -79,13 +84,23 @@ public class accountSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.account_settings_page);
 
         WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+                WindowCompat.getInsetsController(
+                        getWindow(),
+                        getWindow().getDecorView()
+                );
+
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(accountSettingsActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(accountSettingsActivity.this));
+        if (!checkConnection(getApplicationContext())) {
+            startActivity(connectionLostScreen
+                    .createShowSplashOnNetworkFailure(
+                            accountSettingsActivity.this
+                    ));
+        } else {
+            startActivity(connectionLostScreen
+                    .createIntentHideSplashOnNetworkRecovery(
+                            accountSettingsActivity.this
+                    ));
         }
 
         Bundle intentBundle = getIntent().getExtras();
@@ -96,30 +111,37 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         username = findViewById(R.id.username);
         currentEmail = findViewById(R.id.currentEmail);
+        currentLogin = findViewById(R.id.currentLogin);
 
         avatarImage = findViewById(R.id.avatarImage);
         avatarInitial = findViewById(R.id.avatarInitial);
 
         changeAvatarButton = findViewById(R.id.changeAvatarButton);
-        Button changeEmailButton = findViewById(R.id.changeEmailButton);
-        Button changePasswordButton = findViewById(R.id.changePasswordButton);
+        changeUsernameButton = findViewById(R.id.changeUsernameButton);
 
-        Button deleteButton = findViewById(R.id.deleteAccountButton);
+        Button changeEmailButton =
+                findViewById(R.id.changeEmailButton);
+
+        Button changePasswordButton =
+                findViewById(R.id.changePasswordButton);
+
+        Button deleteButton =
+                findViewById(R.id.deleteAccountButton);
+
         Button logoutButton = findViewById(R.id.logoutButton);
-        ImageButton backButton = findViewById(R.id.backButton);
 
         auth = FirebaseAuth.getInstance();
 
         FirebaseUser user = auth.getCurrentUser();
+
         if (user == null) {
             finish();
             return;
         }
 
-        username.setText(getString(R.string.usernameText));
-        currentEmail.setText(user.getEmail());
+        if (user.getEmail() != null
+                && !user.getEmail().isEmpty()) {
 
-        if (user.getEmail() != null && !user.getEmail().isEmpty()) {
             avatarInitial.setText(
                     user.getEmail()
                             .substring(0, 1)
@@ -130,8 +152,13 @@ public class accountSettingsActivity extends AppCompatActivity {
         loadUserProfile();
         loadAvatarIfExists(user);
 
+        changeUsernameButton.setOnClickListener(v ->
+                showChangeUsernameDialog()
+        );
+
         deleteDialog = new Dialog(accountSettingsActivity.this);
         deleteDialog.setContentView(R.layout.delete_dialog_box);
+
         if (deleteDialog.getWindow() != null) {
             deleteDialog.getWindow().setLayout(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -142,6 +169,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                     getDrawable(R.drawable.custom_dialog_bg)
             );
         }
+
         deleteDialog.setCancelable(false);
 
         loginDialog = new Dialog(accountSettingsActivity.this);
@@ -160,48 +188,47 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         loginDialog.setCancelable(true);
 
-        loginPassword = loginDialog.findViewById(R.id.loginPassword);
-        tilPassword = loginDialog.findViewById(R.id.password_layout);
-        loginButton = loginDialog.findViewById(R.id.loginButton);
-        loginProgress = loginDialog.findViewById(R.id.loginProgress);
+        loginPassword =
+                loginDialog.findViewById(R.id.loginPassword);
+
+        passwordBox =
+                loginDialog.findViewById(R.id.passwordBox);
+
+        loginPasswordError =
+                loginDialog.findViewById(R.id.passwordError);
+
+        loginButton =
+                loginDialog.findViewById(R.id.loginButton);
+
+        loginProgress =
+                loginDialog.findViewById(R.id.loginProgress);
 
         loginButton.setOnClickListener(v ->
                 deleteAccountAfterReauthentication()
         );
 
-        Button cancelButton = deleteDialog.findViewById(R.id.cancel_button);
+        Button cancelButton =
+                deleteDialog.findViewById(R.id.cancel_button);
 
-        Button confirmButton = deleteDialog.findViewById(R.id.confirm_button);
+        Button confirmButton =
+                deleteDialog.findViewById(R.id.confirm_button);
 
         confirmButton.setOnClickListener(view -> {
             deleteDialog.dismiss();
+
             loginPassword.setText("");
-            tilPassword.setError(null);
+            loginPasswordError.setVisibility(View.GONE);
             loginProgress.setVisibility(View.GONE);
             loginButton.setEnabled(true);
+
             loginDialog.show();
         });
 
-        cancelButton.setOnClickListener(view -> deleteDialog.dismiss());
+        cancelButton.setOnClickListener(view ->
+                deleteDialog.dismiss()
+        );
 
-        backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(view -> {
-            Intent i = new Intent(
-                    accountSettingsActivity.this,
-                    accountPageActivity.class
-            );
-
-            i.putExtra("currentSeason", mCurrentSeason);
-            i.setFlags(
-                    i.getFlags()
-                            | Intent.FLAG_ACTIVITY_NEW_TASK
-                            | Intent.FLAG_ACTIVITY_CLEAR_TASK
-            );
-
-            startActivity(i);
-            finish();
-            overridePendingTransition(0, 0);
-        });
+        ImageButton backButton = findViewById(R.id.backButton);
 
         backButton.setOnClickListener(view -> {
             finish();
@@ -219,19 +246,24 @@ public class accountSettingsActivity extends AppCompatActivity {
                 }
         );
 
-        deleteButton.setOnClickListener(view -> deleteDialog.show());
+        deleteButton.setOnClickListener(view ->
+                deleteDialog.show()
+        );
 
         changeAvatarButton.setOnClickListener(v -> {
             PickVisualMediaRequest request =
                     new PickVisualMediaRequest.Builder()
                             .setMediaType(
-                                    ActivityResultContracts.PickVisualMedia
+                                    ActivityResultContracts
+                                            .PickVisualMedia
                                             .ImageOnly.INSTANCE
                             )
                             .build();
 
             avatarPicker.launch(request);
         });
+
+
 
         changeEmailButton.setOnClickListener(v ->
                 showChangeEmailDialog()
@@ -241,15 +273,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                 showChangePasswordDialog()
         );
 
-        deleteButton.setOnClickListener(v ->
-                deleteDialog.show()
-        );
-
-        logoutButton.setOnClickListener(v ->
-                logout()
-        );
-
-
+        logoutButton.setOnClickListener(v -> logout());
     }
 
     private void logout() {
@@ -283,6 +307,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         if (user == null || user.getEmail() == null) {
             progress.setVisibility(View.GONE);
             saveButton.setEnabled(true);
+
             showError(getString(R.string.users_not_found));
             return;
         }
@@ -290,6 +315,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         if (newEmail.equalsIgnoreCase(user.getEmail())) {
             progress.setVisibility(View.GONE);
             saveButton.setEnabled(true);
+
             showError(getString(R.string.new_email_error));
             return;
         }
@@ -310,7 +336,9 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                                     Toast.makeText(
                                             this,
-                                            getString(R.string.email_confirming_text),
+                                            getString(
+                                                    R.string.email_confirming_text
+                                            ),
                                             Toast.LENGTH_LONG
                                     ).show();
                                 })
@@ -325,50 +353,45 @@ public class accountSettingsActivity extends AppCompatActivity {
                                     );
 
                                     showError(
-                                            getString(R.string.confirmation_email_error)
+                                            getString(
+                                                    R.string.confirmation_email_error
+                                            )
                                     );
                                 })
                 )
                 .addOnFailureListener(error -> {
                     progress.setVisibility(View.GONE);
                     saveButton.setEnabled(true);
+
                     showError(getString(R.string.password_error));
                 });
     }
 
-
     private void updateEmailInDatabase(String newEmail) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
+
+        String uid = user.getUid();
+
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("userEmail", newEmail);
 
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("users")
-                .orderByChild("userId")
-                .equalTo(user.getUid())
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(
-                                    @NonNull DataSnapshot snapshot) {
-
-                                for (DataSnapshot userSnapshot :
-                                        snapshot.getChildren()) {
-
-                                    userSnapshot.getRef()
-                                            .child("userEmail")
-                                            .setValue(newEmail);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(
-                                    @NonNull DatabaseError error) {
-                            }
-                        });
+                .child(uid)
+                .updateChildren(updates)
+                .addOnFailureListener(error ->
+                        Log.e(
+                                "UpdateEmail",
+                                "Failed to update userEmail",
+                                error
+                        )
+                );
     }
-
 
     private void changePassword(
             String currentPassword,
@@ -382,6 +405,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         if (user == null || user.getEmail() == null) {
             progress.setVisibility(View.GONE);
             saveButton.setEnabled(true);
+
             showError(getString(R.string.users_not_found));
             return;
         }
@@ -402,24 +426,31 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                                     Toast.makeText(
                                             this,
-                                            getString(R.string.password_changed),
+                                            getString(
+                                                    R.string.password_changed
+                                            ),
                                             Toast.LENGTH_SHORT
                                     ).show();
                                 })
                                 .addOnFailureListener(error -> {
                                     progress.setVisibility(View.GONE);
                                     saveButton.setEnabled(true);
+
                                     showError(
-                                            getString(R.string.password_change_error)
+                                            getString(
+                                                    R.string.password_change_error
+                                            )
                                     );
                                 })
                 )
                 .addOnFailureListener(error -> {
                     progress.setVisibility(View.GONE);
                     saveButton.setEnabled(true);
+
                     showError(getString(R.string.password_error));
                 });
     }
+
     private final ActivityResultLauncher<PickVisualMediaRequest> avatarPicker =
             registerForActivityResult(
                     new ActivityResultContracts.PickVisualMedia(),
@@ -431,7 +462,9 @@ public class accountSettingsActivity extends AppCompatActivity {
             );
 
     private void loadAvatarIfExists(FirebaseUser user) {
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
 
         StorageReference avatarRef =
                 FirebaseStorage.getInstance()
@@ -442,6 +475,10 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         avatarRef.getDownloadUrl()
                 .addOnSuccessListener(uri -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
                     avatarImage.setVisibility(View.VISIBLE);
                     avatarInitial.setVisibility(View.GONE);
 
@@ -451,12 +488,81 @@ public class accountSettingsActivity extends AppCompatActivity {
                             .into(avatarImage);
                 })
                 .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
                     avatarImage.setVisibility(View.GONE);
                     avatarInitial.setVisibility(View.VISIBLE);
                 });
     }
 
     private void deleteUserData(FirebaseUser user) {
+        String uid = user.getUid();
+
+        DatabaseReference rootRef =
+                FirebaseDatabase.getInstance().getReference();
+
+        rootRef.child("leaderboards")
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    Map<String, Object> updates = new HashMap<>();
+
+                    for (DataSnapshot seasonSnapshot :
+                            snapshot.getChildren()) {
+
+                        String season = seasonSnapshot.getKey();
+
+                        if (season != null
+                                && seasonSnapshot.child(uid).exists()) {
+
+                            updates.put(
+                                    "/leaderboards/"
+                                            + season
+                                            + "/"
+                                            + uid,
+                                    null
+                            );
+                        }
+                    }
+
+                    updates.put("/users/" + uid, null);
+                    updates.put("/publicProfiles/" + uid, null);
+                    updates.put("/userPredictionStats/" + uid, null);
+                    updates.put("/savedRaces/" + uid, null);
+
+                    rootRef.updateChildren(updates)
+                            .addOnSuccessListener(unused ->
+                                    deleteAvatarAndFirebaseUser(user)
+                            )
+                            .addOnFailureListener(error -> {
+                                Log.e(
+                                        "DeleteAccount",
+                                        "Failed to delete user data",
+                                        error
+                                );
+
+                                showError(
+                                        getString(
+                                                R.string.delete_user_error
+                                        )
+                                );
+                            });
+                })
+                .addOnFailureListener(error -> {
+                    Log.e(
+                            "DeleteAccount",
+                            "Failed to read leaderboards",
+                            error
+                    );
+
+                    showError(
+                            getString(R.string.delete_user_error)
+                    );
+                });
+    }
+
+    private void deleteAvatarAndFirebaseUser(FirebaseUser user) {
         StorageReference avatarRef =
                 FirebaseStorage.getInstance()
                         .getReference()
@@ -466,48 +572,7 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         avatarRef.delete()
                 .addOnCompleteListener(task ->
-                        deleteRealtimeProfile(user)
-                );
-    }
-
-    private void deleteRealtimeProfile(FirebaseUser user) {
-        DatabaseReference usersRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child("users");
-
-        usersRef.orderByChild("userId")
-                .equalTo(user.getUid())
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(
-                                    @NonNull DataSnapshot snapshot) {
-
-                                List<Task<Void>> deleteTasks =
-                                        new ArrayList<>();
-
-                                for (DataSnapshot userSnapshot :
-                                        snapshot.getChildren()) {
-
-                                    deleteTasks.add(
-                                            userSnapshot.getRef()
-                                                    .removeValue()
-                                    );
-                                }
-
-                                Tasks.whenAllComplete(deleteTasks)
-                                        .addOnSuccessListener(tasks ->
-                                                deleteFirebaseUser(user)
-                                        );
-                            }
-
-                            @Override
-                            public void onCancelled(
-                                    @NonNull DatabaseError error) {
-                                showError(getString(R.string.delete_user_error));
-                            }
-                        }
+                        deleteFirebaseUser(user)
                 );
     }
 
@@ -536,26 +601,60 @@ public class accountSettingsActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(error ->
-                        showError(getString(R.string.delete_user_error)));
+                        showError(
+                                getString(R.string.delete_user_error)
+                        )
+                );
     }
 
     private void showChangeEmailDialog() {
-        View view = getLayoutInflater().inflate(R.layout.dialog_change_email, null);
+        View view = getLayoutInflater().inflate(
+                R.layout.dialog_change_email,
+                null
+        );
 
-        EditText newEmailInput = view.findViewById(R.id.newEmailInput);
-        EditText currentPasswordInput = view.findViewById(R.id.currentPasswordEmailInput);
-        TextInputLayout newEmailLayout = view.findViewById(R.id.newEmailLayout);
-        TextInputLayout passwordLayout = view.findViewById(R.id.currentPasswordEmailLayout);
-        ProgressBar progress = view.findViewById(R.id.emailProgress);
-        Button cancel = view.findViewById(R.id.cancelEmailButton);
-        Button save = view.findViewById(R.id.saveEmailButton);
+        EditText newEmailInput =
+                view.findViewById(R.id.newEmailInput);
+
+        EditText currentPasswordInput =
+                view.findViewById(R.id.currentPasswordEmailInput);
+
+        LinearLayout emailBox =
+                view.findViewById(R.id.emailBox);
+
+        LinearLayout passwordBox =
+                view.findViewById(R.id.passwordBox);
+
+        TextView emailError =
+                view.findViewById(R.id.emailError);
+
+        TextView passwordError =
+                view.findViewById(R.id.passwordError);
+
+        if (emailBox == null || emailError == null
+                || passwordBox == null || passwordError == null) {
+
+            throw new IllegalStateException(
+                    "Не найдены emailBox/emailError/"
+                            + "passwordBox/passwordError "
+                            + "в dialog_change_email.xml"
+            );
+        }
+
+        ProgressBar progress =
+                view.findViewById(R.id.emailProgress);
+
+        Button cancel =
+                view.findViewById(R.id.cancelEmailButton);
+
+        Button save =
+                view.findViewById(R.id.saveEmailButton);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(view)
                 .create();
 
         cancel.setOnClickListener(v -> dialog.dismiss());
-
 
         save.setOnClickListener(v -> {
             String email = newEmailInput.getText()
@@ -567,19 +666,45 @@ public class accountSettingsActivity extends AppCompatActivity {
                     .trim();
 
             if (email.isEmpty()) {
-                newEmailLayout.setError(getString(R.string.email_enter));
+                showFieldError(
+                        emailBox,
+                        emailError,
+                        getString(R.string.email_enter)
+                );
+
                 return;
             }
 
             if (!android.util.Patterns.EMAIL_ADDRESS
                     .matcher(email)
                     .matches()) {
-                newEmailLayout.setError(getString(R.string.email_error));
+
+                showFieldError(
+                        emailBox,
+                        emailError,
+                        getString(R.string.email_error)
+                );
+
                 return;
             }
 
             if (password.isEmpty()) {
-                passwordLayout.setError(getString(R.string.password_enter));
+                showFieldError(
+                        passwordBox,
+                        passwordError,
+                        getString(R.string.password_enter)
+                );
+
+                return;
+            }
+
+            if (password.length() < 6) {
+                showFieldError(
+                        passwordBox,
+                        passwordError,
+                        getString(R.string.six_simbols_minimum)
+                );
+
                 return;
             }
 
@@ -591,8 +716,8 @@ public class accountSettingsActivity extends AppCompatActivity {
                     .putString("pending_email", email)
                     .apply();
 
-            newEmailLayout.setError(null);
-            passwordLayout.setError(null);
+            showFieldError(emailBox, emailError, null);
+            showFieldError(passwordBox, passwordError, null);
 
             progress.setVisibility(View.VISIBLE);
             save.setEnabled(false);
@@ -602,29 +727,86 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         dialog.setOnShowListener(d -> {
             if (dialog.getWindow() != null) {
-                dialog.getWindow().setBackgroundDrawableResource(
-                        android.R.color.transparent
-                );
+                dialog.getWindow()
+                        .setBackgroundDrawableResource(
+                                android.R.color.transparent
+                        );
             }
         });
 
         dialog.show();
     }
 
+    private void showFieldError(
+            LinearLayout box,
+            TextView errorView,
+            String message) {
+
+        if (box == null || errorView == null) {
+            Log.e(
+                    "DialogError",
+                    "box или errorView = null"
+            );
+
+            return;
+        }
+
+        boolean hasError =
+                message != null && !message.isEmpty();
+
+        box.setBackgroundResource(
+                hasError
+                        ? R.drawable.bg_input_box_error
+                        : R.drawable.bg_input_box
+        );
+
+        errorView.setText(hasError ? message : "");
+        errorView.setVisibility(
+                hasError ? View.VISIBLE : View.GONE
+        );
+    }
+
     private void showChangePasswordDialog() {
-        View view = getLayoutInflater().inflate(R.layout.dialog_change_password, null);
+        View view = getLayoutInflater().inflate(
+                R.layout.dialog_change_password,
+                null
+        );
 
-        EditText currentPasswordInput = view.findViewById(R.id.currentPasswordInput);
-        EditText newPasswordInput = view.findViewById(R.id.newPasswordInput);
-        EditText repeatPasswordInput = view.findViewById(R.id.repeatPasswordInput);
-        TextInputLayout currentPasswordLayout = view.findViewById(R.id.currentPasswordLayout);
+        EditText currentPasswordInput =
+                view.findViewById(R.id.currentPasswordInput);
 
-        TextInputLayout newPasswordLayout = view.findViewById(R.id.newPasswordLayout);
-        TextInputLayout repeatPasswordLayout = view.findViewById(R.id.repeatPasswordLayout);
+        EditText newPasswordInput =
+                view.findViewById(R.id.newPasswordInput);
 
-        ProgressBar progress = view.findViewById(R.id.passwordProgress);
-        Button cancel = view.findViewById(R.id.cancelPasswordButton);
-        Button save = view.findViewById(R.id.savePasswordButton);
+        EditText repeatPasswordInput =
+                view.findViewById(R.id.repeatPasswordInput);
+
+        LinearLayout newPasswordBox =
+                view.findViewById(R.id.newPasswordBox);
+
+        TextView newPasswordError =
+                view.findViewById(R.id.newPasswordError);
+
+        LinearLayout currentPasswordBox =
+                view.findViewById(R.id.passwordBox);
+
+        TextView currentPasswordError =
+                view.findViewById(R.id.passwordError);
+
+        LinearLayout repeatPasswordBox =
+                view.findViewById(R.id.repeatPasswordBox);
+
+        TextView repeatPasswordError =
+                view.findViewById(R.id.repeatPasswordError);
+
+        ProgressBar progress =
+                view.findViewById(R.id.passwordProgress);
+
+        Button cancel =
+                view.findViewById(R.id.cancelPasswordButton);
+
+        Button save =
+                view.findViewById(R.id.savePasswordButton);
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(view)
@@ -648,33 +830,56 @@ public class accountSettingsActivity extends AppCompatActivity {
             boolean valid = true;
 
             if (currentPassword.length() < 6) {
-                currentPasswordLayout.setError(
-                        getString(R.string.password_enter)
+                showFieldError(
+                        currentPasswordBox,
+                        currentPasswordError,
+                        getString(R.string.six_simbols_minimum)
                 );
+
                 valid = false;
             } else {
-                currentPasswordLayout.setError(null);
+                showFieldError(
+                        currentPasswordBox,
+                        currentPasswordError,
+                        null
+                );
             }
 
             if (newPassword.length() < 6) {
-                newPasswordLayout.setError(
+                showFieldError(
+                        newPasswordBox,
+                        newPasswordError,
                         getString(R.string.six_simbols_minimum)
                 );
+
                 valid = false;
             } else {
-                newPasswordLayout.setError(null);
+                showFieldError(
+                        newPasswordBox,
+                        newPasswordError,
+                        null
+                );
             }
 
             if (!newPassword.equals(repeatPassword)) {
-                repeatPasswordLayout.setError(
+                showFieldError(
+                        repeatPasswordBox,
+                        repeatPasswordError,
                         getString(R.string.passwords_not_equals)
                 );
+
                 valid = false;
             } else {
-                repeatPasswordLayout.setError(null);
+                showFieldError(
+                        repeatPasswordBox,
+                        repeatPasswordError,
+                        null
+                );
             }
 
-            if (!valid) return;
+            if (!valid) {
+                return;
+            }
 
             progress.setVisibility(View.VISIBLE);
             save.setEnabled(false);
@@ -691,6 +896,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         dialog.show();
 
         Window window = dialog.getWindow();
+
         if (window != null) {
             int width = (int) (getResources()
                     .getDisplayMetrics().widthPixels * 0.92f);
@@ -722,9 +928,10 @@ public class accountSettingsActivity extends AppCompatActivity {
                 .trim();
 
         if (password.length() < 6) {
-            tilPassword.setError(
+            setLoginPasswordError(
                     getString(R.string.invalid_password_text)
             );
+
             return;
         }
 
@@ -744,8 +951,27 @@ public class accountSettingsActivity extends AppCompatActivity {
                 .addOnFailureListener(error -> {
                     loginProgress.setVisibility(View.GONE);
                     loginButton.setEnabled(true);
-                    showError(getString(R.string.auth_fail_text));
+
+                    showError(
+                            getString(R.string.auth_fail_text)
+                    );
                 });
+    }
+
+    private void setLoginPasswordError(String message) {
+        boolean hasError =
+                message != null && !message.isEmpty();
+
+        passwordBox.setBackgroundResource(
+                hasError
+                        ? R.drawable.bg_input_box_error
+                        : R.drawable.bg_input_box
+        );
+
+        loginPasswordError.setText(hasError ? message : "");
+        loginPasswordError.setVisibility(
+                hasError ? View.VISIBLE : View.GONE
+        );
     }
 
     private void loadUserProfile() {
@@ -756,49 +982,71 @@ public class accountSettingsActivity extends AppCompatActivity {
             return;
         }
 
+        String uid = user.getUid();
+
         currentEmail.setText(user.getEmail());
 
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("users")
-                .orderByChild("userId")
-                .equalTo(user.getUid())
-                .addListenerForSingleValueEvent(
-                        new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot userSnapshot : snapshot.getChildren()) {
+                .child(uid)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
 
-                                    String name = userSnapshot.getKey();
+                    if (!snapshot.exists()) {
+                        showError(
+                                getString(R.string.account_load_error)
+                        );
+                        return;
+                    }
 
-                                    username.setText(name);
+                    String publicUsername =
+                            snapshot.child("username")
+                                    .getValue(String.class);
 
-                                    if (name != null &&
-                                            !name.isEmpty()) {
-                                        avatarInitial.setText(
-                                                name.substring(0, 1)
-                                                        .toUpperCase()
-                                        );
-                                    }
+                    if (publicUsername == null
+                            || publicUsername.trim().isEmpty()) {
 
-                                    break;
-                                }
-                            }
+                        publicUsername = "Пользователь";
+                    }
 
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                showError(
-                                        getString(R.string.account_load_error)
-                                );
-                            }
-                        }
-                );
+                    String currentLoginText =
+                            snapshot.child("login")
+                                    .getValue(String.class);
+
+                    username.setText(publicUsername);
+
+                    currentLogin.setText(currentLoginText);
+
+                    avatarInitial.setText(
+                            publicUsername
+                                    .substring(0, 1)
+                                    .toUpperCase()
+                    );
+                })
+                .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    Log.e(
+                            "AccountSettings",
+                            "Failed to load profile",
+                            error
+                    );
+
+                    showError(
+                            getString(R.string.account_load_error)
+                    );
+                });
     }
 
     private void showError(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
-
 
     private void uploadAvatar(Uri uri) {
         FirebaseUser user = auth.getCurrentUser();
@@ -821,8 +1069,18 @@ public class accountSettingsActivity extends AppCompatActivity {
                 .addOnSuccessListener(task ->
                         avatarRef.getDownloadUrl()
                                 .addOnSuccessListener(downloadUri -> {
-                                    avatarImage.setVisibility(View.VISIBLE);
-                                    avatarInitial.setVisibility(View.GONE);
+                                    if (isFinishing()
+                                            || isDestroyed()) {
+                                        return;
+                                    }
+
+                                    avatarImage.setVisibility(
+                                            View.VISIBLE
+                                    );
+
+                                    avatarInitial.setVisibility(
+                                            View.GONE
+                                    );
 
                                     GlideApp.with(this)
                                             .load(downloadUri)
@@ -830,6 +1088,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                                             .into(avatarImage);
 
                                     changeAvatarButton.setEnabled(true);
+
                                     Toast.makeText(
                                             this,
                                             R.string.saved_text,
@@ -838,8 +1097,15 @@ public class accountSettingsActivity extends AppCompatActivity {
                                 })
                 )
                 .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
                     changeAvatarButton.setEnabled(true);
-                    showError(getString(R.string.photo_load_error));
+
+                    showError(
+                            getString(R.string.photo_load_error)
+                    );
                 });
     }
 
@@ -847,21 +1113,26 @@ public class accountSettingsActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        if (auth == null) return;
+        if (auth == null) {
+            return;
+        }
 
         FirebaseUser user = auth.getCurrentUser();
 
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
 
         user.reload()
                 .addOnSuccessListener(unused -> {
                     FirebaseUser refreshedUser =
                             auth.getCurrentUser();
 
-                    if (refreshedUser == null) return;
+                    if (refreshedUser == null) {
+                        return;
+                    }
 
-                    String actualEmail =
-                            refreshedUser.getEmail();
+                    String actualEmail = refreshedUser.getEmail();
 
                     currentEmail.setText(actualEmail);
 
@@ -875,8 +1146,10 @@ public class accountSettingsActivity extends AppCompatActivity {
                                             null
                                     );
 
-                    if (pendingEmail != null &&
-                            pendingEmail.equalsIgnoreCase(actualEmail)) {
+                    if (pendingEmail != null
+                            && pendingEmail.equalsIgnoreCase(
+                            actualEmail
+                    )) {
 
                         updateEmailInDatabase(actualEmail);
 
@@ -890,10 +1163,225 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                         Toast.makeText(
                                 this,
-                                getString(R.string.email_confirming_success),
+                                getString(
+                                        R.string.email_confirming_success
+                                ),
                                 Toast.LENGTH_SHORT
                         ).show();
                     }
+                });
+    }
+
+    private void showChangeUsernameDialog() {
+        FirebaseUser user = auth.getCurrentUser();
+
+        if (user == null) {
+            showError(getString(R.string.users_not_found));
+            return;
+        }
+
+        if (changeUsernameDialog != null
+                && changeUsernameDialog.isShowing()) {
+            return;
+        }
+
+        changeUsernameDialog = new Dialog(this);
+        changeUsernameDialog.setContentView(
+                R.layout.dialog_change_username
+        );
+
+        changeUsernameDialog.setCancelable(false);
+
+        Window window = changeUsernameDialog.getWindow();
+
+        if (window != null) {
+            window.setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(
+                            android.graphics.Color.TRANSPARENT
+                    )
+            );
+
+            int width = (int) (getResources()
+                    .getDisplayMetrics().widthPixels * 0.92f);
+
+            window.setLayout(
+                    width,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        }
+
+        EditText usernameInput =
+                changeUsernameDialog.findViewById(
+                        R.id.newUsernameInput
+                );
+
+        LinearLayout usernameBox =
+                changeUsernameDialog.findViewById(
+                        R.id.usernameBox
+                );
+
+        TextView usernameError =
+                changeUsernameDialog.findViewById(
+                        R.id.usernameError
+                );
+
+        ProgressBar progress =
+                changeUsernameDialog.findViewById(
+                        R.id.usernameProgress
+                );
+
+        Button cancelButton =
+                changeUsernameDialog.findViewById(
+                        R.id.cancelUsernameButton
+                );
+
+        Button saveButton =
+                changeUsernameDialog.findViewById(
+                        R.id.saveUsernameButton
+                );
+
+        usernameInput.setText(username.getText().toString());
+
+        cancelButton.setOnClickListener(v ->
+                changeUsernameDialog.dismiss()
+        );
+
+        saveButton.setOnClickListener(v -> {
+            String newUsername = usernameInput.getText()
+                    .toString()
+                    .trim();
+
+            String validationError =
+                    validateUsername(newUsername);
+
+            if (validationError != null) {
+                showUsernameError(
+                        usernameBox,
+                        usernameError,
+                        validationError
+                );
+
+                return;
+            }
+
+            showUsernameError(usernameBox, usernameError, null);
+
+            progress.setVisibility(View.VISIBLE);
+            saveButton.setEnabled(false);
+            cancelButton.setEnabled(false);
+
+            updateUsername(
+                    user,
+                    newUsername,
+                    progress,
+                    saveButton,
+                    cancelButton
+            );
+        });
+
+        changeUsernameDialog.show();
+    }
+
+    private String validateUsername(String value) {
+        if (value.isEmpty()) {
+            return "Введите публичный никнейм";
+        }
+
+        if (value.length() > 30) {
+            return "Максимум 30 символов";
+        }
+
+        return null;
+    }
+
+    private void showUsernameError(
+            LinearLayout box,
+            TextView errorView,
+            String message) {
+
+        boolean hasError =
+                message != null && !message.isEmpty();
+
+        box.setBackgroundResource(
+                hasError
+                        ? R.drawable.bg_input_box_error
+                        : R.drawable.bg_input_box
+        );
+
+        errorView.setText(hasError ? message : "");
+        errorView.setVisibility(
+                hasError ? View.VISIBLE : View.GONE
+        );
+    }
+
+    private void updateUsername(
+            FirebaseUser user,
+            String newUsername,
+            ProgressBar progress,
+            Button saveButton,
+            Button cancelButton) {
+
+        String uid = user.getUid();
+
+        Map<String, Object> updates = new HashMap<>();
+
+        updates.put(
+                "/users/" + uid + "/username",
+                newUsername
+        );
+
+        updates.put(
+                "/publicProfiles/" + uid + "/username",
+                newUsername
+        );
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .updateChildren(updates)
+                .addOnSuccessListener(unused -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    progress.setVisibility(View.GONE);
+                    saveButton.setEnabled(true);
+                    cancelButton.setEnabled(true);
+
+                    username.setText(newUsername);
+                    avatarInitial.setText(
+                            newUsername
+                                    .substring(0, 1)
+                                    .toUpperCase()
+                    );
+
+                    if (changeUsernameDialog != null) {
+                        changeUsernameDialog.dismiss();
+                    }
+
+                    Toast.makeText(
+                            this,
+                            getString(R.string.saved_text),
+                            Toast.LENGTH_SHORT
+                    ).show();
+                })
+                .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    Log.e(
+                            "ChangeUsername",
+                            "Failed to update username",
+                            error
+                    );
+
+                    progress.setVisibility(View.GONE);
+                    saveButton.setEnabled(true);
+                    cancelButton.setEnabled(true);
+
+                    showError(
+                            getString(R.string.smth_wrong_text)
+                    );
                 });
     }
 }

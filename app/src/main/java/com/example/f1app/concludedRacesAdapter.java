@@ -1,5 +1,6 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
@@ -15,9 +16,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -174,6 +177,12 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             StorageReference mSecondImage;
             StorageReference mThirdImage;
 
+            if (!checkLightTheme(context)){
+                holder.stripedImgFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+                holder.stripedImgSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+                holder.stripedImgThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
+            }
+
             mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
             mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
             mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
@@ -231,6 +240,7 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
         LinearLayout podiumNamesLayout, podiumImageLayout;
+        ShapeableImageView stripedImgFirst, stripedImgSecond, stripedImgThird;
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);
             if (viewType == 1){
@@ -251,6 +261,9 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
                 podiumImageLayout = itemView.findViewById(R.id.podiumImage_layout);
                 podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
                 cnd = itemView.findViewById(R.id.cnd_layout);
+                stripedImgFirst = itemView.findViewById(R.id.stripedImg_first);
+                stripedImgSecond = itemView.findViewById(R.id.stripedImg_second);
+                stripedImgThird = itemView.findViewById(R.id.stripedImg_third);
             } else{
                 round = itemView.findViewById(R.id.round);
                 day_start = itemView.findViewById(R.id.day_start);

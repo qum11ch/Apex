@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.example.f1app"
-    compileSdk = 35
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.f1app"
         minSdk = 26
-        targetSdk = 35
-        versionCode = 13
-        versionName = "1.6.1"
+        targetSdk = 37
+        versionCode = 14
+        versionName = "1.7"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -40,7 +40,7 @@ secrets {
 }
 
 dependencies {
-    implementation ("com.firebaseui:firebase-ui-storage:9.0.0")
+    implementation ("com.firebaseui:firebase-ui-storage:9.1.1")
     implementation("com.google.firebase:firebase-storage")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")
     implementation ("com.facebook.shimmer:shimmer:0.5.0")
@@ -50,24 +50,24 @@ dependencies {
     implementation ("androidx.preference:preference:1.2.1")
     implementation ("com.android.volley:volley:1.2.1")
     implementation ("com.github.blongho:worldCountryData:${rootProject.extra["worldcountrydataVersion"]}")
-    implementation ("com.qcloud.cos:avif:1.0.0")
-    implementation ("com.squareup.retrofit2:converter-jackson:2.7.2")
-    implementation ("com.fasterxml.jackson.core:jackson-databind:2.10.3")
-    implementation ("com.fasterxml.jackson.core:jackson-core:2.10.3")
-    implementation ("com.fasterxml.jackson.core:jackson-annotations:2.10.3")
-    implementation ("com.google.code.gson:gson:2.10.1")
-    implementation ("org.jsoup:jsoup:1.10.3")
+    implementation ("com.qcloud.cos:avif:1.1.6")
+    implementation ("com.squareup.retrofit2:converter-jackson:3.0.0")
+    implementation ("com.fasterxml.jackson.core:jackson-databind:2.22.3")
+    implementation ("com.fasterxml.jackson.core:jackson-core:2.22.3")
+    implementation ("com.fasterxml.jackson.core:jackson-annotations:2.22")
+    implementation ("com.google.code.gson:gson:2.14.0")
+    implementation ("org.jsoup:jsoup:1.23.2")
     implementation ("androidx.constraintlayout:constraintlayout:2.2.2")
-    implementation("com.google.android.gms:play-services-maps:20.0.0")
-    implementation("com.google.firebase:firebase-database:22.0.2")
-    implementation (platform("com.google.firebase:firebase-bom:34.19.0"))
+    implementation("com.google.android.gms:play-services-maps:20.1.0")
+    implementation("com.google.firebase:firebase-database:23.0.0")
+    implementation (platform("com.google.firebase:firebase-bom:35.0.1"))
     implementation ("com.google.firebase:firebase-functions")
     implementation("androidx.credentials:credentials:1.6.0")
     implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
     implementation("com.google.android.libraries.identity.googleid:googleid:1.2.1")
     annotationProcessor ("androidx.annotation:annotation:1.11.0")
-    implementation ("com.github.bumptech.glide:glide:4.11.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
+    implementation ("com.github.bumptech.glide:glide:5.0.9")
+    annotationProcessor ("com.github.bumptech.glide:compiler:5.0.9")
     implementation("androidx.appcompat:appcompat:1.8.0")
     annotationProcessor ("androidx.room:room-compiler:2.8.5")
     testImplementation("junit:junit:4.13.2")

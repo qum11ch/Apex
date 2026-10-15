@@ -28,49 +28,37 @@
                 android:textColor="@color/text_color_main"
                 android:textSize="28sp"
                 android:textStyle="bold" />
-            <LinearLayout
-                android:layout_marginStart="10dp"
+            <HorizontalScrollView
                 android:layout_marginTop="10dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:layout_below="@id/resHeader"
-                android:id="@+id/toggleButtons"
-                android:orientation="horizontal">
-                <CheckBox
-                    android:layout_marginEnd="5dp"
-                    android:id="@+id/radioButton_2026"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:text="@string/_2026_season"
-                    android:textColor="@drawable/toggle_text_color"
-                    style="@style/ToggleButton"/>
-                <CheckBox
-                    android:id="@+id/radioButton_2025"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAllCaps="false"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@drawable/toggle_text_color"
-                    android:text="@string/_2025_season"
-                    style="@style/ToggleButton"/>
-            </LinearLayout>
-            <CheckBox
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="20dp"
-                android:id="@+id/radioButton_2024"
-                android:layout_width="wrap_content"
+                android:id="@+id/seasonButtonsScroll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textAllCaps="false"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@drawable/toggle_text_color"
-                android:text="@string/_2024_season"
-                style="@style/ToggleButton"
-                android:layout_marginEnd="5dp"
-                android:layout_below="@id/toggleButtons"/>
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/seasonButtonsLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp" />
+
+            </HorizontalScrollView>
+            <TextView
+                android:layout_marginTop="100dp"
+                android:layout_below="@id/seasonButtonsScroll"
+                android:id="@+id/noResultsText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:padding="24dp"
+                android:text="@string/no_results_text"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp"
+                android:visibility="visible" />
             <RelativeLayout
                 android:id="@+id/results_layout"
                 android:paddingStart="10dp"
@@ -79,7 +67,7 @@
                 android:layout_height="wrap_content"
                 style="@style/StatisticLayout"
                 android:paddingTop = "10dp"
-                android:layout_below="@id/radioButton_2024">
+                android:layout_below="@id/seasonButtonsScroll">
                 <LinearLayout
                     android:id="@+id/results_header"
                     android:orientation="horizontal"
@@ -156,6 +144,7 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/keyMapLayout"
                 style="@style/PtsStyle"
                 android:backgroundTint="@color/dark_grey"
                 android:layout_marginStart="10dp"

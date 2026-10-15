@@ -17,7 +17,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-            android:layout_marginTop="20dp">
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="60dp">
             <TextView
                 android:id="@+id/statisticHeader"
                 android:layout_width="match_parent"
@@ -440,8 +441,7 @@
                 android:layout_below="@id/country_layout"
                 android:layout_marginStart="20dp"
                 android:layout_marginTop="10dp"
-                android:layout_marginEnd="20dp"
-                android:layout_marginBottom="60dp">
+                android:layout_marginEnd="20dp">
 
                 <TextView
                     android:id="@+id/birthdate_info"
@@ -471,7 +471,33 @@
                         android:textSize="20sp"/>
                 </LinearLayout>
             </RelativeLayout>
+            <RelativeLayout
+                android:visibility="gone"
+                android:id="@+id/deathDateLayout"
+                style="@style/CircuitInfoLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/birthdate_layout"
+                android:layout_marginStart="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp">
 
+                <TextView
+                    android:id="@+id/death_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/date_of_death"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+                <TextView
+                    android:layout_below="@id/death_info"
+                    android:paddingBottom="5dp"
+                    android:id="@+id/deathdate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"/>
+            </RelativeLayout>
         </RelativeLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

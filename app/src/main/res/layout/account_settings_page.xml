@@ -26,6 +26,7 @@
             android:src="@drawable/back_arrow" />
 
         <TextView
+            android:textStyle="bold"
             android:layout_gravity="center"
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
@@ -42,6 +43,7 @@
             android:layout_height="48dp" />
     </LinearLayout>
     <ScrollView
+        android:overScrollMode="never"
         android:layout_below="@id/header"
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
@@ -72,8 +74,8 @@
 
                     <FrameLayout
                         android:id="@+id/avatarContainer"
-                        android:layout_width="96dp"
-                        android:layout_height="96dp">
+                        android:layout_width="100dp"
+                        android:layout_height="100dp">
 
                         <ImageView
                             android:id="@+id/avatarImage"
@@ -94,7 +96,7 @@
 
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_marginStart="20dp"
                         android:orientation="vertical">
                         <TextView
@@ -104,6 +106,7 @@
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
                         <Button
+                            android:layout_marginTop="10dp"
                             android:paddingStart="10dp"
                             android:paddingEnd="10dp"
                             android:paddingTop="0dp"
@@ -117,8 +120,24 @@
                             android:id="@+id/changeAvatarButton"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="20dp"
                             android:text="@string/change_avatar"
+                            android:textColor="@color/text_color_thirdly"/>
+                        <Button
+                            android:paddingStart="10dp"
+                            android:paddingEnd="10dp"
+                            android:paddingTop="0dp"
+                            android:paddingBottom="0dp"
+                            style="@style/ButtonStyle"
+                            android:textAllCaps="false"
+                            android:textSize="14sp"
+                            android:minHeight="30dp"
+                            android:layout_marginTop="10dp"
+                            android:backgroundTint="@color/account_settings_input_color"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                            android:id="@+id/changeUsernameButton"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/change_username"
                             android:textColor="@color/text_color_thirdly"/>
                     </LinearLayout>
 
@@ -126,6 +145,7 @@
             </androidx.cardview.widget.CardView>
 
             <TextView
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:layout_marginEnd="20dp"
                 android:layout_marginStart="20dp"
                 android:layout_width="match_parent"
@@ -135,6 +155,48 @@
                 android:textColor="@color/text_color_main"
                 android:textSize="18sp"
                 android:textStyle="bold" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/account_settings_input_color">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="72dp"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/loginText"
+                            android:textSize="13sp"
+                            android:textColor="@color/grey" />
+
+                        <TextView
+                            android:textColor="@color/text_color_main"
+                            android:id="@+id/currentLogin"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="3dp"
+                            android:ellipsize="end"
+                            android:maxLines="1"
+                            android:textSize="16sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_marginEnd="20dp"

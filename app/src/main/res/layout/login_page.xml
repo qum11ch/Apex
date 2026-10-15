@@ -60,69 +60,159 @@
                 android:layout_marginEnd="10dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <com.google.android.material.textfield.TextInputLayout
-                    android:theme="@style/StyledTilEditTextTheme"
-                    app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    app:hintTextColor="@color/text_color_main"
-                    app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    app:errorTextColor="@color/red"
-                    android:id="@+id/username_layout"
+                <LinearLayout
+                    android:id="@+id/loginFieldGroup"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_height="wrap_content"
-                    app:errorEnabled="true"
-                    android:hint="@string/usernameText"
-                    app:hintEnabled="true">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:backgroundTint="@color/text_color_main"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:theme="@style/StyledTilEditTextTheme"
-                        android:id="@+id/loginUsername"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
-                </com.google.android.material.textfield.TextInputLayout>
-                <com.google.android.material.textfield.TextInputLayout
-                    android:theme="@style/StyledTilEditTextTheme"
-                    app:hintTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    app:hintTextColor="@color/text_color_main"
-                    app:errorTextAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    app:errorTextColor="@color/red"
-                    android:id="@+id/password_layout"
-                    android:layout_below="@id/username_layout"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_height="wrap_content"
-                    app:passwordToggleEnabled="true"
-                    app:errorEnabled="true"
-                    app:hintEnabled="true"
-                    android:hint="@string/passwordText">
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:backgroundTint="@color/text_color_main"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:inputType="textPassword"
-                        android:theme="@style/StyledTilEditTextTheme"
-                        android:id="@+id/loginPassword"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content" />
+                    android:orientation="vertical">
                     <TextView
-                        android:gravity="end"
-                        android:textColor="@color/red"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
-                        android:textSize="20sp"
-                        android:id="@+id/resetPassword"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:id="@+id/loginLabel"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/forgot_password" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/loginText"
+                        android:textColor="@color/text_color_main"/>
+
+                    <LinearLayout
+                        android:id="@+id/loginBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="68dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
+
+                        <ImageView
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/login_icon" />
+
+                        <EditText
+                            android:textCursorDrawable="@null"
+                            android:textColorHighlight="@color/text_color_main"
+                            android:textColorLink="@color/text_color_main"
+                            android:textColor="@color/text_color_main"
+                            android:id="@+id/loginUsername"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@null"
+                            android:hint="@string/login_hint_full"
+                            android:inputType="text"
+                            android:singleLine="true"
+                            android:paddingStart="18dp"
+                            android:paddingEnd="8dp"
+                            android:textColorHint="@color/text_color_secondary"
+                            android:textSize="18sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/loginError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/red"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_below="@id/loginFieldGroup"
+                    android:id="@+id/passwordFieldGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="22dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:textStyle="normal"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:id="@+id/passwordLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:text="@string/passwordText"
+                        android:textColor="@color/text_color_main"/>
+
+                    <LinearLayout
+                        android:id="@+id/passwordBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="68dp"
+                        android:background="@drawable/bg_input_box"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
+
+                        <ImageView
+                            android:layout_width="26dp"
+                            android:layout_height="26dp"
+                            android:contentDescription="@null"
+                            android:src="@drawable/password_icon" />
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:paddingStart="18dp"
+                            android:paddingEnd="0dp"
+                            android:id="@+id/passwordInputLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            app:endIconMode="password_toggle"
+                            app:boxStrokeColor="@color/text_color_main"
+                            android:background="@android:color/transparent"
+                            app:endIconTint="@color/text_color_secondary"
+                            app:boxBackgroundMode="none"
+                            app:boxStrokeWidth="0dp"
+                            app:boxStrokeWidthFocused="0dp"
+                            app:hintEnabled="false">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:textCursorDrawable="@null"
+                                app:boxStrokeWidth="0dp"
+                                app:boxStrokeWidthFocused="0dp"
+                                android:id="@+id/loginPassword"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:hint="@string/password_hint_full"
+                                android:background="@null"
+                                android:inputType="textPassword"
+                                android:singleLine="true"
+                                android:textColor="@color/text_color_main"
+                                android:textColorHint="@color/text_color_secondary"
+                                android:textSize="18sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/passwordError"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/red"
+                        android:textSize="14sp"
+                        android:visibility="gone" />
+                </LinearLayout>
+                <TextView
+                    android:layout_marginTop="20dp"
+                    android:layout_below="@id/passwordFieldGroup"
+                    android:textColor="@color/red"
+                    android:textAppearance="@style/TextStyle.Gram.Bold"
+                    android:textSize="18sp"
+                    android:textStyle="normal"
+                    style="text-decoration: underline"
+                    android:id="@+id/resetPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/forgot_password" />
                 <FrameLayout
-                    android:layout_below="@id/password_layout"
+                    android:layout_below="@id/resetPassword"
                     android:id="@+id/loginButton_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
                     android:layout_marginTop="30dp">
                     <ProgressBar
                         android:backgroundTint="@color/red"

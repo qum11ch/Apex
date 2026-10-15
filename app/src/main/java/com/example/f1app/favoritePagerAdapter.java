@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class favoritePagerAdapter extends RecyclerView.Adapter<favoritePagerAdapter.Holder> {
@@ -26,11 +27,11 @@ public class favoritePagerAdapter extends RecyclerView.Adapter<favoritePagerAdap
         void onSelect(favoriteItem item);
     }
 
-    private final List<favoriteItem> items;
+    private final List<favoriteItem> items = new ArrayList<>();
     private final OnSelectListener listener;
 
-    public favoritePagerAdapter(List<favoriteItem> items, OnSelectListener listener) {
-        this.items = items;
+    public favoritePagerAdapter(List<favoriteItem> initialItems, OnSelectListener listener) {
+        this.items.addAll(initialItems);
         this.listener = listener;
     }
 
@@ -41,6 +42,24 @@ public class favoritePagerAdapter extends RecyclerView.Adapter<favoritePagerAdap
                 .inflate(R.layout.item_favorite_picker, parent, false);
 
         return new Holder(view);
+    }
+
+    public void submitItems(List<favoriteItem> newItems) {
+        // Копируем до clear(), даже если передали тот же список.
+        List<favoriteItem> copy = new ArrayList<>(newItems);
+
+        items.clear();
+        items.addAll(copy);
+
+        notifyDataSetChanged();
+    }
+
+    public favoriteItem getItem(int position) {
+        if (position < 0 || position >= items.size()) {
+            return null;
+        }
+
+        return items.get(position);
     }
 
     @Override

@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@color/colorPrimary"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="15dp">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:id="@+id/dialogTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAllCaps="true"
+            android:gravity="center"
+            android:text="@string/choose_username_title"
+            android:textColor="@color/text_color_main"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+
+        <LinearLayout
+            android:id="@+id/usernameFieldGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:textStyle="normal"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                android:textSize="18sp"
+                android:id="@+id/usernameLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/new_username_text"
+                android:textColor="@color/text_color_main"/>
+
+            <LinearLayout
+                android:id="@+id/usernameBox"
+                android:layout_width="match_parent"
+                android:layout_height="68dp"
+                android:background="@drawable/bg_input_box"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="18dp"
+                android:paddingEnd="18dp">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/login_icon" />
+
+                <EditText
+                    android:textCursorDrawable="@null"
+                    android:textColorHighlight="@color/text_color_main"
+                    android:textColorLink="@color/text_color_main"
+                    android:textColor="@color/text_color_main"
+                    android:id="@+id/newUsernameInput"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/public_username_hint"
+                    android:inputType="textPersonName|textCapSentences"
+                    android:singleLine="true"
+                    android:paddingStart="18dp"
+                    android:paddingEnd="8dp"
+                    android:maxLength="30"
+                    android:textColorHint="@color/text_color_secondary"
+                    android:textSize="16sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/usernameError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:textColor="@color/red"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/publicUsernameError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:textColor="@color/red"
+            android:textSize="14sp"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_marginTop="40dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <ProgressBar
+                android:id="@+id/usernameProgress"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:visibility="gone"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="8dp"
+                android:indeterminateTint="@color/red"/>
+
+            <LinearLayout
+                android:id="@+id/emailButtons"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="2"
+                android:orientation="horizontal">
+                <Button
+                    android:maxHeight="30dp"
+                    android:textAllCaps="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                    android:textSize="14sp"
+                    android:textColor="@color/dark_grey"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/cancelUsernameButton"
+                    android:text="@string/cancel"
+                    style="@style/declineButtonStyle"/>
+                <Button
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/white"
+                    android:layout_width="0dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/saveUsernameButton"
+                    android:text="@string/save_text"
+                    android:textAllCaps="true"
+                    android:backgroundTint="@color/red"
+                    style="@style/ButtonStyle"/>
+            </LinearLayout>
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent">
         <LinearLayout
             android:layout_marginBottom="10dp"
-            style="@style/ItemStyleAlt"
+            style="@style/ItemStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
@@ -32,46 +32,51 @@
                 <LinearLayout
                     android:id="@+id/header_layout"
                     android:layout_width="wrap_content"
-                    android:layout_centerInParent="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_above="@id/space"
                     android:layout_height="30dp"
                     android:orientation="horizontal">
                     <TextView
-                        android:textColor="@color/white"
                         android:id="@+id/day_start"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
-                        android:textColor="@color/white"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:text="@string/dash"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
-                        android:textColor="@color/white"
                         android:id="@+id/day_end"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:gravity="center"
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                 </LinearLayout>
+                <Space
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_centerInParent="true"
+                    android:id="@+id/space"/>
                 <TextView
+                    android:layout_marginTop="5dp"
                     android:textAllCaps="true"
+                    android:backgroundTint="@color/month_color"
                     android:id="@+id/raceMonth"
                     style="@style/PtsStyle"
                     android:layout_width="match_parent"
                     android:layout_marginStart="3dp"
                     android:layout_marginEnd="3dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/header_layout"
-                    android:layout_centerInParent="true"
+                    android:layout_below="@id/space"
+                    android:layout_centerHorizontal="true"
                     android:textAlignment="center"
                     android:paddingStart="3dp"
                     android:paddingEnd="3dp"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                    android:textColor="@color/dark_grey" />
+                    android:textColor="@color/footer_icon" />
             </RelativeLayout>
             <RelativeLayout
                 android:layout_width="0dp"
@@ -84,8 +89,7 @@
                     android:id="@+id/roundLayout"
                     android:layout_width="match_parent"
                     android:layout_marginEnd="8dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp">
+                    android:layout_height="wrap_content">
                     <TextView
                         android:textAllCaps="true"
                         android:includeFontPadding="false"
@@ -97,7 +101,7 @@
                         android:text="@string/round"
                         android:paddingEnd="5dp"
                         android:paddingStart="0dp"
-                        android:textColor="@color/white"
+                        android:textColor="@color/round_color"
                         android:textSize="14sp"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"/>
                     <TextView
@@ -110,7 +114,7 @@
                         android:paddingStart="0dp"
                         android:paddingEnd="10dp"
                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                        android:textColor="@color/white"
+                        android:textColor="@color/round_color"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -133,7 +137,7 @@
                     android:backgroundTint="@color/orange" />
 
                 <TextView
-                    android:textColor="@color/white"
+                    android:layout_marginBottom="5dp"
                     android:layout_below="@id/roundLayout"
                     android:id="@+id/raceCountry"
                     android:layout_width="match_parent"
@@ -144,7 +148,6 @@
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
                 <TextView
-                    android:textColor="@color/white"
                     android:id="@+id/raceName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -156,7 +159,6 @@
                     android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
 
                 <TextView
-                    android:textColor="@color/white"
                     android:id="@+id/circuitName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -182,10 +184,11 @@
                         android:layout_height="84dp"
                         android:layout_weight="1">
                         <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/stripedImg_first"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines"/>
+                            android:background="@drawable/background_striped_lines_white"/>
                         <ImageView
                             android:id="@+id/firstPlace_image"
                             android:layout_width="match_parent"
@@ -200,10 +203,11 @@
                         android:layout_height="84dp"
                         android:layout_weight="1">
                         <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/stripedImg_second"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines"/>
+                            android:background="@drawable/background_striped_lines_white"/>
                         <ImageView
                             android:id="@+id/secondPlace_image"
                             android:layout_width="match_parent"
@@ -218,10 +222,11 @@
                         android:layout_height="84dp"
                         android:layout_weight="1">
                         <com.google.android.material.imageview.ShapeableImageView
+                            android:id="@+id/stripedImg_third"
                             app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines"/>
+                            android:background="@drawable/background_striped_lines_white"/>
                         <ImageView
                             android:scaleType="fitCenter"
                             android:id="@+id/thirdPlace_image"
@@ -267,7 +272,6 @@
                             android:textAlignment="center"
                             android:textAllCaps="true"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            android:textColor="@color/white"
                             tools:ignore="RtlCompat" />
                     </RelativeLayout>
 
@@ -300,7 +304,6 @@
                             android:textAlignment="center"
                             android:textAllCaps="true"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            android:textColor="@color/white"
                             tools:ignore="RtlCompat" />
                     </RelativeLayout>
 
@@ -333,7 +336,6 @@
                             android:textAllCaps="true"
                             android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            android:textColor="@color/white"
                             tools:ignore="RtlCompat" />
                     </RelativeLayout>
                 </LinearLayout>

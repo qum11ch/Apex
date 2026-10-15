@@ -71,4 +71,7 @@
     <color name="header_color">#a1000b</color>
     <color name="header_color_gradient">#a1000b</color>
     <color name="separator_header">#a1000b</color>
+    <color name="round_color">#a1000b</color>
+    <color name="month_color">#DFDFDF</color>
+    <color name="search_bar_picker">#222222</color>
 </resources>

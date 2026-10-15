@@ -10,11 +10,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,476 +33,889 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class teamResultsFragment extends Fragment {
+
     private teamDriversResultsAdapter adapter;
     private teamTripleDriversResultsAdapter adapterTriple;
+
     private RecyclerView recyclerView;
+
     private List<teamDriversResultsData> datum;
     private List<teamTripleDriversResultsData> datumTriple;
-    private TextView firstDriverFamilyName, secondDriverFamilyName, thirdDriverFamilyName, raceNameHeader;
-    private ImageView firstDriver_image, secondDriver_image, thirdDriver_image;
-    private CheckBox radioButton_2025, radioButton_2024, radioButton_2026;
-    private ShimmerFrameLayout shimmerFrameLayout, shimmerTripleFrameLayout;
-    private String teamId = " ";
-    private String teamName = " ";
-    private RelativeLayout firstDriverLayout, secondDriverLayout, thirdDriverLayout;
 
-    private Handler handler = new Handler(Looper.getMainLooper());
+    private TextView firstDriverFamilyName;
+    private TextView secondDriverFamilyName;
+    private TextView thirdDriverFamilyName;
+    private TextView raceNameHeader;
+
+    private ImageView firstDriverImage;
+    private ImageView secondDriverImage;
+    private ImageView thirdDriverImage;
+
+    private ShimmerFrameLayout shimmerFrameLayout;
+    private ShimmerFrameLayout shimmerTripleFrameLayout;
+
+    private LinearLayout seasonButtonsLayout;
+
+    private RelativeLayout firstDriverLayout;
+    private RelativeLayout secondDriverLayout;
+    private RelativeLayout thirdDriverLayout;
+
+    private String teamId = "";
+    private String teamName = "";
+
+    private ArrayList<String> currentSeasonDrivers = new ArrayList<>();
+
+    private int selectedSeason = -1;
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
     private Runnable hideShimmerRunnable;
 
-    private int loadedRacesCount = 0;
-    private int totalRacesToLoad = 0;
     private boolean isTripleDriver = false;
 
     public teamResultsFragment() {
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    public void onResume() {
-        super.onResume();
-        if (getView() != null) {
-            getView().requestLayout();
-        }
-    }
-
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.team_page_results_fragment, container, false);
+    public View onCreateView(
+            @NonNull LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+
+        return inflater.inflate(
+                R.layout.team_page_results_fragment,
+                container,
+                false
+        );
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+
         super.onViewCreated(view, savedInstanceState);
 
         firstDriverFamilyName = view.findViewById(R.id.firstDriverFamilyName);
         secondDriverFamilyName = view.findViewById(R.id.secondDriverFamilyName);
         thirdDriverFamilyName = view.findViewById(R.id.thirdDriverFamilyName);
-        firstDriver_image = view.findViewById(R.id.firstDriver_image);
-        secondDriver_image = view.findViewById(R.id.secondDriver_image);
-        thirdDriver_image = view.findViewById(R.id.thirdDriver_image);
-        radioButton_2025 = view.findViewById(R.id.radioButton_2025);
-        radioButton_2026 = view.findViewById(R.id.radioButton_2026);
-        radioButton_2024 = view.findViewById(R.id.radioButton_2024);
+        firstDriverImage = view.findViewById(R.id.firstDriver_image);
+        secondDriverImage = view.findViewById(R.id.secondDriver_image);
+        thirdDriverImage = view.findViewById(R.id.thirdDriver_image);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerTripleFrameLayout = view.findViewById(R.id.shimmerTriple_layout);
+        seasonButtonsLayout = view.findViewById(R.id.seasonButtonsLayout);
         firstDriverLayout = view.findViewById(R.id.firstDriver_layout);
         secondDriverLayout = view.findViewById(R.id.secondDriver_layout);
         thirdDriverLayout = view.findViewById(R.id.thirdDriver_layout);
         raceNameHeader = view.findViewById(R.id.raceName_header);
-
         recyclerView = view.findViewById(R.id.drivers_results);
-        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
-        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        if (!getArguments().isEmpty()) {
-            String mTeamId = getArguments().getString("teamId");
-            teamId = mTeamId;
-            teamName = getArguments().getString("teamName");
-            ArrayList<String> driversList = getArguments().getStringArrayList("teamDrivers");
-            //String mCurrentSeason = getArguments().getString("currentSeason");
-
-            shimmerFrameLayout.startShimmer();
-            shimmerTripleFrameLayout.startShimmer();
-            radioButton_2026.setChecked(true);
-
-            assert driversList != null;
-
-            loadDriversInfo(driversList, "2026");
-            getResults("2026", driversList);
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("constructors").child(teamId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    Integer enterYear = snapshot.child("enterYear").getValue(Integer.class);
-                    if (enterYear > 2024){
-                        radioButton_2024.setVisibility(View.GONE);
-                    }
-                    if (enterYear > 2025) {
-                        radioButton_2025.setVisibility(View.GONE);
-                    }
-                    if (enterYear > 2026){
-                        radioButton_2026.setVisibility(View.GONE);
-                    }
-                }
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("driverPageActivity", "Driver information getting error:" + error.getMessage());
-                }
-            });
-
-            radioButton_2025.setOnClickListener(view1 -> {
-                if (!radioButton_2025.isChecked()) {
-                    radioButton_2026.setChecked(false);
-                    radioButton_2025.setChecked(true);
-                    radioButton_2024.setChecked(false);
-                }
-                radioButton_2024.setChecked(false);
-                radioButton_2026.setChecked(false);
-            });
-
-            radioButton_2026.setOnClickListener(view1 -> {
-                if (!radioButton_2026.isChecked()) {
-                    radioButton_2026.setChecked(true);
-                    radioButton_2025.setChecked(false);
-                    radioButton_2024.setChecked(false);
-                }
-                radioButton_2024.setChecked(false);
-                radioButton_2025.setChecked(false);
-            });
-
-            radioButton_2024.setOnClickListener(view2 -> {
-                if (!radioButton_2024.isChecked()) {
-                    radioButton_2025.setChecked(false);
-                    radioButton_2026.setChecked(false);
-                    radioButton_2024.setChecked(true);
-                }
-                radioButton_2025.setChecked(false);
-                radioButton_2026.setChecked(false);
-            });
-
-            radioButton_2026.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (radioButton_2026.isChecked()) {
-                    recyclerView.setVisibility(View.GONE);
-                    shimmerFrameLayout.setVisibility(View.VISIBLE);
-                    shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
-                    shimmerFrameLayout.startShimmer();
-                    shimmerTripleFrameLayout.startShimmer();
-                    loadDriversInfo(driversList, "2026");
-                    getResults("2026", driversList);
-                }
-            });
-
-            radioButton_2025.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (radioButton_2025.isChecked()) {
-                    ArrayList<String> teamDrivers = new ArrayList<>();
-
-                    rootRef.child("results/season/2025").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot driverSnap : snapshot.getChildren()) {
-                                String driverName = driverSnap.getKey();
-                                for (DataSnapshot raceSnaps : driverSnap.getChildren()) {
-                                    String teamIdFromDb = raceSnaps.child("TeamId").getValue(String.class);
-                                    if (teamIdFromDb != null && teamIdFromDb.equals(mTeamId)) {
-                                        teamDrivers.add(driverName);
-                                        break;
-                                    }
-                                }
-                            }
-                            recyclerView.setVisibility(View.GONE);
-                            shimmerFrameLayout.setVisibility(View.VISIBLE);
-                            shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
-                            shimmerFrameLayout.startShimmer();
-                            shimmerTripleFrameLayout.startShimmer();
-                            loadDriversInfo(teamDrivers, "2025");
-                            getResults("2025", teamDrivers);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("error", "" + error);
-                        }
-                    });
-                }
-            });
-
-            radioButton_2024.setOnCheckedChangeListener((compoundButton, b) -> {
-                if (radioButton_2024.isChecked()) {
-                    ArrayList<String> teamDrivers = new ArrayList<>();
-
-                    rootRef.child("results/season/2024").addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            for (DataSnapshot driverSnap : snapshot.getChildren()) {
-                                String driverName = driverSnap.getKey();
-                                for (DataSnapshot raceSnaps : driverSnap.getChildren()) {
-                                    String teamIdFromDb = raceSnaps.child("TeamId").getValue(String.class);
-                                    if (teamIdFromDb != null && teamIdFromDb.equals(mTeamId)) {
-                                        teamDrivers.add(driverName);
-                                        break;
-                                    }
-                                }
-                            }
-                            recyclerView.setVisibility(View.GONE);
-                            shimmerFrameLayout.setVisibility(View.VISIBLE);
-                            shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
-                            shimmerFrameLayout.startShimmer();
-                            shimmerTripleFrameLayout.startShimmer();
-                            loadDriversInfo(teamDrivers, "2024");
-                            getResults("2024", teamDrivers);
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            Log.e("error", "" + error);
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    private void loadDriversInfo(ArrayList<String> drivers, String season) {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-
-        for (int i = 0; i < drivers.size(); i++) {
-            String[] driverFullname = drivers.get(i).split(" ");
-            String mDriverFamilyName;
-            String mDriverName;
-
-            if (drivers.get(i).equals("Andrea Kimi Antonelli")) {
-                mDriverName = driverFullname[0] + " " + driverFullname[1];
-                mDriverFamilyName = driverFullname[2];
-            } else {
-                mDriverName = driverFullname[0];
-                mDriverFamilyName = driverFullname[1];
-            }
-
-            int finalI = i;
-            String finalDriverName = mDriverName;
-            String finalDriverFamilyName = mDriverFamilyName;
-
-            rootRef.child("drivers").child(drivers.get(i)).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String driversCode = snapshot.child("driversCode").getValue(String.class);
-                    StorageReference mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_" + season + ".png");
-                    //if (season.equals("2024")) {
-                    //    mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + "_2024.png");
-                    //} else {
-                    //    mDriverImage = storageRef.child("drivers/" + driversCode.toLowerCase() + ".png");
-                    //}
-
-                    if (finalI == 0) {
-                        firstDriverFamilyName.setText(finalDriverFamilyName);
-                        GlideApp.with(requireContext())
-                                .load(mDriverImage)
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.placeholder_driver)
-                                .into(firstDriver_image);
-
-                        firstDriverLayout.setOnClickListener(v ->
-                                navigateToDriverPage(drivers.get(finalI), finalDriverName, finalDriverFamilyName)
-                        );
-
-                    } else if (finalI == 1) {
-                        secondDriverFamilyName.setText(finalDriverFamilyName);
-                        GlideApp.with(requireContext())
-                                .load(mDriverImage)
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.placeholder_driver)
-                                .into(secondDriver_image);
-
-                        secondDriverLayout.setOnClickListener(v ->
-                                navigateToDriverPage(drivers.get(finalI), finalDriverName, finalDriverFamilyName)
-                        );
-
-                    } else if (finalI == 2) {
-                        thirdDriverFamilyName.setText(finalDriverFamilyName);
-                        GlideApp.with(requireContext())
-                                .load(mDriverImage)
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.placeholder_driver)
-                                .into(thirdDriver_image);
-
-                        thirdDriverLayout.setOnClickListener(v ->
-                                navigateToDriverPage(drivers.get(finalI), finalDriverName, finalDriverFamilyName)
-                        );
-                    }
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-                }
-            });
-        }
-    }
-
-    private void navigateToDriverPage(String driverFullName, String driverName, String driverFamilyName) {
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("drivers").child(driverFullName).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                String mDriverCode = snapshot.child("driversCode").getValue(String.class);
-                Intent intent = new Intent(requireContext(), driverPageActivity.class);
-                Bundle bundle = new Bundle();
-                bundle.putString("driverName", driverName);
-                bundle.putString("driverFamilyName", driverFamilyName);
-                bundle.putString("driverTeam", teamName);
-                bundle.putString("driverCode", mDriverCode);
-                bundle.putString("driverTeamId", teamId);
-                intent.putExtras(bundle);
-                requireContext().startActivity(intent);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("teamPageActivity", "Drivers error:" + error.getMessage());
-            }
-        });
-    }
-
-    private void getResults(String season, ArrayList<String> drivers) {
         datum = new ArrayList<>();
         datumTriple = new ArrayList<>();
-        loadedRacesCount = 0;
 
-        adapter = null;
-        adapterTriple = null;
-        recyclerView.setAdapter(null);
+        if (getArguments() == null) {
+            return;
+        }
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        teamId = getArguments().getString("teamId", "");
+        teamName = getArguments().getString("teamName", "");
 
-        rootRef.child("schedule/season/" + season)
-                .orderByChild("round")
+        if (teamId.trim().isEmpty()) {
+            return;
+        }
+
+        showLoading(false);
+
+        loadAvailableSeasons();
+    }
+
+    private void loadAvailableSeasons() {
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("constructors")
+                .child(teamId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        totalRacesToLoad = (int) snapshot.getChildrenCount();
 
-                        if (totalRacesToLoad == 0) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Integer enterYear = snapshot
+                                .child("enterYear")
+                                .getValue(Integer.class);
+
+                        int earliestSeason = enterYear != null
+                                ? enterYear
+                                : LocalDate.now().getYear();
+
+                        int latestSeason =
+                                LocalDate.now().getYear();
+
+                        if (earliestSeason > latestSeason) {
+                            int temp = earliestSeason;
+                            earliestSeason = latestSeason;
+                            latestSeason = temp;
+                        }
+
+                        checkSeasons(
+                                earliestSeason,
+                                latestSeason
+                        );
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Log.e(
+                                "TeamResults",
+                                "Failed to load constructor",
+                                error.toException()
+                        );
+                    }
+                });
+    }
+
+    private void checkSeasons(
+            int earliestSeason,
+            int latestSeason) {
+
+        ArrayList<Integer> seasonCandidates = new ArrayList<>();
+
+        for (int season = latestSeason;
+             season >= earliestSeason;
+             season--) {
+
+            seasonCandidates.add(season);
+        }
+
+        ArrayList<Integer> availableSeasons = new ArrayList<>();
+
+        final int totalChecks = seasonCandidates.size();
+        final int[] completedChecks = {0};
+
+        DatabaseReference resultsRef =
+                FirebaseDatabase.getInstance()
+                        .getReference()
+                        .child("results")
+                        .child("season");
+
+        for (Integer season : seasonCandidates) {
+            resultsRef.child(String.valueOf(season))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!isAdded()) {
+                                return;
+                            }
+
+                            if (teamHasResults(snapshot)) {
+                                availableSeasons.add(season);
+                            }
+
+                            completedChecks[0]++;
+
+                            if (completedChecks[0] == totalChecks) {
+                                showAvailableSeasons(
+                                        availableSeasons
+                                );
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            if (!isAdded()) {
+                                return;
+                            }
+
+                            Log.e(
+                                    "TeamResults",
+                                    "Failed to check season "
+                                            + season,
+                                    error.toException()
+                            );
+
+                            completedChecks[0]++;
+
+                            if (completedChecks[0] == totalChecks) {
+                                showAvailableSeasons(
+                                        availableSeasons
+                                );
+                            }
+                        }
+                    });
+        }
+    }
+
+    private boolean teamHasResults(DataSnapshot seasonSnapshot) {
+        for (DataSnapshot driverSnapshot : seasonSnapshot.getChildren()) {
+            for (DataSnapshot raceSnapshot : driverSnapshot.getChildren()) {
+                String raceTeamId = raceSnapshot
+                        .child("TeamId")
+                        .getValue(String.class);
+
+                if (teamId.equals(raceTeamId)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void showAvailableSeasons(ArrayList<Integer> availableSeasons) {
+        if (!isAdded()) {
+            return;
+        }
+
+        if (availableSeasons.isEmpty()) {
+            hideShimmer();
+            return;
+        }
+
+        Collections.sort(availableSeasons);
+        Collections.reverse(availableSeasons);
+
+        seasonButtonsLayout.removeAllViews();
+
+        for (int season : availableSeasons) {
+            seasonButtonsLayout.addView(
+                    createSeasonButton(season)
+            );
+        }
+
+        selectSeason(availableSeasons.get(0));
+    }
+
+    private ToggleButton createSeasonButton(int season) {
+        ToggleButton seasonButton =
+                (ToggleButton) LayoutInflater.from(requireContext())
+                        .inflate(
+                                R.layout.item_season_toggle,
+                                seasonButtonsLayout,
+                                false
+                        );
+
+        String seasonText = String.valueOf(season);
+
+        seasonButton.setTextOn(seasonText);
+        seasonButton.setTextOff(seasonText);
+        seasonButton.setChecked(false);
+        seasonButton.setText(seasonText);
+        seasonButton.setTag(season);
+
+        seasonButton.setOnClickListener(view -> {
+            int clickedSeason = (Integer) view.getTag();
+
+            selectSeason(clickedSeason);
+        });
+
+        return seasonButton;
+    }
+
+    private void selectSeason(int season) {
+        boolean seasonChanged = selectedSeason != season;
+
+        selectedSeason = season;
+
+        for (int index = 0;
+             index < seasonButtonsLayout.getChildCount();
+             index++) {
+
+            View child = seasonButtonsLayout.getChildAt(index);
+
+            if (!(child instanceof ToggleButton)) {
+                continue;
+            }
+
+            ToggleButton button = (ToggleButton) child;
+            int buttonSeason = (Integer) button.getTag();
+
+            button.setChecked(buttonSeason == season);
+        }
+
+        if (seasonChanged) {
+            loadSeasonData(season);
+        }
+    }
+
+    private void loadSeasonData(int season) {
+        currentSeasonDrivers.clear();
+
+        datum.clear();
+        datumTriple.clear();
+
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
+
+        if (adapterTriple != null) {
+            adapterTriple.notifyDataSetChanged();
+        }
+
+        recyclerView.setVisibility(View.GONE);
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("results")
+                .child("season")
+                .child(String.valueOf(season))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        if (!snapshot.exists()) {
                             hideShimmer();
                             return;
                         }
 
-                        isTripleDriver = drivers.size() > 2;
+                        for (DataSnapshot driverSnapshot : snapshot.getChildren()) {
 
-                        rootRef.child("results/season/" + season)
+                            String driverName = driverSnapshot.getKey();
+
+                            if (driverName == null) {
+                                continue;
+                            }
+
+                            boolean droveForTeam = false;
+
+                            for (DataSnapshot raceSnapshot : driverSnapshot.getChildren()) {
+
+                                String raceTeamId = raceSnapshot
+                                        .child("TeamId")
+                                        .getValue(String.class);
+
+                                if (teamId.equals(raceTeamId)) {
+                                    droveForTeam = true;
+                                    break;
+                                }
+                            }
+
+                            if (droveForTeam) {
+                                currentSeasonDrivers.add(
+                                        driverName
+                                );
+                            }
+                        }
+
+                        if (currentSeasonDrivers.isEmpty()) {
+                            hideShimmer();
+                            return;
+                        }
+
+                        showLoading(isTripleDriver);
+
+                        loadDriversInfo(
+                                currentSeasonDrivers,
+                                season
+                        );
+
+                        getResults(
+                                season,
+                                currentSeasonDrivers
+                        );
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Log.e(
+                                "TeamResults",
+                                "Failed to load season drivers",
+                                error.toException()
+                        );
+
+                        hideShimmer();
+                    }
+                });
+    }
+
+    private void loadDriversInfo(ArrayList<String> drivers, int season) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference();
+
+        for (int index = 0; index < drivers.size() && index < 3; index++) {
+
+            String driverFullName = drivers.get(index);
+
+            String[] nameParts = driverFullName.split(" ");
+
+            String driverName;
+            String driverFamilyName;
+
+            if (driverFullName.equals("Andrea Kimi Antonelli")) {
+                driverName = nameParts[0] + " " + nameParts[1];
+                driverFamilyName = nameParts[2];
+            } else if (nameParts.length >= 2) {
+                driverName = nameParts[0];
+                driverFamilyName = nameParts[1];
+            } else {
+                driverName = driverFullName;
+                driverFamilyName = "";
+            }
+
+            int finalIndex = index;
+            String finalDriverName = driverName;
+            String finalDriverFamilyName = driverFamilyName;
+
+            FirebaseDatabase.getInstance()
+                    .getReference()
+                    .child("drivers")
+                    .child(driverFullName)
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (!isAdded()) {
+                                return;
+                            }
+
+                            String driversCode = snapshot
+                                    .child("driversCode")
+                                    .getValue(String.class);
+
+                            if (driversCode == null) {
+                                return;
+                            }
+
+                            StorageReference driverImageRef =
+                                    storageRef.child(
+                                            "drivers/"
+                                                    + driversCode
+                                                    .toLowerCase()
+                                                    + "_"
+                                                    + season
+                                                    + ".png"
+                                    );
+
+                            if (finalIndex == 0) {
+                                firstDriverFamilyName.setText(
+                                        finalDriverFamilyName
+                                );
+
+                                GlideApp.with(requireContext())
+                                        .load(driverImageRef)
+                                        .transition(
+                                                DrawableTransitionOptions
+                                                        .withCrossFade()
+                                        )
+                                        .diskCacheStrategy(
+                                                DiskCacheStrategy.ALL
+                                        )
+                                        .error(
+                                                R.drawable.placeholder_driver
+                                        )
+                                        .into(firstDriverImage);
+
+                                firstDriverLayout.setOnClickListener(
+                                        v -> navigateToDriverPage(
+                                                driverFullName,
+                                                finalDriverName,
+                                                finalDriverFamilyName
+                                        )
+                                );
+                            } else if (finalIndex == 1) {
+                                secondDriverFamilyName.setText(
+                                        finalDriverFamilyName
+                                );
+
+                                GlideApp.with(requireContext())
+                                        .load(driverImageRef)
+                                        .transition(
+                                                DrawableTransitionOptions
+                                                        .withCrossFade()
+                                        )
+                                        .diskCacheStrategy(
+                                                DiskCacheStrategy.ALL
+                                        )
+                                        .error(
+                                                R.drawable.placeholder_driver
+                                        )
+                                        .into(secondDriverImage);
+
+                                secondDriverLayout.setOnClickListener(
+                                        v -> navigateToDriverPage(
+                                                driverFullName,
+                                                finalDriverName,
+                                                finalDriverFamilyName
+                                        )
+                                );
+                            } else if (finalIndex == 2) {
+                                thirdDriverFamilyName.setText(
+                                        finalDriverFamilyName
+                                );
+
+                                GlideApp.with(requireContext())
+                                        .load(driverImageRef)
+                                        .transition(
+                                                DrawableTransitionOptions
+                                                        .withCrossFade()
+                                        )
+                                        .diskCacheStrategy(
+                                                DiskCacheStrategy.ALL
+                                        )
+                                        .error(
+                                                R.drawable.placeholder_driver
+                                        )
+                                        .into(thirdDriverImage);
+
+                                thirdDriverLayout.setOnClickListener(
+                                        v -> navigateToDriverPage(
+                                                driverFullName,
+                                                finalDriverName,
+                                                finalDriverFamilyName
+                                        )
+                                );
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            if (!isAdded()) {
+                                return;
+                            }
+
+                            Log.e(
+                                    "TeamResults",
+                                    "Failed to load driver info",
+                                    error.toException()
+                            );
+                        }
+                    });
+        }
+    }
+
+    private void navigateToDriverPage(
+            String driverFullName,
+            String driverName,
+            String driverFamilyName) {
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("drivers")
+                .child(driverFullName)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        String driverCode = snapshot
+                                .child("driversCode")
+                                .getValue(String.class);
+
+                        Intent intent = new Intent(
+                                requireContext(),
+                                driverPageActivity.class
+                        );
+
+                        Bundle bundle = new Bundle();
+
+                        bundle.putString(
+                                "driverName",
+                                driverName
+                        );
+
+                        bundle.putString(
+                                "driverFamilyName",
+                                driverFamilyName
+                        );
+
+                        bundle.putString(
+                                "driverTeam",
+                                teamName
+                        );
+
+                        bundle.putString(
+                                "driverCode",
+                                driverCode
+                        );
+
+                        bundle.putString(
+                                "driverTeamId",
+                                teamId
+                        );
+
+                        intent.putExtras(bundle);
+
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Log.e(
+                                "TeamResults",
+                                "Failed to open driver page",
+                                error.toException()
+                        );
+                    }
+                });
+    }
+
+    private void getResults(int season, ArrayList<String> drivers) {
+        if (drivers.size() < 2) {
+            hideShimmer();
+            return;
+        }
+
+        datum.clear();
+        datumTriple.clear();
+
+        adapter = null;
+        adapterTriple = null;
+
+        recyclerView.setAdapter(null);
+
+        isTripleDriver = drivers.size() > 2;
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .child("schedule")
+                .child("season")
+                .child(String.valueOf(season))
+                .orderByChild("round")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot scheduleSnapshot) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        int totalRaces =
+                                (int) scheduleSnapshot
+                                        .getChildrenCount();
+
+                        if (totalRaces == 0) {
+                            hideShimmer();
+                            return;
+                        }
+
+                        FirebaseDatabase.getInstance()
+                                .getReference()
+                                .child("results")
+                                .child("season")
+                                .child(String.valueOf(season))
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot resultSnapshot) {
-                                        for (DataSnapshot ds : snapshot.getChildren()) {
-                                            String raceName = ds.getKey();
-                                            processRaceResult(raceName, resultSnapshot, drivers, season);
+                                        if (!isAdded()) {
+                                            return;
+                                        }
+
+                                        final int[] loadedRaces = {0};
+
+                                        for (DataSnapshot raceSnapshot :
+                                                scheduleSnapshot
+                                                        .getChildren()) {
+
+                                            String raceName =
+                                                    raceSnapshot.getKey();
+
+                                            if (raceName == null) {
+                                                loadedRaces[0]++;
+                                                continue;
+                                            }
+
+                                            processRaceResult(
+                                                    raceName,
+                                                    resultSnapshot,
+                                                    drivers,
+                                                    season,
+                                                    totalRaces,
+                                                    loadedRaces
+                                            );
                                         }
                                     }
 
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
-                                        Log.e("error", "" + error);
+                                        if (!isAdded()) {
+                                            return;
+                                        }
+
+                                        Log.e(
+                                                "TeamResults",
+                                                "Failed to load results",
+                                                error.toException()
+                                        );
+
+                                        hideShimmer();
                                     }
                                 });
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("error", "" + error);
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Log.e(
+                                "TeamResults",
+                                "Failed to load schedule",
+                                error.toException()
+                        );
+
+                        hideShimmer();
                     }
                 });
     }
 
-    private void processRaceResult(String raceName, DataSnapshot resultSnapshot, ArrayList<String> drivers, String season) {
+    private void processRaceResult(
+            String raceName,
+            DataSnapshot resultSnapshot,
+            ArrayList<String> drivers,
+            int season,
+            int totalRaces,
+            int[] loadedRaces) {
+
         String firstDriverName = drivers.get(0);
         String secondDriverName = drivers.get(1);
 
-        String firstDriverResult = resultSnapshot.child(firstDriverName)
-                .child(raceName).child("Result").getValue(String.class);
-        String firstDriverResultTeam = resultSnapshot.child(firstDriverName)
-                .child(raceName).child("TeamId").getValue(String.class);
+        String firstResult = getDriverRaceResult(
+                resultSnapshot,
+                firstDriverName,
+                raceName
+        );
 
-        String finalFirstDriverResult = (firstDriverResult != null &&
-                !firstDriverResult.equals("N/C") &&
-                firstDriverResultTeam != null &&
-                firstDriverResultTeam.equals(teamId)) ? firstDriverResult :
-                (firstDriverResult != null && firstDriverResult.equals("N/C")) ? "N/C" : "null";
+        String secondResult = getDriverRaceResult(
+                resultSnapshot,
+                secondDriverName,
+                raceName
+        );
 
-        String secondDriverResult = resultSnapshot.child(secondDriverName)
-                .child(raceName).child("Result").getValue(String.class);
-        String secondDriverResultTeam = resultSnapshot.child(secondDriverName)
-                .child(raceName).child("TeamId").getValue(String.class);
-
-        String finalSecondDriverResult = (secondDriverResult != null &&
-                !secondDriverResult.equals("N/C") &&
-                secondDriverResultTeam != null &&
-                secondDriverResultTeam.equals(teamId)) ? secondDriverResult :
-                (secondDriverResult != null && secondDriverResult.equals("N/C")) ? "N/C" : "null";
-
-        if (isTripleDriver) {
+        if (isTripleDriver && drivers.size() > 2) {
             String thirdDriverName = drivers.get(2);
-            String thirdDriverResult = resultSnapshot.child(thirdDriverName)
-                    .child(raceName).child("Result").getValue(String.class);
-            String thirdDriverResultTeam = resultSnapshot.child(thirdDriverName)
-                    .child(raceName).child("TeamId").getValue(String.class);
 
-            String finalThirdDriverResult = (thirdDriverResult != null &&
-                    !thirdDriverResult.equals("N/C") &&
-                    thirdDriverResultTeam != null &&
-                    thirdDriverResultTeam.equals(teamId)) ? thirdDriverResult :
-                    (thirdDriverResult != null && thirdDriverResult.equals("N/C")) ? "N/C" : "null";
-
-            teamTripleDriversResultsData results = new teamTripleDriversResultsData(
-                    raceName, finalFirstDriverResult, firstDriverName,
-                    finalSecondDriverResult, secondDriverName,
-                    finalThirdDriverResult, thirdDriverName, Integer.parseInt(season)
+            String thirdResult = getDriverRaceResult(
+                    resultSnapshot,
+                    thirdDriverName,
+                    raceName
             );
-            datumTriple.add(results);
-        } else {
-            teamDriversResultsData results = new teamDriversResultsData(
-                    raceName, finalFirstDriverResult, firstDriverName,
-                    finalSecondDriverResult, secondDriverName, Integer.parseInt(season)
-            );
-            datum.add(results);
-        }
 
-        loadedRacesCount++;
+            datumTriple.add(new teamTripleDriversResultsData(
+                    raceName,
+                    firstResult,
+                    firstDriverName,
+                    secondResult,
+                    secondDriverName,
+                    thirdResult,
+                    thirdDriverName,
+                    season
+            ));
 
-        if (isTripleDriver) {
             if (adapterTriple == null) {
-                adapterTriple = new teamTripleDriversResultsAdapter(getActivity(), datumTriple);
+                adapterTriple =
+                        new teamTripleDriversResultsAdapter(
+                                requireActivity(),
+                                datumTriple
+                        );
+
                 recyclerView.setAdapter(adapterTriple);
             } else {
-                adapterTriple.notifyItemInserted(datumTriple.size() - 1);
+                adapterTriple.notifyDataSetChanged();
             }
         } else {
+            datum.add(new teamDriversResultsData(
+                    raceName,
+                    firstResult,
+                    firstDriverName,
+                    secondResult,
+                    secondDriverName,
+                    season
+            ));
+
             if (adapter == null) {
-                adapter = new teamDriversResultsAdapter(getActivity(), datum);
+                adapter = new teamDriversResultsAdapter(
+                        requireActivity(),
+                        datum
+                );
+
                 recyclerView.setAdapter(adapter);
             } else {
-                adapter.notifyItemInserted(datum.size() - 1);
+                adapter.notifyDataSetChanged();
             }
         }
 
-        if (loadedRacesCount >= totalRacesToLoad) {
+        loadedRaces[0]++;
+
+        if (loadedRaces[0] >= totalRaces) {
             updateLayoutParams();
             hideShimmer();
         }
     }
 
-    private void updateLayoutParams() {
-        int marginEnd = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 10, requireContext().getResources().getDisplayMetrics());
+    private String getDriverRaceResult(
+            DataSnapshot resultSnapshot,
+            String driverFullName,
+            String raceName) {
 
-        if (isTripleDriver) {
-            shimmerFrameLayout.setVisibility(View.GONE);
-            shimmerTripleFrameLayout.setVisibility(View.VISIBLE);
-            thirdDriverLayout.setVisibility(View.VISIBLE);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1.55f);
-            layoutParams.gravity = Gravity.BOTTOM;
-            layoutParams.setMargins(0, 0, marginEnd, 0);
-            raceNameHeader.setLayoutParams(layoutParams);
-        } else {
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerTripleFrameLayout.setVisibility(View.GONE);
-            thirdDriverLayout.setVisibility(View.GONE);
-            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 2.7f);
-            layoutParams.gravity = Gravity.BOTTOM;
-            layoutParams.setMargins(0, 0, marginEnd, 0);
-            raceNameHeader.setLayoutParams(layoutParams);
+        DataSnapshot raceResult = resultSnapshot
+                .child(driverFullName)
+                .child(raceName);
+
+        String result = raceResult
+                .child("Result")
+                .getValue(String.class);
+
+        String resultTeamId = raceResult
+                .child("TeamId")
+                .getValue(String.class);
+
+        if ("N/C".equals(result)) {
+            return "N/C";
         }
+
+        if (result != null && teamId.equals(resultTeamId)) {
+            return result;
+        }
+
+        return "null";
+    }
+
+    private void updateLayoutParams() {
+        int marginEnd = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                10,
+                requireContext().getResources().getDisplayMetrics()
+        );
+
+        thirdDriverLayout.setVisibility(
+                isTripleDriver ? View.VISIBLE : View.GONE
+        );
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        0,
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        isTripleDriver ? 1.55f : 2.7f
+                );
+
+        params.gravity = Gravity.BOTTOM;
+        params.setMargins(0, 0, marginEnd, 0);
+
+        raceNameHeader.setLayoutParams(params);
     }
 
     private void hideShimmer() {
@@ -511,13 +924,17 @@ public class teamResultsFragment extends Fragment {
         }
 
         hideShimmerRunnable = () -> {
-            if (isAdded()) {
-                recyclerView.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.setVisibility(View.GONE);
-                shimmerTripleFrameLayout.setVisibility(View.GONE);
-                shimmerFrameLayout.stopShimmer();
-                shimmerTripleFrameLayout.stopShimmer();
+            if (!isAdded()) {
+                return;
             }
+
+            recyclerView.setVisibility(View.VISIBLE);
+
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+
+            shimmerTripleFrameLayout.stopShimmer();
+            shimmerTripleFrameLayout.setVisibility(View.GONE);
         };
 
         handler.postDelayed(hideShimmerRunnable, 500);
@@ -526,8 +943,31 @@ public class teamResultsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
         }
+    }
+
+    private void showLoading(boolean tripleDrivers) {
+        if (hideShimmerRunnable != null) {
+            handler.removeCallbacks(hideShimmerRunnable);
+            hideShimmerRunnable = null;
+        }
+
+        recyclerView.setVisibility(View.GONE);
+
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+
+        shimmerTripleFrameLayout.stopShimmer();
+        shimmerTripleFrameLayout.setVisibility(View.GONE);
+
+        ShimmerFrameLayout activeShimmer = tripleDrivers
+                ? shimmerTripleFrameLayout
+                : shimmerFrameLayout;
+
+        activeShimmer.setVisibility(View.VISIBLE);
+        activeShimmer.startShimmer();
     }
 }

@@ -299,7 +299,6 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                                         showProgressError(getString(R.string.neuro_prediction_progress_data_error));
                                                     }
                                                 });
-
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError error) {
@@ -307,7 +306,6 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                         showProgressError(getString(R.string.neuro_prediction_progress_data_error));
                                     }
                                 });
-
                     }
 
                     @Override

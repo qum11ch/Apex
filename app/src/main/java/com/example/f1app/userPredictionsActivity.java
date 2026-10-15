@@ -336,7 +336,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                                                     season);
                                             seasonRankInfo.setText(seasonRankText);
                                             seasonRankTextView.setVisibility(View.VISIBLE);
-                                            seasonRankTextView.setText(seasonRank);
+                                            seasonRankTextView.setText(String.valueOf(seasonRank));
                                         }
 
                                         if (globalRank <= 0) {
@@ -348,7 +348,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                                             globalRankInfo.setText(getString(
                                                     R.string.user_predictions_stats_globalRank));
                                             globalRankTextView.setVisibility(View.VISIBLE);
-                                            globalRankTextView.setText(globalRank);
+                                            globalRankTextView.setText(String.valueOf(globalRank));
                                         }
                                     }
 
