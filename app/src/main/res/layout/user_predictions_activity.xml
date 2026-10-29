@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/user_predictions_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,9 +13,10 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
+            android:paddingTop="16dp"
+            android:gravity="center_vertical"
             android:id="@+id/header"
             android:orientation="horizontal"
-            android:paddingTop="40dp"
             android:paddingBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,7 +26,7 @@
                 android:visibility="visible"
                 android:id="@+id/backButton"
                 android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/back_arrow"
                 android:paddingStart="15dp"
@@ -32,6 +34,8 @@
                 android:src="@drawable/back_arrow" />
 
             <TextView
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:textStyle="bold"
                 android:id="@+id/usersPredictionHeader"
                 android:text="@string/user_predictions_header"
@@ -51,10 +55,10 @@
                 android:visibility="visible"/>
         </LinearLayout>
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:id="@+id/swipe_layout"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_width="match_parent">
 
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/userPredictionsScrollView"
@@ -100,79 +104,87 @@
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:layout_marginEnd="130dp"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="20dp"
                                 android:layout_marginTop="20dp">
+
                                 <TextView
-                                    android:textColor="@color/text_color_main"
-                                    android:textStyle="normal"
-                                    android:id="@+id/predictionsCount_info"
-                                    android:layout_width="wrap_content"
-                                    android:layout_marginStart="10dp"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/user_predictions_stats_predictions"
-                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-                                <TextView
-                                    android:textColor="@color/text_color_main"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_marginStart="20dp"
                                     android:id="@+id/predictionsCountText"
-                                    android:textSize="22sp"
                                     android:layout_width="wrap_content"
-                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                                    android:layout_height="wrap_content"/>
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:textColor="@color/text_color_main"
+                                    android:textSize="22sp"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown" />
+
+                                <TextView
+                                    android:id="@+id/predictionsCount_info"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_toStartOf="@id/predictionsCountText"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="@string/user_predictions_stats_predictions"
+                                    android:textColor="@color/text_color_main"
+                                    android:textStyle="normal"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
                             </RelativeLayout>
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginEnd="130dp">
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginTop="10dp">
 
                                 <TextView
-                                    android:textColor="@color/text_color_main"
-                                    android:textStyle="normal"
-                                    android:id="@+id/correctPredictions_info"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/user_predictions_stats_correct"
-                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-
-                                <TextView
-                                    android:layout_alignParentEnd="true"
                                     android:id="@+id/correctPredictionsText"
-                                    android:layout_marginStart="20dp"
-                                    android:textSize="22sp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                                    android:textColor="@color/text_color_main"/>
+                                    android:layout_alignParentEnd="true"
+                                    android:textColor="@color/text_color_main"
+                                    android:textSize="22sp"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown" />
+
+                                <TextView
+                                    android:id="@+id/correctPredictions_info"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_toStartOf="@id/correctPredictionsText"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="@string/user_predictions_stats_correct"
+                                    android:textColor="@color/text_color_main"
+                                    android:textStyle="normal"
+                                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
                             </RelativeLayout>
 
                             <RelativeLayout
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="10dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_marginEnd="130dp">
+                                android:layout_marginEnd="20dp"
+                                android:layout_marginTop="10dp">
 
                                 <TextView
+                                    android:id="@+id/totalPointsText"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:textColor="@color/text_color_main"
+                                    android:textSize="22sp"
+                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown" />
+
+                                <TextView
+                                    android:id="@+id/totalPoints_info"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_toStartOf="@id/totalPointsText"
+                                    android:layout_marginEnd="12dp"
+                                    android:text="@string/user_predictions_stats_points"
                                     android:textColor="@color/text_color_main"
                                     android:textStyle="normal"
-                                    android:id="@+id/totalPoints_info"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:text="@string/user_predictions_stats_points"
                                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
 
-                                <TextView
-                                    android:layout_alignParentEnd="true"
-                                    android:id="@+id/totalPointsText"
-                                    android:textSize="22sp"
-                                    android:layout_marginStart="20dp"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
-                                    android:textColor="@color/text_color_main"/>
                             </RelativeLayout>
 
                             <RelativeLayout
@@ -182,17 +194,18 @@
                                 android:layout_marginTop="10dp"
                                 android:layout_marginEnd="20dp">
                                 <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_toStartOf="@id/seasonRank"
+                                    android:layout_marginEnd="12dp"
                                     android:textStyle="normal"
                                     android:layout_centerVertical="true"
                                     android:id="@+id/seasonRank_info"
-                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
                                     android:textColor="@color/text_color_main"/>
                                 <TextView
-                                    android:layout_toEndOf="@id/seasonRank_info"
+                                    android:layout_alignParentEnd="true"
                                     android:id="@+id/seasonRank"
-                                    android:layout_marginStart="20dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"
@@ -208,17 +221,18 @@
                                 android:layout_marginEnd="20dp">
 
                                 <TextView
+                                    android:layout_width="match_parent"
+                                    android:layout_toStartOf="@id/globalRank"
+                                    android:layout_marginEnd="12dp"
                                     android:textStyle="normal"
                                     android:layout_centerVertical="true"
                                     android:id="@+id/globalRank_info"
-                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textAppearance="@style/TextStyle.Gram.Regular.Secondary"
                                     android:textColor="@color/text_color_main"/>
                                 <TextView
-                                    android:layout_toEndOf="@id/globalRank_info"
+                                    android:layout_alignParentEnd="true"
                                     android:id="@+id/globalRank"
-                                    android:layout_marginStart="20dp"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:textAppearance="@style/TextStyle.Audiowide.ForCountdown"

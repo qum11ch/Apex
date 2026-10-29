@@ -40,6 +40,7 @@ secrets {
 }
 
 dependencies {
+    implementation("com.github.skydoves:colorpickerview:2.5.0")
     implementation ("com.firebaseui:firebase-ui-storage:9.1.1")
     implementation("com.google.firebase:firebase-storage")
     implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.2.0")

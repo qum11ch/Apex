@@ -1,70 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:background="@android:color/transparent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="80dp"
-    android:backgroundTint="@android:color/transparent"
-    android:layout_alignParentBottom="true"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:paddingStart="5dp"
-    android:paddingEnd="5dp">
+    android:paddingEnd="5dp"
+    android:elevation="4dp">
+
     <LinearLayout
-        style="@style/FooterStyle"
         android:id="@+id/footer"
+        style="@style/FooterStyle"
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:orientation="horizontal"
         android:weightSum="5"
         android:clipToPadding="false">
+
         <RelativeLayout
             android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
             <View
-                android:layout_margin="3dp"
+                style="@style/FooterStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                style="@style/FooterStyle"
-                android:backgroundTint="#66B0B0B0"/>
+                android:layout_margin="3dp"
+                android:backgroundTint="#66B0B0B0" />
+
             <ImageButton
                 android:id="@+id/showHomePage"
                 style="@style/footerButtonOn"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/home_on" />
+
         </RelativeLayout>
+
         <ImageButton
-            android:layout_gravity="center"
             android:id="@+id/showDriver"
-            android:src="@drawable/drivers_off"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             style="@style/footerButtonOff"
-            android:layout_height="wrap_content"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/drivers_off" />
+
         <ImageButton
-            android:layout_gravity="center"
             android:id="@+id/showTeams"
-            android:src="@drawable/constructor_off"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             style="@style/footerButtonOff"
-            android:layout_height="wrap_content"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/constructor_off" />
+
         <ImageButton
-            android:layout_gravity="center"
             android:id="@+id/showSchedule"
-            android:src="@drawable/schedule_off"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             style="@style/footerButtonOff"
-            android:layout_height="wrap_content"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/schedule_off" />
+
         <ImageButton
-            android:layout_gravity="center"
             android:id="@+id/showAccount"
-            android:src="@drawable/account_off"
-            android:layout_width="0dp"
-            android:layout_weight="1"
             style="@style/footerButtonOff"
-            android:layout_height="wrap_content"/>
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:src="@drawable/account_off" />
+
     </LinearLayout>
+
 </LinearLayout>

@@ -16,6 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
@@ -77,9 +81,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.neuro_predictions_results_activity);
+
+        setupNeuroResultsInsets();
 
         recyclerView = findViewById(R.id.quali_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(neuroPredictionResultActivity.this);
@@ -169,6 +175,46 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+    private void setupNeuroResultsInsets() {
+        View root = findViewById(R.id.neuro_results_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void getPrediction(String gpName, Integer lastGPRound, String event,

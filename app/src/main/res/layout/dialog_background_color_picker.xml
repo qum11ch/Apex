@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:backgroundTint="@color/colorPrimary"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="15dp">
+    <LinearLayout
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:textAllCaps="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/background_color_title"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+            android:textColor="@color/text_color_main"
+            android:gravity="center"
+            android:id="@+id/dialogTitle"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+
+        <com.skydoves.colorpickerview.ColorPickerView
+            android:id="@+id/backgroundColorPicker"
+            android:layout_width="match_parent"
+            android:layout_height="240dp"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:textStyle="normal"
+            android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:text="@string/color_brightness"
+            android:textColor="@color/text_color_main"/>
+
+        <com.skydoves.colorpickerview.sliders.BrightnessSlideBar
+            android:id="@+id/backgroundBrightnessSlider"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp" />
+
+        <View
+            android:id="@+id/backgroundColorPreview"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="20dp" />
+
+        <TextView
+            android:id="@+id/backgroundColorHex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:gravity="center"
+            android:textSize="16sp"
+            android:textColor="@color/grey"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:id="@+id/passwordButtons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/cancelBackgroundColor"
+                style="@style/declineButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_weight="1"
+                android:maxHeight="30dp"
+                android:text="@string/cancel"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                android:textColor="@color/dark_grey"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/applyBackgroundColor"
+                style="@style/ButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_weight="1"
+                android:backgroundTint="@color/red"
+                android:text="@string/save_text"
+                android:textAllCaps="true"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

@@ -4,69 +4,94 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     tools:context=".concludedRaceFragment">
+
     <androidx.core.widget.NestedScrollView
-        android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none">
+
         <LinearLayout
+            android:id="@+id/schedule_page_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/concludedRaceLayout"
             android:orientation="vertical"
-            android:layout_marginEnd="10dp"
-            android:paddingBottom="90dp">
-            <androidx.recyclerview.widget.RecyclerView
-                android:clipToPadding = "false"
-                android:paddingTop="10dp"
-                android:visibility="gone"
-                android:background="@null"
-                android:overScrollMode="never"
+            android:paddingBottom="80dp">
+
+            <LinearLayout
+                android:id="@+id/concludedRaceLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recyclerview_concludedRaces"/>
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmer_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible">
-                <LinearLayout
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_concludedRaces"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <include layout="@layout/shimmer_concluded_race" />
-                    <include layout="@layout/shimmer_concluded_race" />
-                    <include layout="@layout/shimmer_concluded_race" />
-                    <include layout="@layout/shimmer_concluded_race" />
-                    <include layout="@layout/shimmer_concluded_race" />
-                </LinearLayout>
-            </com.facebook.shimmer.ShimmerFrameLayout>
-            <Button
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="2dp"
-                android:textSize="18sp"
-                style="@style/PrevResultsStyle"
-                android:textAlignment="textStart"
-                android:paddingStart="20dp"
-                android:paddingEnd="5dp"
-                android:textColor="@color/text_color_main"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:textAppearance="@style/TextStyle.Gram.Bold"
-                android:id="@+id/seasonResults_2025"/>
-            <Button
-                style="@style/PrevResultsStyleButtom"
-                android:textSize="18sp"
-                android:textAlignment="textStart"
-                android:paddingStart="20dp"
-                android:paddingEnd="5dp"
-                android:textColor="@color/text_color_main"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:textAppearance="@style/TextStyle.Gram.Bold"
-                android:id="@+id/seasonResults_2024" />
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingTop="10dp"
+                    android:background="@null"
+                    android:overScrollMode="never" />
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/shimmer_concluded_race" />
+                        <include layout="@layout/shimmer_concluded_race" />
+                        <include layout="@layout/shimmer_concluded_race" />
+                        <include layout="@layout/shimmer_concluded_race" />
+                        <include layout="@layout/shimmer_concluded_race" />
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <Button
+                    android:id="@+id/seasonResults_2025"
+                    style="@style/PrevResultsStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="60dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="2dp"
+                    android:textSize="18sp"
+                    android:textAlignment="textStart"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="5dp"
+                    android:textColor="@color/text_color_main"
+                    android:textAppearance="@style/TextStyle.Gram.Bold" />
+
+                <Button
+                    android:id="@+id/seasonResults_2024"
+                    style="@style/PrevResultsStyleButtom"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="60dp"
+                    android:textSize="18sp"
+                    android:textAlignment="textStart"
+                    android:paddingStart="20dp"
+                    android:paddingEnd="5dp"
+                    android:textColor="@color/text_color_main"
+                    android:textAppearance="@style/TextStyle.Gram.Bold" />
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
+
 </FrameLayout>

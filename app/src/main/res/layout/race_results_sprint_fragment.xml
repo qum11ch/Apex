@@ -1,113 +1,132 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_marginBottom="30dp"
-    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
     <LinearLayout
-        android:orientation="horizontal"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:background="@color/statusBar_color"
         android:id="@+id/race_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:baselineAligned="false"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/statusBar_color"
         android:weightSum="5">
+
         <TextView
-            android:text="@string/pos_header"
-            android:textAllCaps="true"
-            android:layout_weight="0.5"
             android:id="@+id/driver_placement"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical|center"
-            android:lineSpacingExtra="0dp"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        <TextView
-            android:layout_gravity="center"
-            android:gravity="center_vertical"
-            android:text="@string/driver_header"
-            android:paddingStart="15dp"
-            android:paddingEnd="8dp"
-            android:layout_width="0dp"
-            android:layout_weight="2.4"
-            android:layout_height="match_parent"
-            android:id="@+id/driverName"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="@string/pos_header"
             android:textAllCaps="true"
             android:lineSpacingExtra="0dp"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        <TextView
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
-            android:text="@string/race_status_header"
-            android:layout_width="0dp"
-            android:layout_weight="1.3"
-            android:layout_gravity="center"
-            android:gravity="center_vertical"
-            android:id="@+id/driver_time"
-            android:layout_height="match_parent"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        <TextView
-            android:layout_gravity="center"
-            android:gravity="center_vertical"
-            android:paddingStart="10dp"
-            android:paddingEnd="0dp"
-            android:text="@string/pts_header"
-            android:textAllCaps="true"
-            android:layout_width="0dp"
-            android:layout_weight="0.8"
-            android:layout_height="match_parent"
-            android:id="@+id/driver_pts"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
             android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/driverName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2.4"
+            android:paddingStart="15dp"
+            android:paddingEnd="8dp"
+            android:gravity="center_vertical"
+            android:text="@string/driver_header"
+            android:textAllCaps="true"
+            android:lineSpacingExtra="0dp"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/driver_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.3"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:gravity="center_vertical"
+            android:text="@string/race_status_header"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/driver_pts"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:paddingStart="10dp"
+            android:paddingEnd="0dp"
+            android:gravity="center_vertical"
+            android:text="@string/pts_header"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
     </LinearLayout>
+
     <View
+        android:id="@+id/header_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/light_grey"
-        android:id="@+id/header_line"
-        android:layout_below="@id/race_header"/>
-    <RelativeLayout
-        android:layout_below="@id/header_line"
+        android:layout_below="@id/race_header"
+        android:background="@color/light_grey" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header_line"
+        android:layout_alignParentBottom="true">
+
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/race_results"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:visibility="gone"
+            android:nestedScrollingEnabled="true"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
             android:overScrollMode="never"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/race_results" />
+            android:scrollbars="none" />
+
         <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmer_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/shimmer_layout">
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
-                <include layout="@layout/shimmer_race_result"/>
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
+                <include layout="@layout/shimmer_race_result" />
 
             </LinearLayout>
+
         </com.facebook.shimmer.ShimmerFrameLayout>
-    </RelativeLayout>
+
+    </FrameLayout>
+
 </RelativeLayout>

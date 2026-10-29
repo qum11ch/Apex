@@ -29,7 +29,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
@@ -41,8 +40,6 @@ import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -58,6 +55,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class accountPageActivity extends AppCompatActivity {
 
@@ -81,11 +86,17 @@ public class accountPageActivity extends AppCompatActivity {
     private String mCurrentSeason;
     private String currentDriverChoice, currentTeamChoice;
 
+    private RelativeLayout header;
+
+    private String currentSeason;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.account_page);
+
+        setupAccountInsets();
 
         if (!checkConnection(this)) {
             startActivity(connectionLostScreen
@@ -101,6 +112,8 @@ public class accountPageActivity extends AppCompatActivity {
                 ? intentBundle.getString("currentSeason")
                 : null;
 
+        currentSeason = mCurrentSeason;
+
         Button logout = findViewById(R.id.logout);
 
         avatarInitial = findViewById(R.id.avatarInitial);
@@ -108,7 +121,6 @@ public class accountPageActivity extends AppCompatActivity {
 
         username = findViewById(R.id.username);
         createdAt = findViewById(R.id.createdAt);
-        tabUserName = findViewById(R.id.tabUserName);
 
         driverName = findViewById(R.id.driverName);
         driverFamilyName = findViewById(R.id.driverFamilyName);
@@ -134,6 +146,8 @@ public class accountPageActivity extends AppCompatActivity {
 
         teamPhoto = findViewById(R.id.teamPhoto);
         driverPhoto = findViewById(R.id.driverPhoto);
+
+        header = findViewById(R.id.header);
 
         Button openUsersPredictionsButton = findViewById(R.id.userPredictions);
 
@@ -161,10 +175,6 @@ public class accountPageActivity extends AppCompatActivity {
                 );
 
         windowInsetsController.setAppearanceLightStatusBars(false);
-
-        getWindow().getDecorView().setBackgroundColor(
-                ContextCompat.getColor(this, R.color.dark_blue)
-        );
 
         View scroll = findViewById(R.id.nestedScrollView);
 
@@ -228,11 +238,7 @@ public class accountPageActivity extends AppCompatActivity {
 
             auth.signOut();
 
-            startActivity_seasonData(
-                    accountPageActivity.this,
-                    logInPageActivity.class,
-                    mCurrentSeason
-            );
+            startActivity_getSeason(logInPageActivity.class);
 
             finish();
         });
@@ -280,6 +286,85 @@ public class accountPageActivity extends AppCompatActivity {
         });
     }
 
+    private void setupAccountInsets() {
+        View root = findViewById(R.id.account_root);
+        View headerContainer = findViewById(R.id.account_header_container);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        final int baseContainerHeight =
+                headerContainer.getLayoutParams().height;
+
+        final int baseHeaderHeight =
+                header.getLayoutParams().height;
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            ViewGroup.LayoutParams containerParams =
+                    headerContainer.getLayoutParams();
+
+            int containerHeight = baseContainerHeight + safeInsets.top;
+
+            if (containerParams.height != containerHeight) {
+                containerParams.height = containerHeight;
+                headerContainer.setLayoutParams(containerParams);
+            }
+
+            ViewGroup.LayoutParams headerParams = header.getLayoutParams();
+
+            int headerHeight = baseHeaderHeight + safeInsets.top;
+
+            if (headerParams.height != headerHeight) {
+                headerParams.height = headerHeight;
+                header.setLayoutParams(headerParams);
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+    }
+
+    private void startActivity_getSeason(Class<?> target) {
+        String season = currentSeason;
+
+        if (season == null || season.trim().isEmpty()) {
+            season = "2026";
+        }
+
+        Intent intent = new Intent(this, target);
+        intent.putExtra("currentSeason", season);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -319,12 +404,7 @@ public class accountPageActivity extends AppCompatActivity {
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
-            startActivity_seasonData(
-                    accountPageActivity.this,
-                    logInPageActivity.class,
-                    mCurrentSeason
-            );
-
+            startActivity_getSeason(logInPageActivity.class);
             finish();
             return;
         }
@@ -370,9 +450,7 @@ public class accountPageActivity extends AppCompatActivity {
 
                         if (!snapshot.exists()) {
                             loadingProgress.setVisibility(View.GONE);
-                            showError(
-                                    getString(R.string.user_account_load)
-                            );
+                            openUsernameMigration();
                             return;
                         }
 
@@ -397,6 +475,17 @@ public class accountPageActivity extends AppCompatActivity {
                             return;
                         }
 
+                        String backgroundColor = snapshot.child("background_color")
+                                .getValue(String.class);
+
+                        if (backgroundColor != null
+                                && backgroundColor.matches("^#[0-9A-Fa-f]{6}$")) {
+
+                            header.setBackgroundColor(Color.parseColor(backgroundColor));
+                        }else{
+                            header.setBackgroundColor(getColor(R.color.account_settings_header_color));
+                        }
+
                         String choiceDriver =
                                 snapshot.child("choiceDriver")
                                         .getValue(String.class);
@@ -416,7 +505,7 @@ public class accountPageActivity extends AppCompatActivity {
                                         : choiceTeam;
 
                         showMainContent(publicUsername);
-                        setupToolbar(publicUsername);
+                        // setupToolbar(publicUsername);
 
                         setUserStats(uid);
 
@@ -454,19 +543,8 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void openUsernameMigration() {
-        Toast.makeText(
-                this,
-                "Завершите настройку публичного никнейма",
-                Toast.LENGTH_LONG
-        ).show();
-
-        auth.signOut();
-
-        startActivity_seasonData(
-                accountPageActivity.this,
-                logInPageActivity.class,
-                mCurrentSeason
-        );
+        if (isFinishing() || isDestroyed()) return;
+        startActivity_getSeason(logInPageActivity.class);
 
         finish();
     }
@@ -589,75 +667,75 @@ public class accountPageActivity extends AppCompatActivity {
         loadingProgress.setVisibility(View.GONE);
     }
 
-    private void setupToolbar(String username) {
-        CollapsingToolbarLayout collapsingToolbarLayout =
-                findViewById(R.id.collapsing_toolbar);
-
-        if (!checkLightTheme(accountPageActivity.this)) {
-            collapsingToolbarLayout.setBackground(
-                    ContextCompat.getDrawable(
-                            accountPageActivity.this,
-                            R.drawable.black_gradient
-                    )
-            );
-        }
-
-        AppBarLayout appBarLayout = findViewById(R.id.appbar);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-
-        appBarLayout.addOnOffsetChangedListener(
-                new AppBarLayout.OnOffsetChangedListener() {
-
-                    boolean isShow = true;
-                    int scrollRange = -1;
-
-                    @Override
-                    public void onOffsetChanged(
-                            AppBarLayout appBarLayout,
-                            int verticalOffset) {
-
-                        if (scrollRange == -1) {
-                            scrollRange =
-                                    appBarLayout.getTotalScrollRange();
-                        }
-
-                        if (scrollRange + verticalOffset == 0) {
-                            tabUserName.setText(username);
-
-                            if (!checkLightTheme(
-                                    accountPageActivity.this)) {
-
-                                toolbar.setBackgroundColor(
-                                        ContextCompat.getColor(
-                                                getApplicationContext(),
-                                                R.color.darkest_grey
-                                        )
-                                );
-                            } else {
-                                toolbar.setBackgroundColor(
-                                        ContextCompat.getColor(
-                                                getApplicationContext(),
-                                                R.color.dark_blue
-                                        )
-                                );
-                            }
-
-                            isShow = true;
-                        } else if (isShow) {
-                            tabUserName.setText(" ");
-
-                            toolbar.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                            getApplicationContext(),
-                                            android.R.color.transparent
-                                    )
-                            );
-
-                            isShow = false;
-                        }
-                    }
-                });
-    }
+    // private void setupToolbar(String username) {
+    //     CollapsingToolbarLayout collapsingToolbarLayout =
+    //             findViewById(R.id.collapsing_toolbar);
+//
+    //     if (!checkLightTheme(accountPageActivity.this)) {
+    //         collapsingToolbarLayout.setBackground(
+    //                 ContextCompat.getDrawable(
+    //                         accountPageActivity.this,
+    //                         R.drawable.black_gradient
+    //                 )
+    //         );
+    //     }
+//
+    //     AppBarLayout appBarLayout = findViewById(R.id.appbar);
+    //     Toolbar toolbar = findViewById(R.id.toolbar);
+//
+    //     appBarLayout.addOnOffsetChangedListener(
+    //             new AppBarLayout.OnOffsetChangedListener() {
+//
+    //                 boolean isShow = true;
+    //                 int scrollRange = -1;
+//
+    //                 @Override
+    //                 public void onOffsetChanged(
+    //                         AppBarLayout appBarLayout,
+    //                         int verticalOffset) {
+//
+    //                     if (scrollRange == -1) {
+    //                         scrollRange =
+    //                                 appBarLayout.getTotalScrollRange();
+    //                     }
+//
+    //                     if (scrollRange + verticalOffset == 0) {
+    //                         tabUserName.setText(username);
+//
+    //                         if (!checkLightTheme(
+    //                                 accountPageActivity.this)) {
+//
+    //                             toolbar.setBackgroundColor(
+    //                                     ContextCompat.getColor(
+    //                                             getApplicationContext(),
+    //                                             R.color.darkest_grey
+    //                                     )
+    //                             );
+    //                         } else {
+    //                             toolbar.setBackgroundColor(
+    //                                     ContextCompat.getColor(
+    //                                             getApplicationContext(),
+    //                                             R.color.dark_blue
+    //                                     )
+    //                             );
+    //                         }
+//
+    //                         isShow = true;
+    //                     } else if (isShow) {
+    //                         tabUserName.setText(" ");
+//
+    //                         toolbar.setBackgroundColor(
+    //                                 ContextCompat.getColor(
+    //                                         getApplicationContext(),
+    //                                         android.R.color.transparent
+    //                                 )
+    //                         );
+//
+    //                         isShow = false;
+    //                     }
+    //                 }
+    //             });
+    // }
 
     private void loadDriverInfo(String choiceDriver) {
         DatabaseReference rootRef =
@@ -1958,7 +2036,6 @@ public class accountPageActivity extends AppCompatActivity {
                             .load(uri)
                             .skipMemoryCache(true)
                             .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .circleCrop()
                             .into(avatarImage);
                 })
                 .addOnFailureListener(error -> {

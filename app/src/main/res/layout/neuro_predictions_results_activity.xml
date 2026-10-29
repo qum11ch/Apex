@@ -1,46 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/neuro_results_root"
+    android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:paddingTop="40dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
         android:paddingBottom="20dp"
-        android:layout_height="wrap_content"
         android:background="@color/header_color">
+
         <ImageButton
-            android:layout_marginTop="2dp"
-            android:id='@+id/backButton'
+            android:id="@+id/backButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
-            android:paddingEnd="30dp"
-            android:paddingStart="0dp"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:src="@drawable/back_arrow"
-            android:background="@android:color/transparent"/>
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:src="@drawable/back_arrow" />
+
         <TextView
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:textColor="@color/white"
-            android:textAllCaps="true"
-            android:text="@string/prediction"
-            android:id="@+id/teamsHeader"
-            android:layout_width="match_parent"
-            android:gravity="center"
+            android:id="@+id/raceTitile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
-    </RelativeLayout>
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:text="@string/prediction"
+            android:paddingEnd="8dp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+        <Space
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+    </LinearLayout>
     <androidx.core.widget.NestedScrollView
-        android:layout_below="@id/header"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:overScrollMode="never">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingBottom="24dp">
             <RelativeLayout
                 android:id="@+id/poleLap_layout"
                 android:layout_width="match_parent"
@@ -61,7 +79,6 @@
                 <RelativeLayout
                     android:layout_below="@id/header_text_prediction"
                     style="@style/PtsStyle"
-                    android:layout_centerInParent="true"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="20dp"
@@ -70,7 +87,8 @@
                     android:backgroundTint="@color/statusBar_color">
                     <TextView
                         android:id="@+id/poleLap_header"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_marginEnd="10dp"
                         android:layout_height="wrap_content"
                         android:text="@string/pole_position"
                         android:textAllCaps="true"
@@ -115,7 +133,8 @@
 
                         <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="28dp"
+                            android:layout_height="wrap_content"
+                            android:minHeight="28dp"
                             android:layout_marginTop="10dp">
 
                             <ProgressBar
@@ -129,13 +148,16 @@
                                 android:progressDrawable="@drawable/progress_prediction" />
 
                             <TextView
-                                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                                android:textColor="@color/white"
                                 android:id="@+id/loading_weather_percent"
                                 android:layout_width="match_parent"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
+                                android:minHeight="28dp"
                                 android:gravity="center"
+                                android:paddingTop="4dp"
+                                android:paddingBottom="4dp"
                                 android:text="0%"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                                android:textColor="@color/white"
                                 android:textSize="13sp"
                                 android:textStyle="bold" />
 
@@ -143,36 +165,36 @@
 
                     </LinearLayout>
                     <RelativeLayout
-                        android:visibility="gone"
                         android:id="@+id/poleLapDriver_layout"
-                        android:layout_below="@id/loading_weather_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_below="@id/loading_weather_layout"
+                        android:visibility="gone"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="15dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
+
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/poleLapDriverName"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:textAllCaps="true"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                             android:textColor="@color/white"
                             android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginStart="10dp" />
+                            android:textStyle="bold" />
 
                         <TextView
                             android:id="@+id/poleLapTime"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="15dp"
+                            android:layout_below="@id/poleLapDriverName"
+                            android:layout_marginTop="6dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                             android:textColor="@color/white"
-                            android:textSize="20sp"
-                            tools:ignore="RelativeOverlap" />
+                            android:textSize="20sp" />
+
                     </RelativeLayout>
                     <com.facebook.shimmer.ShimmerFrameLayout
                         android:visibility="visible"
@@ -184,36 +206,36 @@
                     </com.facebook.shimmer.ShimmerFrameLayout>
                     <RelativeLayout
                         android:id="@+id/update_date_layout"
-                        android:visibility="gone"
-                        android:layout_below="@id/poleLapDriver_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content">
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/poleLapDriver_layout"
+                        android:visibility="gone"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="15dp"
+                        android:paddingTop="10dp"
+                        android:paddingBottom="10dp">
+
                         <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
                             android:id="@+id/last_update_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
                             android:text="@string/last_update_text"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                             android:textColor="@color/white"
                             android:textSize="16sp"
-                            android:textStyle="bold"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:layout_marginStart="10dp"
-                            tools:ignore="RelativeOverlap" />
+                            android:textStyle="bold" />
 
                         <TextView
-                            android:text="16/09/2026 20:26:23"
                             android:id="@+id/last_update_time"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="15dp"
-                            android:textSize="16sp"
+                            android:layout_below="@id/last_update_text"
+                            android:layout_marginTop="4dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                             android:textColor="@color/white"
-                            tools:ignore="RelativeOverlap" />
+                            android:textSize="16sp"
+                            tools:text="16/09/2026 20:26:23" />
+
                     </RelativeLayout>
                     <com.facebook.shimmer.ShimmerFrameLayout
                         android:visibility="visible"
@@ -229,7 +251,7 @@
                 android:layout_below="@id/poleLap_layout"
                 android:background="@color/colorPrimary"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content">
                 <LinearLayout
                     android:paddingTop="5dp"
                     android:paddingBottom="5dp"
@@ -238,13 +260,15 @@
                     android:id="@+id/quali_header"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="5">
+                    android:weightSum="5"
+                    android:gravity="center_vertical"
+                    android:baselineAligned="false">
                     <TextView
                         android:text="@string/pos_header"
                         android:layout_weight="0.5"
                         android:id="@+id/driver_placement"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:layout_gravity="center_vertical"
@@ -258,7 +282,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1.8"
                         android:textAllCaps="true"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:id="@+id/driverName"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -274,7 +298,7 @@
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:id="@+id/Q1_time"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -290,7 +314,7 @@
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:id="@+id/Q2_time"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -306,7 +330,7 @@
                         android:layout_weight="0.9"
                         android:layout_gravity="center"
                         android:id="@+id/Q3_time"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -328,7 +352,8 @@
                         android:overScrollMode="never"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/quali_results" />
+                        android:id="@+id/quali_results"
+                        android:nestedScrollingEnabled="false"/>
                     <com.facebook.shimmer.ShimmerFrameLayout
                         android:id="@+id/shimmer_layout"
                         android:layout_width="match_parent"
@@ -337,9 +362,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical">
-                            <include layout="@layout/shimmer_quali_result"/>
-                            <include layout="@layout/shimmer_quali_result"/>
-                            <include layout="@layout/shimmer_quali_result"/>
                             <include layout="@layout/shimmer_quali_result"/>
                             <include layout="@layout/shimmer_quali_result"/>
                             <include layout="@layout/shimmer_quali_result"/>

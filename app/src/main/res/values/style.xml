@@ -59,6 +59,15 @@
         <item name="cornerSizeBottomLeft">5dp</item>
     </style>
 
+    <style name="customRoundedImageView.Avatar" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">18dp</item>
+        <item name="cornerSizeTopRight">18dp</item>
+        <item name="cornerSizeTopLeft">18dp</item>
+        <item name="cornerSizeBottomRight">18dp</item>
+        <item name="cornerSizeBottomLeft">18dp</item>
+    </style>
+
     <style name="ToggleButton" parent="@android:style/Widget.CompoundButton.RadioButton">
         <item name="android:foreground">?android:attr/selectableItemBackground</item>
         <item name="android:layout_width">match_parent</item>

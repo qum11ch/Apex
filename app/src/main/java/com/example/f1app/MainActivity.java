@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.os.Handler;
 import android.util.Log;
@@ -65,6 +66,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import android.view.ViewGroup;
+
 
 public class MainActivity extends AppCompatActivity {
     ImageButton showDriverButton, showSchedule, showTeams, showAccount;
@@ -93,12 +99,61 @@ public class MainActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private DatabaseReference rootRef;
     private FirebaseUser currentUser;
+    private SwipeRefreshLayout swipeLayout;
+    private boolean accountNavigationInProgress = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        View root = findViewById(R.id.main_root);
+        View footerContainer = findViewById(R.id.footer_container);
+
+        final int initialLeft = root.getPaddingLeft();
+        final int initialTop = root.getPaddingTop();
+        final int initialRight = root.getPaddingRight();
+
+        final int footerGap = Math.round(
+                1 * getResources().getDisplayMetrics().density
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            // Сверху и по бокам защищаем весь интерфейс.
+            // Снизу контент продолжает рисоваться до края экрана.
+            view.setPadding(
+                    initialLeft + safeInsets.left,
+                    initialTop + safeInsets.top,
+                    initialRight + safeInsets.right,
+                    0
+            );
+
+            // Только футер поднимаем выше системной навигации.
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) footerContainer.getLayoutParams();
+
+            int bottomMargin = safeInsets.bottom + footerGap;
+
+            if (params.bottomMargin != bottomMargin) {
+                params.bottomMargin = bottomMargin;
+                footerContainer.setLayoutParams(params);
+            }
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+
+        if (AuthSessionGate.redirectIfRequired(this, null)) {
+            return;
+        }
+
 
         if (!checkConnection(this)){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(MainActivity.this));
@@ -193,6 +248,9 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        swipeLayout = findViewById(R.id.swipe_layout);
+        swipeLayout.setOnRefreshListener(this::refreshMainScreen);
+
         showDriverButton = findViewById(R.id.showDriver);
         showDriverButton.setOnClickListener(v -> {
                     startActivity_getSeason(driversStandingsActivity.class);
@@ -207,8 +265,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity_getSeason(teamsStandingsActivity.class));
 
         showAccount = findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(v ->
-                startActivity_getSeason(logInPageActivity.class));
+        showAccount.setOnClickListener(v -> openAccountOrLogin());
 
         String currentYear = Integer.toString(currentDate.getYear());
 
@@ -266,6 +323,146 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
+    }
+
+    private void openAccountOrLogin() {
+        if (accountNavigationInProgress) return;
+
+        // Сохраняем ваш механизм обязательного повторного входа.
+        if (AuthSessionGate.redirectIfRequired(this, currentSeason)) {
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            startActivity_getSeason(logInPageActivity.class);
+            return;
+        }
+
+        String checkedUid = user.getUid();
+
+        accountNavigationInProgress = true;
+        showAccount.setEnabled(false);
+
+        FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(checkedUid)
+                .get()
+                .addOnCompleteListener(task -> {
+                    accountNavigationInProgress = false;
+
+                    if (isFinishing() || isDestroyed()) return;
+
+                    showAccount.setEnabled(true);
+
+                    if (!task.isSuccessful()) {
+                        Log.e(
+                                "AccountNavigation",
+                                "Не удалось проверить профиль",
+                                task.getException()
+                        );
+
+                        Toast.makeText(
+                                this,
+                                getString(R.string.account_open_error),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
+
+                    // Сессия могла измениться во время запроса.
+                    FirebaseUser current =
+                            FirebaseAuth.getInstance().getCurrentUser();
+
+                    if (current == null ||
+                            !checkedUid.equals(current.getUid())) {
+                        startActivity_getSeason(logInPageActivity.class);
+                        return;
+                    }
+
+                    DataSnapshot snapshot = task.getResult();
+
+                    Boolean migrationComplete =
+                            snapshot.child("usernameMigrationComplete")
+                                    .getValue(Boolean.class);
+
+                    String username =
+                            snapshot.child("username")
+                                    .getValue(String.class);
+
+                    boolean profileReady =
+                            snapshot.exists()
+                                    && Boolean.TRUE.equals(migrationComplete)
+                                    && username != null
+                                    && !username.trim().isEmpty();
+
+                    if (profileReady) {
+                        startActivity_getSeason(accountPageActivity.class);
+                    } else {
+                        startActivity_getSeason(logInPageActivity.class);
+                    }
+                });
+    }
+
+    private void refreshMainScreen() {
+        String currentYear = Integer.toString(LocalDate.now().getYear());
+
+        datumDrivers.clear();
+        datumTeams.clear();
+        datumPast.clear();
+        datumFuture.clear();
+
+        driversAdapter.notifyDataSetChanged();
+        teamsAdapter.notifyDataSetChanged();
+        pastRaceAdapter.notifyDataSetChanged();
+        futureRaceAdapter.notifyDataSetChanged();
+
+        // Возвращаем shimmer
+        showShimmer(rvDrivers, sfDrivers);
+        showShimmer(rvTeams, sfTeams);
+        showShimmer(rvPast, sfPast);
+        showShimmer(rvFuture, sfFuture);
+
+        // Скрываем блоки до новой загрузки
+        futureLayout.setVisibility(View.GONE);
+        pastLayout.setVisibility(View.GONE);
+        pastRaceHeader.setVisibility(View.GONE);
+
+        if (currentSeason == null || currentSeason.trim().isEmpty()) {
+            rootRef.child("status")
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            currentSeason = snapshot.child("season").getValue(String.class);
+
+                            if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                                swipeLayout.setRefreshing(false);
+                                showError("Firebase error");
+                                return;
+                            }
+
+                            loadMainData(currentYear);
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            swipeLayout.setRefreshing(false);
+                            showError(error.getMessage());
+                            Log.e("MainActivity", "status request failed: " + error.getMessage());
+                        }
+                    });
+        } else {
+            loadMainData(currentYear);
+        }
+    }
+
+    private void loadMainData(String currentYear) {
+        getTeamStanding(currentSeason);
+        getDriversStanding(currentSeason);
+        getSchedule(currentYear, LocalDate.now());
+
+        swipeLayout.setRefreshing(false);
     }
 
     private void startActivity_getSeason(Class<?> target) {
@@ -490,7 +687,7 @@ public class MainActivity extends AppCompatActivity {
                         showError(e.getMessage());
                         e.printStackTrace();
                     }
-                }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> Toast.makeText(MainActivity.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 
@@ -621,7 +818,7 @@ public class MainActivity extends AppCompatActivity {
                         showError(e.getMessage());
                         Log.e("MainActivityTeams", " " + e.getMessage());
                     }
-                }, error -> Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> Toast.makeText(MainActivity.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 

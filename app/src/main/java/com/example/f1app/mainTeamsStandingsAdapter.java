@@ -52,6 +52,9 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         teamsList datum = dataList.get(position);
+        holder.teamCar.setScaleX(1f);
+        holder.teamCar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
         holder.teamPosition.setText(datum.getPosition());
@@ -88,42 +91,22 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
                         int width = resource.getWidth();
                         int height = resource.getHeight();
 
-                        Bitmap leftHalf = Bitmap.createBitmap(
+                        boolean isAudi = "audi".equals(datum.getTeamId());
+
+                        int halfWidth = width / 2;
+                        int startX = isAudi ? halfWidth : 0;
+
+                        Bitmap displayBitmap = Bitmap.createBitmap(
                                 resource,
+                                startX,
                                 0,
-                                0,
-                                width /2,
+                                halfWidth,
                                 height
                         );
 
-                        Bitmap rightHalf = Bitmap.createBitmap(
-                                resource,
-                                width /2,
-                                0,
-                                width /2,
-                                height
-                        );
-
-                        if (datum.getTeamId().equals("audi")){
-                            holder.teamCar.setImageBitmap(rightHalf);
-                            holder.teamCar.setScaleX(-1f);
-                        }else{
-                            holder.teamCar.setImageBitmap(leftHalf);
-                        }
-
-                        Bitmap displayBitmap = datum.getTeamId().equals("audi") ? rightHalf : leftHalf;
-
-                        holder.teamCar.post(() -> {
-                            Matrix matrix = new Matrix();
-                            matrix.setRectToRect(
-                                    new RectF(0, 0, displayBitmap.getWidth(), displayBitmap.getHeight()),
-                                    new RectF(0, 0, holder.teamCar.getWidth(), holder.teamCar.getHeight()),
-                                    Matrix.ScaleToFit.FILL
-                            );
-
-                            holder.teamCar.setImageMatrix(matrix);
-                            holder.teamCar.setScaleType(ImageView.ScaleType.MATRIX);
-                        });
+                        holder.teamCar.setScaleX(isAudi ? -1f : 1f);
+                        holder.teamCar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        holder.teamCar.setImageBitmap(displayBitmap);
                     }
 
                     @Override

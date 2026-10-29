@@ -58,10 +58,10 @@
         <activity android:name=".connectionLostScreen"/>
         <activity
             android:name=".logInPageActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".registerPageActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustResize" />
         <activity android:name=".accountPageActivity"
             android:theme="@style/AppTheme.CollapsingToolbar"/>
         <activity android:name=".savedRacesActivity" />

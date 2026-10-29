@@ -1,53 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".scheduleActivity"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    tools:context=".scheduleActivity">
+
     <LinearLayout
         android:id="@+id/header"
-        android:paddingTop="40dp"
-        android:paddingBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
         android:background="@color/header_color_gradient">
 
         <ImageButton
             android:id="@+id/backButton"
             android:layout_width="48dp"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:src="@drawable/back_arrow" />
+
         <TextView
-            android:textStyle="bold"
             android:id="@+id/pageHeader"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:textColor="@color/white"
-            android:textSize="22sp"/>
+            android:textSize="22sp" />
+
         <Space
             android:layout_width="48dp"
             android:layout_height="48dp" />
+
     </LinearLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        style="@style/BackgroundGradient"
         android:id="@+id/swipe_layout"
-        android:layout_below="@id/header"
+        style="@style/BackgroundGradient"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_alignParentBottom="true">
+
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/viewPager2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent" />
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </RelativeLayout>

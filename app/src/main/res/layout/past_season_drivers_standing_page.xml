@@ -1,80 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="vertical"
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/standings_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:orientation="vertical">
+
     <LinearLayout
         android:id="@+id/header"
-        android:paddingTop="40dp"
-        android:paddingBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
         android:background="@color/header_color_gradient">
+
         <ImageButton
             android:id="@+id/backButton"
             android:layout_width="48dp"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
             android:paddingStart="15dp"
             android:paddingEnd="15dp"
             android:src="@drawable/back_arrow" />
+
         <TextView
-            android:textStyle="bold"
             android:id="@+id/driversHeader"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:textColor="@color/white"
-            android:textSize="22sp"/>
+            android:textSize="22sp" />
+
         <Space
             android:layout_width="48dp"
             android:layout_height="48dp" />
+
     </LinearLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        style="@style/BackgroundGradient"
         android:id="@+id/swipe_layout"
-        android:layout_weight="1"
+        style="@style/BackgroundGradient"
         android:layout_width="match_parent"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
         <RelativeLayout
-            android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingStart="0dp"
             android:paddingEnd="10dp">
+
             <androidx.recyclerview.widget.RecyclerView
-                android:clipToPadding = "false"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:overScrollMode="never"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:id="@+id/recyclerview_currentDrivers"
-                android:visibility="gone"/>
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:clipToPadding="false"
+                android:paddingTop="10dp"
+                android:paddingBottom="16dp"
+                android:overScrollMode="never"
+                android:scrollbars="none" />
+
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmer_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:visibility="visible"
                 app:duration="1500">
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:orientation="vertical">
+
                     <include layout="@layout/shimmer_driver_standings" />
                     <include layout="@layout/shimmer_driver_standings" />
                     <include layout="@layout/shimmer_driver_standings" />
                     <include layout="@layout/shimmer_driver_standings" />
                     <include layout="@layout/shimmer_driver_standings" />
                     <include layout="@layout/shimmer_driver_standings" />
+
                 </LinearLayout>
+
             </com.facebook.shimmer.ShimmerFrameLayout>
+
         </RelativeLayout>
+
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </LinearLayout>

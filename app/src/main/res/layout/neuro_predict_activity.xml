@@ -3,51 +3,70 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
+    android:id="@+id/neuro_predict_root"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/header"
         android:layout_width="match_parent"
-        android:paddingTop="40dp"
-        android:paddingBottom="20dp"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
         android:background="@color/header_color">
+
         <ImageButton
-            android:layout_marginTop="2dp"
-            android:id='@+id/backButton'
+            android:id="@+id/backButton"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
-            android:paddingEnd="30dp"
-            android:paddingStart="0dp"
-            android:layout_width="100dp"
-            android:layout_height="30dp"
-            android:src="@drawable/back_arrow"
-            android:background="@android:color/transparent"/>
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp"
+            android:src="@drawable/back_arrow" />
+
         <TextView
-            android:paddingStart="40dp"
-            android:paddingEnd="40dp"
-            android:textColor="@color/white"
-            android:textAllCaps="true"
-            android:text="@string/predict"
-            android:id="@+id/header_predictions"
-            android:layout_width="match_parent"
-            android:gravity="center"
+            android:id="@+id/raceTitile"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
-    </RelativeLayout>
+            android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:text="@string/predict"
+            android:paddingEnd="8dp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+            android:textColor="@color/white"
+            android:textSize="22sp" />
+
+        <Space
+            android:layout_width="48dp"
+            android:layout_height="48dp" />
+
+    </LinearLayout>
     <View
+        android:id="@+id/separatorLine"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_below="@id/header"
-        android:background="@color/separator_header"/>
+        android:background="@color/separator_header" />
     <androidx.core.widget.NestedScrollView
-        android:layout_below="@id/header"
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/separatorLine"
+        android:layout_alignParentBottom="true"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:scrollbars="none">
         <RelativeLayout
-            android:layout_marginTop="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:paddingStart="10dp"
-            android:paddingEnd="10dp">
+            android:paddingEnd="10dp"
+            android:paddingBottom="24dp">
             <TextView
                 android:textStyle="normal"
                 android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
@@ -66,8 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:layout_centerInParent="true">
+                android:layout_marginBottom="20dp">
 
                 <View
                     android:layout_marginStart="10dp"
@@ -98,29 +116,42 @@
                 android:orientation="vertical">
 
                 <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:textColor="@color/text_color_main"
                     android:buttonTint="@drawable/radio_color"
                     android:textStyle="normal"
                     android:checked="true"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:id="@+id/radio1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/predict_quali"
                     android:tag="Q"/>
 
                 <RadioButton
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:gravity="center_vertical"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:textColor="@color/text_color_main"
                     android:buttonTint="@drawable/radio_color"
                     android:textStyle="normal"
                     android:layout_marginTop="15dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                     android:checked="false"
                     android:id="@+id/radio2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="@string/predict_sprint_quali"
                     android:tag="SQ"/>
             </RadioGroup>
             <Button
+                android:minHeight="60dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
                 android:layout_marginStart="10dp"
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="30dp"

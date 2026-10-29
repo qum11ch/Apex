@@ -6,8 +6,7 @@
     tools:context=".scheduleActivity"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_height="match_parent">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -15,7 +14,8 @@
         <LinearLayout
             android:id="@+id/header"
             android:orientation="horizontal"
-            android:paddingTop="40dp"
+            android:paddingTop="16dp"
+            android:gravity="center_vertical"
             android:paddingBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
                 android:visibility="gone"
                 android:id="@+id/backButton"
                 android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/back_arrow"
                 android:paddingStart="15dp"
@@ -33,16 +33,17 @@
                 android:src="@drawable/back_arrow" />
 
             <TextView
-                android:paddingStart="40dp"
-                android:paddingEnd="40dp"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:text="@string/race_schudule_header"
                 android:id="@+id/raceHeader"
-                android:layout_width="match_parent"
                 android:gravity="center"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"/>
 
             <Space
                 android:layout_width="48dp"
@@ -55,11 +56,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            style="@style/BackgroundGradient"
             android:id="@+id/swipe_layout"
+            style="@style/BackgroundGradient"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="0dp"
+            android:layout_weight="1">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -241,37 +242,16 @@
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/viewPager2"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
             </LinearLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="5"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="20dp">
-
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-
-    </LinearLayout>
     <include
+        android:id="@+id/footer_container"
+        layout="@layout/footer_schedule"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="20dp"
-        layout="@layout/footer_schudule"/>
+        android:layout_gravity="bottom" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -40,6 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
 
     private List<driversList> datum;
@@ -54,9 +58,11 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.past_season_drivers_standing_page);
+
+        setupStandingsInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonDriversStandingsActivity.this));
@@ -94,7 +100,12 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
             adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
             recyclerView.setAdapter(adapter);
 
-            swipeLayout = findViewById(R.id.swipe_layout);
+            SwipeRefreshLayout swipeLayout = findViewById(R.id.swipe_layout);
+
+            swipeLayout.setOnChildScrollUpCallback(
+                    (parent, child) -> recyclerView.canScrollVertically(-1)
+            );
+
             swipeLayout.setOnRefreshListener(() -> {
                 recyclerView.setVisibility(View.GONE);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
@@ -103,6 +114,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                 getStanding(mSeason);
                 swipeLayout.setRefreshing(false);
             });
+
             LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
             recyclerView.setLayoutManager(linearLayoutManager3);
 
@@ -117,6 +129,45 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         }
     }
 
+    private void setupStandingsInsets() {
+        View root = findViewById(R.id.standings_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+    }
 
     public void getStanding(String seasonYear){
         RequestQueue queue = Volley.newRequestQueue(pastSeasonDriversStandingsActivity.this);

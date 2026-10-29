@@ -11,10 +11,11 @@
         android:layout_marginEnd="10dp"
         android:fillViewport="true"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:overScrollMode="never"
         android:scrollbars="none">
         <RelativeLayout
+            android:paddingBottom="24dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
@@ -56,17 +57,18 @@
                 android:layout_below="@id/seasonButtonsScroll">
                 <LinearLayout
                     android:id="@+id/results_header"
-                    android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:weightSum="5">
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:gravity="bottom">
                     <TextView
                         android:textColor="@color/text_color_main"
                         android:id="@+id/raceName_header"
                         android:layout_width="0dp"
                         android:layout_weight="2.7"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:textSize="20sp"
                         android:textStyle="bold"
@@ -96,6 +98,10 @@
                             android:layout_below="@id/striped_first"
                             android:gravity="center"
                             android:id='@+id/firstDriverFamilyName'
+                            android:paddingStart="2dp"
+                            android:paddingEnd="2dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -126,6 +132,10 @@
                                 android:scaleType="fitCenter" />
                         </RelativeLayout>
                         <TextView
+                            android:paddingStart="2dp"
+                            android:paddingEnd="2dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
                             android:textColor="@color/text_color_main"
                             android:layout_below="@id/striped_second"
                             android:gravity="center"
@@ -160,6 +170,10 @@
                                 android:scaleType="fitCenter" />
                         </RelativeLayout>
                         <TextView
+                            android:paddingStart="2dp"
+                            android:paddingEnd="2dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp"
                             android:layout_below="@id/striped_third"
                             android:gravity="center"
                             android:id='@+id/thirdDriverFamilyName'
@@ -186,7 +200,8 @@
                     android:overScrollMode="never"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/drivers_results"/>
+                    android:id="@+id/drivers_results"
+                    android:nestedScrollingEnabled="false"/>
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_layout"
                     android:layout_below="@id/line"
@@ -197,7 +212,7 @@
                     app:duration="1000">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <include layout="@layout/shimmer_team_result"/>
                         <include layout="@layout/shimmer_team_result"/>
@@ -224,7 +239,7 @@
                     app:duration="1000">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <include layout="@layout/shimmer_team_triple_result"/>
                         <include layout="@layout/shimmer_team_triple_result"/>
@@ -242,14 +257,15 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/keyMapLayout"
                 style="@style/PtsStyle"
-                android:backgroundTint="@color/dark_grey"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/results_layout"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
-                android:orientation="horizontal"
-                android:layout_below="@id/results_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/dark_grey">
                 <TextView
                     android:layout_marginTop="1dp"
                     android:paddingTop="3dp"
@@ -263,7 +279,7 @@
                     android:textColor="@color/dark_grey"
                     android:textSize="20sp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/_1st_place_header"/>
                 <TextView
                     android:layout_marginTop="0.5dp"

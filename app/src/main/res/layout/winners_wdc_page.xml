@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
+    android:id="@+id/winners_wdc_root"
+    android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
         <LinearLayout
+            android:paddingTop="16dp"
+            android:gravity="center_vertical"
             android:id="@+id/header"
-            android:paddingTop="40dp"
             android:paddingBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -20,7 +23,7 @@
             <ImageButton
                 android:id="@+id/backButton"
                 android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/back_arrow"
                 android:paddingStart="15dp"
@@ -28,14 +31,17 @@
                 android:src="@drawable/back_arrow" />
 
             <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
                 android:text="@string/winners_wdc_header"
                 android:id="@+id/teamsHeader"
-                android:layout_width="wrap_content"
                 android:gravity="center"
-                android:layout_height="match_parent"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
 
             <Space
@@ -43,10 +49,15 @@
                 android:layout_height="48dp" />
         </LinearLayout>
         <androidx.core.widget.NestedScrollView
-            android:overScrollMode="never"
+            android:id="@+id/winnersScroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none">
             <RelativeLayout
+                android:paddingBottom="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <RelativeLayout
@@ -70,13 +81,14 @@
                     <RelativeLayout
                         android:layout_below="@id/winnersWDC_info"
                         style="@style/PtsStyle"
-                        android:layout_centerInParent="true"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/statusBar_color">
                         <LinearLayout
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
                             android:id="@+id/roundLayout"
                             android:layout_width="match_parent"
                             android:layout_marginTop="10dp"
@@ -99,7 +111,7 @@
                             <TextView
                                 android:id="@+id/round"
                                 android:layout_width="wrap_content"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:gravity="center_vertical"
                                 android:paddingStart="0dp"
                                 android:paddingEnd="10dp"
@@ -139,10 +151,12 @@
                             android:orientation="horizontal"
                             android:layout_below="@id/remaining_events_info"
                             android:layout_marginStart="20dp"
-                            android:layout_marginEnd="10dp">
+                            android:layout_marginEnd="10dp"
+                            android:gravity="center_vertical">
                             <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
                                 android:id="@+id/conv_events_text"
-                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/conventional_events_text"
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -167,10 +181,12 @@
                             android:orientation="horizontal"
                             android:layout_below="@id/conv_events_layout"
                             android:layout_marginStart="20dp"
-                            android:layout_marginEnd="10dp">
+                            android:layout_marginEnd="10dp"
+                            android:gravity="center_vertical">
                             <TextView
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
                                 android:id="@+id/sprint_events_text"
-                                android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="@string/sprint_events_text"
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -223,13 +239,15 @@
                     android:id="@+id/wdc_table"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="5">
+                    android:weightSum="5"
+                    android:gravity="center_vertical"
+                    android:baselineAligned="false">
                     <TextView
                         android:includeFontPadding="false"
                         android:text="@string/pos_header"
                         android:layout_weight="0.5"
                         android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -244,7 +262,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1.75"
                         android:textAllCaps="true"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:textColor="@color/white"
@@ -257,7 +275,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:textAlignment="center"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -272,7 +290,7 @@
                         android:layout_width="0dp"
                         android:layout_weight="1"
                         android:layout_gravity="center"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -286,7 +304,7 @@
                         android:layout_weight="0.75"
                         android:layout_marginEnd="1dp"
                         android:layout_gravity="center"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:gravity="center"
                         android:textAllCaps="true"
                         android:textStyle="bold"
@@ -301,13 +319,11 @@
                     android:id="@+id/header_line"
                     android:layout_below="@id/wdc_table"/>
                 <androidx.recyclerview.widget.RecyclerView
+                    android:nestedScrollingEnabled="false"
                     android:id="@+id/recyclerview_winnersWDC"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/header_line"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="0dp"
-                    android:layout_marginEnd="-1dp"
                     android:clipToPadding="false"
                     android:overScrollMode="never"
                     android:paddingBottom="5dp"
@@ -321,7 +337,7 @@
                     app:duration="1500">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <include layout="@layout/shimmer_winners_wdc" />
                         <include layout="@layout/shimmer_winners_wdc" />

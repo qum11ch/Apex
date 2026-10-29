@@ -29,6 +29,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.view.View;
+import android.view.ViewGroup;
+
 public class futureRaceFragment extends Fragment {
     List<futureRaceData> datum;
     private futureRaceAdapter adapter;
@@ -60,6 +63,7 @@ public class futureRaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupFooterClearance(view);
         if (!getArguments().isEmpty()){
             shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
@@ -146,8 +150,69 @@ public class futureRaceFragment extends Fragment {
             }
 
             LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
-            scrollView.setScrollingEnabled(false);
+
+            if (scrollView != null) {
+                scrollView.setScrollingEnabled(true);
+            }
         }
+    }
+
+    private void setupFooterClearance(View pageRoot) {
+        View content = pageRoot.findViewById(R.id.schedule_page_content);
+        View footer = requireActivity().findViewById(R.id.footer_container);
+
+        if (content == null || footer == null) {
+            return;
+        }
+
+        final int left = content.getPaddingLeft();
+        final int top = content.getPaddingTop();
+        final int right = content.getPaddingRight();
+
+        final int extraGap = Math.round(
+                12 * getResources().getDisplayMetrics().density
+        );
+
+        Runnable updatePadding = () -> {
+            ViewGroup.LayoutParams layoutParams = footer.getLayoutParams();
+
+            int bottomMargin = 0;
+
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                bottomMargin =
+                        ((ViewGroup.MarginLayoutParams) layoutParams).bottomMargin;
+            }
+
+            int bottomPadding = footer.getHeight() + bottomMargin + extraGap;
+
+            if (content.getPaddingBottom() != bottomPadding) {
+                content.setPadding(left, top, right, bottomPadding);
+            }
+        };
+
+        View.OnLayoutChangeListener listener =
+                (view, l, t, r, b, oldL, oldT, oldR, oldB) ->
+                        updatePadding.run();
+
+        footer.addOnLayoutChangeListener(listener);
+
+        pageRoot.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View view) {
+                        footer.removeOnLayoutChangeListener(listener);
+                        footer.addOnLayoutChangeListener(listener);
+                        view.post(updatePadding);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View view) {
+                        footer.removeOnLayoutChangeListener(listener);
+                    }
+                }
+        );
+
+        pageRoot.post(updatePadding);
     }
 
     private void hideShimmer() {

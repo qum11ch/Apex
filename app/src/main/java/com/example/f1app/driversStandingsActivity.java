@@ -26,6 +26,8 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -43,6 +45,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class driversStandingsActivity extends AppCompatActivity {
     ImageButton showTeams, showSchedule, showHomePage, showAccount;
     private View driverStndLine;
@@ -56,11 +66,15 @@ public class driversStandingsActivity extends AppCompatActivity {
     private StorageReference storageRef;
     private DatabaseReference rootRef;
 
+    private String currentSeason;
+    private boolean accountNavigationInProgress = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.drivers_standing_page);
+        setupDriversInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(driversStandingsActivity.this));
@@ -70,6 +84,8 @@ public class driversStandingsActivity extends AppCompatActivity {
 
         Bundle intentBundle = getIntent().getExtras();
         mCurrentSeason = intentBundle.getString("currentSeason");
+
+        currentSeason = mCurrentSeason;
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
@@ -144,10 +160,10 @@ public class driversStandingsActivity extends AppCompatActivity {
         });
 
         showTeams = findViewById(R.id.showTeams);
-        showTeams.setOnClickListener(v -> startActivity_seasonData(driversStandingsActivity.this, teamsStandingsActivity.class, mCurrentSeason));
+        showTeams.setOnClickListener(v -> startActivity_getSeason(teamsStandingsActivity.class));
 
         showSchedule = findViewById(R.id.showSchedule);
-        showSchedule.setOnClickListener(v -> startActivity_seasonData(driversStandingsActivity.this, scheduleActivity.class, mCurrentSeason));
+        showSchedule.setOnClickListener(v -> startActivity_getSeason(scheduleActivity.class));
 
         showHomePage = findViewById(R.id.showHomePage);
         showHomePage.setOnClickListener(v -> {
@@ -157,7 +173,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         });
 
         showAccount = findViewById(R.id.showAccount);
-        showAccount.setOnClickListener(v -> startActivity_seasonData(driversStandingsActivity.this, logInPageActivity.class, mCurrentSeason));
+        showAccount.setOnClickListener(v -> openAccountOrLogin());
 
 
         ImageButton backButton = findViewById(R.id.backButton);
@@ -172,10 +188,190 @@ public class driversStandingsActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
     }
 
-    public static void startActivity_seasonData(Activity activity, Class<?> className, String currentSeason){
+    private void setupDriversInsets() {
+        View root = findViewById(R.id.drivers_root);
+        View header = findViewById(R.id.header);
+        View footer = findViewById(R.id.footer_container);
+        View scrollContent = findViewById(R.id.drivers_scroll_content);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        final int contentLeft = scrollContent.getPaddingLeft();
+        final int contentTop = scrollContent.getPaddingTop();
+        final int contentRight = scrollContent.getPaddingRight();
+
+        final float density = getResources().getDisplayMetrics().density;
+        final int footerGap = Math.round(1 * density);
+        final int contentGap = Math.round(12 * density);
+
+        final int[] bottomInset = {0};
+
+        Runnable updateContentPadding = () -> {
+            int reserve = footer.getHeight()
+                    + bottomInset[0]
+                    + footerGap
+                    + contentGap;
+
+            if (scrollContent.getPaddingBottom() != reserve) {
+                scrollContent.setPadding(
+                        contentLeft,
+                        contentTop,
+                        contentRight,
+                        reserve
+                );
+            }
+        };
+
+        footer.addOnLayoutChangeListener(
+                (view, left, top, right, bottom,
+                 oldLeft, oldTop, oldRight, oldBottom) ->
+                        updateContentPadding.run()
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    0
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            bottomInset[0] = safeInsets.bottom;
+
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) footer.getLayoutParams();
+
+            int margin = safeInsets.bottom + footerGap;
+
+            if (params.bottomMargin != margin) {
+                params.bottomMargin = margin;
+                footer.setLayoutParams(params);
+            }
+
+            updateContentPadding.run();
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+    }
+
+    private void openAccountOrLogin() {
+        if (accountNavigationInProgress) return;
+
+        // Сохраняем ваш механизм обязательного повторного входа.
+        if (AuthSessionGate.redirectIfRequired(this, currentSeason)) {
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            startActivity_getSeason(logInPageActivity.class);
+            return;
+        }
+
+        String checkedUid = user.getUid();
+
+        accountNavigationInProgress = true;
+        showAccount.setEnabled(false);
+
+        FirebaseDatabase.getInstance()
+                .getReference("users")
+                .child(checkedUid)
+                .get()
+                .addOnCompleteListener(task -> {
+                    accountNavigationInProgress = false;
+
+                    if (isFinishing() || isDestroyed()) return;
+
+                    showAccount.setEnabled(true);
+
+                    if (!task.isSuccessful()) {
+                        Log.e(
+                                "AccountNavigation",
+                                "Не удалось проверить профиль",
+                                task.getException()
+                        );
+
+                        Toast.makeText(
+                                this,
+                                getString(R.string.account_open_error),
+                                Toast.LENGTH_SHORT
+                        ).show();
+                        return;
+                    }
+
+                    // Сессия могла измениться во время запроса.
+                    FirebaseUser current =
+                            FirebaseAuth.getInstance().getCurrentUser();
+
+                    if (current == null ||
+                            !checkedUid.equals(current.getUid())) {
+                        startActivity_getSeason(logInPageActivity.class);
+                        return;
+                    }
+
+                    DataSnapshot snapshot = task.getResult();
+
+                    Boolean migrationComplete =
+                            snapshot.child("usernameMigrationComplete")
+                                    .getValue(Boolean.class);
+
+                    String username =
+                            snapshot.child("username")
+                                    .getValue(String.class);
+
+                    boolean profileReady =
+                            snapshot.exists()
+                                    && Boolean.TRUE.equals(migrationComplete)
+                                    && username != null
+                                    && !username.trim().isEmpty();
+
+                    if (profileReady) {
+                        startActivity_getSeason(accountPageActivity.class);
+                    } else {
+                        startActivity_getSeason(logInPageActivity.class);
+                    }
+                });
+    }
+
+    private void startActivity_getSeason(Class<?> target) {
+        String season = currentSeason;
+
+        if (season == null || season.trim().isEmpty()) {
+            season = "2026";
+        }
+
+        Intent intent = new Intent(this, target);
+        intent.putExtra("currentSeason", season);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+
+    public static void startActivity_seasonData(Activity activity, Class<?> className, String currentSeason) {
         Intent intent = new Intent(activity, className);
         Bundle bundle = new Bundle();
-        bundle.putString("currentSeason" , currentSeason);
+        bundle.putString("currentSeason", currentSeason);
         intent.putExtras(bundle);
         activity.startActivity(intent);
         activity.overridePendingTransition(0, 0);
@@ -341,7 +537,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         Log.e("driverStandingsError", e.getMessage());
                     }
-                }, error -> Toast.makeText(driversStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> Toast.makeText(driversStandingsActivity.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
     }
 

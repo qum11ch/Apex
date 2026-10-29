@@ -1,27 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/teams_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
+
         <LinearLayout
             android:id="@+id/header"
-            android:orientation="horizontal"
-            android:paddingTop="40dp"
-            android:paddingBottom="20dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp"
             android:background="@color/header_color_gradient">
 
             <ImageButton
-                android:visibility="gone"
                 android:id="@+id/backButton"
                 android:layout_width="48dp"
-                android:layout_height="match_parent"
+                android:layout_height="48dp"
+                android:visibility="gone"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/back_arrow"
                 android:paddingStart="15dp"
@@ -29,62 +33,72 @@
                 android:src="@drawable/back_arrow" />
 
             <TextView
-                android:textAllCaps="true"
-                android:paddingStart="40dp"
-                android:paddingEnd="40dp"
-                android:textColor="@color/white"
-                android:text="@string/teams_header"
                 android:id="@+id/teamsHeader"
-                android:layout_width="match_parent"
-                android:gravity="center"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/teams_header"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
             <Space
                 android:layout_width="48dp"
                 android:layout_height="48dp"
-                android:visibility="gone"/>
+                android:visibility="gone" />
+
         </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            style="@style/BackgroundGradient"
             android:id="@+id/swipe_layout"
+            style="@style/BackgroundGradient"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
             <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:fillViewport="true"
                 android:overScrollMode="never"
-                android:scrollbars="none"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:scrollbars="none">
+
                 <RelativeLayout
+                    android:id="@+id/teams_scroll_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:paddingStart="0dp"
                     android:paddingEnd="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:paddingBottom="80dp">
+
                     <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerview_currentTeams"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
                         android:nestedScrollingEnabled="false"
-                        android:scrollingCache="true"
                         android:animateLayoutChanges="false"
-                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         android:overScrollMode="never"
                         android:clipToPadding="false"
                         android:paddingTop="10dp"
                         android:paddingBottom="5dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/recyclerview_currentTeams"
-                        android:visibility="gone"/>
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
                     <com.facebook.shimmer.ShimmerFrameLayout
                         android:id="@+id/shimmer_layout"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:visibility="visible"
                         app:duration="1500">
+
                         <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="wrap_content"
                             android:orientation="vertical">
+
                             <include layout="@layout/shimmer_team_standings" />
                             <include layout="@layout/shimmer_team_standings" />
                             <include layout="@layout/shimmer_team_standings" />
@@ -95,72 +109,62 @@
                             <include layout="@layout/shimmer_team_standings" />
                             <include layout="@layout/shimmer_team_standings" />
                             <include layout="@layout/shimmer_team_standings" />
+
                         </LinearLayout>
+
                     </com.facebook.shimmer.ShimmerFrameLayout>
+
                     <Button
-                        android:visibility="gone"
-                        android:layout_below="@id/recyclerview_currentTeams"
-                        style="@style/PrevResultsStyle"
-                        android:textColor="@color/text_color_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
                         android:id="@+id/teamsStandings_2025"
+                        style="@style/PrevResultsStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="60dp"
+                        android:layout_below="@id/recyclerview_currentTeams"
+                        android:visibility="gone"
+                        android:textColor="@color/text_color_main"
+                        android:textAppearance="@style/TextStyle.Gram.Bold"
                         android:textSize="18sp"
                         android:paddingStart="20dp"
                         android:paddingEnd="5dp"
-                        android:textAlignment="textStart"/>
+                        android:textAlignment="textStart" />
+
                     <View
-                        android:visibility="gone"
-                        android:layout_below="@id/teamsStandings_2025"
+                        android:id="@+id/teamStndLine"
                         android:layout_width="match_parent"
                         android:layout_height="2dp"
-                        android:background="@color/text_color_main"
-                        android:id="@+id/teamStndLine"/>
-                    <Button
+                        android:layout_below="@id/teamsStandings_2025"
                         android:visibility="gone"
-                        android:layout_marginBottom="90dp"
-                        android:layout_below="@id/teamStndLine"
-                        style="@style/PrevResultsStyleButtom"
-                        android:textColor="@color/text_color_main"
-                        android:layout_width="match_parent"
-                        android:layout_height="60dp"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
+                        android:background="@color/text_color_main" />
+
+                    <Button
                         android:id="@+id/teamsStandings_2024"
+                        style="@style/PrevResultsStyleButtom"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:minHeight="60dp"
+                        android:layout_below="@id/teamStndLine"
+                        android:visibility="gone"
+                        android:textColor="@color/text_color_main"
+                        android:textAppearance="@style/TextStyle.Gram.Bold"
                         android:textSize="18sp"
                         android:paddingStart="20dp"
                         android:paddingEnd="5dp"
-                        android:textAlignment="textStart"/>
+                        android:textAlignment="textStart" />
+
                 </RelativeLayout>
+
             </androidx.core.widget.NestedScrollView>
+
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="5"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="20dp">
-
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
 
     </LinearLayout>
+
     <include
+        android:id="@+id/footer_container"
+        layout="@layout/footer_teams"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="20dp"
-        layout="@layout/footer_teams" />
+        android:layout_gravity="bottom" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

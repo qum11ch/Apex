@@ -39,6 +39,9 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private List<teamsList> datum;
@@ -51,9 +54,12 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
         setContentView(R.layout.past_season_teams_standing_page);
+
+        setupTeamsStandingsInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonTeamsStandingsActivity.this));
@@ -93,6 +99,11 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
 
             swipeLayout = findViewById(R.id.swipe_layout);
+
+            swipeLayout.setOnChildScrollUpCallback(
+                    (parent, child) -> recyclerView.canScrollVertically(-1)
+            );
+
             swipeLayout.setOnRefreshListener(() -> {
                 recyclerView.setVisibility(View.GONE);
                 shimmerFrameLayout.setVisibility(View.VISIBLE);
@@ -114,6 +125,46 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             windowInsetsController.setAppearanceLightStatusBars(false);
 
         }
+    }
+
+    private void setupTeamsStandingsInsets() {
+        View root = findViewById(R.id.teams_standings_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void getTeamStanding(String year){

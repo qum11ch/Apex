@@ -39,6 +39,11 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.view.View;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class winnersWDCActivity extends AppCompatActivity {
     private static final int POINTS_FOR_SPRINT = 8 + 25;
     private static final int POINTS_FOR_CONVENTIONAL = 25;
@@ -49,9 +54,10 @@ public class winnersWDCActivity extends AppCompatActivity {
     private winnersWDCAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.winners_wdc_page);
+        setupWinnersInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(winnersWDCActivity.this));
@@ -128,6 +134,46 @@ public class winnersWDCActivity extends AppCompatActivity {
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+    }
+
+    private void setupWinnersInsets() {
+        View root = findViewById(R.id.winners_wdc_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void calculateMaxPoints(Integer lastRound, String currentSeason){

@@ -4,45 +4,67 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@android:color/transparent"
     tools:context=".futureRaceFragment">
+
     <androidx.core.widget.NestedScrollView
-        android:fillViewport="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none">
+
         <LinearLayout
+            android:id="@+id/schedule_page_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/futureRaceLayout"
             android:orientation="vertical"
-            android:layout_marginEnd="10dp"
-            android:paddingBottom="90dp">
-            <androidx.recyclerview.widget.RecyclerView
-                android:clipToPadding = "false"
-                android:paddingTop="10dp"
-                android:visibility="gone"
-                android:overScrollMode="never"
+            android:paddingBottom="80dp">
+
+            <LinearLayout
+                android:id="@+id/futureRaceLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/recyclerview_futureRaces"/>
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmer_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="visible">
-                <LinearLayout
+                android:layout_marginEnd="10dp"
+                android:orientation="vertical"
+                tools:ignore="UselessParent">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_futureRaces"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <include layout="@layout/shimmer_future_race" />
-                    <include layout="@layout/shimmer_future_race" />
-                    <include layout="@layout/shimmer_future_race" />
-                    <include layout="@layout/shimmer_future_race" />
-                    <include layout="@layout/shimmer_future_race" />
-                    <include layout="@layout/shimmer_future_race" />
-                </LinearLayout>
-            </com.facebook.shimmer.ShimmerFrameLayout>
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false"
+                    android:paddingTop="10dp"
+                    android:overScrollMode="never" />
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/shimmer_future_race" />
+                        <include layout="@layout/shimmer_future_race" />
+                        <include layout="@layout/shimmer_future_race" />
+                        <include layout="@layout/shimmer_future_race" />
+                        <include layout="@layout/shimmer_future_race" />
+                        <include layout="@layout/shimmer_future_race" />
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+            </LinearLayout>
+
         </LinearLayout>
+
     </androidx.core.widget.NestedScrollView>
+
 </FrameLayout>

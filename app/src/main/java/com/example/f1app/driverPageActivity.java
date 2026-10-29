@@ -45,6 +45,13 @@ import com.google.firebase.storage.StorageReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import android.view.View;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class driverPageActivity extends AppCompatActivity {
 
     private static final int EARLIEST_AVAILABLE_SEASON = 2018;
@@ -71,6 +78,8 @@ public class driverPageActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.driver_page);
+
+        setupDriverInsets();
 
         contentLayout = findViewById(R.id.content_layout);
         progressBar = findViewById(R.id.progressBar);
@@ -127,6 +136,45 @@ public class driverPageActivity extends AppCompatActivity {
         );
 
         setupToolbar(currentDriverFullName);
+    }
+
+    private void setupDriverInsets() {
+        View root = findViewById(R.id.main_content);
+        View appBar = findViewById(R.id.appbar);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int appBarLeft = appBar.getPaddingLeft();
+        final int appBarTop = appBar.getPaddingTop();
+        final int appBarRight = appBar.getPaddingRight();
+        final int appBarBottom = appBar.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+            appBar.setPadding(
+                    appBarLeft,
+                    appBarTop + safeInsets.top,
+                    appBarRight,
+                    appBarBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void loadDriverData(

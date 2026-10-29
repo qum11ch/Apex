@@ -374,7 +374,7 @@ public class teamResultsFragment extends Fragment {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                        if (!isAdded()) {
+                        if (!isAdded() || season != selectedSeason) {
                             return;
                         }
 
@@ -419,15 +419,9 @@ public class teamResultsFragment extends Fragment {
 
                         showLoading(isTripleDriver);
 
-                        loadDriversInfo(
-                                currentSeasonDrivers,
-                                season
-                        );
-
-                        getResults(
-                                season,
-                                currentSeasonDrivers
-                        );
+                        ArrayList<String> seasonDrivers = new ArrayList<>(currentSeasonDrivers);
+                        loadDriversInfo(seasonDrivers, season);
+                        getResults(season, seasonDrivers);
                     }
 
                     @Override
@@ -482,7 +476,7 @@ public class teamResultsFragment extends Fragment {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            if (!isAdded()) {
+                            if (!isAdded() || season != selectedSeason) {
                                 return;
                             }
 
@@ -698,7 +692,7 @@ public class teamResultsFragment extends Fragment {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot scheduleSnapshot) {
-                        if (!isAdded()) {
+                        if (!isAdded() || season != selectedSeason) {
                             return;
                         }
 
@@ -719,7 +713,7 @@ public class teamResultsFragment extends Fragment {
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot resultSnapshot) {
-                                        if (!isAdded()) {
+                                        if (!isAdded() || season != selectedSeason) {
                                             return;
                                         }
 
@@ -789,6 +783,22 @@ public class teamResultsFragment extends Fragment {
             int season,
             int totalRaces,
             int[] loadedRaces) {
+
+        if (!isAdded() || season != selectedSeason) {
+            return;
+        }
+
+        if (drivers == null || drivers.size() < 2) {
+            Log.w(
+                    "TeamResults",
+                    "Недостаточно пилотов для обработки гонки: "
+                            + raceName
+                            + ", season=" + season
+                            + ", drivers=" + drivers
+            );
+            hideShimmer();
+            return;
+        }
 
         String firstDriverName = drivers.get(0);
         String secondDriverName = drivers.get(1);

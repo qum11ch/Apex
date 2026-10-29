@@ -32,7 +32,19 @@
     <string name="save_race">Сохранить</string>
     <string name="settings">Настройки аккаунта</string>
     <string name="saved_race">Сохраненные гонки</string>
-    <string name="account_data">Данные аккаунта</string>
+    <string name="account_data">Информация об учетной записи</string>
+
+    <string name="background_color_title">Цвет фона</string>
+    <string name="color_brightness">Яркость</string>
+    <string name="apply_color">Применить</string>
+
+    <string name="saving_color">Сохранение…</string>
+    <string name="background_color_saved">Цвет фона сохранён</string>
+    <string name="background_color_save_error">Не удалось сохранить цвет. Попробуйте ещё раз.</string>
+    <string name="background_color_login_required">Войдите в аккаунт, чтобы сохранить цвет.</string>
+    <string name="background_color_load_error">Не удалось загрузить цвет фона профиля.</string>
+
+    <string name="account_open_error">Не удалось открыть профиль. Попробуйте ещё раз.</string>
 
     <string name="change_username">Изменить имя профиля</string>
     <string name="change_avatar">Изменить аватар</string>
@@ -543,4 +555,15 @@
     <string name="neuro_prediction_progress_model_results">Обработка списка результатов...</string>
     <string name="neuro_prediction_progress_model_table">Обновление таблицы...</string>
     <string name="neuro_prediction_progress_model_error">не удалось рассчитать прогноз</string>
+
+    <string name="update_required_title">Требуется обновление</string>
+    <string name="update_required_description">Доступ к нейросетевым прогнозам доступен только в последней версии Apex. Пожалуйста, обновите приложение до актуальной версии.</string>
+    <string name="update_required_decline_text">Остаться</string>
+    <string name="update_required_update_text">Обновить</string>
+    <string name="update_required_url_error">Не удалось открыть страницу обновления</string>
+    <string name="update_required_version_error">Не удалось определить версию приложения</string>
+    <string name="neuro_prediction_access_blocked">Доступ к результатам временно недоступен</string>
+    <string name="update_reqired_version_task_error">Не удалось проверить версию. Попробуйте ещё раз.</string>
+
+    <string name="account_relogin_required">Мы обновили систему аккаунтов. Пожалуйста, войдите снова, чтобы завершить обновление профиля.</string>
 </resources>

@@ -4,74 +4,103 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <RelativeLayout
+    android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fastestLap_layout"
         android:layout_width="match_parent"
-        android:layout_height="125dp"
-        android:background="@drawable/background_striped_lines_darkblue">
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:src="@drawable/background_striped_lines_darkblue"
+            android:scaleType="centerCrop"
+            android:contentDescription="@null"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <RelativeLayout
+            android:id="@+id/fastestLap_card"
             style="@style/PtsStyle"
-            android:layout_centerInParent="true"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:backgroundTint="@color/statusBar_color">
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/statusBar_color"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
             <TextView
                 android:id="@+id/fastestLap_header"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="15dp"
                 android:text="@string/fastest_lap_header"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/red"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:layout_marginTop="10dp"
-                android:layout_marginStart="10dp"/>
+                android:textStyle="bold" />
+
             <RelativeLayout
-                android:visibility="gone"
                 android:id="@+id/fastestLapDriver_layout"
-                android:layout_below="@id/fastestLap_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_below="@id/fastestLap_header"
+                android:visibility="gone"
+                android:paddingStart="10dp"
+                android:paddingEnd="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:id="@+id/fastestLapDriverName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                     android:textColor="@color/white"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="10dp" />
+                    android:textStyle="bold" />
+
                 <TextView
                     android:id="@+id/fastestLapTime"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="15dp"
+                    android:layout_below="@id/fastestLapDriverName"
+                    android:layout_marginTop="6dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:textColor="@color/white"
-                    android:textSize="20sp"
-                    tools:ignore="RelativeOverlap" />
+                    android:textSize="20sp" />
+
             </RelativeLayout>
+
             <com.facebook.shimmer.ShimmerFrameLayout
-                android:visibility="visible"
                 android:id="@+id/shimmer_layout_driver"
-                android:layout_below="@id/fastestLap_header"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <include layout="@layout/shimmer_fastest_lap"/>
+                android:layout_height="wrap_content"
+                android:layout_below="@id/fastestLap_header"
+                android:visibility="visible">
+
+                <include layout="@layout/shimmer_fastest_lap" />
+
             </com.facebook.shimmer.ShimmerFrameLayout>
+
         </RelativeLayout>
-    </RelativeLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
     <LinearLayout
+        android:gravity="center_vertical"
+        android:baselineAligned="false"
         android:layout_below="@id/fastestLap_layout"
         android:orientation="horizontal"
         android:paddingTop="5dp"
@@ -87,7 +116,7 @@
             android:layout_weight="0.5"
             android:id="@+id/driver_placement"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:gravity="center_vertical|center"
             android:lineSpacingExtra="0dp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
@@ -101,7 +130,7 @@
             android:paddingEnd="8dp"
             android:layout_width="0dp"
             android:layout_weight="2.4"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/driverName"
             android:textAllCaps="true"
             android:lineSpacingExtra="0dp"
@@ -119,7 +148,7 @@
             android:layout_gravity="center"
             android:gravity="center_vertical"
             android:id="@+id/driver_time"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
@@ -133,7 +162,7 @@
             android:textAllCaps="true"
             android:layout_width="0dp"
             android:layout_weight="0.8"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:id="@+id/driver_pts"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
@@ -145,27 +174,35 @@
         android:background="@color/light_grey"
         android:id="@+id/header_line"
         android:layout_below="@id/race_header"/>
-    <LinearLayout
-        android:layout_below="@id/header_line"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_below="@id/header_line"
+        android:layout_alignParentBottom="true">
+
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:id="@+id/race_results"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:nestedScrollingEnabled="true"
+            android:clipToPadding="false"
+            android:paddingBottom="24dp"
             android:overScrollMode="never"
-            android:visibility="gone"/>
+            android:scrollbars="none" />
+
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:visibility="visible"
             app:duration="1500">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
                 <include layout="@layout/shimmer_race_result" />
                 <include layout="@layout/shimmer_race_result" />
                 <include layout="@layout/shimmer_race_result" />
@@ -180,7 +217,10 @@
                 <include layout="@layout/shimmer_race_result" />
                 <include layout="@layout/shimmer_race_result" />
                 <include layout="@layout/shimmer_race_result" />
+
             </LinearLayout>
+
         </com.facebook.shimmer.ShimmerFrameLayout>
-    </LinearLayout>
+
+    </FrameLayout>
 </RelativeLayout>

@@ -30,6 +30,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import android.view.View;
+import android.view.ViewGroup;
 
 public class concludedRaceFragment extends Fragment {
     private List<concludedRacesData> datum;
@@ -65,6 +67,13 @@ public class concludedRaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        setupFooterClearance(view);
+
+        LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
+
+        if (scrollView != null) {
+            scrollView.setScrollingEnabled(true);
+        }
 
         if (!getArguments().isEmpty()) {
             shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
@@ -201,7 +210,6 @@ public class concludedRaceFragment extends Fragment {
                 stripedImage.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_striped_lines_item_night));
             }
 
-            LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
             Button seasonsResults_2024 = view.findViewById(R.id.seasonResults_2024);
             Button seasonsResults_2025 = view.findViewById(R.id.seasonResults_2025);
 
@@ -229,9 +237,65 @@ public class concludedRaceFragment extends Fragment {
                 startActivity(intent);
                 getActivity().overridePendingTransition(0, 0);
             });
-
-            scrollView.setScrollingEnabled(false);
         }
+    }
+
+    private void setupFooterClearance(View pageRoot) {
+        View content = pageRoot.findViewById(R.id.schedule_page_content);
+        View footer = requireActivity().findViewById(R.id.footer_container);
+
+        if (content == null || footer == null) {
+            return;
+        }
+
+        final int left = content.getPaddingLeft();
+        final int top = content.getPaddingTop();
+        final int right = content.getPaddingRight();
+
+        final int extraGap = Math.round(
+                12 * getResources().getDisplayMetrics().density
+        );
+
+        Runnable updatePadding = () -> {
+            ViewGroup.LayoutParams layoutParams = footer.getLayoutParams();
+
+            int bottomMargin = 0;
+
+            if (layoutParams instanceof ViewGroup.MarginLayoutParams) {
+                bottomMargin =
+                        ((ViewGroup.MarginLayoutParams) layoutParams).bottomMargin;
+            }
+
+            int bottomPadding = footer.getHeight() + bottomMargin + extraGap;
+
+            if (content.getPaddingBottom() != bottomPadding) {
+                content.setPadding(left, top, right, bottomPadding);
+            }
+        };
+
+        View.OnLayoutChangeListener listener =
+                (view, l, t, r, b, oldL, oldT, oldR, oldB) ->
+                        updatePadding.run();
+
+        footer.addOnLayoutChangeListener(listener);
+
+        pageRoot.addOnAttachStateChangeListener(
+                new View.OnAttachStateChangeListener() {
+                    @Override
+                    public void onViewAttachedToWindow(View view) {
+                        footer.removeOnLayoutChangeListener(listener);
+                        footer.addOnLayoutChangeListener(listener);
+                        view.post(updatePadding);
+                    }
+
+                    @Override
+                    public void onViewDetachedFromWindow(View view) {
+                        footer.removeOnLayoutChangeListener(listener);
+                    }
+                }
+        );
+
+        pageRoot.post(updatePadding);
     }
 
     private void hideShimmer() {

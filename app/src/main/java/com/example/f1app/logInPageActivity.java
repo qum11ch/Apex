@@ -25,21 +25,30 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.functions.FirebaseFunctions;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ViewGroup;
+
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class logInPageActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -53,9 +62,21 @@ public class logInPageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
         setContentView(R.layout.login_page);
+        setupLoginInsets();
+
+        auth = FirebaseAuth.getInstance();
+
+        TextView reloginNotice = findViewById(R.id.reloginNotice);
+
+        reloginNotice.setVisibility(
+                AuthSessionGate.shouldShowReloginNotice(this)
+                        ? View.VISIBLE
+                        : View.GONE
+        );
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(logInPageActivity.this));
@@ -81,16 +102,6 @@ public class logInPageActivity extends AppCompatActivity {
         signUpLayout.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, registerPageActivity.class, mCurrentSeason));
 
         loginProgress = findViewById(R.id.loginProgress);
-
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        Log.d("AUTH_CHECK", "currentUser = " +
-                (user == null ? "null" : user.getUid()));
-
-        if(!(user == null)){
-            startActivity_seasonData(logInPageActivity.this, accountPageActivity.class, mCurrentSeason);
-            finish();
-        }
 
         TextView resetPassword = findViewById(R.id.resetPassword);
         resetPassword.setOnClickListener(view -> startActivity_seasonData(logInPageActivity.this, resetPageActivity.class, mCurrentSeason));
@@ -118,6 +129,125 @@ public class logInPageActivity extends AppCompatActivity {
 
         editTextPassword.addTextChangedListener(textWatcher);
         editTextLogin.addTextChangedListener(textWatcher);
+
+        FirebaseUser existingUser = auth.getCurrentUser();
+
+
+        Log.d("AUTH_CHECK", "currentUser = " +
+                (existingUser == null ? "null" : existingUser.getUid()));
+
+        if (existingUser != null) {
+            checkOrMigrateProfile(
+                    existingUser,
+                    null,
+                    mCurrentSeason
+            );
+        } else {
+            updateRegisterButtonState();
+        }
+    }
+
+    private void setupLoginInsets() {
+        View root = findViewById(R.id.login_root);
+        View header = findViewById(R.id.header);
+        View footer = findViewById(R.id.footer_container);
+        View content = findViewById(R.id.login_scroll_content);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        final int contentLeft = content.getPaddingLeft();
+        final int contentTop = content.getPaddingTop();
+        final int contentRight = content.getPaddingRight();
+
+        final float density = getResources().getDisplayMetrics().density;
+        final int footerGap = Math.round(1 * density);
+        final int contentGap = Math.round(16 * density);
+
+        Runnable updateContentPadding = () -> {
+            int bottomPadding = contentGap;
+
+            if (footer.getVisibility() == View.VISIBLE) {
+                ViewGroup.MarginLayoutParams params =
+                        (ViewGroup.MarginLayoutParams) footer.getLayoutParams();
+
+                bottomPadding += footer.getHeight() + params.bottomMargin;
+            }
+
+            if (content.getPaddingBottom() != bottomPadding) {
+                content.setPadding(
+                        contentLeft,
+                        contentTop,
+                        contentRight,
+                        bottomPadding
+                );
+            }
+        };
+
+        footer.addOnLayoutChangeListener(
+                (view, left, top, right, bottom,
+                 oldLeft, oldTop, oldRight, oldBottom) ->
+                        updateContentPadding.run()
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            Insets imeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            boolean keyboardVisible = windowInsets.isVisible(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    keyboardVisible
+                            ? Math.max(imeInsets.bottom, safeInsets.bottom)
+                            : 0
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            int visibility = keyboardVisible ? View.GONE : View.VISIBLE;
+
+            if (footer.getVisibility() != visibility) {
+                footer.setVisibility(visibility);
+            }
+
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) footer.getLayoutParams();
+
+            int bottomMargin = safeInsets.bottom + footerGap;
+
+            if (params.bottomMargin != bottomMargin) {
+                params.bottomMargin = bottomMargin;
+                footer.setLayoutParams(params);
+            }
+
+            updateContentPadding.run();
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void showFieldError(
@@ -168,9 +298,7 @@ public class logInPageActivity extends AppCompatActivity {
         String password = getPasswordInput();
 
         setLoginError(
-                login.isEmpty() || login.matches("[A-Za-z0-9_]{3,24}")
-                        ? null
-                        : "Логин: 3–24 символа, латиница, цифры или _"
+                null
         );
 
         setPasswordError(
@@ -184,12 +312,10 @@ public class logInPageActivity extends AppCompatActivity {
         String login = getLoginInput();
         String password = getPasswordInput();
 
-        boolean fieldsValid =
-                login.matches("[A-Za-z0-9_]{3,24}")
-                        && password.length() >= 6;
-
         loginButton.setEnabled(
-                fieldsValid
+                !loginInProgress
+                        && !login.isEmpty()
+                        && password.length() >= 6
         );
     }
 
@@ -204,14 +330,10 @@ public class logInPageActivity extends AppCompatActivity {
     private void loginUserAccount(String currentSeason) {
         if (loginInProgress) return;
 
-        String legacyLogin = editTextLogin.getText()
-                .toString()
-                .trim();
+        String login = getLoginInput();
+        String password = getPasswordInput();
 
-        String enteredPassword = editTextPassword.getText()
-                .toString();
-
-        if (legacyLogin.isEmpty() || enteredPassword.isEmpty()) {
+        if (login.isEmpty() || password.isEmpty()) {
             Toast.makeText(
                     this,
                     getString(R.string.empty_credentials_text),
@@ -220,54 +342,84 @@ public class logInPageActivity extends AppCompatActivity {
             return;
         }
 
-        String login = getLoginInput();
-        String password = getPasswordInput();
-
-        if ("null".equals(login) || "null".equals(password)) {
-            Toast.makeText(
-                    this,
-                    getString(R.string.all_fields_text),
-                    Toast.LENGTH_LONG
-            ).show();
-            return;
-        }
-
         setLoginLoading(true);
 
-        DatabaseReference legacyProfile =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child("users")
-                        .child(legacyLogin);
+        Map<String, Object> data = new HashMap<>();
+        data.put("login", login);
+        data.put("password", password);
 
-        legacyProfile.get()
-                .addOnSuccessListener(snapshot -> {
-                    String email =
-                            snapshot.child("userEmail")
-                                    .getValue(String.class);
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("loginWithLogin")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    Log.d("LoginFlow", "LOGIN_CALLABLE_OK");
 
-                    String storedUid =
-                            snapshot.child("userId")
-                                    .getValue(String.class);
+                    if (isFinishing() || isDestroyed()) return;
 
-                    if (!snapshot.exists() ||
-                            email == null ||
-                            email.trim().isEmpty()) {
+                    Object raw = result.getData();
+
+                    if (!(raw instanceof Map)) {
                         finishLoginWithError();
                         return;
                     }
 
-                    signInLegacyUser(
-                            email,
-                            enteredPassword,
-                            legacyLogin,
-                            storedUid,
-                            currentSeason
-                    );
+                    Object tokenValue =
+                            ((Map<?, ?>) raw).get("customToken");
+
+                    if (!(tokenValue instanceof String)) {
+                        finishLoginWithError();
+                        return;
+                    }
+
+                    auth.signInWithCustomToken((String) tokenValue)
+                            .addOnCompleteListener(this, task -> {
+                                if (isFinishing() || isDestroyed()) return;
+
+                                if (!task.isSuccessful()) {
+                                    Log.e(
+                                            "LoginFlow",
+                                            "SIGN_IN_CUSTOM_TOKEN_FAILED",
+                                            task.getException()
+                                    );
+
+                                    finishLoginWithError();
+                                    return;
+                                }
+
+                                Log.d("LoginFlow", "SIGN_IN_CUSTOM_TOKEN_OK");
+
+                                FirebaseUser user = auth.getCurrentUser();
+
+                                if (user == null) {
+                                    finishLoginWithError();
+                                    return;
+                                }
+
+                                checkOrMigrateProfile(
+                                        user,
+                                        login,
+                                        currentSeason
+                                );
+                            });
                 })
                 .addOnFailureListener(error -> {
-                    Log.e("Login", "Failed to read legacy profile", error);
-                    finishLoginWithError();
+                    if (isFinishing() || isDestroyed()) return;
+
+                    Log.e("Login", "Server login failed", error);
+
+                    String message = error.getLocalizedMessage();
+
+                    if (message == null || message.trim().isEmpty()) {
+                        message = getString(R.string.auth_fail_text);
+                    }
+
+                    setLoginLoading(false);
+
+                    Toast.makeText(
+                            this,
+                            message,
+                            Toast.LENGTH_LONG
+                    ).show();
                 });
     }
 
@@ -317,48 +469,62 @@ public class logInPageActivity extends AppCompatActivity {
             String legacyLogin,
             String currentSeason) {
 
-        String uid = firebaseUser.getUid();
+        setLoginLoading(true);
 
-        DatabaseReference root = FirebaseDatabase.getInstance().getReference();
-
-        DatabaseReference uidProfile = root.child("users").child(uid);
-
-        uidProfile.get()
-                .addOnSuccessListener(uidSnapshot -> {
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("prepareAccountProfile")
+                .call()
+                .addOnSuccessListener(result -> {
+                    Log.d("LoginFlow", "PREPARE_PROFILE_OK");
                     if (isFinishing() || isDestroyed()) return;
 
-                    if (uidSnapshot.exists()) {
-                        Boolean completed =
-                                uidSnapshot.child("usernameMigrationComplete")
-                                        .getValue(Boolean.class);
+                    FirebaseUser current = auth.getCurrentUser();
 
-                        String publicUsername =
-                                uidSnapshot.child("username")
-                                        .getValue(String.class);
-
-                        if (Boolean.TRUE.equals(completed)
-                                && publicUsername != null
-                                && !publicUsername.trim().isEmpty()) {
-                            openAccount(currentSeason);
-                        } else {
-                            showPublicUsernameDialog(
-                                    firebaseUser,
-                                    legacyLogin,
-                                    currentSeason
-                            );
-                        }
-
+                    if (current == null ||
+                            !current.getUid().equals(firebaseUser.getUid())) {
+                        finishLoginWithError();
                         return;
                     }
 
-                    migrateLegacyProfile(
-                            firebaseUser,
-                            legacyLogin,
+
+                    Object raw = result.getData();
+
+                    if (!(raw instanceof Map)) {
+                        finishLoginWithError();
+                        return;
+                    }
+
+                    Map<?, ?> data = (Map<?, ?>) raw;
+
+                    if (Boolean.TRUE.equals(data.get("migrationComplete"))) {
+                        openAccount(currentSeason);
+                        return;
+                    }
+
+                    Object loginValue = data.get("login");
+
+                    if (!(loginValue instanceof String)) {
+                        finishLoginWithError();
+                        return;
+                    }
+
+                    showPublicUsernameDialog(
+                            current,
+                            (String) loginValue,
                             currentSeason
                     );
                 })
                 .addOnFailureListener(error -> {
-                    Log.e("Migration", "Failed to read UID profile", error);
+                    if (isFinishing() || isDestroyed()) return;
+
+                    Log.e(
+                            "Migration",
+                            "Server profile preparation failed",
+                            error
+                    );
+
+                    // Не оставляем доступ к аккаунту через неполный сценарий.
+                    auth.signOut();
                     finishLoginWithError();
                 });
     }
@@ -401,25 +567,21 @@ public class logInPageActivity extends AppCompatActivity {
                                 // Копируем старые поля в новый UID-путь.
                                 // usernameMigrationComplete пока false:
                                 // пользователь ещё не выбрал публичный ник.
-                                Map<String, Object> profile =
-                                        new HashMap<>();
+                                Map<String, Object> profile = new HashMap<>();
 
                                 profile.put("userId", uid);
-                                profile.put("login", legacyLogin);
+                                profile.put("login", legacyLogin.toLowerCase(Locale.ROOT));
                                 profile.put(
                                         "userEmail",
-                                        oldSnapshot.child("userEmail")
-                                                .getValue(String.class)
+                                        oldSnapshot.child("userEmail").getValue(String.class)
                                 );
                                 profile.put(
                                         "choiceDriver",
-                                        oldSnapshot.child("choiceDriver")
-                                                .getValue(String.class)
+                                        oldSnapshot.child("choiceDriver").getValue(String.class)
                                 );
                                 profile.put(
                                         "choiceTeam",
-                                        oldSnapshot.child("choiceTeam")
-                                                .getValue(String.class)
+                                        oldSnapshot.child("choiceTeam").getValue(String.class)
                                 );
                                 profile.put(
                                         "usernameMigrationComplete",
@@ -430,6 +592,7 @@ public class logInPageActivity extends AppCompatActivity {
                                         new HashMap<>();
 
                                 updates.put("/users/" + uid, profile);
+                                updates.put("/loginIndex/" + legacyLogin.toLowerCase(Locale.ROOT), uid);
 
                                 if (racesSnapshot.exists()) {
                                     updates.put(
@@ -589,89 +752,40 @@ public class logInPageActivity extends AppCompatActivity {
             Button saveButton,
             Button cancelButton) {
 
-        String uid = firebaseUser.getUid();
+        FirebaseUser current = auth.getCurrentUser();
 
-        DatabaseReference root =
-                FirebaseDatabase.getInstance().getReference();
-
-        DatabaseReference profileRef =
-                root.child("users").child(uid);
+        if (current == null ||
+                !current.getUid().equals(firebaseUser.getUid())) {
+            dialog.dismiss();
+            finishLoginWithError();
+            return;
+        }
 
         setLoginLoading(true);
         saveButton.setEnabled(false);
         cancelButton.setEnabled(false);
 
-        profileRef.get()
-                .addOnSuccessListener(snapshot -> {
+        Map<String, Object> data = new HashMap<>();
+        data.put("username", publicUsername);
+
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("completeAccountMigration")
+                .call(data)
+                .addOnSuccessListener(result -> {
                     if (isFinishing() || isDestroyed()) return;
 
-                    if (!snapshot.exists()) {
-                        setLoginLoading(false);
-                        saveButton.setEnabled(true);
-                        cancelButton.setEnabled(true);
-                        showLoginError();
-                        return;
-                    }
-
-                    String login = snapshot.child("login")
-                            .getValue(String.class);
-
-                    if (login == null || login.trim().isEmpty()) {
-                        login = legacyLogin;
-                    }
-
-                    Map<String, Object> profileUpdates = new HashMap<>();
-                    profileUpdates.put("login", login);
-                    profileUpdates.put("username", publicUsername);
-                    profileUpdates.put("usernameMigrationComplete", true);
-
-                    profileRef.updateChildren(profileUpdates)
-                            .addOnSuccessListener(unused -> {
-                                Map<String, Object> publicUpdates =
-                                        new HashMap<>();
-                                publicUpdates.put("username", publicUsername);
-
-                                root.child("publicProfiles")
-                                        .child(uid)
-                                        .updateChildren(publicUpdates)
-                                        .addOnSuccessListener(done -> {
-                                            if (isFinishing() || isDestroyed()) {
-                                                return;
-                                            }
-
-                                            dialog.dismiss();
-                                            openAccount(currentSeason);
-                                        })
-                                        .addOnFailureListener(error -> {
-                                            Log.e(
-                                                    "Migration",
-                                                    "Failed to update public profile",
-                                                    error
-                                            );
-                                            setLoginLoading(false);
-                                            saveButton.setEnabled(true);
-                                            cancelButton.setEnabled(true);
-                                            showMigrationError();
-                                        });
-                            })
-                            .addOnFailureListener(error -> {
-                                Log.e(
-                                        "Migration",
-                                        "Failed to update user profile",
-                                        error
-                                );
-                                setLoginLoading(false);
-                                saveButton.setEnabled(true);
-                                cancelButton.setEnabled(true);
-                                showMigrationError();
-                            });
+                    dialog.dismiss();
+                    openAccount(currentSeason);
                 })
                 .addOnFailureListener(error -> {
+                    if (isFinishing() || isDestroyed()) return;
+
                     Log.e(
                             "Migration",
-                            "Failed to read UID profile",
+                            "Server migration completion failed",
                             error
                     );
+
                     setLoginLoading(false);
                     saveButton.setEnabled(true);
                     cancelButton.setEnabled(true);
@@ -682,6 +796,7 @@ public class logInPageActivity extends AppCompatActivity {
     private void openAccount(String currentSeason) {
         if (isFinishing() || isDestroyed()) return;
 
+        AuthSessionGate.clearReloginNotice(this);
         setLoginLoading(false);
 
         Toast.makeText(
@@ -716,7 +831,7 @@ public class logInPageActivity extends AppCompatActivity {
         loginButton.setVisibility(
                 loading ? View.INVISIBLE : View.VISIBLE
         );
-        loginButton.setEnabled(!loading);
+        updateRegisterButtonState();
     }
 
     private void finishLoginWithError() {
@@ -732,16 +847,6 @@ public class logInPageActivity extends AppCompatActivity {
         Toast.makeText(
                 this,
                 getString(R.string.auth_fail_text),
-                Toast.LENGTH_LONG
-        ).show();
-    }
-
-    private void inputErrorUnavailable() {
-        if (isFinishing() || isDestroyed()) return;
-
-        Toast.makeText(
-                this,
-                getString(R.string.smth_wrong_text),
                 Toast.LENGTH_LONG
         ).show();
     }

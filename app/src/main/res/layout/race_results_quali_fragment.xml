@@ -1,128 +1,148 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:background="@color/colorPrimary"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary">
+
     <LinearLayout
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
-        android:orientation="horizontal"
-        android:background="@color/statusBar_color"
         android:id="@+id/quali_header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:baselineAligned="false"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:background="@color/statusBar_color"
         android:weightSum="5">
+
         <TextView
-            android:text="@string/pos_header"
-            android:layout_weight="0.5"
             android:id="@+id/driver_placement"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
             android:gravity="center"
+            android:text="@string/pos_header"
             android:textAllCaps="true"
-            android:layout_gravity="center_vertical"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
+
         <TextView
-            android:text="@string/driver_header"
+            android:id="@+id/driverName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.8"
             android:paddingStart="15dp"
             android:paddingEnd="8dp"
-            android:layout_width="0dp"
-            android:layout_weight="1.8"
-            android:textAllCaps="true"
-            android:layout_height="match_parent"
             android:gravity="center_vertical"
-            android:id="@+id/driverName"
+            android:text="@string/driver_header"
+            android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
+
         <TextView
-            android:text="@string/q1_header"
-            android:layout_marginStart="2dp"
-            android:layout_marginEnd="2dp"
-            android:paddingStart="3dp"
-            android:paddingEnd="3dp"
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_gravity="center"
             android:id="@+id/Q1_time"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        <TextView
-            android:text="@string/q2_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:paddingStart="3dp"
             android:paddingEnd="3dp"
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@string/q1_header"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
+        <TextView
             android:id="@+id/Q2_time"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-            android:textColor="@color/white"
-            android:textSize="18sp"/>
-        <TextView
-            android:text="@string/q3_header"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
             android:layout_marginStart="2dp"
             android:layout_marginEnd="2dp"
             android:paddingStart="3dp"
             android:paddingEnd="3dp"
-            android:layout_width="0dp"
-            android:layout_weight="0.9"
-            android:layout_gravity="center"
-            android:id="@+id/Q3_time"
-            android:layout_height="match_parent"
             android:gravity="center"
+            android:text="@string/q2_header"
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
             android:textColor="@color/white"
-            android:textSize="18sp"/>
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/Q3_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.9"
+            android:layout_marginStart="2dp"
+            android:layout_marginEnd="2dp"
+            android:paddingStart="3dp"
+            android:paddingEnd="3dp"
+            android:gravity="center"
+            android:text="@string/q3_header"
+            android:textAllCaps="true"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+            android:textColor="@color/white"
+            android:textSize="18sp" />
+
     </LinearLayout>
+
     <View
+        android:id="@+id/header_line"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/light_grey"
-        android:id="@+id/header_line"
-        android:layout_below="@id/quali_header"/>
-    <RelativeLayout
+        android:layout_below="@id/quali_header"
+        android:background="@color/light_grey" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/header_line">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header_line"
+        android:layout_alignParentBottom="true">
+
         <androidx.recyclerview.widget.RecyclerView
-            android:visibility="gone"
-            android:overScrollMode="never"
+            android:id="@+id/quali_results"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/quali_results" />
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            android:nestedScrollingEnabled="true"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            android:overScrollMode="never"
+            android:scrollbars="none" />
+
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/shimmer_layout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
-                <include layout="@layout/shimmer_quali_result"/>
+
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+                <include layout="@layout/shimmer_quali_result" />
+
             </LinearLayout>
+
         </com.facebook.shimmer.ShimmerFrameLayout>
 
-    </RelativeLayout>
+    </FrameLayout>
+
 </RelativeLayout>

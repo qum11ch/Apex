@@ -1,62 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:background="@android:color/transparent"
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".futureRaceFragment"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@android:color/transparent"
+    tools:context=".futureRaceFragment">
+
     <com.example.f1app.LockableNestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none">
-        <RelativeLayout
-            style="@style/ScheduleEmptyLayout"
+
+        <LinearLayout
+            android:id="@+id/schedule_page_content"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp">
+            android:orientation="vertical"
+            android:paddingBottom="80dp">
+
             <RelativeLayout
-                android:orientation="vertical"
-                android:id="@+id/emptyFutureRace_layout"
+                style="@style/ScheduleEmptyLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="0dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginBottom="10dp">
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_marginTop="10dp"
-                    app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.RightSide"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp">
+
+                <RelativeLayout
+                    android:id="@+id/emptyFutureRace_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    style="@style/StripedLinesWhite"
-                    android:id="@+id/stripedImage"/>
-                <TextView
-                    android:textColor="@color/text_color_schedule"
-                    android:id="@+id/header_text"
-                    android:layout_marginTop="20dp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:layout_marginStart="10dp"
-                    android:textSize="28sp"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/empty_race_list_header"/>
-                <TextView
-                    android:textColor="@color/text_color_schedule"
-                    android:layout_below="@id/header_text"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                    android:textStyle="normal"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="100dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/empty_race_list_future"/>
+                    android:layout_marginBottom="10dp">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/stripedImage"
+                        style="@style/StripedLinesWhite"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="10dp"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.RightSide" />
+
+                    <TextView
+                        android:id="@+id/header_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:text="@string/empty_race_list_header"
+                        android:textColor="@color/text_color_schedule"
+                        android:textSize="28sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/header_text"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="16dp"
+                        android:text="@string/empty_race_list_future"
+                        android:textColor="@color/text_color_schedule"
+                        android:textStyle="normal"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+                </RelativeLayout>
+
             </RelativeLayout>
-        </RelativeLayout>
+
+        </LinearLayout>
+
     </com.example.f1app.LockableNestedScrollView>
+
 </FrameLayout>

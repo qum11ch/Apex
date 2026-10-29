@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -61,7 +62,7 @@ public class raceResultsRaceFragment extends Fragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        RelativeLayout fastestLapLayout = view.findViewById(R.id.fastestLap_layout);
+        ConstraintLayout fastestLapLayout = view.findViewById(R.id.fastestLap_layout);
         if (!checkLightTheme(getContext())){
             fastestLapLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.background_striped_lines_item_night));
         }

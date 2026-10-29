@@ -14,10 +14,11 @@
         android:overScrollMode="never"
         android:scrollbars="none">
         <RelativeLayout
-            android:paddingTop="20dp"
-            android:layout_marginEnd="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="24dp">
             <TextView
                 android:layout_marginStart="10dp"
                 android:id="@+id/resHeader"
@@ -47,7 +48,6 @@
 
             </HorizontalScrollView>
             <TextView
-                android:layout_marginTop="100dp"
                 android:layout_below="@id/seasonButtonsScroll"
                 android:id="@+id/noResultsText"
                 android:layout_width="match_parent"
@@ -58,8 +58,10 @@
                 android:text="@string/no_results_text"
                 android:textColor="@color/text_color_main"
                 android:textSize="16sp"
-                android:visibility="visible" />
+                android:visibility="gone"
+                android:layout_marginTop="24dp"/>
             <RelativeLayout
+                android:visibility="visible"
                 android:id="@+id/results_layout"
                 android:paddingStart="10dp"
                 android:paddingEnd="0dp"
@@ -69,6 +71,8 @@
                 android:paddingTop = "10dp"
                 android:layout_below="@id/seasonButtonsScroll">
                 <LinearLayout
+                    android:gravity="bottom"
+                    android:baselineAligned="false"
                     android:id="@+id/results_header"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -80,7 +84,7 @@
                         android:paddingStart="0dp"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:textColor="@color/text_color_main"
                         android:textSize="20sp"
@@ -91,7 +95,7 @@
                         android:layout_marginEnd="5dp"
                         android:layout_width="0dp"
                         android:layout_weight="1"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:textColor="@color/text_color_main"
                         android:textSize="20sp"
@@ -107,6 +111,7 @@
                     android:layout_below="@id/results_header"
                     android:layout_marginEnd="10dp"/>
                 <androidx.recyclerview.widget.RecyclerView
+                    android:nestedScrollingEnabled="false"
                     android:visibility="gone"
                     android:paddingEnd="5dp"
                     android:paddingStart="0dp"
@@ -125,7 +130,7 @@
                     app:duration="1000">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <include layout="@layout/shimmer_driver_result"/>
                         <include layout="@layout/shimmer_driver_result"/>
@@ -144,13 +149,13 @@
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
             <RelativeLayout
+                android:visibility="gone"
                 android:id="@+id/keyMapLayout"
                 style="@style/PtsStyle"
                 android:backgroundTint="@color/dark_grey"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_marginBottom="20dp"
-                android:orientation="horizontal"
                 android:layout_below="@id/results_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -167,7 +172,7 @@
                     android:textColor="@color/dark_grey"
                     android:textSize="20sp"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="@string/_1st_place_header"/>
                 <TextView
                     android:layout_marginTop="0.5dp"

@@ -2,24 +2,26 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/race_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".futureRaceActivity"
-    android:background="@color/colorPrimary">
+    android:background="@color/colorPrimary"
+    tools:context=".futureRaceActivity">
+
     <LinearLayout
         android:id="@+id/header"
-        android:orientation="horizontal"
-        android:paddingTop="40dp"
-        android:paddingBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
         android:background="@color/header_color">
 
         <ImageButton
-            android:visibility="visible"
             android:id="@+id/backButton"
             android:layout_width="48dp"
-            android:layout_height="match_parent"
+            android:layout_height="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
             android:paddingStart="15dp"
@@ -27,32 +29,37 @@
             android:src="@drawable/back_arrow" />
 
         <TextView
-            android:textStyle="bold"
             android:id="@+id/raceTitile"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp"
             android:gravity="center"
+            android:textAllCaps="true"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
             android:textColor="@color/white"
-            android:textSize="22sp"/>
+            android:textSize="22sp" />
 
         <Space
             android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:visibility="visible"/>
+            android:layout_height="48dp" />
+
     </LinearLayout>
+
     <com.google.android.material.tabs.TabLayout
-        style="@style/AppTabLayout.NotGradient"
         android:id="@+id/tab_layout"
+        style="@style/AppTabLayout.NotGradient"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/header"/>
+        android:layout_below="@id/header" />
+
     <androidx.viewpager2.widget.ViewPager2
-        android:layout_below="@id/tab_layout"
         android:id="@+id/viewPager2"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/tab_layout"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>

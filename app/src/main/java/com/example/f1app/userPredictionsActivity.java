@@ -5,15 +5,11 @@ import static com.example.f1app.MainActivity.hideShimmer;
 import static com.example.f1app.MainActivity.showShimmer;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.TypedValue;
@@ -28,7 +24,6 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.view.WindowCompat;
@@ -63,6 +58,10 @@ import java.util.Map;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class userPredictionsActivity extends AppCompatActivity {
     private final List<userPrediction> userPredictions = new ArrayList<>();
@@ -100,6 +99,8 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.user_predictions_activity);
+
+        setupUserPredictionsInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(userPredictionsActivity.this));
@@ -210,6 +211,46 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         cancelDelete = deleteDialog.findViewById(R.id.cancel_button);
         deletePrediction = deleteDialog.findViewById(R.id.confirm_button);
+    }
+
+    private void setupUserPredictionsInsets() {
+        View root = findViewById(R.id.user_predictions_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void loadUserAnswers(Context context) {

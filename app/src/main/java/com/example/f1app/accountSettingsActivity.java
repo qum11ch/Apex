@@ -4,6 +4,11 @@ import static com.example.f1app.MainActivity.checkConnection;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -11,49 +16,60 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import android.view.View;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class accountSettingsActivity extends AppCompatActivity {
 
-    private Button changeAvatarButton;
+    private RelativeLayout changeAvatarLayout;
+    private RelativeLayout changeBackgroundLayout;
+    private LinearLayout header;
+
     private Button loginButton;
-    private Button changeUsernameButton;
 
     private FirebaseAuth auth;
 
@@ -73,15 +89,23 @@ public class accountSettingsActivity extends AppCompatActivity {
     private LinearLayout passwordBox;
     private TextView loginPasswordError;
 
+    private TextView usernameMain;
+
     private ProgressBar loginProgress;
 
     private String mCurrentSeason;
 
+    private int selectedBackgroundColor;
+
+    private backgroundColorPickerDialog backgroundColorDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.account_settings_page);
+
+        setupAccountSettingsInsets();
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(
@@ -110,19 +134,34 @@ public class accountSettingsActivity extends AppCompatActivity {
                 : null;
 
         username = findViewById(R.id.username);
+        usernameMain = findViewById(R.id.usernameMain);
         currentEmail = findViewById(R.id.currentEmail);
         currentLogin = findViewById(R.id.currentLogin);
 
         avatarImage = findViewById(R.id.avatarImage);
         avatarInitial = findViewById(R.id.avatarInitial);
 
-        changeAvatarButton = findViewById(R.id.changeAvatarButton);
-        changeUsernameButton = findViewById(R.id.changeUsernameButton);
+        changeAvatarLayout = findViewById(R.id.changeAvatarLayout);
+        changeBackgroundLayout = findViewById(R.id.changeBackgroundLayout);
+        header = findViewById(R.id.header);
 
-        Button changeEmailButton =
+        selectedBackgroundColor = readBackgroundColor(
+                changeBackgroundLayout,
+                ContextCompat.getColor(this, R.color.account_settings_header_color)
+        );
+
+        applyBackgroundColor(selectedBackgroundColor);
+
+        changeBackgroundLayout.setOnClickListener(view ->
+                showBackgroundColorDialog()
+        );
+
+        LinearLayout changeUsernameLayout = findViewById(R.id.changeUsernameButton);
+
+        LinearLayout changeEmailButton =
                 findViewById(R.id.changeEmailButton);
 
-        Button changePasswordButton =
+        LinearLayout changePasswordButton =
                 findViewById(R.id.changePasswordButton);
 
         Button deleteButton =
@@ -152,7 +191,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         loadUserProfile();
         loadAvatarIfExists(user);
 
-        changeUsernameButton.setOnClickListener(v ->
+        changeUsernameLayout.setOnClickListener(v ->
                 showChangeUsernameDialog()
         );
 
@@ -250,7 +289,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                 deleteDialog.show()
         );
 
-        changeAvatarButton.setOnClickListener(v -> {
+        changeAvatarLayout.setOnClickListener(v -> {
             PickVisualMediaRequest request =
                     new PickVisualMediaRequest.Builder()
                             .setMediaType(
@@ -274,6 +313,246 @@ public class accountSettingsActivity extends AppCompatActivity {
         );
 
         logoutButton.setOnClickListener(v -> logout());
+    }
+
+    private void setupAccountSettingsInsets() {
+        View root = findViewById(R.id.account_settings_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+    }
+
+    private int readBackgroundColor(View view, int fallbackColor) {
+        ColorStateList tint = view.getBackgroundTintList();
+
+        if (tint != null) {
+            return tint.getColorForState(
+                    view.getDrawableState(),
+                    tint.getDefaultColor()
+            );
+        }
+
+        Drawable background = view.getBackground();
+
+        if (background instanceof ColorDrawable) {
+            return ((ColorDrawable) background).getColor();
+        }
+
+        if (android.os.Build.VERSION.SDK_INT >= 24
+                && background instanceof GradientDrawable) {
+
+            ColorStateList fill = ((GradientDrawable) background).getColor();
+
+            if (fill != null) {
+                return fill.getColorForState(
+                        view.getDrawableState(),
+                        fill.getDefaultColor()
+                );
+            }
+        }
+
+        return fallbackColor;
+    }
+
+    private void applyBackgroundColor(int color) {
+        selectedBackgroundColor = color;
+
+        tintBackground(changeBackgroundLayout, color);
+        tintBackground(header, color);
+    }
+
+    private void tintBackground(View view, int color) {
+        if (view.getBackground() == null) {
+            view.setBackgroundColor(getColor(R.color.account_settings_header_color));
+        }
+
+        view.setBackgroundTintList(
+                ColorStateList.valueOf(color)
+        );
+    }
+
+    private void showBackgroundColorDialog() {
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        if (backgroundColorDialog != null
+                && backgroundColorDialog.isShowing()) {
+            return;
+        }
+
+        FirebaseUser user =
+                FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            Toast.makeText(
+                    this,
+                    R.string.background_color_login_required,
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            return;
+        }
+
+        // Запоминаем владельца профиля при открытии окна.
+        final String ownerUid = user.getUid();
+
+        backgroundColorDialog = new backgroundColorPickerDialog(
+                this,
+                selectedBackgroundColor,
+                color -> {
+                    backgroundColorPickerDialog dialog =
+                            backgroundColorDialog;
+
+                    if (dialog != null && dialog.isShowing()) {
+                        saveBackgroundColor(ownerUid, color, dialog);
+                    }
+                }
+        );
+
+        backgroundColorDialog.setOnDismissListener(dialog ->
+                backgroundColorDialog = null
+        );
+
+        backgroundColorDialog.show();
+    }
+
+    private void saveBackgroundColor(
+            String ownerUid,
+            int color,
+            backgroundColorPickerDialog dialog) {
+
+        FirebaseUser user =
+                FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null || !ownerUid.equals(user.getUid())) {
+            dialog.dismiss();
+
+            Toast.makeText(
+                    this,
+                    R.string.background_color_login_required,
+                    Toast.LENGTH_LONG
+            ).show();
+
+            return;
+        }
+
+        // Непрозрачный цвет в формате #RRGGBB.
+        final int opaqueColor = Color.rgb(
+                Color.red(color),
+                Color.green(color),
+                Color.blue(color)
+        );
+
+        final String hexColor = String.format(
+                Locale.ROOT,
+                "#%06X",
+                opaqueColor & 0xFFFFFF
+        );
+
+        Map<String, Object> updates = new HashMap<>();
+
+        updates.put(
+                "users/" + ownerUid + "/background_color",
+                hexColor
+        );
+
+        updates.put(
+                "publicProfiles/" + ownerUid + "/background_color",
+                hexColor
+        );
+
+        dialog.setSaving(true);
+
+        FirebaseDatabase.getInstance()
+                .getReference()
+                .updateChildren(updates)
+                .addOnSuccessListener(unused -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    FirebaseUser currentUser =
+                            FirebaseAuth.getInstance().getCurrentUser();
+
+                    if (currentUser == null
+                            || !ownerUid.equals(currentUser.getUid())) {
+
+                        dialog.dismiss();
+                        return;
+                    }
+
+                    // Меняем экран только после успешной записи.
+                    applyBackgroundColor(opaqueColor);
+
+                    dialog.dismiss();
+
+                    Toast.makeText(
+                            this,
+                            R.string.background_color_saved,
+                            Toast.LENGTH_SHORT
+                    ).show();
+                })
+                .addOnFailureListener(error -> {
+                    Log.e(
+                            "BackgroundColor",
+                            "Failed to save background color",
+                            error
+                    );
+
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    if (dialog.isShowing()) {
+                        dialog.setSaving(false);
+                    }
+
+                    Toast.makeText(
+                            this,
+                            R.string.background_color_save_error,
+                            Toast.LENGTH_LONG
+                    ).show();
+                });
+    }
+
+    private int dp(float value) {
+        return Math.round(
+                value * getResources().getDisplayMetrics().density
+        );
     }
 
     private void logout() {
@@ -484,7 +763,6 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                     GlideApp.with(this)
                             .load(uri)
-                            .circleCrop()
                             .into(avatarImage);
                 })
                 .addOnFailureListener(error -> {
@@ -725,16 +1003,26 @@ public class accountSettingsActivity extends AppCompatActivity {
             changeEmail(email, password, dialog, progress, save);
         });
 
-        dialog.setOnShowListener(d -> {
-            if (dialog.getWindow() != null) {
-                dialog.getWindow()
-                        .setBackgroundDrawableResource(
-                                android.R.color.transparent
-                        );
-            }
-        });
-
         dialog.show();
+
+        Window window = dialog.getWindow();
+
+        if (window != null) {
+            int width = (int) (getResources()
+                    .getDisplayMetrics().widthPixels * 0.92f);
+
+            window.setBackgroundDrawable(
+                    new android.graphics.drawable.ColorDrawable(
+                            android.graphics.Color.TRANSPARENT
+                    )
+            );
+
+            window.getDecorView().setPadding(0, 0, 0, 0);
+            window.setLayout(
+                    width,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+        }
     }
 
     private void showFieldError(
@@ -1013,11 +1301,28 @@ public class accountSettingsActivity extends AppCompatActivity {
                         publicUsername = "Пользователь";
                     }
 
+                    String backgroundColor = snapshot.child("background_color")
+                            .getValue(String.class);
+
+                    if (backgroundColor != null
+                            && backgroundColor.matches("^#[0-9A-Fa-f]{6}$")) {
+
+                        applyBackgroundColor(
+                                Color.parseColor(backgroundColor)
+                        );
+
+                    }else{
+                        applyBackgroundColor(
+                                ContextCompat.getColor(this, R.color.account_settings_header_color));
+                    }
+
                     String currentLoginText =
                             snapshot.child("login")
                                     .getValue(String.class);
 
                     username.setText(publicUsername);
+
+                    usernameMain.setText(publicUsername);
 
                     currentLogin.setText(currentLoginText);
 
@@ -1056,7 +1361,7 @@ public class accountSettingsActivity extends AppCompatActivity {
             return;
         }
 
-        changeAvatarButton.setEnabled(false);
+        changeAvatarLayout.setEnabled(false);
 
         StorageReference avatarRef =
                 FirebaseStorage.getInstance()
@@ -1084,10 +1389,9 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                                     GlideApp.with(this)
                                             .load(downloadUri)
-                                            .circleCrop()
                                             .into(avatarImage);
 
-                                    changeAvatarButton.setEnabled(true);
+                                    changeAvatarLayout.setEnabled(true);
 
                                     Toast.makeText(
                                             this,
@@ -1101,7 +1405,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                         return;
                     }
 
-                    changeAvatarButton.setEnabled(true);
+                    changeAvatarLayout.setEnabled(true);
 
                     showError(
                             getString(R.string.photo_load_error)
@@ -1189,8 +1493,6 @@ public class accountSettingsActivity extends AppCompatActivity {
         changeUsernameDialog.setContentView(
                 R.layout.dialog_change_username
         );
-
-        changeUsernameDialog.setCancelable(false);
 
         Window window = changeUsernameDialog.getWindow();
 
@@ -1383,5 +1685,15 @@ public class accountSettingsActivity extends AppCompatActivity {
                             getString(R.string.smth_wrong_text)
                     );
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (backgroundColorDialog != null) {
+            backgroundColorDialog.dismiss();
+            backgroundColorDialog = null;
+        }
+
+        super.onDestroy();
     }
 }

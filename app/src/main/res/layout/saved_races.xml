@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout android:orientation="vertical"
+<RelativeLayout
+    android:id="@+id/saved_races_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <LinearLayout
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
         android:id="@+id/header"
-        android:paddingTop="40dp"
         android:paddingBottom="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,8 +18,8 @@
 
         <ImageButton
             android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:background="@android:color/transparent"
             android:contentDescription="@string/back_arrow"
             android:paddingStart="15dp"
@@ -28,7 +31,7 @@
             android:textAllCaps="true"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@string/saved_race"
@@ -41,12 +44,13 @@
     </LinearLayout>
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
-        android:layout_below="@id/header"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_below="@id/header"
+        android:layout_alignParentBottom="true">
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="match_parent">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -62,8 +66,11 @@
                     android:layout_marginEnd="15dp"
                     android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/recyclerview_savedRaces"/>
+                    android:id="@+id/recyclerview_savedRaces"
+                    android:layout_height="match_parent"
+                    android:nestedScrollingEnabled="true"
+                    android:clipToPadding="false"
+                    android:paddingBottom="24dp"/>
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:layout_marginTop="15dp"
                     android:layout_marginEnd="15dp"
@@ -74,7 +81,7 @@
                     app:duration="1500">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:orientation="vertical">
                         <include layout="@layout/shimmer_saved_race" />
                         <include layout="@layout/shimmer_saved_race" />
@@ -83,55 +90,66 @@
                     </LinearLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>
-            <RelativeLayout
-                android:visibility="gone"
-                android:id="@+id/emptySavedRace_layout"
-                style="@style/SavedRacesLayout"
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/emptySavedRaceScroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                android:visibility="gone">
                 <RelativeLayout
-                    android:orientation="vertical"
-                    android:id="@+id/team"
+                    android:id="@+id/emptySavedRace_layout"
+                    style="@style/SavedRacesLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="5dp">
-                    <com.google.android.material.imageview.ShapeableImageView
-                        style="@style/StripedLinesWhite"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:id="@+id/stripedImage"/>
-                    <TextView
-                        android:textColor="@color/text_color_schedule"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="0dp"
-                        android:paddingTop="20dp"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                        android:textSize="28sp"
-                        android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:visibility="visible">
+                    <RelativeLayout
+                        android:orientation="vertical"
+                        android:id="@+id/team"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/empty_race_list_header"
-                        android:id="@+id/header_text"/>
-                    <TextView
-                        android:textColor="@color/text_color_schedule"
-                        android:layout_below="@id/header_text"
-                        android:paddingStart="10dp"
-                        android:paddingEnd="0dp"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                        android:textStyle="bold"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="100dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/empty_saved_race_info"/>
+                        android:minHeight="200dp"
+                        android:paddingBottom="16dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginBottom="5dp">
+                        <com.google.android.material.imageview.ShapeableImageView
+                            style="@style/StripedLinesWhite"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:id="@+id/stripedImage"/>
+                        <TextView
+                            android:textColor="@color/text_color_schedule"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="0dp"
+                            android:paddingTop="20dp"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                            android:textSize="28sp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/empty_race_list_header"
+                            android:id="@+id/header_text"/>
+                        <TextView
+                            android:textColor="@color/text_color_schedule"
+                            android:layout_below="@id/header_text"
+                            android:paddingStart="10dp"
+                            android:paddingEnd="0dp"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                            android:textStyle="bold"
+                            android:layout_marginTop="10dp"
+                            android:layout_marginEnd="10dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/empty_saved_race_info"/>
+                    </RelativeLayout>
                 </RelativeLayout>
-            </RelativeLayout>
+            </androidx.core.widget.NestedScrollView>
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

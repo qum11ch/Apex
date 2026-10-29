@@ -3,13 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
         <com.google.android.material.appbar.AppBarLayout
             android:background="@color/colorPrimary"
             android:id="@+id/appbar"
@@ -27,6 +26,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <ImageView
+                        android:contentDescription="@null"
+                        android:importantForAccessibility="no"
                         android:id="@+id/background_img"
                         android:layout_width="0dp"
                         android:layout_height="0dp"
@@ -37,61 +38,73 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"/>
                     <LinearLayout
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginBottom="10dp"
                         android:id="@+id/date_layout"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:orientation="vertical"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <TextView
+                                android:id="@+id/day_start"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="3dp"
+                                android:gravity="center"
+                                android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
+
+                            <TextView
+                                android:id="@+id/dash"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="3dp"
+                                android:gravity="center"
+                                android:text="@string/dash"
+                                android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
+
+                            <TextView
+                                android:id="@+id/day_end"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:paddingTop="3dp"
+                                android:gravity="center"
+                                android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
+
+                            <TextView
+                                android:id="@+id/month"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:gravity="center_vertical"
+                                android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                                android:textSize="12sp"
+                                android:textColor="@color/white"
+                                android:textAllCaps="true" />
+
+                        </LinearLayout>
+
                         <TextView
-                            android:paddingTop="3dp"
-                            android:id="@+id/day_start"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
-                        <TextView
-                            android:id="@+id/dash"
-                            android:paddingTop="3dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:text="@string/dash"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
-                        <TextView
-                            android:paddingTop="3dp"
-                            android:id="@+id/day_end"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS.White" />
-                        <TextView
-                            android:layout_marginStart="5dp"
-                            android:id="@+id/month"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                            android:textSize="12sp"
-                            android:textColor="@color/white"
-                            android:textAllCaps="true"/>
-                        <TextView
-                            android:layout_marginStart="20dp"
                             android:id="@+id/raceStatus"
-                            android:layout_width="wrap_content"
-                            android:layout_height="match_parent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="@string/race_finished_text"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
                             android:textSize="12sp"
-                            android:gravity="center"
-                            android:text="@string/race_finished_text"
                             android:textColor="@color/white"
-                            android:layout_marginEnd="5dp"
-                            android:textAllCaps="true"/>
+                            android:textAllCaps="true" />
+
                     </LinearLayout>
                     <LinearLayout
                         app:layout_constraintTop_toBottomOf="@id/date_layout"
@@ -117,8 +130,8 @@
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
                             android:textColor="@color/white"
                             android:textSize="20sp"
-                            android:paddingStart="0dp"
-                            android:paddingEnd="10dp"/>
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"/>
                         <LinearLayout
                             android:layout_marginTop="10dp"
                             android:layout_marginStart="5dp"
@@ -127,7 +140,7 @@
                             android:baselineAligned="false"
                             android:gravity="bottom"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="160dp"
                             android:orientation="horizontal"
                             android:weightSum="3">
                             <RelativeLayout
@@ -150,11 +163,11 @@
                                         tools:ignore="TooDeepLayout" />
                                 </androidx.cardview.widget.CardView>
                                 <ImageView
-                                    android:id="@+id/secondPlace_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="fitEnd"
+                                    android:id="@+id/secondPlace_image"
                                     android:contentDescription="@string/_2nd_place_driver_image"
-                                    android:scaleType="fitCenter"
                                     android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                             <RelativeLayout
@@ -178,11 +191,11 @@
                                 </androidx.cardview.widget.CardView>
 
                                 <ImageView
-                                    android:id="@+id/firstPlace_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="fitEnd"
+                                    android:id="@+id/firstPlace_image"
                                     android:contentDescription="@string/_1st_place_driver_image"
-                                    android:scaleType="fitCenter"
                                     android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                             <RelativeLayout
@@ -205,11 +218,11 @@
                                         tools:ignore="TooDeepLayout"/>
                                 </androidx.cardview.widget.CardView>
                                 <ImageView
-                                    android:contentDescription="@string/_3rd_place_driver_image"
-                                    android:scaleType="fitCenter"
-                                    android:id="@+id/thirdPlace_image"
                                     android:layout_width="match_parent"
-                                    android:layout_height="wrap_content"
+                                    android:layout_height="match_parent"
+                                    android:scaleType="fitEnd"
+                                    android:contentDescription="@string/_3rd_place_driver_image"
+                                    android:id="@+id/thirdPlace_image"
                                     android:layout_alignParentBottom="true"/>
                             </RelativeLayout>
                         </LinearLayout>
@@ -228,7 +241,7 @@
                             <TextView
                                 android:id="@+id/secondPlace_info"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="5dp"
                                 android:layout_marginEnd="5dp"
                                 android:layout_weight="1"
@@ -247,7 +260,7 @@
                                 android:layout_weight="1.1"
                                 android:id="@+id/firstPlace_info"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
                                 android:text="@string/_1st_place_header"
@@ -262,7 +275,7 @@
                                 android:layout_weight="0.9"
                                 android:id="@+id/thirdPlace_info"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:includeFontPadding="false"
                                 android:lineSpacingExtra="0dp"
                                 android:text="@string/_3rd_place_header"
@@ -284,10 +297,10 @@
                             android:weightSum="3"
                             android:layout_marginBottom="10dp">
                             <TextView
+                                android:layout_height="wrap_content"
                                 android:layout_marginStart="0dp"
                                 android:layout_marginEnd="2.5dp"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
                                 android:layout_weight="1"
                                 android:id="@+id/secondPlace_code"
                                 android:gravity="center"
@@ -299,7 +312,7 @@
                                 android:layout_marginStart="2.5dp"
                                 android:layout_marginEnd="2.5dp"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="1.1"
                                 android:id="@+id/firstPlace_code"
                                 android:gravity="center"
@@ -311,7 +324,7 @@
                                 android:layout_marginStart="2.5dp"
                                 android:layout_marginEnd="0dp"
                                 android:layout_width="0dp"
-                                android:layout_height="match_parent"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="0.9"
                                 android:id="@+id/thirdPlace_code"
                                 android:gravity="center"
@@ -322,49 +335,49 @@
                         </LinearLayout>
                     </LinearLayout>
                     <TextView
-                        android:textStyle="normal"
-                        android:textAllCaps="false"
-                        android:layout_marginBottom="100dp"
                         android:id="@+id/show_results"
                         style="@style/StickyBottomStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:minHeight="48dp"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
                         android:gravity="center"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="5dp"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:text="@string/view_results"
+                        android:textStyle="normal"
+                        android:textAllCaps="false"
                         android:textAppearance="@style/TextStyle.Gram.Bold"
                         android:textColor="@color/white"
                         android:textSize="16sp"
-                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/podium_layout"/>
-                    <View
-                        android:layout_width="match_parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/podium_layout" />
+                    <Space
+                        android:layout_width="0dp"
                         android:layout_height="20dp"
                         app:layout_constraintTop_toBottomOf="@id/show_results"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"/>
+                        app:layout_constraintVertical_bias="0" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <androidx.core.widget.NestedScrollView
-            android:scrollbars="none"
-            android:overScrollMode="never"
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:id="@+id/nestedScrollView"
-            app:layout_anchor="@+id/nestedScrollView"
-            app:layout_anchorGravity="center"
+            android:fillViewport="true"
+            android:scrollbars="none"
+            android:overScrollMode="never"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
             <RelativeLayout
-                android:paddingBottom="30dp"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="wrap_content"
+                android:paddingBottom="30dp">
                 <RelativeLayout
                     android:layout_marginTop="20dp"
                     android:id="@+id/schedule_layout"
@@ -391,6 +404,7 @@
                         android:layout_marginEnd="20dp"
                         android:layout_marginBottom="15dp">
                         <androidx.recyclerview.widget.RecyclerView
+                            android:nestedScrollingEnabled="false"
                             android:overScrollMode="never"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -399,6 +413,9 @@
                 </RelativeLayout>
 
                 <ToggleButton
+                    android:minHeight="60dp"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"
                     android:textSize="16sp"
                     android:gravity="center"
                     android:layout_marginTop="20dp"

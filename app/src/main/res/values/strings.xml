@@ -31,10 +31,23 @@
     <string name="team">Team</string>
     <string name="save_race">Save Race</string>
     <string name="settings">Account Settings</string>
-    <string name="account_data">Account data</string>
+    <string name="account_data">Account information</string>
     <string name="change_avatar">Change avatar</string>
     <string name="change_username">Change username</string>
     <string name="saved_race">Saved Races</string>
+
+    <string name="background_color_title">Background color</string>
+    <string name="color_brightness">Brightness</string>
+    <string name="apply_color">Apply</string>
+
+    <string name="saving_color">Saving…</string>
+    <string name="background_color_saved">Background color saved</string>
+    <string name="background_color_save_error">Failed to save color. Please try again.</string>
+    <string name="background_color_login_required">Please log in to save the color.</string>
+    <string name="background_color_load_error">Failed to load profile background color.</string>
+
+    <string name="account_open_error">Failed to open profile. Please try again.</string>
+
 
     <string name="choose_username_title">Choose your public nickname</string>
     <string name="choose_username_description">Your login will remain the same. The chosen nickname will be visible to other users.</string>
@@ -569,4 +582,14 @@
     <string name="neuro_prediction_progress_model_table">Updating table...</string>
     <string name="neuro_prediction_progress_model_error">failed to calculate prediction</string>
 
+    <string name="update_required_title">Update required</string>
+    <string name="update_required_description">Access to neural network forecasts is only available in the latest version of Apex. Please update the app to the current version.</string>
+    <string name="update_required_decline_text">Stay</string>
+    <string name="update_required_update_text">Update</string>
+    <string name="update_required_url_error">Failed to open the update page</string>
+    <string name="update_required_version_error">Failed to determine the app version</string>
+    <string name="neuro_prediction_access_blocked">Access to results is temporarily unavailable</string>
+    <string name="update_reqired_version_task_error">Failed to check the version. Please try again.</string>
+
+    <string name="account_relogin_required">We have updated the account system. Please log in again to complete your profile update.</string>
 </resources>

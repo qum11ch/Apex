@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
-    android:theme="@style/AppTheme.WhiteStatusBar"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/main_root"
+    android:theme="@style/AppTheme.WhiteStatusBar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary">
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/content_layout"
@@ -14,15 +15,13 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:fitsSystemWindows="true">
+            android:background="@color/colorPrimary">
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/colorPrimary"
                 android:fitsSystemWindows="true"
-                android:paddingTop="25dp"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed">
                 <TextView
                     android:textColor="@color/text_color_main"
@@ -31,375 +30,358 @@
                     android:text="@string/home_page"
                     android:id="@+id/teamsHeader"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/nestedScrollView"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:background="@color/colorPrimary"
+            android:id="@+id/swipe_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/colorPrimary"
-            android:overScrollMode="never"
-            app:layout_anchor="@+id/nestedScrollView"
-            app:layout_anchorGravity="center"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
-            <RelativeLayout
+            <androidx.core.widget.NestedScrollView
+                android:id="@+id/nestedScrollView"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
-                <TextView
-                    android:textColor="@color/text_color_main"
-                    android:textAllCaps="true"
-                    android:layout_marginTop="10dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/race_completed_text"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                    android:id="@+id/progress_header"/>
+                android:layout_height="match_parent"
+                android:overScrollMode="never"
+                android:fillViewport="true"
+                android:scrollbars="none">
                 <RelativeLayout
-                    android:layout_below="@id/progress_header"
-                    android:id="@+id/race_progress_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/ProgressBarLayout"
-                    android:orientation="horizontal"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp">
-                    <ProgressBar
-                        android:visibility="gone"
-                        android:layout_margin="2dp"
-                        android:maxHeight="25dp"
-                        android:progress="2"
-                        android:progressDrawable="@drawable/dash_progress"
-                        android:progressTint="@color/red"
-                        android:progressBackgroundTint="@color/white"
-                        android:id="@+id/race_progress"
-                        style="?android:attr/progressBarStyleHorizontal"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:max="24"/>
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:layout_margin="3dp"
-                        android:id="@+id/shimmerProgress_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:duration="1500">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_progress_bar" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
+                    android:layout_height="wrap_content">
                     <TextView
-                        android:textColor="@color/red"
-                        android:id="@+id/race_progress_text"
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:layout_marginTop="10dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:text="@string/race_completed_text"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                        android:id="@+id/progress_header"/>
+                    <RelativeLayout
+                        android:layout_below="@id/progress_header"
+                        android:id="@+id/race_progress_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/ProgressBarLayout"
+                        android:orientation="horizontal"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="10dp">
+                        <ProgressBar
+                            android:visibility="gone"
+                            android:layout_margin="2dp"
+                            android:maxHeight="25dp"
+                            android:progress="2"
+                            android:progressDrawable="@drawable/dash_progress"
+                            android:progressTint="@color/red"
+                            android:progressBackgroundTint="@color/white"
+                            android:id="@+id/race_progress"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:max="24"/>
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:layout_margin="3dp"
+                            android:id="@+id/shimmerProgress_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_progress_bar" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                        <TextView
+                            android:textColor="@color/red"
+                            android:id="@+id/race_progress_text"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@android:color/transparent"
+                            android:gravity="center"
+                            android:textAppearance="@style/TextStyle.Gram.Bold"
+                            android:layout_centerVertical="true"
+                            android:textSize="14sp"/>
+                    </RelativeLayout>
+                    <TextView
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_below="@id/race_progress_layout"
+                        android:text="@string/upcoming_race"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                        android:id="@+id/futureRace_header"/>
+                    <LinearLayout
+                        android:layout_below="@id/futureRace_header"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginTop="10dp"
+                        android:id="@+id/main_future"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/RaceLayout"
+                        android:orientation="vertical">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:overScrollMode="never"
+                            android:id="@+id/recyclerView_future"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="5dp"
+                            android:visibility="gone"/>
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:layout_marginEnd="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:layout_marginTop="5dp"
+                            android:id="@+id/shimmerFuture_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_future_race" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_below="@id/main_future"
+                        android:text="@string/last_concluded_race"
+                        android:gravity="end"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                        android:id="@+id/pastRace_header"/>
+                    <LinearLayout
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_below="@id/pastRace_header"
+                        android:id="@+id/main_past"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        style="@style/RaceLayoutInverted"
+                        android:orientation="vertical">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:overScrollMode="never"
+                            android:id="@+id/recyclerView_past"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="15dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginBottom="5dp"
+                            android:visibility="gone"/>
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:layout_marginTop="5dp"
+                            android:layout_marginStart="15dp"
+                            android:layout_marginBottom="15dp"
+                            android:id="@+id/shimmerPast_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_concluded_race_main" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </LinearLayout>
+                    <Button
+                        android:visibility="gone"
+                        android:textSize="16sp"
+                        android:enabled="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:elevation="0dp"
+                        android:textAllCaps="true"
+                        style="@style/ButtonStyle"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
                         android:gravity="center"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
-                        android:layout_centerVertical="true"
-                        android:textSize="14sp"/>
+                        android:layout_below="@id/main_past"
+                        android:id="@+id/predict"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/predict_button"/>
+                    <Button
+                        android:textSize="16sp"
+                        android:enabled="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:elevation="0dp"
+                        android:textAllCaps="true"
+                        style="@style/ButtonStyle"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:layout_below="@id/predict"
+                        android:id="@+id/winnersWDS"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/winners_wdc_button_text"/>
+                    <Button
+                        android:textSize="16sp"
+                        android:enabled="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/white"
+                        android:textStyle="bold"
+                        android:elevation="0dp"
+                        android:textAllCaps="true"
+                        style="@style/ButtonStyle"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:layout_below="@id/winnersWDS"
+                        android:id="@+id/predictionsPageButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/prediction_button_text"/>
+
+                    <Button
+                        android:visibility="gone"
+                        android:id="@+id/userPredictionsButton"
+                        style="@style/ButtonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/predictionsPageButton"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginEnd="10dp"
+                        android:elevation="0dp"
+                        android:enabled="true"
+                        android:gravity="center"
+                        android:text="@string/user_prediction_button_text"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_below="@id/userPredictionsButton"
+                        android:text="@string/top_drivers"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                        android:id="@+id/top_drivers_header"/>
+                    <LinearLayout
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_below="@id/top_drivers_header"
+                        android:id="@+id/top_drivers"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:overScrollMode="never"
+                            android:id="@+id/recyclerView_drivers"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmerDrivers_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_main_driver" />
+                                <include layout="@layout/shimmer_main_driver" />
+                                <include layout="@layout/shimmer_main_driver" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </LinearLayout>
+                    <TextView
+                        android:textColor="@color/text_color_main"
+                        android:textAllCaps="true"
+                        android:layout_marginTop="20dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:textAlignment="textEnd"
+                        android:layout_below="@id/top_drivers"
+                        android:text="@string/top_3_teams"
+                        android:textSize="16sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                        android:id="@+id/top_teams_header"/>
+                    <LinearLayout
+                        android:layout_marginTop="5dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_below="@id/top_teams_header"
+                        android:id="@+id/top_teams"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_marginBottom="90dp">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:overScrollMode="never"
+                            android:id="@+id/recyclerView_teams"
+                            android:visibility="gone"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"/>
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmerTeams_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_main_team" />
+                                <include layout="@layout/shimmer_main_team" />
+                                <include layout="@layout/shimmer_main_team" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </LinearLayout>
                 </RelativeLayout>
-                <TextView
-                    android:textColor="@color/text_color_main"
-                    android:textAllCaps="true"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_below="@id/race_progress_layout"
-                    android:text="@string/upcoming_race"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                    android:id="@+id/futureRace_header"/>
-                <LinearLayout
-                    android:layout_below="@id/futureRace_header"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginTop="10dp"
-                    android:id="@+id/main_future"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/RaceLayout"
-                    android:orientation="vertical">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:overScrollMode="never"
-                        android:id="@+id/recyclerView_future"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="5dp"
-                        android:visibility="gone"/>
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="15dp"
-                        android:layout_marginTop="5dp"
-                        android:id="@+id/shimmerFuture_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:duration="1500">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_future_race" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                </LinearLayout>
-                <TextView
-                    android:textColor="@color/text_color_main"
-                    android:textAllCaps="true"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_below="@id/main_future"
-                    android:text="@string/last_concluded_race"
-                    android:gravity="end"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                    android:id="@+id/pastRace_header"/>
-                <LinearLayout
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_below="@id/pastRace_header"
-                    android:id="@+id/main_past"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    style="@style/RaceLayoutInverted"
-                    android:orientation="vertical">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:overScrollMode="never"
-                        android:id="@+id/recyclerView_past"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginBottom="5dp"
-                        android:visibility="gone"/>
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:layout_marginTop="5dp"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginBottom="15dp"
-                        android:id="@+id/shimmerPast_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:duration="1500">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_concluded_race_main" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                </LinearLayout>
-                <Button
-                    android:visibility="gone"
-                    android:textSize="16sp"
-                    android:enabled="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center"
-                    android:layout_below="@id/main_past"
-                    android:id="@+id/predict"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/predict_button"/>
-                <Button
-                    android:textSize="16sp"
-                    android:enabled="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center"
-                    android:layout_below="@id/predict"
-                    android:id="@+id/winnersWDS"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/winners_wdc_button_text"/>
-                <Button
-                    android:textSize="16sp"
-                    android:enabled="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:textAllCaps="true"
-                    style="@style/ButtonStyle"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:gravity="center"
-                    android:layout_below="@id/winnersWDS"
-                    android:id="@+id/predictionsPageButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/prediction_button_text"/>
-
-                <Button
-                    android:visibility="gone"
-                    android:id="@+id/userPredictionsButton"
-                    style="@style/ButtonStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/predictionsPageButton"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="9dp"
-                    android:layout_marginEnd="10dp"
-                    android:elevation="0dp"
-                    android:enabled="true"
-                    android:gravity="center"
-                    android:text="@string/user_prediction_button_text"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:textColor="@color/text_color_main"
-                    android:textAllCaps="true"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_below="@id/userPredictionsButton"
-                    android:text="@string/top_drivers"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                    android:id="@+id/top_drivers_header"/>
-                <LinearLayout
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_below="@id/top_drivers_header"
-                    android:id="@+id/top_drivers"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:overScrollMode="never"
-                        android:id="@+id/recyclerView_drivers"
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/shimmerDrivers_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:duration="1500">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_main_driver" />
-                            <include layout="@layout/shimmer_main_driver" />
-                            <include layout="@layout/shimmer_main_driver" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                </LinearLayout>
-                <TextView
-                    android:textColor="@color/text_color_main"
-                    android:textAllCaps="true"
-                    android:layout_marginTop="20dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:textAlignment="textEnd"
-                    android:layout_below="@id/top_drivers"
-                    android:text="@string/top_3_teams"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                    android:id="@+id/top_teams_header"/>
-                <LinearLayout
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_below="@id/top_teams_header"
-                    android:id="@+id/top_teams"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="90dp">
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:overScrollMode="never"
-                        android:id="@+id/recyclerView_teams"
-                        android:visibility="gone"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"/>
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/shimmerTeams_layout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:visibility="visible"
-                        app:duration="1500">
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_main_team" />
-                            <include layout="@layout/shimmer_main_team" />
-                            <include layout="@layout/shimmer_main_team" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                </LinearLayout>
-            </RelativeLayout>
-        </androidx.core.widget.NestedScrollView>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_gravity="bottom"
-        android:orientation="horizontal"
-        android:weightSum="5"
-        android:paddingStart="5dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="20dp">
-
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-        <View android:layout_width="0dp" android:layout_height="match_parent"
-            android:layout_weight="1" android:clickable="true" android:focusable="true" />
-    </LinearLayout>
-
     <include
+        android:id="@+id/footer_container"
+        layout="@layout/footer_home"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:layout_marginBottom="20dp"
-        layout="@layout/footer_home"/>
+        android:layout_gravity="bottom" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

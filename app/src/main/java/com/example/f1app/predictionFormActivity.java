@@ -51,6 +51,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class predictionFormActivity extends AppCompatActivity {
     private final List<predictionOption> headToHeadOptions = new ArrayList<>();
     private final List<View> headToHeadCardViews = new ArrayList<>();
@@ -94,6 +98,8 @@ public class predictionFormActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.prediction_form_activity);
+
+        setupPredictionFormInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(predictionFormActivity.this));
@@ -156,6 +162,95 @@ public class predictionFormActivity extends AppCompatActivity {
         points.setBackground(drawable);
 
         loadPrediction(predictionFormActivity.this);
+    }
+
+    private void setupPredictionFormInsets() {
+        View root = findViewById(R.id.mainLayout);
+        View header = findViewById(R.id.header);
+        View savePanel = findViewById(R.id.saveLayout);
+        View scrollContent = findViewById(R.id.scrollContent);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        final int contentLeft = scrollContent.getPaddingLeft();
+        final int contentTop = scrollContent.getPaddingTop();
+        final int contentRight = scrollContent.getPaddingRight();
+        final int contentBottom = scrollContent.getPaddingBottom();
+
+        final int panelGap = Math.round(
+                8 * getResources().getDisplayMetrics().density
+        );
+
+        Runnable updateScrollReserve = () -> {
+            int reserve = contentBottom;
+
+            if (savePanel.getVisibility() != View.GONE) {
+                ViewGroup.MarginLayoutParams params =
+                        (ViewGroup.MarginLayoutParams) savePanel.getLayoutParams();
+
+                reserve += savePanel.getHeight() + params.bottomMargin;
+            }
+
+            if (scrollContent.getPaddingBottom() != reserve) {
+                scrollContent.setPadding(
+                        contentLeft,
+                        contentTop,
+                        contentRight,
+                        reserve
+                );
+            }
+        };
+
+        savePanel.addOnLayoutChangeListener(
+                (view, left, top, right, bottom,
+                 oldLeft, oldTop, oldRight, oldBottom) ->
+                        updateScrollReserve.run()
+        );
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    0
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            ViewGroup.MarginLayoutParams params =
+                    (ViewGroup.MarginLayoutParams) savePanel.getLayoutParams();
+
+            int bottomMargin = safeInsets.bottom + panelGap;
+
+            if (params.bottomMargin != bottomMargin) {
+                params.bottomMargin = bottomMargin;
+                savePanel.setLayoutParams(params);
+            }
+
+            updateScrollReserve.run();
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+        savePanel.post(updateScrollReserve);
     }
 
     private void loadPrediction(Context context) {

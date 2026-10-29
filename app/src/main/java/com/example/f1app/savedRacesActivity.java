@@ -4,7 +4,6 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
-import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -45,6 +44,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class savedRacesActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
@@ -53,7 +56,7 @@ public class savedRacesActivity extends AppCompatActivity {
     private List<savedRacesData> datum;
     private savedRacesAdapter adapter;
 
-    private RelativeLayout emptySavedRaceLayout;
+    // private RelativeLayout emptySavedRaceLayout;
 
     private SwipeRefreshLayout swipeLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
@@ -62,11 +65,16 @@ public class savedRacesActivity extends AppCompatActivity {
 
     private DatabaseReference savedRacesRef;
 
+    private View emptyScroll;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+
         setContentView(R.layout.saved_races);
+
+        setupSavedRacesInsets();
 
         if (!checkConnection(getApplicationContext())) {
             startActivity(connectionLostScreen
@@ -101,8 +109,19 @@ public class savedRacesActivity extends AppCompatActivity {
 
         swipeLayout = findViewById(R.id.swipe_layout);
 
+        emptyScroll = findViewById(R.id.emptySavedRaceScroll);
+
+        swipeLayout.setOnChildScrollUpCallback((parent, child) -> {
+            if (emptyScroll.getVisibility() == View.VISIBLE) {
+                return emptyScroll.canScrollVertically(-1);
+            }
+
+            return recyclerView.getVisibility() == View.VISIBLE
+                    && recyclerView.canScrollVertically(-1);
+        });
+
         swipeLayout.setOnRefreshListener(() -> {
-            emptySavedRaceLayout.setVisibility(View.GONE);
+            emptyScroll.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
 
             shimmerFrameLayout.setVisibility(View.VISIBLE);
@@ -115,9 +134,6 @@ public class savedRacesActivity extends AppCompatActivity {
 
             swipeLayout.setRefreshing(false);
         });
-
-        emptySavedRaceLayout =
-                findViewById(R.id.emptySavedRace_layout);
 
         ShapeableImageView stripedImage =
                 findViewById(R.id.stripedImage);
@@ -145,6 +161,46 @@ public class savedRacesActivity extends AppCompatActivity {
         setupDeleteSwipe();
 
         loadSavedRaces();
+    }
+
+    private void setupSavedRacesInsets() {
+        View root = findViewById(R.id.saved_races_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private void loadSavedRaces() {
@@ -250,7 +306,7 @@ public class savedRacesActivity extends AppCompatActivity {
                         return;
                     }
 
-                    emptySavedRaceLayout.setVisibility(View.VISIBLE);
+                    emptyScroll.setVisibility(View.VISIBLE);
                     recyclerView.setVisibility(View.GONE);
 
                     shimmerFrameLayout.setVisibility(View.GONE);
@@ -267,7 +323,7 @@ public class savedRacesActivity extends AppCompatActivity {
                         return;
                     }
 
-                    emptySavedRaceLayout.setVisibility(View.GONE);
+                    emptyScroll.setVisibility(View.GONE);
                     recyclerView.setVisibility(View.VISIBLE);
 
                     shimmerFrameLayout.setVisibility(View.GONE);

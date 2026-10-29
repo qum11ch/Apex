@@ -267,7 +267,12 @@ public class userPrediction {
     }
 
     public boolean canBeChanged(){
-        return isOpen() && "pending".equals(answerResult);
+        return isOpen() && "pending".equals(answerResult) && !deadlineExceeded();
+    }
+
+    public boolean deadlineExceeded(){
+        long currentTimeInMs = System.currentTimeMillis();
+        return deadline <= currentTimeInMs;
     }
 
     public String getLocalizedTitle(){

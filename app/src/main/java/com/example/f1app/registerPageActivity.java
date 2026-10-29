@@ -57,6 +57,13 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import android.view.View;
+
+import androidx.activity.EdgeToEdge;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class registerPageActivity extends AppCompatActivity {
     private FirebaseAuth auth;
 
@@ -102,9 +109,10 @@ public class registerPageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        EdgeToEdge.enable(this);
         super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
         setContentView(R.layout.register_page);
+        setupRegisterInsets();
 
         if (!checkConnection(getApplicationContext())) {
             startActivity(
@@ -227,6 +235,55 @@ public class registerPageActivity extends AppCompatActivity {
                     avatarInitial.setVisibility(View.GONE);
                 }
         );
+    }
+
+    private void setupRegisterInsets() {
+        View root = findViewById(R.id.register_root);
+        View header = findViewById(R.id.header);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int headerLeft = header.getPaddingLeft();
+        final int headerTop = header.getPaddingTop();
+        final int headerRight = header.getPaddingRight();
+        final int headerBottom = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            Insets imeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.ime()
+            );
+
+            int bottomInset = Math.max(
+                    safeInsets.bottom,
+                    imeInsets.bottom
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + bottomInset
+            );
+
+            header.setPadding(
+                    headerLeft,
+                    headerTop + safeInsets.top,
+                    headerRight,
+                    headerBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     private GradientDrawable cardBg(int strokeColor, boolean dashed) {
@@ -1253,10 +1310,7 @@ public class registerPageActivity extends AppCompatActivity {
                         && password.length() >= 6;
 
         registerButton.setEnabled(
-                fieldsValid
-                        && driversLoaded
-                        && teamsLoaded
-                        && !registrationInProgress
+                fieldsValid && !registrationInProgress
         );
     }
 
@@ -1265,11 +1319,6 @@ public class registerPageActivity extends AppCompatActivity {
 
         validateFields();
         updateRegisterButtonState();
-
-        if (!driversLoaded || !teamsLoaded) {
-            showError("Списки пилотов и команд ещё загружаются");
-            return;
-        }
 
         if (!registerButton.isEnabled()) {
             showError(getString(R.string.all_fields_text));
@@ -1305,8 +1354,7 @@ public class registerPageActivity extends AppCompatActivity {
             String choiceDriver,
             String choiceTeam) {
 
-        String normalizedLogin =
-                login.toLowerCase(Locale.ROOT);
+        String normalizedLogin = login.toLowerCase(Locale.ROOT);
 
         DatabaseReference loginRef =
                 FirebaseDatabase.getInstance()
@@ -1317,9 +1365,7 @@ public class registerPageActivity extends AppCompatActivity {
         loginRef.runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
-            public Transaction.Result doTransaction(
-                    @NonNull MutableData currentData) {
-
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 if (currentData.getValue() != null) {
                     return Transaction.abort();
                 }
@@ -1345,8 +1391,8 @@ public class registerPageActivity extends AppCompatActivity {
                 }
 
                 if (!committed) {
-                    setLoginError("Этот логин уже занят");
                     failRegistration("Выберите другой логин");
+                    setLoginError("Этот логин уже занят");
                     return;
                 }
 
@@ -1482,18 +1528,14 @@ public class registerPageActivity extends AppCompatActivity {
         profile.put("choiceTeam", choiceTeam);
         profile.put("usernameMigrationComplete", true);
 
-        if (avatarUrl != null) {
-            profile.put("avatarUrl", avatarUrl);
-        }
+        // if (avatarUrl != null) {
+        //     profile.put("avatarUrl", avatarUrl);
+        // }
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("/users/" + uid, profile);
         updates.put("/loginIndex/" + login.toLowerCase(Locale.ROOT), uid);
         updates.put("/publicProfiles/" + uid + "/username", publicUsername);
-
-        if (avatarUrl != null) {
-            updates.put("/publicProfiles/" + uid + "/avatarUrl", avatarUrl);
-        }
 
         FirebaseDatabase.getInstance()
                 .getReference()

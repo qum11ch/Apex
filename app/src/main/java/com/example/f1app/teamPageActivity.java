@@ -46,6 +46,10 @@ import com.google.firebase.storage.StorageReference;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 public class teamPageActivity extends AppCompatActivity {
     private TextView teamName;
     private ProgressBar progressBar;
@@ -55,8 +59,9 @@ public class teamPageActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.team_page);
         EdgeToEdge.enable(this);
+        setContentView(R.layout.team_page);
+        setupTeamInsets();
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamPageActivity.this));
@@ -199,6 +204,46 @@ public class teamPageActivity extends AppCompatActivity {
             });
 
         }
+    }
+
+    private void setupTeamInsets() {
+        View root = findViewById(R.id.main_content);
+        View appBar = findViewById(R.id.appbar);
+
+        final int rootLeft = root.getPaddingLeft();
+        final int rootTop = root.getPaddingTop();
+        final int rootRight = root.getPaddingRight();
+        final int rootBottom = root.getPaddingBottom();
+
+        final int appBarLeft = appBar.getPaddingLeft();
+        final int appBarTop = appBar.getPaddingTop();
+        final int appBarRight = appBar.getPaddingRight();
+        final int appBarBottom = appBar.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safeInsets = windowInsets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                            | WindowInsetsCompat.Type.displayCutout()
+            );
+
+            view.setPadding(
+                    rootLeft + safeInsets.left,
+                    rootTop,
+                    rootRight + safeInsets.right,
+                    rootBottom + safeInsets.bottom
+            );
+
+            appBar.setPadding(
+                    appBarLeft,
+                    appBarTop + safeInsets.top,
+                    appBarRight,
+                    appBarBottom
+            );
+
+            return WindowInsetsCompat.CONSUMED;
+        });
+
+        ViewCompat.requestApplyInsets(root);
     }
 
     public static void saveChoice(String field, String valueOrNull,
