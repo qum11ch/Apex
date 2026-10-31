@@ -230,7 +230,7 @@ public class teamPageActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             appBar.setPadding(

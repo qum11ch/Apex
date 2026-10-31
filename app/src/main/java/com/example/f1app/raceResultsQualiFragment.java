@@ -51,6 +51,8 @@ public class raceResultsQualiFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.quali_results));
+
         recyclerView = view.findViewById(R.id.quali_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);

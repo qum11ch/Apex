@@ -161,7 +161,13 @@ public class futureRaceFragment extends Fragment {
         View content = pageRoot.findViewById(R.id.schedule_page_content);
         View footer = requireActivity().findViewById(R.id.footer_container);
 
-        if (content == null || footer == null) {
+        if (content == null) {
+            return;
+        }
+
+        if (footer == null) {
+            // Экран без футера (прошлые сезоны): только системный отступ
+            EdgeInsets.applyBottom(content);
             return;
         }
 

@@ -78,6 +78,7 @@ public class driverStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
         scrollView = view.findViewById(R.id.scrollView);
 

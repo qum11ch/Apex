@@ -36,6 +36,10 @@
     <string name="change_username">Change username</string>
     <string name="saved_race">Saved Races</string>
 
+    <string name="ongoing_now_text">Ongoing now</string>
+    <string name="awaiting_results_text">Awaiting results</string>
+    <string name="next_session_text">Next: %1$s · %2$s</string>
+
     <string name="background_color_title">Background color</string>
     <string name="color_brightness">Brightness</string>
     <string name="apply_color">Apply</string>

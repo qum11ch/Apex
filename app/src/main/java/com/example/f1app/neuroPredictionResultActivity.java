@@ -86,6 +86,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         setContentView(R.layout.neuro_predictions_results_activity);
 
         setupNeuroResultsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.scrollView));
 
         recyclerView = findViewById(R.id.quali_results);
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(neuroPredictionResultActivity.this);
@@ -201,7 +202,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -211,7 +212,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

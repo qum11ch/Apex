@@ -54,6 +54,7 @@ public class predictionsActivity extends AppCompatActivity {
         setContentView(R.layout.predictions_activity);
 
         setupPredictionsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.predictionsRecyclerView));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(predictionsActivity.this));
@@ -115,7 +116,7 @@ public class predictionsActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -125,7 +126,7 @@ public class predictionsActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

@@ -57,7 +57,9 @@ public class winnersWDCActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.winners_wdc_page);
+
         setupWinnersInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.winnersScroll));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(winnersWDCActivity.this));
@@ -160,7 +162,7 @@ public class winnersWDCActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -170,7 +172,7 @@ public class winnersWDCActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

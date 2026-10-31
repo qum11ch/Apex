@@ -60,6 +60,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         setContentView(R.layout.past_season_teams_standing_page);
 
         setupTeamsStandingsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.recyclerview_currentTeams));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonTeamsStandingsActivity.this));
@@ -151,7 +152,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -161,7 +162,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

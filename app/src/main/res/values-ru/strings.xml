@@ -34,6 +34,10 @@
     <string name="saved_race">Сохраненные гонки</string>
     <string name="account_data">Информация об учетной записи</string>
 
+    <string name="ongoing_now_text">Идёт сейчас</string>
+    <string name="awaiting_results_text">Ожидает результатов</string>
+    <string name="next_session_text">Далее: %1$s · %2$s</string>
+
     <string name="background_color_title">Цвет фона</string>
     <string name="color_brightness">Яркость</string>
     <string name="apply_color">Применить</string>

@@ -107,7 +107,8 @@
                                         android:layout_width="wrap_content"
                                         android:layout_height="match_parent"
                                         android:gravity="center"
-                                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                                        tools:ignore="TooDeepLayout" />
                                     <TextView
                                         android:textColor="@color/light_status"
                                         android:layout_height="match_parent"
@@ -157,7 +158,8 @@
                                     android:id="@+id/roundLayout"
                                     android:layout_width="match_parent"
                                     android:layout_marginEnd="8dp"
-                                    android:layout_height="wrap_content">
+                                    android:layout_height="wrap_content"
+                                    android:gravity="center_vertical">
                                     <TextView
                                         android:includeFontPadding="false"
                                         android:lineSpacingExtra="0dp"
@@ -185,21 +187,41 @@
                                         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                                         android:textColor="@color/light_silver"
                                         android:textSize="14sp" />
-                                    <TextView
-                                        android:textAlignment="textEnd"
-                                        android:layout_gravity="end"
-                                        android:id="@+id/ongoing"
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:includeFontPadding="false"
-                                        android:lineSpacingExtra="0dp"
-                                        android:paddingStart="0dp"
-                                        android:paddingEnd="10dp"
-                                        android:textAllCaps="true"
-                                        android:text="@string/is_ongoing"
-                                        android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                                        android:textColor="@color/light_silver"
-                                        android:textSize="14sp" />
+                                    <View
+                                        android:layout_width="0dp"
+                                        android:layout_weight="1"
+                                        android:layout_height="0dp"/>
+
+                                    <LinearLayout
+                                        android:id="@+id/ongoingStatusContainer"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:gravity="center_vertical"
+                                        android:orientation="horizontal"
+                                        android:layout_marginEnd="10dp"
+                                        android:paddingStart="4dp"
+                                        android:paddingEnd="4dp">
+
+                                        <View
+                                            android:paddingEnd="0dp"
+                                            android:paddingStart="2dp"
+                                            android:id="@+id/liveDot"
+                                            android:layout_width="8dp"
+                                            android:layout_height="8dp"
+                                            android:layout_marginEnd="6dp"
+                                            android:background="@drawable/live_dot"
+                                            android:layout_gravity="center"
+                                            android:visibility="gone" />
+
+                                        <TextView
+                                            android:id="@+id/ongoingStatus"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content"
+                                            android:textAllCaps="true"
+                                            android:textColor="@color/white"
+                                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                                            android:textSize="12sp" />
+                                    </LinearLayout>
                                 </LinearLayout>
                                 <TextView
                                     android:layout_marginBottom="5dp"

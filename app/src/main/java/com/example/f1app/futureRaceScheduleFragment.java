@@ -82,6 +82,9 @@ public class futureRaceScheduleFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.nestedScrollView));
+
         days_countdown = view.findViewById(R.id.days_countdown);
         hrs_countdown = view.findViewById(R.id.hrs_countdown);
         mns_countdown = view.findViewById(R.id.mns_countdown);
@@ -277,6 +280,18 @@ public class futureRaceScheduleFragment extends Fragment {
                 countDownStart(eventsCountdown);
 
                 adapter.notifyDataSetChanged();
+
+                Integer round = snapshot.child("round").getValue(Integer.class);
+
+                if (round != null && isAdded()) {
+                    sessionResultsLoader.load(
+                            futureRaceScheduleFragment.this,
+                            currentYear,
+                            String.valueOf(round),
+                            datum,
+                            adapter
+                    );
+                }
             }
 
             @Override

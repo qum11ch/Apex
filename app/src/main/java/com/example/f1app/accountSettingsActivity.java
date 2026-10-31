@@ -106,6 +106,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.account_settings_page);
 
         setupAccountSettingsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.scrollView));
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(
@@ -339,7 +340,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -349,7 +350,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

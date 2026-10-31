@@ -72,6 +72,15 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         }
 
         holder.eventName.setText(context.getString(getStringByName(eventName + "_text")));
+
+        CharSequence results = datum.getResultsText();
+
+        if (results != null && results.length() > 0) {
+            holder.eventResults.setText(results);
+            holder.eventResults.setVisibility(View.VISIBLE);
+        } else {
+            holder.eventResults.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -83,8 +92,11 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         TextView eventDay, eventMonth, eventName, eventTime;
         ConstraintLayout constraintLayout;
         LinearLayout content_layout;
+        TextView eventResults;
+
         public DataHolder(@NonNull View itemView) {
             super(itemView);
+            eventResults = itemView.findViewById(R.id.eventResults);
             eventDay = itemView.findViewById(R.id.eventDay);
             eventMonth = itemView.findViewById(R.id.eventMonth);
             eventName = itemView.findViewById(R.id.eventName);

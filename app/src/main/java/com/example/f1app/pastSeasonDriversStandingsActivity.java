@@ -63,6 +63,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         setContentView(R.layout.past_season_drivers_standing_page);
 
         setupStandingsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.recyclerview_currentDrivers));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonDriversStandingsActivity.this));
@@ -153,7 +154,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -163,7 +164,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

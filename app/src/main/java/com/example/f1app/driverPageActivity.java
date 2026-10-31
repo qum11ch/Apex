@@ -162,7 +162,7 @@ public class driverPageActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
             appBar.setPadding(
                     appBarLeft,
@@ -171,7 +171,7 @@ public class driverPageActivity extends AppCompatActivity {
                     appBarBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

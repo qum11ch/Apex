@@ -69,6 +69,8 @@ public class teamStatsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
+
         enterYear = view.findViewById(R.id.enterYear);
         wins = view.findViewById(R.id.wins);
         podiums = view.findViewById(R.id.podiums);

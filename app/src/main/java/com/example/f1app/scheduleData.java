@@ -2,6 +2,7 @@ package com.example.f1app;
 
 public class scheduleData {
     String eventDate, eventName;
+    CharSequence resultsText;
 
     public scheduleData(String eventDate, String eventName) {
         this.eventDate = eventDate;
@@ -23,4 +24,7 @@ public class scheduleData {
     public void setEventName(String eventName) {
         this.eventName = eventName;
     }
+
+    public CharSequence getResultsText() { return resultsText; }
+    public void setResultsText(CharSequence resultsText) { this.resultsText = resultsText; }
 }

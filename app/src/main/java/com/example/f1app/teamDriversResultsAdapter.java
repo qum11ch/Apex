@@ -58,7 +58,9 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
         myGradFirst.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
         myGradSecond.setStroke(strokeWidth, ContextCompat.getColor(context, R.color.grey));
 
-        if (!firstDriverResult.equals("N/C")){
+        android.util.Log.d("F1ErrorCheck", raceName + ": first=[" + firstDriverResult + "] second=[" + secondDriverResult + "]");
+
+        //if (!firstDriverResult.equals("N/C")){
             switch (firstDriverResult) {
                 case "CND":
                     myGradFirst.setColor(ContextCompat.getColor(context, R.color.orange));
@@ -77,6 +79,12 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     holder.firstDriverResult.setBackground(myGradFirst);
                     holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.firstDriverResult.setText("-");
+                    break;
+                case "N/C":
+                    myGradFirst.setColor(ContextCompat.getColor(context, R.color.light_grey));
+                    holder.firstDriverResult.setBackground(myGradFirst);
+                    holder.firstDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                    holder.firstDriverResult.setText(context.getResources().getString(R.string.n_c_text));
                     break;
                 default:
                     String[] firstDriver = firstDriverResult.split("-");
@@ -162,6 +170,12 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
                     holder.secondDriverResult.setText("-");
                     break;
+                case "N/C":
+                    myGradSecond.setColor(ContextCompat.getColor(context, R.color.light_grey));
+                    holder.secondDriverResult.setBackground(myGradSecond);
+                    holder.secondDriverResult.setTextColor(ContextCompat.getColor(context, R.color.dark_grey));
+                    holder.secondDriverResult.setText(context.getResources().getString(R.string.n_c_text));
+                    break;
                 default:
                     String[] secondDriver = secondDriverResult.split("-");
                     String secondDriverFinish = secondDriver[1];
@@ -225,14 +239,14 @@ public class teamDriversResultsAdapter extends RecyclerView.Adapter<teamDriversR
                     }
                     break;
             }
-        } else{
-            myGradFirst.setColor(ContextCompat.getColor(context, R.color.light_grey));
-            holder.firstDriverResult.setBackground(myGradFirst);
-            myGradSecond.setColor(ContextCompat.getColor(context, R.color.light_grey));
-            holder.secondDriverResult.setBackground(myGradSecond);
-            holder.firstDriverResult.setText(context.getResources().getString(R.string.n_c_text));
-            holder.secondDriverResult.setText(context.getResources().getString(R.string.n_c_text));
-        }
+        //} else{
+        //    myGradFirst.setColor(ContextCompat.getColor(context, R.color.light_grey));
+        //    holder.firstDriverResult.setBackground(myGradFirst);
+        //    myGradSecond.setColor(ContextCompat.getColor(context, R.color.light_grey));
+        //    holder.secondDriverResult.setBackground(myGradSecond);
+        //    holder.firstDriverResult.setText(context.getResources().getString(R.string.n_c_text));
+        //    holder.secondDriverResult.setText(context.getResources().getString(R.string.n_c_text));
+        //}
 
 
     }

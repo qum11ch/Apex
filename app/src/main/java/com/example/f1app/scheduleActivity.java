@@ -4,8 +4,11 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
+import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -41,6 +44,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -67,6 +71,8 @@ public class scheduleActivity extends AppCompatActivity {
     private String currentSeason;
     private boolean accountNavigationInProgress = false;
 
+    private ongoingStatusView ongoingStatusView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +92,12 @@ public class scheduleActivity extends AppCompatActivity {
 
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
+
+        ongoingStatusView = new ongoingStatusView(
+                findViewById(R.id.ongoingStatusContainer),
+                findViewById(R.id.liveDot),
+                findViewById(R.id.ongoingStatus)
+        );
 
 
         getSchedule(currentYear);
@@ -283,6 +295,8 @@ public class scheduleActivity extends AppCompatActivity {
     private void getSchedule(String year){
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
         rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+            boolean hasActiveWeekend = false;
+
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 ArrayList<String> concludedRoundNumber = new ArrayList<>();
@@ -298,73 +312,40 @@ public class scheduleActivity extends AppCompatActivity {
                     String raceName = ds.child("Circuit/raceName").getValue(String.class);
                     String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
                     //String raceTime = ds.child("raceTime").getValue(String.class);
-                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
 
-                    boolean isCanceled;
-                    isCanceled = hasCanceled != null;
+                    raceWeekendStatus.State state =
+                            raceWeekendStatus.resolve(ds, System.currentTimeMillis());
 
-                    boolean future = false;
-                    boolean isOnGoing = false;
-                    boolean concluded = true;
+                    boolean isCanceled = raceWeekendStatus.isCanceled(ds);
 
-                    String eventEndTime = ds.child("raceDate").getValue(String.class) +
-                            " " + ds.child("raceTime").getValue(String.class);
-                    String eventStartTime = ds.child("FirstPractice/firstPracticeDate").getValue(String.class) +
-                            " " + ds.child("FirstPractice/firstPracticeTime").getValue(String.class);
-
-                    try{
-                        String eventEndTimeString = eventEndTime.replaceAll("\\s+", "T");
-                        String eventStartTimeString = eventStartTime.replaceAll("\\s+", "T");
-
-                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-                        DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
-
-                        Date currentDate = Calendar.getInstance().getTime();
-
-                        Instant endDateInst = Instant.parse(eventEndTimeString);
-                        ZonedDateTime endDateTime = endDateInst.atZone(ZoneId.systemDefault());
-                        String endDate = endDateTime.format(fullDateFormatter);
-
-                        Instant startDateInst = Instant.parse(eventStartTimeString);
-                        ZonedDateTime startDateTime = startDateInst.atZone(ZoneId.systemDefault());
-                        String startDate = startDateTime.format(fullDateFormatter);
-
-                        Date endValue = formatter.parse(endDate);
-                        Date eventEnd = new Date(endValue.getTime() + 2 * HOUR);
-
-                        Date startValue = formatter.parse(startDate);
-                        Date eventStart = new Date(startValue.getTime());
-
-                        if(eventStart.after(currentDate) && eventEnd.after(currentDate))
-                        {
-                            concluded = false;
-                            future = true;
-                        }
-                        else if (currentDate.equals(eventStart) || currentDate.equals(eventEnd)){
-                            concluded = false;
-                            isOnGoing = true;
-                        }
-                        else if (currentDate.after(eventStart) && currentDate.before(eventEnd)){
-                            concluded = false;
-                            isOnGoing = true;
-                        }
-
-                    } catch (ParseException e){
-                        Log.d("ParseExeption", "" + e);
+                    switch (state) {
+                        case CONCLUDED:
+                        case CANCELED:
+                            concludedRoundNumber.add(round.toString());
+                            break;
+                        case FUTURE:
+                            futureRaceRoundNumber.add(round.toString());
+                            break;
+                        default:
+                            break;
                     }
+
+                    boolean isOnGoing =
+                            state == raceWeekendStatus.State.ONGOING
+                                    || state == raceWeekendStatus.State.AWAITING_RESULTS;
 
                     if (isCanceled){
                         isOnGoing = false;
                     }
 
-                    if(concluded){
-                        concludedRoundNumber.add(round.toString());
-                    }
-                    if (future){
-                        futureRaceRoundNumber.add(round.toString());
-                    }
                     if (isOnGoing){
-                        cardView.setVisibility(View.VISIBLE);
+                        hasActiveWeekend = true;
+
+                        ongoingStatusView.bind(
+                                raceWeekendStatus.sessions(ds),
+                                state == raceWeekendStatus.State.AWAITING_RESULTS
+                        );
+
                         TextView roundOngoing = findViewById(R.id.round);
                         TextView dayStartOngoing = findViewById(R.id.day_start);
                         TextView dayEndOngoing = findViewById(R.id.day_end);
@@ -481,6 +462,8 @@ public class scheduleActivity extends AppCompatActivity {
                 if(!futureRaceRoundNumber.isEmpty()){
                     futureFragmentBundle.putStringArrayList("raceRound", futureRaceRoundNumber);
                 }
+
+                cardView.setVisibility(hasActiveWeekend ? View.VISIBLE : View.GONE);
 
                 init(concludedFragmentBundle, futureFragmentBundle);
             }

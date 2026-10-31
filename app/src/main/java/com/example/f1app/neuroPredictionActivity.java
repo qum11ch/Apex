@@ -58,6 +58,7 @@ public class neuroPredictionActivity extends AppCompatActivity {
         setContentView(R.layout.neuro_predict_activity);
 
         setupNeuroPredictInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.scrollView));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(neuroPredictionActivity.this));
@@ -164,7 +165,7 @@ public class neuroPredictionActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -174,7 +175,7 @@ public class neuroPredictionActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

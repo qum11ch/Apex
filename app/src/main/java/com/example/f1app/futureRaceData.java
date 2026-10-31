@@ -6,6 +6,9 @@ public class futureRaceData {
             locality;
     boolean isCanceled;
 
+    private raceWeekendStatus.State weekendState = raceWeekendStatus.State.FUTURE;
+    private java.util.List<raceWeekendStatus.SessionInfo> sessions;
+
     public boolean isCanceled() {
         return isCanceled;
     }
@@ -52,4 +55,15 @@ public class futureRaceData {
     }
 
     public String getCircuitId(){ return circuitId;}
+
+    public raceWeekendStatus.State getWeekendState() { return weekendState; }
+    public void setWeekendState(raceWeekendStatus.State state) { this.weekendState = state; }
+
+    public java.util.List<raceWeekendStatus.SessionInfo> getSessions() { return sessions; }
+    public void setSessions(java.util.List<raceWeekendStatus.SessionInfo> sessions) { this.sessions = sessions; }
+
+    public boolean isActiveWeekend() {
+        return weekendState == raceWeekendStatus.State.ONGOING
+                || weekendState == raceWeekendStatus.State.AWAITING_RESULTS;
+    }
 }

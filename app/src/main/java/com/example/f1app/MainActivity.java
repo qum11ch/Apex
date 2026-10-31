@@ -835,72 +835,24 @@ public class MainActivity extends AppCompatActivity {
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Integer round = ds.child("round").getValue(Integer.class);
-                    String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
-                    String dateEnd = ds.child("raceDate").getValue(String.class);
 
-                    String raceName = ds.child("Circuit/raceName").getValue(String.class);
-                    String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
-                    Boolean hasCanceled = ds.child("Canceled").getValue(Boolean.class);
+                    raceWeekendStatus.State state =
+                            raceWeekendStatus.resolve(ds, System.currentTimeMillis());
 
-                    boolean isCanceled;
-                    isCanceled = hasCanceled != null;
+                    boolean isCanceled = raceWeekendStatus.isCanceled(ds);
 
-                    if (!isCanceled){
-                        raceNames.add(raceName);
-                        circuitsId.add(circuitId);
-                    }
-                    boolean future = false;
-                    boolean isOnGoing = false;
-                    boolean concluded = true;
-
-                    String currentDateString = currentDate.toString();
-                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
-
-                    // String eventEndTime = ds.child("raceDate").getValue(String.class) +
-                    //         " " + ds.child("raceTime").getValue(String.class);
-                    // String eventStartTime = ds.child("FirstPractice/firstPracticeDate").getValue(String.class) +
-                    //         " " + ds.child("FirstPractice/firstPracticeTime").getValue(String.class);
-
-                    try{
-                        Date start = formatter.parse(dateStart);
-                        Date end = formatter.parse(dateEnd);
-                        Date current = formatter.parse(currentDateString);
-                        if(start.after(current) && end.after(current))
-                        {
-                            concluded = false;
-                            future = true;
-                        }
-                        else if (current.equals(start) || current.equals(end)){
-                            concluded = false;
-                            isOnGoing = true;
-                        }
-                        else if (current.after(start) && current.before(end)){
-                            concluded = false;
-                            isOnGoing = true;
-                        }
-
-                    } catch (ParseException e){
-                        showError(e.getMessage());
-                        Log.d("ParseExeption", "" + e);
-                    }
-
-                    if (isCanceled){
-                        isOnGoing = false;
-                        future = false;
-                    }
-
-                    if(concluded){
-                        concludedRoundNumber.add(round.toString());
-                    }
-
-                    if (future || isOnGoing){
-                        String newRound;
-                        if (isOnGoing){
-                           newRound = round + " " + getString(R.string.is_ongoing);
-                        }else{
-                            newRound = round.toString();
-                        }
-                        futureRaceRoundNumber.add(newRound.toUpperCase());
+                    switch (state) {
+                        case CONCLUDED:
+                        case CANCELED:
+                            concludedRoundNumber.add(round.toString());
+                            break;
+                        case FUTURE:
+                            if (!isCanceled) futureRaceRoundNumber.add(round.toString());
+                            break;
+                        case ONGOING:
+                        case AWAITING_RESULTS:
+                            futureRaceRoundNumber.add(round.toString());
+                            break;
                     }
                 }
                 if(!concludedRoundNumber.isEmpty()){
@@ -990,13 +942,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getFutureRace(String currentYear, String round){
         DatabaseReference rootRef = database.getReference();
-        String newRound;
-        if (round.contains(getString(R.string.is_ongoing).toUpperCase())){
-            String[] roundArray = round.split("\\s+");
-            newRound = roundArray[0];
-        }else{
-            newRound = round;
-        }
+        String newRound = round.trim().split("\\s+")[0];
         rootRef.child("schedule/season/" + currentYear).orderByChild("round")
                 .equalTo(Integer.parseInt(newRound)).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -1022,6 +968,12 @@ public class MainActivity extends AppCompatActivity {
                                             circuitName, round, raceCountry, circuitId);
                                     futureRaceData.setLocality(raceLocation);
                                     futureRaceData.setCanceled(isCanceled);
+
+                                    futureRaceData.setWeekendState(
+                                            raceWeekendStatus.resolve(ds, System.currentTimeMillis())
+                                    );
+                                    futureRaceData.setSessions(raceWeekendStatus.sessions(ds));
+
                                     datumFuture.add(futureRaceData);
 
                                     hideShimmer(rvFuture, sfFuture);

@@ -75,6 +75,15 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
             holder.raceMonth.setText(month);
         }
 
+        if (!datum.isCanceled() && datum.isActiveWeekend() && datum.getSessions() != null) {
+            holder.ongoingStatusView.bind(
+                    datum.getSessions(),
+                    datum.getWeekendState() == raceWeekendStatus.State.AWAITING_RESULTS
+            );
+        } else {
+            holder.ongoingStatusView.clear();
+        }
+
         String localeRaceName = datum.getFutureRaceName().toLowerCase().replaceAll("\\s+", "_");
         String futureRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + currentYear;
         holder.raceName.setText(futureRaceName);
@@ -144,6 +153,7 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 cnd;
         ConstraintLayout constraintLayout;
+        ongoingStatusView ongoingStatusView;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             round = itemView.findViewById(R.id.round);
@@ -155,6 +165,12 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
             raceName = itemView.findViewById(R.id.raceName);
             circuitName = itemView.findViewById(R.id.circuitName);
             constraintLayout = itemView.findViewById(R.id.main_layout);
+
+            ongoingStatusView = new ongoingStatusView(
+                    itemView.findViewById(R.id.ongoingStatusContainer),
+                    itemView.findViewById(R.id.liveDot),
+                    itemView.findViewById(R.id.ongoingStatus)
+            );
         }
     }
 }

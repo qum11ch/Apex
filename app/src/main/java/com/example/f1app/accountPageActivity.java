@@ -1,7 +1,6 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
-import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
 
@@ -56,13 +55,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.activity.EdgeToEdge;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class accountPageActivity extends AppCompatActivity {
 
@@ -317,7 +309,7 @@ public class accountPageActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -346,7 +338,7 @@ public class accountPageActivity extends AppCompatActivity {
                 header.setLayoutParams(headerParams);
             }
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

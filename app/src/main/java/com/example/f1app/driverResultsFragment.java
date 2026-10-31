@@ -80,6 +80,7 @@ public class driverResultsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
 
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
         scrollView = view.findViewById(R.id.scrollView);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);

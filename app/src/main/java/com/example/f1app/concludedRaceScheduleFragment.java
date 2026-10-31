@@ -72,6 +72,9 @@ public class concludedRaceScheduleFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.nestedScrollView));
+
         secondPlace_code = view.findViewById(R.id.secondPlace_code);
         firstPlace_code = view.findViewById(R.id.firstPlace_code);
         thirdPlace_code = view.findViewById(R.id.thirdPlace_code);
@@ -508,6 +511,18 @@ public class concludedRaceScheduleFragment extends Fragment {
                 datum.add(raceEvent);
 
                 adapter.notifyDataSetChanged();
+
+                Integer round = snapshot.child("round").getValue(Integer.class);
+
+                if (round != null && isAdded()) {
+                    sessionResultsLoader.load(
+                            concludedRaceScheduleFragment.this,
+                            currentYear,
+                            String.valueOf(round),
+                            datum,
+                            adapter
+                    );
+                }
             }
 
             @Override

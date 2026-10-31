@@ -72,6 +72,20 @@
                     android:textSize="22sp"
                     android:textColor="@color/text_color_thirdly"
                     android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+
+                <TextView
+                    android:id="@+id/eventResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/eventTime"
+                    android:layout_marginTop="6dp"
+                    android:layout_marginEnd="8dp"
+                    android:textAlignment="center"
+                    android:textColor="@color/grey"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                    android:textSize="14sp"
+                    android:letterSpacing="0.03"
+                    android:visibility="gone" />
             </RelativeLayout>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

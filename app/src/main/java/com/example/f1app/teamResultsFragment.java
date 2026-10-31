@@ -97,8 +97,8 @@ public class teamResultsFragment extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
         firstDriverFamilyName = view.findViewById(R.id.firstDriverFamilyName);
         secondDriverFamilyName = view.findViewById(R.id.secondDriverFamilyName);
@@ -876,30 +876,13 @@ public class teamResultsFragment extends Fragment {
         }
     }
 
-    private String getDriverRaceResult(
-            DataSnapshot resultSnapshot,
-            String driverFullName,
-            String raceName) {
+    private String getDriverRaceResult(DataSnapshot resultSnapshot, String driverFullName, String raceName) {
+        DataSnapshot raceResult = resultSnapshot.child(driverFullName).child(raceName);
+        String result = raceResult.child("Result").getValue(String.class);
+        String resultTeamId = raceResult.child("TeamId").getValue(String.class);
 
-        DataSnapshot raceResult = resultSnapshot
-                .child(driverFullName)
-                .child(raceName);
-
-        String result = raceResult
-                .child("Result")
-                .getValue(String.class);
-
-        String resultTeamId = raceResult
-                .child("TeamId")
-                .getValue(String.class);
-
-        if ("N/C".equals(result)) {
-            return "N/C";
-        }
-
-        if (result != null && teamId.equals(resultTeamId)) {
-            return result;
-        }
+        if ("N/C".equals(result)) return "N/C";
+        if (result != null && teamId.equals(resultTeamId)) return result;
 
         return "null";
     }

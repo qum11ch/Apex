@@ -101,6 +101,7 @@ public class userPredictionsActivity extends AppCompatActivity {
         setContentView(R.layout.user_predictions_activity);
 
         setupUserPredictionsInsets();
+        EdgeInsets.applyBottom(findViewById(R.id.userPredictionsScrollView));
 
         if (!checkConnection(getApplicationContext())){
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(userPredictionsActivity.this));
@@ -237,7 +238,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
+                    rootBottom
             );
 
             header.setPadding(
@@ -247,7 +248,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

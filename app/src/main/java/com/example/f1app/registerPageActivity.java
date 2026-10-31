@@ -270,7 +270,7 @@ public class registerPageActivity extends AppCompatActivity {
                     rootLeft + safeInsets.left,
                     rootTop,
                     rootRight + safeInsets.right,
-                    rootBottom + bottomInset
+                    rootBottom
             );
 
             header.setPadding(
@@ -280,7 +280,7 @@ public class registerPageActivity extends AppCompatActivity {
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);

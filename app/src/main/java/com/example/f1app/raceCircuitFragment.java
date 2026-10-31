@@ -61,6 +61,8 @@ public class raceCircuitFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
+
         TextView raceName = view.findViewById(R.id.raceName);
         circuitName = view.findViewById(R.id.circuitName);
         length = view.findViewById(R.id.length);
