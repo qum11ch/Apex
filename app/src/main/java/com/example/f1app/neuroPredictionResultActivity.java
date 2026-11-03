@@ -60,7 +60,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.example.f1app.BuildConfig;
+import androidx.core.widget.NestedScrollView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 
 public class neuroPredictionResultActivity extends AppCompatActivity {
@@ -70,20 +71,31 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout, shimmerUpdateLayour;
     private TextView poleLapDriverName;
     private TextView poleLapTime;
-    private TextView eventInfo;
+    private TextView raceName;
+    private TextView eventType;
+    private TextView raceYear;
     private TextView updateDate;
-    private RelativeLayout updateDateLayout;
-    private RelativeLayout poleLapDriverLayout;
-    private LinearLayout loadingWeatherLayout;
+    private LinearLayout updateDateLayout;
+    private LinearLayout poleLapDriverLayout;
+    private RelativeLayout loadingWeatherLayout;
     private ProgressBar weatherProgress;
     private TextView loadingWeatherText;
     private TextView loadingWeatherPercent;
+    private SwipeRefreshLayout swipeRefresh;
+    private boolean predictionLoading = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.neuro_predictions_results_activity);
+
+        findViewById(R.id.aboutPrediction).setOnClickListener(v ->
+                new neuroPredictionInfoSheet().show(
+                        getSupportFragmentManager(),
+                        "neuro_prediction_info"
+                )
+        );
 
         setupNeuroResultsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.scrollView));
@@ -105,14 +117,16 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionResultActivity.this));
         }
 
-        RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
+        StripedRelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
         if (!checkLightTheme(neuroPredictionResultActivity.this)){
             fastestLapLayout.setBackground(ContextCompat.getDrawable(neuroPredictionResultActivity.this, R.drawable.background_striped_lines_item_night));
         }
 
         poleLapDriverName = findViewById(R.id.poleLapDriverName);
         poleLapTime = findViewById(R.id.poleLapTime);
-        eventInfo = findViewById(R.id.event_info);
+        raceName = findViewById(R.id.race_name);
+        eventType = findViewById(R.id.event_type);
+        raceYear = findViewById(R.id.year);
         updateDate = findViewById(R.id.last_update_time);
         poleLapDriverLayout = findViewById(R.id.poleLapDriver_layout);
         updateDateLayout = findViewById(R.id.update_date_layout);
@@ -137,6 +151,22 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
+        swipeRefresh = findViewById(R.id.swipeRefresh);
+
+        NestedScrollView scrollView = findViewById(R.id.scrollView);
+
+        swipeRefresh.setColorSchemeColors(
+                ContextCompat.getColor(this, R.color.red)
+        );
+
+        swipeRefresh.setProgressBackgroundColorSchemeColor(
+                ContextCompat.getColor(this, R.color.header_color)
+        );
+
+        swipeRefresh.setOnChildScrollUpCallback(
+                (parent, child) -> scrollView.canScrollVertically(-1)
+        );
+
         if(!getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String gpName = bundle.getString("gp");
@@ -155,6 +185,31 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 q3TimeText.setText(R.string.q3_header);
             }
 
+            String mEventType;
+
+            if (event.equals("Q")) {
+                mEventType =
+                        getString(
+                                R.string.qualifying_text
+                        );
+            } else {
+                mEventType =
+                        getString(
+                                R.string.sprint_qualifying_text
+                        );
+            }
+
+            String normalizedGpName = gpName.toLowerCase().replace(" ", "_");
+
+            String localizedGpName = getString( getStringByName( normalizedGpName + "_text") );
+
+            raceName.setText(localizedGpName);
+            eventType.setText(mEventType);
+            raceYear.setText(currentSeason);
+
+            LinearLayout eventHeader = findViewById(R.id.eventHeader);
+            eventHeader.setVisibility(View.VISIBLE);
+
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
             rootRef.child("status/last_update")
                     .addValueEventListener(new ValueEventListener() {
@@ -164,8 +219,16 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                             String lastRace = snapshot.child("last_race").getValue(String.class);
                             String year = lastRace.substring(0, 4);
                             if (year.equals(currentSeason)){
+                                swipeRefresh.setOnRefreshListener(() -> {
+                                    getPrediction(gpName, lastRound, event, currentSeason);
+                                });
+
                                 getPrediction(gpName, lastRound, event, currentSeason);
                             }else{
+                                swipeRefresh.setOnRefreshListener(() -> {
+                                    getPrediction(gpName, 0, event, currentSeason);
+                                });
+
                                 getPrediction(gpName, 0, event, currentSeason);
                             }
                         }
@@ -173,8 +236,17 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                         @Override
                         public void onCancelled(@NonNull DatabaseError error) {
                             Log.e("predictPageActivity", error.getMessage());
+                            showProgressError(getString(R.string.neuro_prediction_status_error));
                         }
                     });
+        }
+    }
+
+    private void finishSwipeRefresh() {
+        predictionLoading = false;
+
+        if (swipeRefresh != null) {
+            swipeRefresh.setRefreshing(false);
         }
     }
 
@@ -220,6 +292,12 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
     private void getPrediction(String gpName, Integer lastGPRound, String event,
                                String currentSeason){
+
+        if (predictionLoading) {
+            return;
+        }
+
+        predictionLoading = true;
 
         setProgressStage(0, getString(R.string.neuro_prediction_progress_data_start));
 
@@ -541,6 +619,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                     "WeatherPredict",
                     "VISUAL_CROSSING_API_KEY не найден"
             );
+            showProgressError(getString(R.string.neuro_prediction_weather_api_error));
+
             return;
         }
 
@@ -595,6 +675,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     Log.e("WeatherPredict",
                                             "Время " + targetTime + " не найдено");
 
+                                    showProgressError(getString(R.string.neuro_prediction_weather_time_error));
+
                                     return;
                                 }
 
@@ -630,6 +712,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                             } catch (JSONException e) {
                                 Log.e("WeatherPredict", "Ошибка обработки JSON", e);
+                                showProgressError(getString(R.string.neuro_prediction_weather_catch_error));
                             }
                         },
                         error -> {
@@ -965,28 +1048,6 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
         poleLapTime.setText(q3Time);
 
-        String eventType;
-
-        if (event.equals("Q")) {
-            eventType =
-                    getString(
-                            R.string.qualifying_text
-                    );
-        } else {
-            eventType =
-                    getString(
-                            R.string.sprint_qualifying_text
-                    );
-        }
-
-        String normalizedGpName = gpName.toLowerCase().replace(" ", "_");
-
-        String localizedGpName = getString( getStringByName( normalizedGpName + "_text") );
-
-        String fullEventName = year + " " + localizedGpName + " " + eventType;
-
-        eventInfo.setText(fullEventName);
-
         String updateDateText = formatDateForUser(updateDateRawText);
         updateDate.setText(updateDateText);
 
@@ -1045,7 +1106,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern(
-                        "dd-MM-yyyy HH:mm:ss",
+                        "dd-MM-yyyy HH:mm",
                         Locale.getDefault()
                 );
 
@@ -1186,8 +1247,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     }
 
     private void finishProgress() {
-        weatherProgress.setProgress(100);
+        finishSwipeRefresh();
 
+        weatherProgress.setProgress(100);
         loadingWeatherPercent.setText("100%");
         loadingWeatherText.setText(getString(R.string.neuro_prediction_progress_finish));
 
@@ -1197,9 +1259,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         );
     }
 
-    private void showProgressError(
-            String message
-    ) {
+    private void showProgressError(String message) {
+        finishSwipeRefresh();
+
         if (loadingWeatherLayout != null) {
             loadingWeatherLayout.setVisibility(
                     View.VISIBLE

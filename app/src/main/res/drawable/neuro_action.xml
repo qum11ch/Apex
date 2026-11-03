@@ -1,0 +1,18 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/neuro_divider" />
+            <corners android:radius="14dp" />
+        </shape>
+    </item>
+    <item>
+        <ripple android:color="#30FFFFFF">
+            <item>
+                <shape>
+                    <solid android:color="@color/neuro_accent" />
+                    <corners android:radius="14dp"/>
+                </shape>
+            </item>
+        </ripple>
+    </item>
+</selector>

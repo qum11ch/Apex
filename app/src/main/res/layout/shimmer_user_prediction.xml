@@ -17,33 +17,94 @@
         app:layout_constraintTop_toTopOf="parent">
         <RelativeLayout
             android:id="@+id/content_layout"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:baselineAligned="false"
-            style="@style/ItemStylePreds"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:paddingStart="15dp"
-            android:paddingEnd="15dp">
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/bg_user_prediction_card"
+            android:paddingStart="16dp"
+            android:paddingTop="14dp"
+            android:paddingEnd="16dp"
+            android:paddingBottom="14dp">
 
             <RelativeLayout
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <TextView
+                    style="@style/ShimmerStyle"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:lineSpacingMultiplier="1.1"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textColor="@color/text_color_schedule"
+                    android:textSize="12sp"
+                    android:textStyle="normal" />
+            </RelativeLayout>
+
+            <TextView
+                style="@style/ShimmerStyle"
+                android:id="@+id/userPredictionTitle"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/header"
+                android:layout_marginTop="6dp"
+                android:gravity="start"
+                android:lineSpacingMultiplier="1.15"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                android:textColor="@color/text_color_main"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:id="@+id/userAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userPredictionTitle"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/ShimmerStyle"
+                    android:id="@+id/userPredictionAnswer_text"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textSize="16sp"
+                    android:textStyle="normal" />
+
+                <TextView
+                    style="@style/ShimmerStyle"
+                    android:id="@+id/userPredictionAnswer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="5dp"
+                    android:layout_weight="1"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/resultRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userAnswer"
+                android:layout_marginTop="12dp">
+
                 <TextView
                     android:id="@+id/userPredictionPoints"
                     style="@style/ShimmerStyle"
-                    android:layout_width="50dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_alignParentTop="true"
+                    android:layout_width="80dp"
                     android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
                     android:minHeight="20dp"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:gravity="center"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                     android:textColor="@color/white"
@@ -51,83 +112,30 @@
 
                 <TextView
                     style="@style/ShimmerStyle"
-                    android:layout_marginEnd="8dp"
-                    android:textStyle="normal"
-                    android:id="@+id/userPredictionEvent"
-                    android:layout_width="200dp"
+                    android:id="@+id/userPredictionStatus"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
-                    android:layout_alignTop="@id/userPredictionPoints"
-                    android:textSize="13sp"
-                    android:textColor="@color/prediction_red_text_color"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@id/userPredictionPoints"
+                    android:layout_marginEnd="12dp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                    android:textColor="@color/text_color_schedule"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
             </RelativeLayout>
 
             <TextView
-                style="@style/ShimmerStyle"
-                android:textColor="@color/text_color_main"
-                android:layout_marginTop="5dp"
-                android:gravity="start"
-                android:textAlignment="viewStart"
-                android:layout_below="@id/header"
-                android:id="@+id/userPredictionTitle"
-                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"/>
-
-            <LinearLayout
-                android:id="@+id/userAnswer"
-                android:layout_below="@id/userPredictionTitle"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="3dp">
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:textStyle="normal"
-                    android:id="@+id/userPredictionAnswer_text"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color_schedule"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"/>
-
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:textStyle="bold"
-                    android:layout_marginStart="5dp"
-                    android:id="@+id/userPredictionAnswer"
-                    android:layout_width="100dp"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/text_color_main"
-                    android:textSize="16sp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"/>
-
-            </LinearLayout>
-            <TextView
-                style="@style/ShimmerStyle"
-                android:layout_below="@id/userAnswer"
-                android:id="@+id/userPredictionStatus"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:textColor="@color/text_color_schedule"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-
-            <TextView
-                android:visibility="gone"
-                android:layout_below="@id/userPredictionStatus"
-                android:textStyle="normal"
-                android:layout_marginTop="5dp"
                 android:id="@+id/userPredictionDeadline"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/resultRow"
+                android:layout_marginTop="6dp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
                 android:textColor="@color/grey"
                 android:textSize="14sp"
-                android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+                android:textStyle="normal"
+                android:visibility="gone" />
 
         </RelativeLayout>
     </androidx.cardview.widget.CardView>

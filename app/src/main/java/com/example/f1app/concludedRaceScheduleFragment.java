@@ -513,6 +513,7 @@ public class concludedRaceScheduleFragment extends Fragment {
                 adapter.notifyDataSetChanged();
 
                 Integer round = snapshot.child("round").getValue(Integer.class);
+                Log.d("schedule_error", "exists=" + snapshot.exists() + " round=" + round + " isAdded=" + isAdded() + " key=" + raceName + " year=" + currentYear);
 
                 if (round != null && isAdded()) {
                     sessionResultsLoader.load(

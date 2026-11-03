@@ -14,6 +14,8 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -62,6 +64,10 @@ public class predictionsActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(predictionsActivity.this));
         }
 
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
+
         recyclerView = findViewById(R.id.predictionsRecyclerView);
         shimmerLayout = findViewById(R.id.shimmer_layout);
         swipeRefreshLayout = findViewById(R.id.swipe_layout);
@@ -75,6 +81,11 @@ public class predictionsActivity extends AppCompatActivity {
                         recyclerView.getVisibility() == View.VISIBLE
                                 && recyclerView.canScrollVertically(-1)
         );
+
+        findViewById(R.id.predictionRulesButton)
+                .setOnClickListener(v ->
+                        userPredictionRules.show(this)
+                );
 
         swipeRefreshLayout.setOnRefreshListener(() -> {
             if (isLoading) {
@@ -90,6 +101,13 @@ public class predictionsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         loadPredictions(predictionsActivity.this);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        userPredictionRules.showIfNeeded(this);
     }
 
     private void setupPredictionsInsets() {

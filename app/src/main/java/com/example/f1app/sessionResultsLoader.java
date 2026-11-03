@@ -23,6 +23,10 @@ public final class sessionResultsLoader {
             List<scheduleData> datum,
             RecyclerView.Adapter<?> adapter) {
 
+        Log.d("SessionResults", "load called: season=" + season
+                + " round=" + round
+                + " datumSize=" + datum.size());
+
         Context context = fragment.requireContext().getApplicationContext();
         long now = System.currentTimeMillis();
 
@@ -61,13 +65,19 @@ public final class sessionResultsLoader {
         for (jolpicaSessions.Session session : jolpicaSessions.Session.values()) {
             scheduleData event = findEvent(datum, eventKey(session));
 
-            // Нет такой сессии в уикенде (например, спринта) — не запрашиваем.
+            Long start = event != null ? startMillis(event.getEventDate()) : null;
+
+            Log.d("SessionResults", "check session=" + session
+                    + " eventFound=" + (event != null)
+                    + " eventDate=" + (event != null ? event.getEventDate() : "null")
+                    + " start=" + start
+                    + " now=" + now);
+
             if (event == null) continue;
 
-            // Сессия ещё не началась — результатов быть не может.
-            Long start = startMillis(event.getEventDate());
             if (start != null && now < start) continue;
 
+            Log.d("SessionResults", "requesting " + session);
             jolpicaSessions.load(context, season, round, session, callback);
         }
     }

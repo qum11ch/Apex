@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -38,7 +39,7 @@ public class raceResultsRaceFragment extends Fragment {
     private List<raceResultsRaceData> datum;
     private TextView fastestLapDriverName, fastestLapTime;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout;
-    private RelativeLayout fastestLapDriverLayout;
+    private LinearLayout fastestLapDriverLayout;
 
     public raceResultsRaceFragment() {
         // required empty public constructor.

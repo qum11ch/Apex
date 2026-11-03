@@ -172,38 +172,53 @@ public class teamPageActivity extends AppCompatActivity {
                     .error(R.drawable.placeholder)
                     .into(teamLogo);
 
-            CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
-            if (!checkLightTheme(teamPageActivity.this)){
-                collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(teamPageActivity.this, R.drawable.black_gradient));
-            }
-            AppBarLayout appBarLayout = findViewById(R.id.appbar);
-            Toolbar toolbar = findViewById(R.id.toolbar);
-            appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-                boolean isShow = true;
-                int scrollRange = -1;
-
-                @Override
-                public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                    if (scrollRange == -1) {
-                        scrollRange = appBarLayout.getTotalScrollRange();
-                    }
-                    if (scrollRange + verticalOffset == 0) {
-                        teamName.setText(mTeamName);
-                        if (!checkLightTheme(teamPageActivity.this)){
-                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.darkest_grey));
-                        }else{
-                            toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),R.color.dark_blue));
-                        }
-                        isShow = true;
-                    } else if (isShow) {
-                        teamName.setText(" ");
-                        toolbar.setBackgroundColor(ContextCompat.getColor(getApplicationContext(),android.R.color.transparent));
-                        isShow = false;
-                    }
-                }
-            });
-
+            setupToolbar(mTeamName);
         }
+    }
+
+    private void setupToolbar(String mTeamName) {
+        CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+
+        if (!checkLightTheme(teamPageActivity.this)) {
+            appBarLayout.setBackground(ContextCompat.getDrawable(teamPageActivity.this, R.drawable.black_gradient));
+            collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(teamPageActivity.this, R.drawable.black_gradient));
+        }
+
+        appBarLayout.setExpanded(true, true);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+                                                    boolean isShow = true;
+                                                    int scrollRange = -1;
+
+                                                    @Override
+                                                    public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                                                        if (scrollRange == -1) {
+                                                            scrollRange = appBarLayout.getTotalScrollRange();
+                                                        }
+                                                        if (scrollRange + verticalOffset == 0) {
+                                                            teamName.setText(mTeamName);
+                                                            if (!checkLightTheme(teamPageActivity.this)) {
+                                                                toolbar.setBackgroundColor(
+                                                                        ContextCompat.getColor(getApplicationContext(), R.color.darkest_grey));
+                                                            } else {
+                                                                toolbar.setBackgroundColor(
+                                                                        ContextCompat.getColor(getApplicationContext(), R.color.dark_blue));
+                                                            }
+                                                            isShow = true;
+                                                        } else if (isShow) {
+                                                            teamName.setText(" ");
+                                                            toolbar.setBackgroundColor(
+                                                                    ContextCompat.getColor(
+                                                                            getApplicationContext(),
+                                                                            android.R.color.transparent
+                                                                    )
+                                                            );
+                                                            isShow = false;
+                                                        }
+                                                    }
+                                                }
+        );
     }
 
     private void setupTeamInsets() {

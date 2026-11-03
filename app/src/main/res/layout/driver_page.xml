@@ -34,7 +34,7 @@
                 android:minHeight="70dp"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
                 app:statusBarScrim="@color/statusBar_color"
-                app:contentScrim="@color/dark_blue">
+                app:contentScrim="@color/statusBar_color">
                 <LinearLayout
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7"

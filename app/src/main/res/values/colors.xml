@@ -5,7 +5,7 @@
     <color name="colorPrimaryDark">#090e27</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="colorPrimary">#FFF</color>
-    <color name="colorPredicts">#dedede</color>
+    <color name="colorPredicts">#BFDEDEDE</color>
     <color name="textColorPrimary">#FFF</color>
     <color name="light_gold">#FFFFBF</color>
     <color name="gold">#836800</color>
@@ -74,4 +74,12 @@
     <color name="round_color">#a1000b</color>
     <color name="month_color">#DFDFDF</color>
     <color name="search_bar_picker">#222222</color>
+    <color name="table_header_color">#090e27</color>
+    <color name="neuro_bg">#F5F5F7</color>
+    <color name="neuro_surface">#80DEDEDE</color>
+    <color name="neuro_selected">#FCEBED</color>
+    <color name="neuro_divider">#D9DCE2</color>
+    <color name="neuro_text">#191B20</color>
+    <color name="neuro_secondary">#595E69</color>
+    <color name="neuro_accent">#C50020</color>
 </resources>

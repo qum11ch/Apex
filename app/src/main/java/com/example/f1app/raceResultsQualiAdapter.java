@@ -51,37 +51,9 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
         holder.driverCode.setText(mDriverCode);
         holder.driver_placement.setText(mDriverPosition);
 
-        if(mQ1.isEmpty()){
-            holder.Q1_time.setBackgroundColor(Color.TRANSPARENT);
-            holder.Q1_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
-            holder.Q1_time.setText("--");
-        }else{
-            holder.Q1_time.setText(mQ1);
-        }
-
-        if(mQ2.isEmpty()){
-            holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
-            holder.Q2_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
-            holder.Q2_time.setText("--");
-        } else if (mQ2.equals("--")) {
-            holder.Q2_time.setBackgroundColor(Color.TRANSPARENT);
-            holder.Q2_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
-            holder.Q2_time.setText(mQ2);
-        }else{
-            holder.Q2_time.setText(mQ2);
-        }
-
-        if(mQ3.isEmpty()){
-            holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
-            holder.Q3_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
-            holder.Q3_time.setText("--");
-        } else if (mQ3.equals("--")) {
-            holder.Q3_time.setBackgroundColor(Color.TRANSPARENT);
-            holder.Q3_time.setTextColor(ContextCompat.getColor(context, R.color.text_color_main));
-            holder.Q3_time.setText(mQ3);
-        }else{
-            holder.Q3_time.setText(mQ3);
-        }
+        bindTime(holder.Q1_time, mQ1);
+        bindTime(holder.Q2_time, mQ2);
+        bindTime(holder.Q3_time, mQ3);
 
         int year = Integer.parseInt(mSeason);
 
@@ -105,6 +77,25 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
                 });
             }
         }
+    }
+
+    private void bindTime(TextView view, String time) {
+        boolean hasTime =
+                time != null
+                        && !time.trim().isEmpty()
+                        && !"--".equals(time.trim());
+
+        view.setText(hasTime ? time : "--");
+
+        if (hasTime) {
+            view.setBackgroundResource(R.drawable.pts_style);
+        } else {
+            view.setBackgroundColor(Color.TRANSPARENT);
+        }
+
+        view.setTextColor(
+                ContextCompat.getColor(context, R.color.text_color_main)
+        );
     }
 
     @Override

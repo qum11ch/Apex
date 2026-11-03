@@ -116,6 +116,11 @@ public class predictionFormActivity extends AppCompatActivity {
             page.setBackground(ContextCompat.getDrawable(predictionFormActivity.this, R.drawable.black_gradient));
         }
 
+        findViewById(R.id.aboutPrediction)
+                .setOnClickListener(v ->
+                        userPredictionRules.show(this)
+                );
+
         predictionId = getIntent().getStringExtra("predictionId");
 
         eventName = findViewById(R.id.eventName);

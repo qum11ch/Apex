@@ -47,9 +47,15 @@
                 android:textColor="@color/white"
                 android:textSize="22sp" />
 
-            <Space
+            <ImageButton
+                android:id="@+id/predictionRulesButton"
                 android:layout_width="48dp"
-                android:layout_height="48dp" />
+                android:layout_height="48dp"
+                android:padding="12dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/neuro_info"
+                app:tint="@color/white"
+                android:contentDescription="@string/pred_rules_button" />
 
         </LinearLayout>
 

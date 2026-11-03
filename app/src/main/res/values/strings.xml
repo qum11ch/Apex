@@ -27,7 +27,7 @@
     <string name="footer_homePage">Home</string>
     <string name="footer_account">Account</string>
     <string name="country">Country:</string>
-    <string name="pole_position">Pole position</string>
+    <string name="pole_position">Pole prediction</string>
     <string name="team">Team</string>
     <string name="save_race">Save Race</string>
     <string name="settings">Account Settings</string>
@@ -586,6 +586,12 @@
     <string name="neuro_prediction_progress_model_table">Updating table...</string>
     <string name="neuro_prediction_progress_model_error">failed to calculate prediction</string>
 
+    <string name="neuro_prediction_weather_api_error">Error: Failed to find the weather API key.</string>
+    <string name="neuro_prediction_weather_time_error">Error: Weather response contains no data for the event time.</string>
+    <string name="neuro_prediction_weather_catch_error">Error: Failed to process weather data.</string>
+    <string name="neuro_prediction_status_error">Error: Failed to load season status.</string>
+
+
     <string name="update_required_title">Update required</string>
     <string name="update_required_description">Access to neural network forecasts is only available in the latest version of Apex. Please update the app to the current version.</string>
     <string name="update_required_decline_text">Stay</string>
@@ -596,4 +602,68 @@
     <string name="update_reqired_version_task_error">Failed to check the version. Please try again.</string>
 
     <string name="account_relogin_required">We have updated the account system. Please log in again to complete your profile update.</string>
+
+    <string name="neuro_ui_title">AI Predictor</string>
+    <string name="neuro_ui_heading">Qualifying Prediction</string>
+    <string name="neuro_ui_intro">Select a round and session to get the predicted qualifying results.</string>
+    <string name="neuro_ui_how">How it works</string>
+    <string name="neuro_ui_gp">Grand Prix</string>
+    <string name="neuro_ui_season">%1$s Season</string>
+    <string name="neuro_ui_choose_gp">Select Grand Prix</string>
+    <string name="neuro_ui_loading_gp">Loading rounds…</string>
+    <string name="neuro_ui_gp_error">Failed to load the list of rounds. Please reopen the screen.</string>
+    <string name="neuro_ui_session">Session</string>
+    <string name="neuro_ui_qualifying">Qualifying</string>
+    <string name="neuro_ui_sprint">Sprint Shootout</string>
+    <string name="neuro_ui_get_prediction">Get Prediction</string>
+    <string name="neuro_ui_disclaimer">The model\'s output may differ from the actual qualifying results.</string>
+
+    <string name="neuro_ui_result_note">Approximate qualifying results prediction.</string>
+    <string name="neuro_ui_predicted_pole">Predicted Pole Position</string>
+
+    <string name="neuro_design_title">Neural-Model Predictor</string>
+    <string name="neuro_design_heading">Qualifying Prediction</string>
+    <string name="neuro_design_intro">Select a Grand-Prix and qualifying type.</string>
+    <string name="neuro_design_stage">Round</string>
+    <string name="neuro_design_session">Session</string>
+    <string name="neuro_design_season">%1$s Season</string>
+    <string name="neuro_design_loading">Loading rounds…</string>
+    <string name="neuro_design_choose">Select round</string>
+    <string name="neuro_design_error">Failed to load rounds</string>
+    <string name="neuro_design_qualifying">Qualifying</string>
+    <string name="neuro_design_sprint">Sprint Qualifying</string>
+    <string name="neuro_design_action">Get Prediction</string>
+    <string name="neuro_design_note">Calculation based on current data: the selected Grand-Prix is treated as the upcoming round. \n\nModel prediction, not an official result.</string>
+    <string name="neuro_design_about">About Prediction</string>
+    <string name="neuro_design_capabilities">Capabilities</string>
+    <string name="neuro_design_capabilities_body">Prediction of positions and lap times in the selected qualifying session.</string>
+    <string name="neuro_design_round">Limitations</string>
+    <string name="neuro_design_round_body">The model treats the selected Grand-Prix as the upcoming round and utilizes the current championship standings.</string>
+    <string name="neuro_design_major">Key considerations</string>
+    <string name="neuro_design_major_body">For past rounds, the calculation replicates the conditions at the time of the event. For future rounds, it does not account for driver point changes that may occur beforehand. Model results may differ from actual qualifying outcomes.</string>
+    <string name="neuro_design_done">Understood</string>
+    <string name="neuro_design_pole">Predicted Pole Position</string>
+    <string name="neuro_design_results">Preparing the prediction may take a few minutes.\n\nModel prediction, not an official result.</string>
+    <string name="neuro_search_clear">Clear search</string>
+
+    <string name="neuro_search_hint">Find Grand-Prix</string>
+    <string name="neuro_search_empty">No results</string>
+
+    <string name="pred_rules_plain_title">Prediction Rules</string>
+    <string name="pred_rules_plain_intro">Select an option and tap "Save". Your response is considered accepted once the save is confirmed.\nAccount login is required to participate.</string>
+    <string name="pred_rules_plain_deadline_title">Submission Deadline</string>
+    <string name="pred_rules_plain_deadline_body">You can modify or delete your response until the deadline specified in the prediction. If you make changes, make sure to save it again. Once the deadline passes, submitting, modifying, or deleting responses will be unavailable.</string>
+    <string name="pred_rules_plain_points_title">Scoring</string>
+    <string name="pred_rules_plain_points_body">The card displays the maximum reward for the prediction. A correct answer awards the full reward. Incorrect answers do not deduct previously earned points.</string>
+    <string name="pred_rules_plain_tie_title">Ties</string>
+    <string name="pred_rules_plain_weekend_title">Weekend Points</string>
+    <string name="pred_rules_plain_weekend_body">Weekend point predictions account for the total points earned in both the main race and the sprint, if applicable.</string>
+    <string name="pred_rules_plain_tie_body">A tie option is available in certain prediction formats. In such cases, 50% of the maximum reward is awarded.</string>
+    <string name="pred_rules_plain_results_title">Finalizing Results</string>
+    <string name="pred_rules_plain_results_body">Prediction results are finalized based on the official outcomes of the events. Awarded points become final once the prediction results are announced.</string>
+    <string name="pred_rules_plain_stats_title">Statistics</string>
+    <string name="pred_rules_plain_stats_body">Your responses, points, and leaderboard rankings are available in "My Predictions". Accuracy is the ratio of correct answers to the total of correct and incorrect answers. Ties and unresolved responses are excluded from this calculation.</string>
+    <string name="pred_rules_plain_done">Got it</string>
+
+    <string name="pred_rules_button">About Predictions</string>
 </resources>

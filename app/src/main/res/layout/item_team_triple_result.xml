@@ -80,7 +80,7 @@
         </LinearLayout>
         <View
             android:id="@+id/bottomLine"
-            android:background="@color/light_silver"
+            android:background="@color/account_settings_input_color"
             android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="1dp"/>

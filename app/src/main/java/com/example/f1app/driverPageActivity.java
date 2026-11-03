@@ -602,12 +602,13 @@ public class driverPageActivity extends AppCompatActivity {
 
     private void setupToolbar(String driverFullName) {
         CollapsingToolbarLayout collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
 
         if (!checkLightTheme(driverPageActivity.this)) {
+            appBarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
             collapsingToolbarLayout.setBackground(ContextCompat.getDrawable(driverPageActivity.this, R.drawable.black_gradient));
         }
 
-        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.setExpanded(true, true);
         Toolbar toolbar = findViewById(R.id.toolbar);
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {

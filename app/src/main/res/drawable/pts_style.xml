@@ -3,5 +3,5 @@
     android:thickness="0dp"
     android:shape="rectangle">
     <corners android:radius="8dp"/>
-    <solid android:color="@color/light_grey"/>
+    <solid android:color="@color/account_settings_input_color"/>
 </shape>

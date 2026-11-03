@@ -25,9 +25,9 @@ import androidx.core.view.WindowInsetsCompat;
 import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,17 +45,26 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class neuroPredictionActivity extends AppCompatActivity {
-    private NumberPicker numberPicker;
     private RadioGroup radioGroup;
     private Button predictButton;
 
     private boolean checkingResultAccess = false;
 
+    private TextView selectedRaceText;
+    private View racePickerField;
+
+    private final ArrayList<String> raceNames = new ArrayList<>();
+    private final ArrayList<String> raceLabels = new ArrayList<>();
+
+    private int selectedRaceIndex = -1;
+
+    private static final String STATE_SELECTED_GP = "selected_gp";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-        setContentView(R.layout.neuro_predict_activity);
+        setContentView(R.layout.neuro_prediction_activity);
 
         setupNeuroPredictInsets();
         EdgeInsets.applyBottom(findViewById(R.id.scrollView));
@@ -66,7 +75,6 @@ public class neuroPredictionActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionActivity.this));
         }
 
-        numberPicker = findViewById(R.id.numberpicker);
         predictButton = findViewById(R.id.predict_button);
         radioGroup = findViewById(R.id.radioGroup);
         predictButton = findViewById(R.id.predict_button);
@@ -80,65 +88,182 @@ public class neuroPredictionActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("/schedule/season/" + currentSeason)
-                .addValueEventListener(new ValueEventListener() {
+        selectedRaceText = findViewById(R.id.selectedRaceText);
+        racePickerField = findViewById(R.id.racePickerField);
+
+        TextView seasonText = findViewById(R.id.seasonText);
+        seasonText.setText(getString(
+                R.string.neuro_ui_season,
+                currentSeason == null ? "—" : currentSeason
+        ));
+
+        findViewById(R.id.aboutPrediction).setOnClickListener(v ->
+                new neuroPredictionInfoSheet().show(
+                        getSupportFragmentManager(),
+                        "neuro_prediction_info"
+                )
+        );
+
+        racePickerField.setEnabled(false);
+        predictButton.setEnabled(false);
+
+        getSupportFragmentManager().setFragmentResultListener(
+                neuroRacePickerSheet.RESULT_KEY,
+                this,
+                (key, result) -> {
+                    int index = result.getInt(
+                            neuroRacePickerSheet.INDEX,
+                            -1
+                    );
+
+                    if (index < 0 || index >= raceNames.size()) {
+                        return;
+                    }
+
+                    selectedRaceIndex = index;
+                    selectedRaceText.setText(raceLabels.get(index));
+                }
+        );
+
+        racePickerField.setOnClickListener(v -> {
+            if (raceLabels.isEmpty()) return;
+
+            if (getSupportFragmentManager()
+                    .findFragmentByTag("neuro_races") != null) {
+                return;
+            }
+
+            neuroRacePickerSheet
+                    .create(raceLabels, selectedRaceIndex)
+                    .show(getSupportFragmentManager(), "neuro_races");
+        });
+
+        findViewById(R.id.aboutPrediction).setOnClickListener(v -> {
+            if (getSupportFragmentManager()
+                    .findFragmentByTag("neuro_info") != null) {
+                return;
+            }
+
+            new neuroPredictionInfoSheet().show(
+                    getSupportFragmentManager(),
+                    "neuro_info"
+            );
+        });
+
+        predictButton.setOnClickListener(v -> {
+            if (checkingResultAccess) return;
+
+            if (selectedRaceIndex < 0
+                    || selectedRaceIndex >= raceNames.size()) {
+                return;
+            }
+
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+
+            if (selectedId == -1) {
+                Toast.makeText(
+                        this,
+                        R.string.neuro_prediction_missing_option,
+                        Toast.LENGTH_SHORT
+                ).show();
+                return;
+            }
+
+            RadioButton radioButton = findViewById(selectedId);
+            String event = String.valueOf(radioButton.getTag());
+            String gpName = raceNames.get(selectedRaceIndex);
+
+            checkVersionAndOpenResult(event, gpName, currentSeason);
+        });
+
+        if (currentSeason == null || currentSeason.trim().isEmpty()) {
+            selectedRaceText.setText(R.string.neuro_ui_gp_error);
+            return;
+        }
+
+        final String restoredGp = savedInstanceState == null
+                ? null
+                : savedInstanceState.getString(STATE_SELECTED_GP);
+
+        DatabaseReference rootRef =
+                FirebaseDatabase.getInstance().getReference();
+
+        rootRef.child("schedule")
+                .child("season")
+                .child(currentSeason)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        ArrayList<String> raceListLocalized = new ArrayList<>();
-                        ArrayList<String> raceList = new ArrayList<>();
-                        long raceCount = snapshot.getChildrenCount();
+                        if (isFinishing() || isDestroyed()) return;
 
-                        numberPicker.setMinValue(0);
-                        numberPicker.setMaxValue((int) raceCount);
-                        numberPicker.setWrapSelectorWheel(true);
+                        raceNames.clear();
+                        raceLabels.clear();
 
-                        for (DataSnapshot raceSnaps: snapshot.getChildren()){
-                            String raceName = raceSnaps.getKey();
+                        for (DataSnapshot raceSnapshot : snapshot.getChildren()) {
+                            String raceName = raceSnapshot.getKey();
 
-                            if (!raceName.equals("Australian Grand Prix")){
-                                String preprocessedGPName = raceName.toLowerCase();
-                                preprocessedGPName = preprocessedGPName.replace(" ", "_");
-                                String localizedGpName = getString(getStringByName(preprocessedGPName + "_text"));
+                            if (raceName == null) continue;
 
-                                raceListLocalized.add(localizedGpName);
-                                raceList.add(raceName);
+                            if ("Australian Grand Prix".equals(raceName)) {
+                                continue;
                             }
+
+                            String resourceName = raceName
+                                    .toLowerCase(java.util.Locale.ROOT)
+                                    .replace(" ", "_") + "_text";
+
+                            int titleId = getStringByName(resourceName);
+
+                            String label = titleId == 0
+                                    ? raceName
+                                    : getString(titleId);
+
+                            raceNames.add(raceName);
+                            raceLabels.add(label);
                         }
 
-                        String[] values = raceListLocalized.toArray(new String[0]);
-                        numberPicker.setMinValue(0);
-                        numberPicker.setMaxValue(values.length - 1);
-                        numberPicker.setDisplayedValues(values);
+                        if (raceNames.isEmpty()) {
+                            selectedRaceText.setText(R.string.neuro_ui_gp_error);
+                            return;
+                        }
 
-                        predictButton.setOnClickListener(v -> {
-                            if (checkingResultAccess) return;
+                        int restoredIndex = raceNames.indexOf(restoredGp);
+                        selectedRaceIndex = restoredIndex >= 0
+                                ? restoredIndex
+                                : 0;
 
-                            int selectedId = radioGroup.getCheckedRadioButtonId();
+                        selectedRaceText.setText(
+                                raceLabels.get(selectedRaceIndex)
+                        );
 
-                            if (selectedId == -1) {
-                                Toast.makeText(
-                                        neuroPredictionActivity.this,
-                                        getString(R.string.neuro_prediction_missing_option),
-                                        Toast.LENGTH_SHORT
-                                ).show();
-                                return;
-                            }
-
-                            RadioButton radioButton = findViewById(selectedId);
-
-                            String event = radioButton.getTag().toString();
-                            String gpName = raceList.get(numberPicker.getValue());
-
-                            checkVersionAndOpenResult(event, gpName, currentSeason);
-                        });
+                        racePickerField.setEnabled(true);
+                        predictButton.setEnabled(true);
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("predictPageActivity", error.getMessage());
+                        if (isFinishing() || isDestroyed()) return;
+
+                        Log.e("NeuroPrediction", error.getMessage());
+
+                        selectedRaceText.setText(R.string.neuro_ui_gp_error);
+                        racePickerField.setEnabled(false);
+                        predictButton.setEnabled(false);
                     }
                 });
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        if (selectedRaceIndex >= 0
+                && selectedRaceIndex < raceNames.size()) {
+            outState.putString(
+                    STATE_SELECTED_GP,
+                    raceNames.get(selectedRaceIndex)
+            );
+        }
+
+        super.onSaveInstanceState(outState);
     }
 
     private void setupNeuroPredictInsets() {

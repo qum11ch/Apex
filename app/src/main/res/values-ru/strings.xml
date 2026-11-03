@@ -27,7 +27,7 @@
     <string name="footer_homePage">Главная</string>
     <string name="footer_account">Аккаунт</string>
     <string name="country">Страна:</string>
-    <string name="pole_position">Поул-позиция</string>
+    <string name="pole_position">Прогноз поула</string>
     <string name="team">Команда</string>
     <string name="save_race">Сохранить</string>
     <string name="settings">Настройки аккаунта</string>
@@ -278,7 +278,7 @@
     <string name="try_again_button">Попытаться снова</string>
     <string name="not_concluded">Гран-При не завершилось (Н/З)</string>
     <string name="is_running">идет</string>
-    <string name="last_update_text">Актуален на:</string>
+    <string name="last_update_text">Обновлено:</string>
 
     <string name="abu_dhabi_grand_prix_text">Гран-при Абу-Даби</string>
     <string name="australian_grand_prix_text">Гран-при Австралии</string>
@@ -391,7 +391,7 @@
     <string name="login_fail_text">Ошибка входа! Неверный логин или пароль.</string>
     <string name="predict">прогноз</string>
     <string name="predict_button">Нейросетевой прогноз</string>
-    <string name="prediction">прогнозирование</string>
+    <string name="prediction">прогноз</string>
     <string name="predict_quali">Квалификация</string>
     <string name="predict_sprint_quali">Спринт Квалификация</string>
     <string name="predict_info_text">Здесь Вы можете получить прогноз результатов квалификации любого Гран-При 2026 года по вашему выбору. Для этого Вам необходимо выбрать Гран-При из списка, а также тип квалификации, который вы хотите получить. Прогноз может не совпадать с реальными итогами квалификации в связи со многими факторами. Также стоит отметить, что прогнозирование делается на основе очков пилота В НАСТОЯЩИЙ МОМЕНТ, по этой причине чем ближе событие, тем ближе к реальным будет результат прогноза.</string>
@@ -560,6 +560,11 @@
     <string name="neuro_prediction_progress_model_table">Обновление таблицы...</string>
     <string name="neuro_prediction_progress_model_error">не удалось рассчитать прогноз</string>
 
+    <string name="neuro_prediction_weather_api_error">Ошибка: не удалось найти API-ключ погоды.</string>
+    <string name="neuro_prediction_weather_time_error">Ошибка: в ответе погоды нет данных на время события.</string>
+    <string name="neuro_prediction_weather_catch_error">Ошибка: не удалось обработать данные погоды.</string>
+    <string name="neuro_prediction_status_error">Ошибка: не удалось загрузить статус сезона.</string>
+
     <string name="update_required_title">Требуется обновление</string>
     <string name="update_required_description">Доступ к нейросетевым прогнозам доступен только в последней версии Apex. Пожалуйста, обновите приложение до актуальной версии.</string>
     <string name="update_required_decline_text">Остаться</string>
@@ -570,4 +575,70 @@
     <string name="update_reqired_version_task_error">Не удалось проверить версию. Попробуйте ещё раз.</string>
 
     <string name="account_relogin_required">Мы обновили систему аккаунтов. Пожалуйста, войдите снова, чтобы завершить обновление профиля.</string>
+
+    <string name="neuro_ui_title">Нейропрогноз</string>
+    <string name="neuro_ui_heading">Прогноз квалификации</string>
+    <string name="neuro_ui_intro">Выберите этап и сессию, чтобы получить предполагаемые результаты квалификации.</string>
+    <string name="neuro_ui_how">Как работает прогноз</string>
+    <string name="neuro_ui_gp">Гран-при</string>
+    <string name="neuro_ui_season">Сезон %1$s</string>
+    <string name="neuro_ui_choose_gp">Выберите Гран-при</string>
+    <string name="neuro_ui_loading_gp">Загрузка этапов…</string>
+    <string name="neuro_ui_gp_error">Не удалось загрузить список этапов. Откройте экран повторно.</string>
+    <string name="neuro_ui_session">Сессия</string>
+    <string name="neuro_ui_qualifying">Квалификация</string>
+    <string name="neuro_ui_sprint">Спринт-квалификация</string>
+    <string name="neuro_ui_get_prediction">Получить прогноз</string>
+    <string name="neuro_ui_disclaimer">Результат модели может отличаться от реальных итогов квалификации.</string>
+
+    <string name="neuro_ui_result_note">Ориентировочный прогноз результатов квалификации.</string>
+    <string name="neuro_ui_predicted_pole">Прогноз поул-позиции</string>
+
+    <string name="neuro_design_title">Нейропрогноз</string>
+    <string name="neuro_design_heading">Прогноз квалификации</string>
+    <string name="neuro_design_intro">Выберите Гран-при и тип квалификации.</string>
+    <string name="neuro_design_stage">Этап</string>
+    <string name="neuro_design_session">Сессия</string>
+    <string name="neuro_design_season">Сезон %1$s</string>
+    <string name="neuro_design_loading">Загрузка этапов…</string>
+    <string name="neuro_design_choose">Выберите этап</string>
+    <string name="neuro_design_error">Не удалось загрузить этапы</string>
+    <string name="neuro_design_qualifying">Квалификация</string>
+    <string name="neuro_design_sprint">Спринт-квалификация</string>
+    <string name="neuro_design_action">Получить прогноз</string>
+    <string name="neuro_design_note">Расчёт по текущим данным: выбранный Гран-при рассматривается как следующий этап. \n\nПрогноз модели, не официальный результат.</string>
+    <string name="neuro_design_about">О прогнозе</string>
+
+    <string name="neuro_design_capabilities">Что рассчитывает модель</string>
+    <string name="neuro_design_capabilities_body">Предполагаемые позиции пилотов и время круга в выбранной квалификации.</string>
+    <string name="neuro_design_round">Ограничения</string>
+    <string name="neuro_design_round_body">Модель рассматривает выбранный Гран-при как следующий этап и использует текущие результаты чемпионата.</string>
+    <string name="neuro_design_major">Что важно учитывать</string>
+    <string name="neuro_design_major_body">Для прошедшего этапа расчет воспроизводит условия на момент его проведения. Для будущего - не учитывает изменения в очках пилотов, которые произойдут до него. Результат модели может отличаться от реальных итогов квалификации.</string>
+    <string name="neuro_design_done">Понятно</string>
+    <string name="neuro_design_results">Подготовка прогноза может занять несколько минут.\n\nПрогноз модели, не официальный результат.</string>
+    <string name="neuro_search_clear">Очистить поиск</string>
+
+    <string name="neuro_design_pole">Прогноз поул-позиции</string>
+
+    <string name="neuro_search_hint">Найти Гран-при</string>
+    <string name="neuro_search_empty">Ничего не найдено</string>
+
+    <string name="pred_rules_plain_title">Правила прогнозирования</string>
+    <string name="pred_rules_plain_intro">Выберите вариант и нажмите «Сохранить». Ответ считается принятым после подтверждения сохранения.\nДля участия необходимо войти в аккаунт.</string>
+    <string name="pred_rules_plain_deadline_title">Срок приёма</string>
+    <string name="pred_rules_plain_deadline_body">До указанного в прогнозе срока ответ можно изменить или удалить. После изменения сохраните его повторно. После окончания срока приём, изменение и удаление ответов недоступны.</string>
+    <string name="pred_rules_plain_points_title">Начисление очков</string>
+    <string name="pred_rules_plain_points_body">В карточке указана максимальная награда за прогноз. За верный ответ начисляется полная награда. При неверном ответе ранее заработанные очки не списываются.</string>
+    <string name="pred_rules_plain_tie_title">Ничьи</string>
+    <string name="pred_rules_plain_tie_body">В некоторых форматах прогнозов доступна ничья. В этом случае начисляется 50% максимальной награды.</string>
+    <string name="pred_rules_plain_weekend_title">Очки за уикенд</string>
+    <string name="pred_rules_plain_weekend_body">В очковых прогнозах на уикенд учитывается сумма очков, заработанных в основной гонке и спринте, если он проводится.</string>
+    <string name="pred_rules_plain_results_title">Подведение итогов</string>
+    <string name="pred_rules_plain_results_body">Итоги прогнозов подводятся на основе официальных результатов событий. Начисленные очки становятся окончательными после объявления результатов прогноза.</string>
+    <string name="pred_rules_plain_stats_title">Статистика</string>
+    <string name="pred_rules_plain_stats_body">В «Моих прогнозах» доступны ваши ответы, очки и позиции в рейтингах. Точность — доля верных ответов среди верных и неверных. Ничьи и ответы без результата в расчёт не входят.</string>
+    <string name="pred_rules_plain_done">Понятно</string>
+
+    <string name="pred_rules_button">О пользовательских прогнозах</string>
 </resources>

@@ -96,9 +96,6 @@
     <style name="StickyBottomStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/stinky_bottom_style</item>
     </style>
-    <style name="PtsStyle" parent="android:Widget.TextView">
-        <item name="android:background">@drawable/pts_style</item>
-    </style>
     <style name="ResultsStyle" parent="android:Widget.TextView">
         <item name="android:background">@drawable/results_style</item>
     </style>

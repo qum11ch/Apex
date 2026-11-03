@@ -397,6 +397,49 @@
     </style>
 
 
+    <style name="ThemeOverlay.Apex.NeuroSheet"
+        parent="ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="colorSurface">@color/neuro_surface</item>
+        <item name="colorOnSurface">@color/neuro_text</item>
+
+        <item name="enableEdgeToEdge">true</item>
+
+        <item name="android:navigationBarColor">
+            @android:color/transparent
+        </item>
+
+        <item name="bottomSheetStyle">
+            @style/Widget.Apex.NeuroSheet
+        </item>
+    </style>
+
+    <style name="Widget.Apex.NeuroSheet"
+        parent="Widget.Design.BottomSheet.Modal">
+
+        <item name="android:background">
+            @android:color/transparent
+        </item>
+
+        <item name="backgroundTint">
+            @android:color/transparent
+        </item>
+
+        <item name="shapeAppearance">@null</item>
+        <item name="shapeAppearanceOverlay">@null</item>
+        <item name="paddingBottomSystemWindowInsets">false</item>
+        <item name="paddingLeftSystemWindowInsets">false</item>
+        <item name="paddingRightSystemWindowInsets">false</item>
+    </style>
+
+    <style name="ShapeAppearanceOverlay.Apex.NeuroSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+
     <style name="ShapeAppearanceOverlay_card_custom_corners_buttons" parent="">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeTopRight">8dp</item>

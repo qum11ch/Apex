@@ -51,7 +51,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/fastestLapDriver_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -64,7 +64,8 @@
 
                 <TextView
                     android:id="@+id/fastestLapDriverName"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
                     android:layout_height="wrap_content"
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
@@ -74,15 +75,14 @@
 
                 <TextView
                     android:id="@+id/fastestLapTime"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/fastestLapDriverName"
                     android:layout_marginTop="6dp"
                     android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                     android:textColor="@color/white"
                     android:textSize="20sp" />
 
-            </RelativeLayout>
+            </LinearLayout>
 
             <com.facebook.shimmer.ShimmerFrameLayout
                 android:id="@+id/shimmer_layout_driver"
@@ -171,7 +171,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/light_grey"
+        android:background="@color/account_settings_input_color"
         android:id="@+id/header_line"
         android:layout_below="@id/race_header"/>
     <FrameLayout

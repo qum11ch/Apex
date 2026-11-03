@@ -30,53 +30,59 @@
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/collapsing_toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="wrap_content"
                 android:minHeight="70dp"
-                app:contentScrim="@color/dark_blue"
+                app:contentScrim="@color/statusBar_color"
                 app:layout_scrollFlags="scroll|exitUntilCollapsed|snap"
                 app:statusBarScrim="@color/statusBar_color">
-                <ImageView
-                    android:paddingBottom="25dp"
-                    android:id="@+id/team_car"
-                    android:layout_width="match_parent"
-                    android:layout_height="250dp"
-                    android:layout_gravity="bottom"
-                    android:contentDescription="@string/team_car"
-                    android:paddingStart="30dp"
-                    android:paddingEnd="30dp"
-                    android:scaleType="fitEnd"
-                    app:layout_collapseMode="parallax"
-                    app:layout_collapseParallaxMultiplier="0.7"/>
                 <LinearLayout
-                    android:id="@+id/team_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="90dp"
-                    android:paddingStart="24dp"
-                    android:paddingEnd="24dp"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:baselineAligned="false"
+                    android:layout_marginTop="70dp"
+                    android:orientation="vertical"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="16dp"
                     app:layout_collapseMode="parallax"
                     app:layout_collapseParallaxMultiplier="0.7">
 
-                    <ImageView
-                        android:id="@+id/teamLogo"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:contentDescription="@string/teamlogo"
-                        android:paddingBottom="5dp"
-                        android:scaleType="fitCenter" />
-
-                    <TextView
-                        android:id="@+id/teamNameFull"
-                        android:layout_width="0dp"
+                    <LinearLayout
+                        android:id="@+id/team_layout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="10dp"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-                        android:textColor="@color/white"
-                        android:textSize="30sp" />
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:baselineAligned="false">
+
+                        <ImageView
+                            android:id="@+id/teamLogo"
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:contentDescription="@string/teamlogo"
+                            android:scaleType="fitCenter" />
+
+                        <TextView
+                            android:id="@+id/teamNameFull"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:layout_marginStart="10dp"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+                            android:textColor="@color/white"
+                            android:textSize="30sp" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/team_car"
+                        android:layout_width="match_parent"
+                        android:layout_height="120dp"
+                        android:layout_marginTop="12dp"
+                        android:paddingStart="24dp"
+                        android:paddingEnd="24dp"
+                        android:contentDescription="@string/team_car"
+                        android:scaleType="fitCenter" />
 
                 </LinearLayout>
                 <androidx.appcompat.widget.Toolbar
@@ -101,19 +107,23 @@
                             android:paddingStart="15dp"
                             android:paddingEnd="15dp"
                             android:src="@drawable/back_arrow" />
-                        <ToggleButton
-                            android:id="@+id/like_button"
-                            style="@style/LikeToggleButton"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
+                        <FrameLayout
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:id="@+id/toggleButtonContainer"
                             android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
-                            android:layout_marginEnd="15dp"
-                            android:background="@drawable/like_toggle_bg"
-                            android:checked="false"
-                            android:textOff=""
-                            android:textOn="" />
-
+                            android:layout_centerVertical="true">
+                            <ToggleButton
+                                android:layout_gravity="center"
+                                android:id="@+id/like_button"
+                                style="@style/LikeToggleButton"
+                                android:layout_width="30dp"
+                                android:layout_height="30dp"
+                                android:background="@drawable/like_toggle_bg"
+                                android:checked="false"
+                                android:textOff=""
+                                android:textOn="" />
+                        </FrameLayout>
                         <TextView
                             android:maxLines="1"
                             android:ellipsize="end"
@@ -121,7 +131,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_toEndOf="@id/backButton"
-                            android:layout_toStartOf="@id/like_button"
+                            android:layout_toStartOf="@id/toggleButtonContainer"
                             android:gravity="center"
                             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                             android:textColor="@color/white"

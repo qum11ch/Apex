@@ -169,6 +169,11 @@ public class userPredictionsActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.predictionRulesButton)
+                .setOnClickListener(v ->
+                        userPredictionRules.show(this)
+                );
+
         rootRef.child("status/predictions_season")
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
@@ -252,6 +257,13 @@ public class userPredictionsActivity extends AppCompatActivity {
         });
 
         ViewCompat.requestApplyInsets(root);
+    }
+
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+
+        userPredictionRules.showIfNeeded(this);
     }
 
     private void loadUserAnswers(Context context) {
