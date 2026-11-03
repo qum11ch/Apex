@@ -641,4 +641,27 @@
     <string name="pred_rules_plain_done">Понятно</string>
 
     <string name="pred_rules_button">О пользовательских прогнозах</string>
+
+    <string name="prediction_stats_title">Статистика перед прогнозом</string>
+    <string name="prediction_stats_open_weekend">Открыть Гран-при</string>
+    <string name="prediction_stats_loading">Загружаем статистику…</string>
+    <string name="prediction_stats_unavailable">Недостаточно данных для статистики</string>
+    <string name="prediction_stats_error">Не удалось загрузить статистику</string>
+
+    <string name="prediction_stats_duel_race_title">Дуэль в гонках</string>
+    <string name="prediction_stats_duel_score">Счёт</string>
+    <string name="prediction_stats_average_points">Средние очки</string>
+    <string name="prediction_stats_retirements">Сходы</string>
+    <string name="prediction_stats_last_races">Последние 5 совместных гонок</string>
+
+    <string name="prediction_stats_duel_quali_title">Дуэль в квалификациях</string>
+    <string name="prediction_stats_average_position">Средняя позиция</string>
+    <string name="prediction_stats_last_qualis">Последние 5 квалификаций</string>
+
+    <string name="prediction_stats_team_duel_title">Дуэль команд по очкам</string>
+
+    <string name="prediction_stats_score_caption">Счёт в совместных гонках</string>
+    <string name="prediction_stats_average_points_row">Средние очки: %1$s : %2$s</string>
+    <string name="prediction_stats_retirements_row">Сходы: %1$d : %2$d</string>
+    <string name="prediction_stats_recent_races">Последние 5 совместных гонок</string>
 </resources>

@@ -6,6 +6,7 @@ import static com.example.f1app.userPredictionAdapter.formatPoints;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -93,6 +94,25 @@ public class predictionFormActivity extends AppCompatActivity {
 
     private LinearLayout twoOptionsContainer;
 
+    private LinearLayout predictionStatsCard;
+    private TextView predictionStatsTitle;
+    private TextView predictionStatsBody;
+    private ProgressBar predictionStatsProgress;
+    private Button openWeekendButton;
+
+    private predictionStatsLoader statsLoader;
+    private predictionDuelStatsCalculator duelStatsCalculator;
+
+    private String headToHeadChoiceAId;
+    private String headToHeadChoiceATitle;
+    private String headToHeadChoiceBId;
+    private String headToHeadChoiceBTitle;
+
+    private String predictionCategory;
+
+    private predictionSingleStatsCalculator singleStatsCalculator;
+    private predictionTeamStatsCalculator teamStatsCalculator;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -146,6 +166,19 @@ public class predictionFormActivity extends AppCompatActivity {
         saveButton.setOnClickListener(v -> savePrediction(predictionFormActivity.this));
 
         twoOptionsContainer = findViewById(R.id.twoOptionsContainer);
+
+        predictionStatsCard = findViewById(R.id.predictionStatsCard);
+        predictionStatsTitle = findViewById(R.id.predictionStatsTitle);
+        predictionStatsBody = findViewById(R.id.predictionStatsBody);
+        predictionStatsProgress = findViewById(R.id.predictionStatsProgress);
+        openWeekendButton = findViewById(R.id.openWeekendButton);
+
+        statsLoader = new predictionStatsLoader();
+        duelStatsCalculator = new predictionDuelStatsCalculator();
+        singleStatsCalculator = new predictionSingleStatsCalculator();
+        teamStatsCalculator = new predictionTeamStatsCalculator();
+
+        openWeekendButton.setOnClickListener(v -> openWeekendRace());
 
         storage = FirebaseStorage.getInstance();
 
@@ -278,6 +311,15 @@ public class predictionFormActivity extends AppCompatActivity {
                         optionType = snapshot.child("optionType").getValue(String.class);
                         predictionSeason = snapshot.child("season").getValue(String.class);
                         predictionRaceRound = snapshot.child("raceRound").getValue(Integer.class);
+                        predictionCategory = snapshot.child("category").getValue(String.class);
+
+                        if (isHeadToHead(predictionType)) {
+                            // статистика загрузится в loadHeadToHeadOptions()
+                        } else if (isBooleanPrediction(predictionType, optionType)) {
+                            setupBooleanStats();
+                        } else {
+                            setupWeekendStats();
+                        }
 
                         LocalizedText title =
                                 snapshot.child("title").getValue(LocalizedText.class);
@@ -344,6 +386,280 @@ public class predictionFormActivity extends AppCompatActivity {
                         saveButton.setEnabled(false);
                     }
                 });
+    }
+
+    private void setupWeekendStats() {
+        if (!"weekend".equals(predictionCategory)
+                || predictionSeason == null
+                || predictionRaceRound == null) {
+            predictionStatsCard.setVisibility(View.GONE);
+            return;
+        }
+
+        predictionStatsCard.setVisibility(View.VISIBLE);
+        predictionStatsTitle.setText(R.string.prediction_stats_title);
+        predictionStatsBody.setText(R.string.prediction_stats_loading);
+        predictionStatsProgress.setVisibility(View.VISIBLE);
+        openWeekendButton.setVisibility(View.GONE);
+
+        statsLoader.loadWeekendRace(
+                this,
+                predictionSeason,
+                predictionRaceRound,
+                new predictionStatsLoader.weekendCallback() {
+                    @Override
+                    public void onLoaded(weekendRaceData race) {
+                        predictionStatsProgress.setVisibility(View.GONE);
+                        predictionStatsBody.setText(
+                                race.getRaceName()
+                                        + "\n"
+                                        + race.getRaceDate()
+                        );
+                        openWeekendButton.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onError() {
+                        showStatsUnavailable();
+                    }
+                }
+        );
+    }
+
+    private void openWeekendRace() {
+        statsLoader.loadWeekendRace(
+                this,
+                predictionSeason,
+                predictionRaceRound,
+                new predictionStatsLoader.weekendCallback() {
+                    @Override
+                    public void onLoaded(weekendRaceData race) {
+                        Intent intent = new Intent(
+                                predictionFormActivity.this,
+                                futureRaceActivity.class
+                        );
+
+                        intent.putExtra("circuitId", race.getCircuitId());
+                        intent.putExtra("raceName", race.getRaceName());
+                        intent.putExtra("futureRaceStartDay", race.getStartDay());
+                        intent.putExtra("futureRaceEndDay", race.getEndDay());
+                        intent.putExtra("futureRaceStartMonth", race.getStartMonth());
+                        intent.putExtra("futureRaceEndMonth", race.getEndMonth());
+                        intent.putExtra("roundCount", String.valueOf(race.getRound()));
+                        intent.putExtra("raceCountry", race.getCountry());
+                        intent.putExtra("dateStart", race.getFirstPracticeDate());
+                        intent.putExtra("dateEnd", race.getRaceDate());
+                        intent.putExtra("isCanceled", false);
+
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onError() {
+                        Toast.makeText(
+                                predictionFormActivity.this,
+                                R.string.prediction_stats_unavailable,
+                                Toast.LENGTH_LONG
+                        ).show();
+                    }
+                }
+        );
+    }
+
+    private void setupHeadToHeadStats() {
+        if (!isHeadToHead(predictionType)) {
+            predictionStatsCard.setVisibility(View.GONE);
+            return;
+        }
+
+        if (headToHeadChoiceAId == null || headToHeadChoiceBId == null) {
+            showStatsUnavailable();
+            return;
+        }
+
+        predictionStatsCard.setVisibility(View.VISIBLE);
+        predictionStatsBody.setText(R.string.prediction_stats_loading);
+        predictionStatsProgress.setVisibility(View.VISIBLE);
+        openWeekendButton.setVisibility(View.GONE);
+
+        if ("race_head_to_head".equals(predictionType)) {
+            statsLoader.loadRaceDuelEvents(
+                    this,
+                    predictionSeason,
+                    headToHeadChoiceAId,
+                    headToHeadChoiceBId,
+                    new predictionStatsLoader.raceStatsCallback() {
+                        @Override
+                        public void onLoaded(List<raceDuelEvent> events) {
+                            predictionStatsProgress.setVisibility(View.GONE);
+
+                            if (events.isEmpty()) {
+                                showStatsUnavailable();
+                                return;
+                            }
+
+                            predictionStatsTitle.setText(
+                                    R.string.prediction_stats_duel_race_title
+                            );
+
+                            predictionStatsBody.setText(
+                                    duelStatsCalculator.buildRaceDuelStyledBody(
+                                            predictionFormActivity.this,
+                                            events
+                                    )
+                            );
+                        }
+
+                        @Override
+                        public void onError() {
+                            showStatsError();
+                        }
+                    }
+            );
+        } else if ("qualifying_head_to_head".equals(predictionType)) {
+            statsLoader.loadQualifyingDuelEvents(
+                    this,
+                    predictionSeason,
+                    predictionRaceRound,
+                    headToHeadChoiceAId,
+                    headToHeadChoiceBId,
+                    new predictionStatsLoader.qualifyingStatsCallback() {
+                        @Override
+                        public void onLoaded(List<qualifyingDuelEvent> events) {
+                            predictionStatsProgress.setVisibility(View.GONE);
+
+                            if (events.isEmpty()) {
+                                showStatsUnavailable();
+                                return;
+                            }
+
+                            predictionStatsTitle.setText(
+                                    R.string.prediction_stats_duel_quali_title
+                            );
+
+                            predictionStatsBody.setText(
+                                    duelStatsCalculator.buildQualifyingDuelBody(
+                                            headToHeadChoiceATitle,
+                                            headToHeadChoiceBTitle,
+                                            events
+                                    )
+                            );
+                        }
+
+                        @Override
+                        public void onError() {
+                            showStatsError();
+                        }
+                    }
+            );
+        } else if ("team_points_head_to_head".equals(predictionType)) {
+            statsLoader.loadTeamDuelStats(
+                    this,
+                    predictionSeason,
+                    headToHeadChoiceAId,
+                    headToHeadChoiceBId,
+                    new predictionStatsLoader.teamStatsCallback() {
+                        @Override
+                        public void onLoaded(
+                                List<teamRaceStats> teamA,
+                                List<teamRaceStats> teamB
+                        ) {
+                            predictionStatsProgress.setVisibility(View.GONE);
+
+                            if (teamA.isEmpty() || teamB.isEmpty()) {
+                                showStatsUnavailable();
+                                return;
+                            }
+
+                            predictionStatsTitle.setText(
+                                    R.string.prediction_stats_team_duel_title
+                            );
+
+                            predictionStatsBody.setText(
+                                    teamStatsCalculator.buildTeamDuelBody(
+                                            headToHeadChoiceATitle,
+                                            headToHeadChoiceBTitle,
+                                            teamA,
+                                            teamB
+                                    )
+                            );
+                        }
+
+                        @Override
+                        public void onError() {
+                            showStatsError();
+                        }
+                    }
+            );
+        } else {
+            predictionStatsCard.setVisibility(View.GONE);
+        }
+    }
+
+    private void showStatsUnavailable() {
+        predictionStatsProgress.setVisibility(View.GONE);
+        predictionStatsBody.setText(R.string.prediction_stats_unavailable);
+        openWeekendButton.setVisibility(View.GONE);
+    }
+
+    private void showStatsError() {
+        predictionStatsProgress.setVisibility(View.GONE);
+        predictionStatsBody.setText(R.string.prediction_stats_error);
+        openWeekendButton.setVisibility(View.GONE);
+    }
+
+    private void updateSingleOptionStats(predictionOption option) {
+        if (option == null
+                || optionType == null
+                || !"driver".equals(optionType)
+                || (!"champion".equals(predictionType)
+                && !"winner".equals(predictionType))) {
+            predictionStatsCard.setVisibility(View.GONE);
+            return;
+        }
+
+        predictionStatsCard.setVisibility(View.VISIBLE);
+        predictionStatsTitle.setText(R.string.prediction_stats_title);
+        predictionStatsBody.setText(R.string.prediction_stats_loading);
+        predictionStatsProgress.setVisibility(View.VISIBLE);
+        openWeekendButton.setVisibility(View.GONE);
+
+        statsLoader.loadDriverSeasonStats(
+                this,
+                predictionSeason,
+                option.getId(),
+                new predictionStatsLoader.singleStatsCallback() {
+                    @Override
+                    public void onLoaded(
+                            List<raceDuelEvent> events,
+                            int seasonPoints,
+                            int championshipPosition,
+                            int driversCount
+                    ) {
+                        predictionStatsProgress.setVisibility(View.GONE);
+
+                        if (events.isEmpty()) {
+                            showStatsUnavailable();
+                            return;
+                        }
+
+                        predictionStatsBody.setText(
+                                singleStatsCalculator.buildDriverSeasonBody(
+                                        option.getTitle(),
+                                        events,
+                                        seasonPoints,
+                                        championshipPosition,
+                                        driversCount
+                                )
+                        );
+                    }
+
+                    @Override
+                    public void onError() {
+                        showStatsError();
+                    }
+                }
+        );
     }
 
     private boolean isBooleanPrediction(String predictionType, String optionType) {
@@ -512,6 +828,62 @@ public class predictionFormActivity extends AppCompatActivity {
         predictionOption option = options.get(index);
         selectedOptionId = option.getId();
         selectedOptionTitle = option.getTitle();
+
+        if ("constructor".equals(optionType)) {
+            updateConstructorStats(option);
+        } else {
+            updateSingleOptionStats(option);
+        }
+    }
+
+    private void updateConstructorStats(predictionOption option) {
+        if (option == null
+                || !"constructor".equals(optionType)
+                || (!"champion".equals(predictionType)
+                && !"winner".equals(predictionType))) {
+            predictionStatsCard.setVisibility(View.GONE);
+            return;
+        }
+
+        predictionStatsCard.setVisibility(View.VISIBLE);
+        predictionStatsTitle.setText(R.string.prediction_stats_title);
+        predictionStatsBody.setText(R.string.prediction_stats_loading);
+        predictionStatsProgress.setVisibility(View.VISIBLE);
+        openWeekendButton.setVisibility(View.GONE);
+
+        statsLoader.loadSingleTeamStats(
+                this,
+                predictionSeason,
+                option.getId(),
+                new predictionStatsLoader.singleTeamStatsCallback() {
+                    @Override
+                    public void onLoaded(
+                            List<teamRaceStats> team,
+                            Map<String, Integer> allTeamPoints
+                    ) {
+                        predictionStatsProgress.setVisibility(View.GONE);
+
+                        if (team.isEmpty()) {
+                            showStatsUnavailable();
+                            return;
+                        }
+
+                        predictionStatsBody.setText(
+                                teamStatsCalculator.buildSingleTeamBody(
+                                        option.getTitle(),
+                                        team,
+                                        allTeamPoints,
+                                        option.getId()
+                                )
+                        );
+                    }
+
+                    @Override
+                    public void onError() {
+                        showStatsError();
+                    }
+                }
+        );
     }
 
     private void loadSavedAnswer(Context context) {
@@ -736,6 +1108,13 @@ public class predictionFormActivity extends AppCompatActivity {
         String sideBId = snapshot.child("sideBId").getValue(String.class);
         String sideBTitle = snapshot.child("sideBTitle").getValue(String.class);
 
+        headToHeadChoiceAId = sideAId;
+        headToHeadChoiceATitle = sideATitle;
+        headToHeadChoiceBId = sideBId;
+        headToHeadChoiceBTitle = sideBTitle;
+
+        setupHeadToHeadStats();
+
         if (sideAId == null || sideATitle == null || sideBId == null || sideBTitle == null) {
             Toast.makeText(
                     predictionFormActivity.this,
@@ -788,6 +1167,64 @@ public class predictionFormActivity extends AppCompatActivity {
         if (!headToHeadOptions.isEmpty()) {
             selectHeadToHeadOption(0);
         }
+    }
+
+    private void setupBooleanStats() {
+        if (!isBooleanPrediction(predictionType, optionType)
+                || !"weekend".equals(predictionCategory)) {
+            return;
+        }
+
+        predictionStatsCard.setVisibility(View.VISIBLE);
+        predictionStatsTitle.setText(R.string.prediction_stats_title);
+        predictionStatsBody.setText(R.string.prediction_stats_loading);
+        predictionStatsProgress.setVisibility(View.VISIBLE);
+        openWeekendButton.setVisibility(View.GONE);
+
+        statsLoader.loadCircuitInfo(
+                this,
+                predictionSeason,
+                predictionRaceRound,
+                new predictionStatsLoader.circuitInfoCallback() {
+                    @Override
+                    public void onLoaded(circuitInfoData circuit) {
+                        predictionStatsProgress.setVisibility(View.GONE);
+
+                        predictionStatsBody.setText(
+                                circuit.getCircuitName()
+                                        + "\n"
+                                        + circuit.getLocation()
+                                        + ", "
+                                        + circuit.getCountry()
+                                        + "\n\n"
+                                        + "Кругов: "
+                                        + circuit.getLapsCount()
+                                        + "\n"
+                                        + "Поворотов: "
+                                        + circuit.getTurnsCount()
+                                        + "\n"
+                                        + "Длина: "
+                                        + circuit.getLength()
+                                        + " км\n"
+                                        + "Дистанция: "
+                                        + circuit.getRaceDistance()
+                                        + " км\n\n"
+                                        + "Рекорд круга: "
+                                        + circuit.getLapRecordDriver()
+                                        + " — "
+                                        + circuit.getLapRecordTime()
+                                        + " ("
+                                        + circuit.getLapRecordYear()
+                                        + ")"
+                        );
+                    }
+
+                    @Override
+                    public void onError() {
+                        showStatsUnavailable();
+                    }
+                }
+        );
     }
 
     private TextView createVerticalVsView(Context context) {

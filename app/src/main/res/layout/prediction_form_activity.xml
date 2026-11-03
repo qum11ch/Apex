@@ -169,6 +169,55 @@
                             android:visibility="gone" />
 
                     </LinearLayout>
+                    <LinearLayout
+                        android:id="@+id/predictionStatsCard"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginEnd="20dp"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone"
+                        style="@style/PredictionStatusLayout">
+
+                        <TextView
+                            android:id="@+id/predictionStatsTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/prediction_stats_title"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+
+                        <TextView
+                            android:id="@+id/predictionStatsBody"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="15sp"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+
+                        <ProgressBar
+                            android:id="@+id/predictionStatsProgress"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="12dp"
+                            android:visibility="gone" />
+
+                        <Button
+                            android:id="@+id/openWeekendButton"
+                            style="@style/ButtonStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:minHeight="48dp"
+                            android:text="@string/prediction_stats_open_weekend"
+                            android:visibility="gone" />
+                    </LinearLayout>
 
                     <LinearLayout
                         android:visibility="gone"

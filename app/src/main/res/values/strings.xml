@@ -666,4 +666,25 @@
     <string name="pred_rules_plain_done">Got it</string>
 
     <string name="pred_rules_button">About Predictions</string>
+
+    <string name="prediction_stats_title">Pre-prediction stats</string>
+    <string name="prediction_stats_open_weekend">Open Grand Prix</string>
+    <string name="prediction_stats_loading">Loading stats…</string>
+    <string name="prediction_stats_unavailable">Not enough data for stats</string>
+    <string name="prediction_stats_error">Failed to load stats</string>
+    <string name="prediction_stats_duel_race_title">Race head-to-head</string>
+    <string name="prediction_stats_duel_score">Score</string>
+    <string name="prediction_stats_average_points">Average points</string>
+    <string name="prediction_stats_retirements">Retirements</string>
+    <string name="prediction_stats_last_races">Last 5 joint races</string>
+    <string name="prediction_stats_duel_quali_title">Qualifying head-to-head</string>
+    <string name="prediction_stats_average_position">Average position</string>
+    <string name="prediction_stats_last_qualis">Last 5 qualifyings</string>
+
+    <string name="prediction_stats_team_duel_title">Team head-to-head by points</string>
+
+    <string name="prediction_stats_score_caption">Head-to-head race score</string>
+    <string name="prediction_stats_average_points_row">Average points: %1$s : %2$s</string>
+    <string name="prediction_stats_retirements_row">Retirements: %1$d : %2$d</string>
+    <string name="prediction_stats_recent_races">Last 5 races together</string>
 </resources>
