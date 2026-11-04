@@ -87,6 +87,21 @@ public class predictionStatsLoader {
                 });
     }
 
+    private Integer readQualifyingRound(DataSnapshot snapshot) {
+        String raw = snapshot.child("round").getValue(String.class);
+
+        if (raw == null || raw.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            int round = Integer.parseInt(raw.trim());
+            return round > 0 ? round : null;
+        } catch (NumberFormatException error) {
+            return null;
+        }
+    }
+
     public void loadQualifyingDuelEvents(
             Context context,
             String season,
@@ -96,7 +111,6 @@ public class predictionStatsLoader {
             qualifyingStatsCallback callback
     ) {
         if (season == null
-                || raceRound == null
                 || choiceACode == null
                 || choiceBCode == null) {
             callback.onError();
@@ -108,20 +122,31 @@ public class predictionStatsLoader {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot seasonSnapshot) {
-                        List<qualifyingDuelEvent> events = new ArrayList<>();
+                        List<DataSnapshot> rounds = new ArrayList<>();
 
-                        for (DataSnapshot roundSnapshot :
-                                seasonSnapshot.getChildren()) {
-                            Long round = roundSnapshot
-                                    .child("round")
-                                    .getValue(Long.class);
+                        for (DataSnapshot roundSnapshot : seasonSnapshot.getChildren()) {
+                            Integer round = readQualifyingRound(roundSnapshot);
 
-                            if (round == null || round > raceRound) {
+                            if (round == null) {
                                 continue;
                             }
 
-                            DataSnapshot results = roundSnapshot
-                                    .child("results");
+                            if (raceRound != null && round > raceRound) {
+                                continue;
+                            }
+
+                            rounds.add(roundSnapshot);
+                        }
+
+                        rounds.sort((a, b) -> Integer.compare(
+                                readQualifyingRound(a),
+                                readQualifyingRound(b)
+                        ));
+
+                        List<qualifyingDuelEvent> events = new ArrayList<>();
+
+                        for (DataSnapshot roundSnapshot : rounds) {
+                            DataSnapshot results = roundSnapshot.child("results");
 
                             Integer positionA = findQualifyingPosition(
                                     results,
@@ -133,13 +158,12 @@ public class predictionStatsLoader {
                                     choiceBCode
                             );
 
-                            if (positionA == null && positionB == null) {
+                            if (positionA == null || positionB == null) {
                                 continue;
                             }
 
                             events.add(new qualifyingDuelEvent(
-                                    roundSnapshot.child("raceName")
-                                            .getValue(String.class),
+                                    roundSnapshot.child("raceName").getValue(String.class),
                                     positionA,
                                     positionB
                             ));
@@ -441,6 +465,193 @@ public class predictionStatsLoader {
                 start.getMonthValue() + "",
                 end.getMonthValue() + ""
         );
+    }
+
+    public void loadTeamRaceDuelStats(
+            String season,
+            Integer beforeRound,
+            String teamAId,
+            String teamBId,
+            teamStatsCallback callback
+    ) {
+        if (season == null
+                || teamAId == null
+                || teamBId == null
+                || teamAId.equals(teamBId)) {
+            callback.onError();
+            return;
+        }
+
+        rootRef.child("schedule")
+                .child("season")
+                .child(season)
+                .orderByChild("round")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot scheduleSnapshot) {
+                        List<String> raceNames = new ArrayList<>();
+
+                        for (DataSnapshot raceSnapshot :
+                                scheduleSnapshot.getChildren()) {
+                            String raceName = raceSnapshot.getKey();
+
+                            Long round = raceSnapshot.child("round")
+                                    .getValue(Long.class);
+
+                            if (raceName == null || round == null) {
+                                continue;
+                            }
+
+                            if (beforeRound != null
+                                    && round >= beforeRound) {
+                                continue;
+                            }
+
+                            raceNames.add(raceName);
+                        }
+
+                        rootRef.child("results")
+                                .child("season")
+                                .child(season)
+                                .addListenerForSingleValueEvent(
+                                        new ValueEventListener() {
+                                            @Override
+                                            public void onDataChange(
+                                                    DataSnapshot seasonSnapshot
+                                            ) {
+                                                List<teamRaceStats> teamA =
+                                                        new ArrayList<>();
+
+                                                List<teamRaceStats> teamB =
+                                                        new ArrayList<>();
+
+                                                for (String raceName : raceNames) {
+                                                    teamRaceStats a =
+                                                            buildTeamMainRaceStats(
+                                                                    seasonSnapshot,
+                                                                    raceName,
+                                                                    teamAId
+                                                            );
+
+                                                    teamRaceStats b =
+                                                            buildTeamMainRaceStats(
+                                                                    seasonSnapshot,
+                                                                    raceName,
+                                                                    teamBId
+                                                            );
+
+                                                    if (a == null || b == null) {
+                                                        continue;
+                                                    }
+
+                                                    teamA.add(a);
+                                                    teamB.add(b);
+                                                }
+
+                                                callback.onLoaded(teamA, teamB);
+                                            }
+
+                                            @Override
+                                            public void onCancelled(
+                                                    DatabaseError error
+                                            ) {
+                                                callback.onError();
+                                            }
+                                        }
+                                );
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError error) {
+                        callback.onError();
+                    }
+                });
+    }
+
+    private teamRaceStats buildTeamMainRaceStats(
+            DataSnapshot seasonSnapshot,
+            String raceName,
+            String teamId
+    ) {
+        int points = 0;
+        boolean hasWin = false;
+        boolean hasCompletedResult = false;
+
+        for (DataSnapshot driverSnapshot : seasonSnapshot.getChildren()) {
+            DataSnapshot raceSnapshot = driverSnapshot.child(raceName);
+
+            String raceTeamId = raceSnapshot.child("TeamId")
+                    .getValue(String.class);
+
+            if (!teamId.equals(raceTeamId)) {
+                continue;
+            }
+
+            String raw = raceSnapshot.child("Result")
+                    .getValue(String.class);
+
+            if (raw == null) {
+                continue;
+            }
+
+            String[] parts = raw.trim().split("-", 2);
+
+            if (parts.length != 2) {
+                continue;
+            }
+
+            String finish = parts[1].trim();
+            Integer position = null;
+
+            try {
+                int parsed = Integer.parseInt(finish);
+
+                if (parsed <= 0) {
+                    continue;
+                }
+
+                position = parsed;
+            } catch (NumberFormatException error) {
+                if (!"R".equals(finish)
+                        && !"W".equals(finish)
+                        && !"D".equals(finish)
+                        && !"NC".equals(finish)) {
+                    continue;
+                }
+            }
+
+            hasCompletedResult = true;
+
+            if (position != null) {
+                points += mainRacePointsForPosition(position);
+
+                if (position == 1) {
+                    hasWin = true;
+                }
+            }
+        }
+
+        if (!hasCompletedResult) {
+            return null;
+        }
+
+        return new teamRaceStats(raceName, points, hasWin);
+    }
+
+    private int mainRacePointsForPosition(int position) {
+        switch (position) {
+            case 1: return 25;
+            case 2: return 18;
+            case 3: return 15;
+            case 4: return 12;
+            case 5: return 10;
+            case 6: return 8;
+            case 7: return 6;
+            case 8: return 4;
+            case 9: return 2;
+            case 10: return 1;
+            default: return 0;
+        }
     }
 
     private Integer parseRacePosition(String result) {
@@ -981,44 +1192,37 @@ public class predictionStatsLoader {
             DataSnapshot snapshot,
             weekendRaceData race
     ) {
+        if (!snapshot.exists()) {
+            return null;
+        }
+
         String circuitName = snapshot.child("circuitName")
                 .getValue(String.class);
 
-        String country = snapshot.child("country").getValue(String.class);
-        String location = snapshot.child("location").getValue(String.class);
-
-        Long lapsCount = snapshot.child("lapsCount").getValue(Long.class);
-        Long turnsCount = snapshot.child("turnsCount").getValue(Long.class);
-
-        Double length = snapshot.child("length").getValue(Double.class);
-        Double raceDistance = snapshot.child("raceDistance")
-                .getValue(Double.class);
-
-        String lapRecordDriver = snapshot.child("lapRecordDriver")
-                .getValue(String.class);
-
-        Double lapRecordTime = snapshot.child("lapRecordTime")
-                .getValue(Double.class);
-
-        Long lapRecordYear = snapshot.child("lapRecordYear")
-                .getValue(Long.class);
-
-        if (circuitName == null) {
+        if (circuitName == null || circuitName.trim().isEmpty()) {
             return null;
         }
 
         return new circuitInfoData(
                 race.getRaceName(),
                 circuitName,
-                country == null ? "" : country,
-                location == null ? "" : location,
-                lapsCount == null ? 0 : lapsCount.intValue(),
-                turnsCount == null ? 0 : turnsCount.intValue(),
-                length == null ? 0 : length,
-                raceDistance == null ? 0 : raceDistance,
-                lapRecordDriver == null ? "" : lapRecordDriver,
-                lapRecordTime == null ? 0 : lapRecordTime,
-                lapRecordYear == null ? 0 : lapRecordYear.intValue()
+                circuitText(snapshot, "country"),
+                circuitText(snapshot, "location"),
+                circuitText(snapshot, "lapsCount"),
+                circuitText(snapshot, "turnsCount"),
+                circuitText(snapshot, "length"),
+                circuitText(snapshot, "raceDistance"),
+                circuitText(snapshot, "lapRecordDriver"),
+                circuitText(snapshot, "lapRecordTime"),
+                snapshot.child("lapRecordYear").getValue(Long.class)
         );
+    }
+
+    private String circuitText(DataSnapshot snapshot, String field) {
+        String value = snapshot.child(field).getValue(String.class);
+
+        return value == null || value.trim().isEmpty()
+                ? "—"
+                : value;
     }
 }

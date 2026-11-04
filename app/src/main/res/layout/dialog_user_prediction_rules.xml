@@ -1,196 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/rulesDialogRoot"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@drawable/custom_dialog_bg"
-    android:paddingTop="24dp"
-    android:paddingBottom="12dp">
-
-    <TextView
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:id="@+id/rulesTitle"
+    android:backgroundTint="@color/colorPrimary"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="15dp"
+    app:cardElevation="15dp">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/pred_rules_plain_title"
-        android:textAppearance="@style/TextStyle.Gram.Bold.ForTab"
-        android:textColor="@color/text_color_main"
-        android:textSize="20sp" />
-
-    <androidx.core.widget.NestedScrollView
-        android:overScrollMode="never"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:id="@+id/rulesScroll"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginTop="16dp"
-        android:fillViewport="false"
-        android:clipToPadding="false"
-        android:scrollbars="vertical">
-
-        <LinearLayout
-            android:layout_marginStart="12dp"
-            android:layout_marginEnd="12dp"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:id="@+id/rulesTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:text="@string/pred_rules_plain_title"
+            android:textAppearance="@style/TextStyle.Gram.Bold.ForTab"
+            android:textColor="@color/text_color_main"
+            android:textSize="20sp" />
 
-            <TextView
-                android:id="@+id/rulesIntro"
+        <androidx.core.widget.NestedScrollView
+            android:overScrollMode="never"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:id="@+id/rulesScroll"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="16dp"
+            android:fillViewport="false"
+            android:clipToPadding="false"
+            android:scrollbars="vertical">
+
+            <LinearLayout
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/pred_rules_plain_intro"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
+                android:orientation="vertical"
+                android:paddingBottom="8dp">
 
-            <!-- Срок приёма -->
-            <TextView
-                android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/rulesIntro"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/pred_rules_plain_intro"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <!-- Срок приёма -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_deadline_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_deadline_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <!-- Очки и результаты -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_points_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_points_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_tie_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_points_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_weekend_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_weekend_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_results_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_results_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+                <!-- Статистика -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/pred_rules_plain_stats_title"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:text="@string/pred_rules_plain_stats_body"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="15sp"
+                    android:lineSpacingExtra="3dp" />
+
+            </LinearLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <!-- Кнопка остаётся вне прокрутки. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/rulesUnderstoodButton"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_deadline_title"
-                android:textColor="@color/text_color_main"
+                android:minWidth="88dp"
+                android:minHeight="48dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:text="@string/pred_rules_plain_done"
+                android:textColor="@color/red"
                 android:textSize="15sp"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_deadline_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
-
-            <!-- Очки и результаты -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_points_title"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_points_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_tie_title"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_points_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_weekend_title"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_weekend_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_results_title"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_results_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
-
-            <!-- Статистика -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:text="@string/pred_rules_plain_stats_title"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
-                android:text="@string/pred_rules_plain_stats_body"
-                android:textColor="@color/text_color_main"
-                android:textSize="15sp"
-                android:lineSpacingExtra="3dp" />
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
-
-    <!-- Кнопка остаётся вне прокрутки. -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/rulesUnderstoodButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:minWidth="88dp"
-            android:minHeight="48dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
-            android:gravity="center"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/pred_rules_plain_done"
-            android:textColor="@color/red"
-            android:textSize="15sp"
-            android:textStyle="bold" />
-
     </LinearLayout>
-
-</LinearLayout>
+</androidx.cardview.widget.CardView>

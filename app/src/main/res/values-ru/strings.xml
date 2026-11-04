@@ -664,4 +664,135 @@
     <string name="prediction_stats_average_points_row">Средние очки: %1$s : %2$s</string>
     <string name="prediction_stats_retirements_row">Сходы: %1$d : %2$d</string>
     <string name="prediction_stats_recent_races">Последние 5 совместных гонок</string>
+
+    <string name="pred_duel_wins">Победы в дуэли</string>
+    <string name="pred_duel_average">Средние очки</string>
+    <string name="pred_duel_retirements">Сходы</string>
+    <string name="pred_duel_recent">Последние совместные гонки</string>
+    <string name="pred_duel_race">Гран-при</string>
+    <string name="pred_duel_finish_note">Финишные места · последние 5 совместных гонок</string>
+
+    <string name="pred_quali_duel_wins">Победы в квалификационных дуэлях</string>
+    <string name="pred_quali_duel_average">Средняя позиция</string>
+    <string name="pred_quali_duel_recent">Последние совместные квалификации</string>
+    <string name="pred_quali_duel_note">Позиции в квалификации · последние 5 совместных сессий</string>
+
+    <string name="pred_team_main_race_points">Очки за основные гонки</string>
+    <string name="pred_team_average_points">Средние очки за гонку</string>
+    <string name="pred_team_gp_wins">Победы в Гран-при</string>
+    <string name="pred_team_recent">Последние совместные гонки</string>
+    <string name="pred_team_points_note">Очки основных гонок восстановлены по финишным позициям. Очки спринтов и другие корректировки не включены.</string>
+    <string name="pred_team_comparison_header">Показатель</string>
+
+    <string name="ps_season">Сезон %1$s</string>
+    <string name="ps_before_event">Результаты до этого этапа</string>
+    <string name="ps_main_points">Очки за основные гонки</string>
+    <string name="ps_wins">Победы</string>
+    <string name="ps_podiums">Подиумы</string>
+    <string name="ps_retirements">Сходы</string>
+    <string name="ps_average">Средние очки за гонку: %1$s</string>
+    <string name="ps_events">Гонок с записанными результатами: %1$d</string>
+    <string name="ps_race_points">Очки команды</string>
+    <string name="ps_finish">Финиш</string>
+    <string name="ps_recent">Последние 5 гонок</string>
+    <string name="ps_no_events">В этом периоде ещё нет завершённых результатов</string>
+    <string name="ps_driver_note">Очки восстановлены по финишам основных гонок, без очков спринтов и других корректировок.</string>
+    <string name="ps_team_note">Очки восстановлены по финишам основных гонок. Подиумы и сходы считаются по пилотам, гонки — по этапам команды. Очки спринтов и другие корректировки не включены.</string>
+
+    <string name="pc_laps">Кругов</string>
+    <string name="pc_turns">Поворотов</string>
+    <string name="pc_length">Длина круга</string>
+    <string name="pc_distance">Дистанция гонки</string>
+    <string name="pc_opened">Открыта</string>
+    <string name="pc_altitude">Высота</string>
+    <string name="pc_record">Рекорд круга</string>
+    <string name="pc_km">%1$s км</string>
+    <string name="pc_m">%1$s м</string>
+    <string name="pc_note">Только характеристики трассы. В базе нет истории погоды и появлений машины безопасности, поэтому карточка не оценивает вероятность исхода.</string>
+    <string name="pc_title">О трассе</string>
+
+    <string name="tq_title">Команды в квалификации</string>
+    <string name="tq_side_a">Команда A</string>
+    <string name="tq_side_b">Команда B</string>
+    <string name="tq_average">Средняя позиция пилота · меньше — лучше</string>
+    <string name="tq_count">Сопоставимых сессий: %1$d</string>
+    <string name="tq_recent">Последние 5 квалификаций</string>
+    <string name="tq_columns">Гран-при · позиции команды A / команды B</string>
+    <string name="tq_empty">В этом периоде нет сессий с двумя записанными позициями у каждой команды.</string>
+    <string name="tq_note">В каждой паре — позиции обоих пилотов, лучшая первой. Учтены только сессии с двумя корректными позициями у каждой команды. Статистика не задаёт правило определения результата прогноза.</string>
+
+    <string name="tr_title">Команды в гонках</string>
+    <string name="tr_side_a">Команда A</string>
+    <string name="tr_side_b">Команда B</string>
+    <string name="tr_average">Средняя записанная числовая позиция финиша</string>
+    <string name="tr_samples">Числовых позиций: A — %1$d, B — %2$d</string>
+    <string name="tr_retirements">Сходы</string>
+    <string name="tr_count">Сопоставимых гонок: %1$d</string>
+    <string name="tr_recent">Последние 5 совместных гонок</string>
+    <string name="tr_columns">Гран-при · финиши команды A / команды B</string>
+    <string name="tr_empty">В этом периоде нет гонок с двумя завершёнными записями результатов у каждой команды.</string>
+    <string name="tr_not_classified">Не классиф.</string>
+    <string name="tr_note">В паре показаны оба пилота: сначала числовые позиции, затем статусы. Сход — только R. Статусы не входят в среднюю позицию. Нужны две корректные записи у каждой команды. Карточка не задаёт правило определения результата прогноза.</string>
+
+    <string name="dp_title">Пилоты: вклад в очки</string>
+    <string name="dp_main_points">Очки основных гонок в сравниваемом периоде</string>
+    <string name="dp_count">Гонок с результатами обоих пилотов: %1$d</string>
+    <string name="dp_metric">Показатель</string>
+    <string name="dp_average">Средние очки за гонку</string>
+    <string name="dp_race">Гран-при</string>
+    <string name="dp_recent">Последние 5 гонок · очки</string>
+    <string name="dp_empty">В этом периоде ещё нет сопоставимых результатов.</string>
+    <string name="dp_note">Сравниваются только гонки с завершёнными записями результатов у обоих пилотов. Очки восстановлены по финишным позициям, без очков спринтов и других корректировок. Это не полный официальный вклад в очки команды.</string>
+
+    <string name="sp_title">Сравнение очков чемпионата</string>
+    <string name="sp_period">Сезон %1$s · после раунда %2$d</string>
+    <string name="sp_side_a">Команда A</string>
+    <string name="sp_side_b">Команда B</string>
+    <string name="sp_caption">Очки чемпионата · гонки и спринты</string>
+    <string name="sp_difference">Разница в очках: %1$s</string>
+    <string name="sp_source_drivers">Источник: Jolpica · зачёт пилотов. Показана готовая сумма, без восстановления по финишным позициям.</string>
+    <string name="sp_source_teams">Источник: Jolpica · зачёт конструкторов. Показана готовая сумма, без восстановления по финишным позициям.</string>
+    <string name="sp_before_season">До первого этапа: завершённых раундов чемпионата ещё нет.</string>
+    <string name="sp_driver_note">Если пилот менял команду, его сумма здесь не разбита по конструкторам.</string>
+
+    <string name="spw_period">Сезон %1$s · зачёт после раунда %2$d</string>
+    <string name="spw_a">Команда A</string>
+    <string name="spw_b">Команда B</string>
+    <string name="spw_total">Очки чемпионата · гонки и спринты</string>
+    <string name="spw_drivers_source">Итог: зачёт пилотов Jolpica. При смене команды сумма пилота не разбита по командам.</string>
+    <string name="spw_teams_source">Итог: зачёт конструкторов Jolpica.</string>
+    <string name="spw_average">Средние очки за уик-энд</string>
+    <string name="spw_count">Полностью загруженных уик-эндов в периоде: %1$d</string>
+    <string name="spw_skipped">Исключено раундов без результатов гонки или ожидаемого спринта: %1$d</string>
+    <string name="spw_recent">Последние 5 уик-эндов</string>
+    <string name="spw_parts_caption">Колонки соответствуют участникам выше. Разбивка: гонка + спринт.</string>
+    <string name="spw_total_parts">%1$s\n(%2$s + %3$s)</string>
+    <string name="spw_loading">Загрузка очков гонок и спринтов…</string>
+    <string name="spw_history_error">Итоговые очки загружены, но историю уик-эндов загрузить не удалось.</string>
+    <string name="spw_empty">Для этого периода нет полностью загруженных уик-эндов.</string>
+    <string name="spw_mismatch">Сумма результатов сессий отличается от зачёта. Причиной могут быть пропущенные уик-энды или корректировки очков. Итог выше остаётся значением standings.</string>
+    <string name="spw_mean_note">Среднее = очки гонок и спринтов / число полностью загруженных уик-эндов периода. Каждый уик-энд считается один раз. Отсутствие участника в полном списке результатов даёт ноль очков, но не означает участие.</string>
+
+    <string name="bh_title">История для прогноза</string>
+    <string name="bh_rain_title">История показаний дождя</string>
+    <string name="bh_sc_title">История Safety Car</string>
+    <string name="bh_ratio">%1$d из %2$d</string>
+    <string name="bh_rain_caption">сессий с зафиксированным дождём</string>
+    <string name="bh_sc_caption">сессий с зафиксированным SC</string>
+    <string name="bh_unknown">Недостаточно данных: %1$d · выбрано сессий: %2$d</string>
+    <string name="bh_vsc_count">VSC отдельно: %1$d из %2$d сессий с данными</string>
+    <string name="bh_sc_vsc_row">SC: %1$s · VSC: %2$s</string>
+    <string name="bh_yes">Зафиксировано</string>
+    <string name="bh_no">Не обнаружено</string>
+    <string name="bh_no_data">Нет данных</string>
+    <string name="bh_recent">Последние доступные сессии Race на этой трассе</string>
+    <string name="bh_empty">Подходящие завершённые сессии не найдены.</string>
+    <string name="bh_rain_rule">Дождь: rainfall=1 в интервале сессии OpenF1. «Не обнаружено» — только при сухих измерениях по всему интервалу с разрывами не более 5 минут; иначе нет данных. Это история датчика, не подтверждение условий в каждой точке трассы.</string>
+    <string name="bh_sc_rule">SC и VSC учитываются отдельно по распознанным сообщениям Race Control в интервале сессии. Нераспознанные сообщения SafetyCar и отсутствие границ журнала дают «нет данных», а не «нет». Карточка не задаёт правило зачёта прогноза.</string>
+    <string name="bh_source">Источник: OpenF1, доступная история с 2023 года. До 5 сессий строго до этого уик-энда. Историческая частота — не вероятность будущего события.</string>
+    <string name="bh_loading">Загрузка истории OpenF1…</string>
+    <string name="bh_waiting_track">Ожидание информации о трассе…</string>
+    <string name="bh_error">Не удалось загрузить историю или однозначно сопоставить трассу. Исход не определяется.</string>
+    <string name="bh_generic">Для этого вопроса «Да / Нет» не настроен исторический показатель. Ориентируйтесь на описание автора.</string>
+    <string name="bh_season">Для этой исторической карточки нужны конкретная трасса и уик-энд. Показатель для всего сезона пока не настроен.</string>
 </resources>

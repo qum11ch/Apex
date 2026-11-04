@@ -1,31 +1,31 @@
 package com.example.f1app;
 
-public class circuitInfoData {
+public final class circuitInfoData {
 
     private final String raceName;
     private final String circuitName;
     private final String country;
     private final String location;
-    private final int lapsCount;
-    private final int turnsCount;
-    private final double length;
-    private final double raceDistance;
+    private final String lapsCount;
+    private final String turnsCount;
+    private final String length;
+    private final String raceDistance;
     private final String lapRecordDriver;
-    private final double lapRecordTime;
-    private final int lapRecordYear;
+    private final String lapRecordTime;
+    private final Long lapRecordYear;
 
     public circuitInfoData(
             String raceName,
             String circuitName,
             String country,
             String location,
-            int lapsCount,
-            int turnsCount,
-            double length,
-            double raceDistance,
+            String lapsCount,
+            String turnsCount,
+            String length,
+            String raceDistance,
             String lapRecordDriver,
-            double lapRecordTime,
-            int lapRecordYear
+            String lapRecordTime,
+            Long lapRecordYear
     ) {
         this.raceName = raceName;
         this.circuitName = circuitName;
@@ -56,19 +56,19 @@ public class circuitInfoData {
         return location;
     }
 
-    public int getLapsCount() {
+    public String getLapsCount() {
         return lapsCount;
     }
 
-    public int getTurnsCount() {
+    public String getTurnsCount() {
         return turnsCount;
     }
 
-    public double getLength() {
+    public String getLength() {
         return length;
     }
 
-    public double getRaceDistance() {
+    public String getRaceDistance() {
         return raceDistance;
     }
 
@@ -76,11 +76,11 @@ public class circuitInfoData {
         return lapRecordDriver;
     }
 
-    public double getLapRecordTime() {
+    public String getLapRecordTime() {
         return lapRecordTime;
     }
 
-    public int getLapRecordYear() {
+    public Long getLapRecordYear() {
         return lapRecordYear;
     }
 }

@@ -687,4 +687,135 @@
     <string name="prediction_stats_average_points_row">Average points: %1$s : %2$s</string>
     <string name="prediction_stats_retirements_row">Retirements: %1$d : %2$d</string>
     <string name="prediction_stats_recent_races">Last 5 races together</string>
+
+    <string name="pred_duel_wins">Head-to-head wins</string>
+    <string name="pred_duel_average">Average points</string>
+    <string name="pred_duel_retirements">Retirements</string>
+    <string name="pred_duel_recent">Latest races together</string>
+    <string name="pred_duel_race">Grand Prix</string>
+    <string name="pred_duel_finish_note">Finishing positions · latest 5 races together</string>
+
+    <string name="pred_quali_duel_wins">Qualifying head-to-head wins</string>
+    <string name="pred_quali_duel_average">Average position</string>
+    <string name="pred_quali_duel_recent">Latest qualifying sessions together</string>
+    <string name="pred_quali_duel_note">Qualifying positions · latest 5 sessions together</string>
+
+    <string name="pred_team_main_race_points">Points from main races</string>
+    <string name="pred_team_average_points">Average points per race</string>
+    <string name="pred_team_gp_wins">Grand Prix wins</string>
+    <string name="pred_team_recent">Latest races together</string>
+    <string name="pred_team_points_note">Main-race points reconstructed from finishing positions. Sprint points and other adjustments are not included.</string>
+    <string name="pred_team_comparison_header">Statistic</string>
+
+    <string name="ps_season">Season %1$s</string>
+    <string name="ps_before_event">Results before this round</string>
+    <string name="ps_main_points">Points from main races</string>
+    <string name="ps_wins">Wins</string>
+    <string name="ps_podiums">Podium finishes</string>
+    <string name="ps_retirements">Retirements</string>
+    <string name="ps_average">Average points per race: %1$s</string>
+    <string name="ps_events">Races with recorded results: %1$d</string>
+    <string name="ps_race_points">Team points</string>
+    <string name="ps_finish">Finish</string>
+    <string name="ps_recent">Latest 5 races</string>
+    <string name="ps_no_events">No completed results in this period</string>
+    <string name="ps_driver_note">Points are reconstructed from main-race finishes; sprint points and other adjustments are excluded.</string>
+    <string name="ps_team_note">Points are reconstructed from main-race finishes. Podiums and retirements count individual drivers; races count team events. Sprint points and other adjustments are excluded.</string>
+
+    <string name="pc_laps">Laps</string>
+    <string name="pc_turns">Turns</string>
+    <string name="pc_length">Lap length</string>
+    <string name="pc_distance">Race distance</string>
+    <string name="pc_opened">Opened</string>
+    <string name="pc_altitude">Altitude</string>
+    <string name="pc_record">Lap record</string>
+    <string name="pc_km">%1$s km</string>
+    <string name="pc_m">%1$s m</string>
+    <string name="pc_note">Circuit facts only. The database has no weather or safety-car history, so this card does not estimate outcome probability.</string>
+    <string name="pc_title">About the circuit</string>
+
+    <string name="tq_title">Teams in qualifying</string>
+    <string name="tq_side_a">Team A</string>
+    <string name="tq_side_b">Team B</string>
+    <string name="tq_average">Mean driver position · lower is better</string>
+    <string name="tq_count">Comparable sessions: %1$d</string>
+    <string name="tq_recent">Latest 5 qualifying sessions</string>
+    <string name="tq_columns">Grand Prix · positions of team A / team B</string>
+    <string name="tq_empty">No sessions with two recorded positions for each team in this period.</string>
+    <string name="tq_note">Each pair lists both drivers, best position first. Only sessions with two valid positions per team are included. These statistics do not define the prediction settlement rule.</string>
+
+    <string name="tr_title">Teams in races</string>
+    <string name="tr_side_a">Team A</string>
+    <string name="tr_side_b">Team B</string>
+    <string name="tr_average">Mean recorded numeric finishing position</string>
+    <string name="tr_samples">Numeric positions: A — %1$d, B — %2$d</string>
+    <string name="tr_retirements">Retirements</string>
+    <string name="tr_count">Comparable races: %1$d</string>
+    <string name="tr_recent">Latest 5 races together</string>
+    <string name="tr_columns">Grand Prix · team A finishes / team B finishes</string>
+    <string name="tr_empty">No races with two completed result records for each team in this period.</string>
+    <string name="tr_not_classified">Not classified</string>
+    <string name="tr_note">Each pair shows both drivers: numeric positions first, then statuses. Only R counts as a retirement. Statuses are excluded from mean finishing position. Two valid records per team are required. This card does not define the prediction settlement rule.</string>
+
+    <string name="dp_title">Drivers: points contribution</string>
+    <string name="dp_main_points">Points from main races in the compared period</string>
+    <string name="dp_count">Races with results for both drivers: %1$d</string>
+    <string name="dp_metric">Statistic</string>
+    <string name="dp_average">Average points per race</string>
+    <string name="dp_race">Grand Prix</string>
+    <string name="dp_recent">Latest 5 races · points</string>
+    <string name="dp_empty">No comparable results for this period.</string>
+    <string name="dp_note">Only races with completed result records for both drivers are compared. Points are reconstructed from finishing positions, without sprint points or other adjustments. They are not the full official team contribution.</string>
+
+    <string name="sp_title">Championship points comparison</string>
+    <string name="sp_period">Season %1$s · after round %2$d</string>
+    <string name="sp_side_a">Team A</string>
+    <string name="sp_side_b">Team B</string>
+    <string name="sp_caption">Championship points · races and sprints</string>
+    <string name="sp_difference">Points difference: %1$s</string>
+    <string name="sp_source_drivers">Source: Jolpica · driver standings. The displayed total is read directly, not reconstructed from finishing positions.</string>
+    <string name="sp_source_teams">Source: Jolpica · constructor standings. The displayed total is read directly, not reconstructed from finishing positions.</string>
+    <string name="sp_before_season">Before the first round: no completed championship rounds.</string>
+    <string name="sp_driver_note">A driver total is not split between constructors if the driver changed teams.</string>
+
+    <string name="spw_period">Season %1$s · standings after round %2$d</string>
+    <string name="spw_a">Team A</string>
+    <string name="spw_b">Team B</string>
+    <string name="spw_total">Championship points · races and sprints</string>
+    <string name="spw_drivers_source">Total: Jolpica driver standings. A driver total is not split between teams after a transfer.</string>
+    <string name="spw_teams_source">Total: Jolpica constructor standings.</string>
+    <string name="spw_average">Average points per weekend</string>
+    <string name="spw_count">Fully loaded weekends in the period: %1$d</string>
+    <string name="spw_skipped">Rounds with missing race or expected sprint results excluded: %1$d</string>
+    <string name="spw_recent">Latest 5 weekends</string>
+    <string name="spw_parts_caption">Columns follow the participant order above. Breakdown: race + sprint.</string>
+    <string name="spw_total_parts">%1$s\n(%2$s + %3$s)</string>
+    <string name="spw_loading">Loading race and sprint points…</string>
+    <string name="spw_history_error">The standings total is loaded, but weekend history could not be loaded.</string>
+    <string name="spw_empty">No complete weekends are available for this period.</string>
+    <string name="spw_mismatch">The sum of session results differs from standings. This can reflect missing weekends or championship adjustments. The total above remains the standings value.</string>
+    <string name="spw_mean_note">Average = race and sprint points divided by fully loaded weekends in this period. Every included weekend counts once. Absence from a fully loaded result list counts as zero points, not as participation.</string>
+
+    <string name="bh_title">Prediction history</string>
+    <string name="bh_rain_title">Rain sensor history</string>
+    <string name="bh_sc_title">Safety Car history</string>
+    <string name="bh_ratio">%1$d of %2$d</string>
+    <string name="bh_rain_caption">sessions with recorded rain</string>
+    <string name="bh_sc_caption">sessions with recorded SC evidence</string>
+    <string name="bh_unknown">Insufficient data: %1$d · sessions selected: %2$d</string>
+    <string name="bh_vsc_count">VSC separately: %1$d of %2$d known sessions</string>
+    <string name="bh_sc_vsc_row">SC: %1$s · VSC: %2$s</string>
+    <string name="bh_yes">Recorded</string>
+    <string name="bh_no">Not detected</string>
+    <string name="bh_no_data">Insufficient data</string>
+    <string name="bh_recent">Latest available Race sessions at this circuit</string>
+    <string name="bh_empty">No matching completed sessions were found.</string>
+    <string name="bh_rain_rule">Rain: rainfall=1 within the OpenF1 session interval. No rain is reported only with valid dry samples spanning the interval and gaps no larger than 5 minutes; otherwise data is unknown. This is a sensor history, not proof of conditions at every point of the circuit.</string>
+    <string name="bh_sc_rule">SC and VSC are classified separately from recognised race-control messages in the session interval. Unrecognised SafetyCar messages or missing session boundaries yield unknown, not no. This card does not define how the prediction is settled.</string>
+    <string name="bh_source">Source: OpenF1, available history from 2023. Up to 5 sessions strictly before this weekend. Historical frequency is not a forecast probability.</string>
+    <string name="bh_loading">Loading OpenF1 history…</string>
+    <string name="bh_waiting_track">Waiting for circuit information…</string>
+    <string name="bh_error">History could not be loaded or the circuit could not be matched unambiguously. No outcome is inferred.</string>
+    <string name="bh_generic">This Yes/No question has no configured historical metric. Use the description supplied by its author.</string>
+    <string name="bh_season">This history card requires a specific circuit and weekend. A season-wide metric has not been configured.</string>
 </resources>

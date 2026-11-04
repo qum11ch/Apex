@@ -200,6 +200,13 @@
                             android:textSize="15sp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
 
+                        <FrameLayout
+                            android:id="@+id/predictionStatsCustomContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:visibility="gone" />
+
                         <ProgressBar
                             android:id="@+id/predictionStatsProgress"
                             android:layout_width="32dp"
@@ -207,9 +214,46 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
                             android:visibility="gone" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/predictionWeekendCard"
+                        style="@style/PredictionStatusLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="16dp"
+                        android:layout_marginEnd="20dp"
+                        android:orientation="vertical"
+                        android:padding="16dp"
+                        android:visibility="gone">
+
+                        <FrameLayout
+                            android:id="@+id/predictionWeekendContent"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone" />
+
+                        <ProgressBar
+                            android:id="@+id/predictionWeekendProgress"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginTop="12dp"
+                            android:layout_marginBottom="12dp"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/predictionWeekendError"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="@string/prediction_stats_unavailable"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="14sp"
+                            android:visibility="gone" />
 
                         <Button
-                            android:id="@+id/openWeekendButton"
+                            android:id="@+id/predictionWeekendOpenButton"
                             style="@style/ButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -217,6 +261,7 @@
                             android:minHeight="48dp"
                             android:text="@string/prediction_stats_open_weekend"
                             android:visibility="gone" />
+
                     </LinearLayout>
 
                     <LinearLayout

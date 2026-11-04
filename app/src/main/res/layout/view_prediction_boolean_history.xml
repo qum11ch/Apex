@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+<TextView android:id="@+id/bhHeading" android:text="@string/bh_title" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="18sp" android:textStyle="bold" />
+<TextView android:id="@+id/bhDescription" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="14sp" android:layout_marginTop="8dp"/>
+<TextView android:id="@+id/bhMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="14sp" android:layout_marginTop="12dp"/>
+<LinearLayout android:id="@+id/bhStats" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+<TextView android:id="@+id/bhRatio" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="32sp" android:textStyle="bold" android:layout_marginTop="16dp"/>
+<TextView android:id="@+id/bhCaption" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:alpha="0.75"/>
+<TextView android:id="@+id/bhUnknown" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="8dp" android:alpha="0.65"/>
+<TextView android:id="@+id/bhVirtual" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="14sp" android:layout_marginTop="8dp"/>
+<View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="16dp" android:layout_marginBottom="12dp"/>
+<TextView android:text="@string/bh_recent" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" />
+<LinearLayout android:id="@+id/bhRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
+<TextView android:id="@+id/bhEmpty" android:text="@string/bh_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:visibility="gone" android:layout_marginTop="8dp"/>
+<TextView android:id="@+id/bhRule" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="12dp" android:alpha="0.65"/>
+<TextView android:text="@string/bh_source" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="8dp" android:alpha="0.65"/>
+</LinearLayout>
+</LinearLayout>
