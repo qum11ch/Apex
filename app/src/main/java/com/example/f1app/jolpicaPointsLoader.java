@@ -2,15 +2,9 @@ package com.example.f1app;
 
 import android.os.Handler;
 import android.os.Looper;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import android.util.Log;
+import org.json.*;
+import java.util.concurrent.*;
 
 public final class jolpicaPointsLoader {
     public interface Callback {
@@ -19,108 +13,124 @@ public final class jolpicaPointsLoader {
     }
 
     public static final class Result {
-        public final double pointsA, pointsB;
+        public final double pointsA,pointsB;
         public final int round;
-        public final String idA, idB; // driverId или constructorId из Jolpica
+        public final String idA,idB;
 
         Result(double a, double b, int round, String idA, String idB) {
-            this.pointsA = a;
-            this.pointsB = b;
-            this.round = round;
-            this.idA = idA;
-            this.idB = idB;
+            pointsA=a;
+            pointsB=b;
+            this.round=round;
+            this.idA=idA;
+            this.idB=idB;
         }
     }
 
-    private static final ExecutorService IO = Executors.newSingleThreadExecutor();
-    private static final Handler MAIN = new Handler(Looper.getMainLooper());
+    private static final class Table {
+        int round=-1;
+        final JSONArray entries=new JSONArray();
+    }
 
-    public void load(boolean teams, String season, Integer afterRound,
-                     String idA, String titleA, String idB, String titleB, Callback callback) {
-        if (season == null || !season.matches("\\d{4}") || idA == null || idB == null
-                || idA.equals(idB) || (afterRound != null && afterRound < 0)) {
-            MAIN.post(() -> callback.onError("Invalid standings request"));
+    private static final ExecutorService IO=Executors.newFixedThreadPool(2);
+    private static final Handler MAIN=new Handler(Looper.getMainLooper());
+
+    public void load(boolean teams, String season, Integer afterRound, String idA, String titleA,
+                     String idB, String titleB, Callback callback) {
+        if (idA == null || idB == null || idA.equals(idB)) {
+            MAIN.post(()->callback.onError("Invalid participants"));
             return;
         }
-        if (afterRound != null && afterRound == 0) {
-            MAIN.post(() -> callback.onLoaded(new Result(0, 0, 0, null, null)));
+        request(teams, season, afterRound, idA, titleA, idB, titleB, callback);
+    }
+
+    public void loadSingle(boolean team, String season, Integer afterRound,
+                           String id, String title, Callback callback) {
+        if (id == null){
+            MAIN.post(()->callback.onError("Invalid participant"));
             return;
         }
-        IO.execute(() -> {
+        request(team, season, afterRound, id, title, id, title, callback);
+    }
+
+    private void request(boolean teams, String season, Integer requested, String a, String an,
+                         String b, String bn, Callback callback) {
+        if (season == null || !season.matches("\\d{4}") || (requested != null && requested<0)) {
+            MAIN.post(()->callback.onError("Invalid standings period"));
+            return;
+        }
+
+        if (requested != null && requested == 0) {
+            MAIN.post(()->callback.onLoaded(new Result(0,0,0,null,null)));
+            return;
+        }
+
+        IO.execute(()->{
             try {
-                String endpoint = teams ? "constructorStandings" : "driverStandings";
-                String address = "https://api.jolpi.ca/ergast/f1/" + season + "/"
-                        + (afterRound == null ? "" : afterRound + "/") + endpoint + ".json";
-                int offset = 0;
-                Double a = null, b = null;
-                String foundA = null, foundB = null;
-                Integer representedRound = null;
-                while (true) {
-                    JSONObject mr = new JSONObject(get(address + "?limit=100&offset=" + offset))
-                            .getJSONObject("MRData");
-                    JSONArray lists = mr.getJSONObject("StandingsTable").getJSONArray("StandingsLists");
-                    if (lists.length() != 1) throw new Exception("Standings are not available");
-                    JSONObject standings = lists.getJSONObject(0);
-                    if (!season.equals(standings.getString("season"))) throw new Exception("Season mismatch");
-                    int round = Integer.parseInt(standings.getString("round"));
-                    if (representedRound != null && representedRound != round)
-                        throw new Exception("Standings changed between pages; retry");
-                    representedRound = round;
-                    if (afterRound != null && round != afterRound)
-                        throw new Exception("Requested round is not available");
-                    JSONArray entries = standings.getJSONArray(teams ? "ConstructorStandings" : "DriverStandings");
-                    for (int i = 0; i < entries.length(); i++) {
-                        JSONObject entry = entries.getJSONObject(i);
-                        JSONObject entity = entry.getJSONObject(teams ? "Constructor" : "Driver");
-                        double points = Double.parseDouble(entry.getString("points"));
-                        if (Double.isNaN(points) || Double.isInfinite(points)) throw new Exception("Invalid points");
+                Table latest = read(teams, season, null);
+                int effective = predictionStandingsPeriod.resolve(requested, latest.round);
+                Table table = effective == latest.round ? latest : read(teams,season,effective);
+                if (table.round > effective) throw new Exception("Unsafe future standings response");
+                Double pa = null,pb = null;String ia = null,ib = null;
+                for (int i = 0; i < table.entries.length(); i++) {
+                    JSONObject entry = table.entries.getJSONObject(i);
+                    JSONObject entity = entry.getJSONObject(teams ? "Constructor":"Driver");
+                    double points = entry.getDouble("points");
 
-                        String jolpicaId = entity.optString(teams ? "constructorId" : "driverId");
+                    if (!Double.isFinite(points)) throw new Exception("Invalid points");
 
-                        if (matches(entity, teams, idA, titleA)) {
-                            a = points;
-                            foundA = jolpicaId;
-                        }
-                        if (matches(entity, teams, idB, titleB)) {
-                            b = points;
-                            foundB = jolpicaId;
-                        }
+                    String id = entity.getString(teams?"constructorId":"driverId");
 
+                    if(match(entity, teams, a, an)){
+                        pa=points;ia=id;
                     }
-                    int total = Integer.parseInt(mr.getString("total"));
-                    int limit = Integer.parseInt(mr.getString("limit"));
-                    if (offset + limit >= total || entries.length() == 0) break;
-                    if (limit <= 0) throw new Exception("Invalid pagination");
-                    offset += limit;
+
+                    if(match(entity, teams, b, bn)){
+                        pb=points;
+                        ib=id;
+                    }
                 }
-                if (a == null || b == null) throw new Exception("One or both participants not found in Jolpica");
-                Result result = new Result(a, b, representedRound, foundA, foundB);
-                MAIN.post(() -> callback.onLoaded(result));
-            } catch (Exception error) {
-                MAIN.post(() -> callback.onError(error.getMessage()));
+                if (pa == null || pb == null)
+                    throw new Exception("Participant not found: " + a + " / " + b
+                        + "; season=" + season + "; round=" + table.round);
+
+                Result result = new Result(pa, pb, table.round, ia, ib);
+                Log.d("StandingsPoints","season=" + season + " requested=" + requested
+                        + " latest=" + latest.round + " used=" + table.round + " teams=" + teams);
+                MAIN.post(()->callback.onLoaded(result));
+            }catch(Exception e) {
+                Log.e("StandingsPoints","Failed: season=" + season + " requested=" + requested
+                        + " participantA=" + a + " participantB=" + b, e);
+                MAIN.post(()->callback.onError(e.toString()));
             }
         });
     }
-    private static boolean matches(JSONObject entity, boolean team, String id, String title) {
-        if (team) return id.equals(entity.optString("constructorId"));
-        if (id.equals(entity.optString("code")) || id.equals(entity.optString("driverId"))) return true;
-        String name = (entity.optString("givenName") + " " + entity.optString("familyName")).trim();
-        return title != null && title.equals(name);
+    private static Table read(boolean teams, String season, Integer round)throws Exception {
+        String base="https://api.jolpi.ca/ergast/f1/" + season + "/"
+                + (round == null ? " " : round + "/") + (teams ? "constructorStandings/" : "driverStandings/");
+        Table result = new Table();
+        int offset = 0;
+        while (true) {
+            JSONObject mr = predictionPointsJson.object(base + "?format=json&limit=100&offset=" + offset).getJSONObject("MRData");
+            JSONArray lists = mr.getJSONObject("StandingsTable").getJSONArray("StandingsLists");
+            if (lists.length()!=1) throw new Exception("Standings unavailable: " + base);
+            JSONObject table = lists.getJSONObject(0);
+            if(!season.equals(table.getString("season")))throw new Exception("Season mismatch");
+            int represented=table.getInt("round");
+            if(represented<0||(round!=null&&represented>round))throw new Exception("Round mismatch");
+            if(result.round!=-1&&result.round!=represented)throw new Exception("Standings changed between pages");
+            result.round=represented;
+            JSONArray entries=table.getJSONArray(teams?"ConstructorStandings":"DriverStandings");
+            for(int i=0;i<entries.length();i++)result.entries.put(entries.getJSONObject(i));
+            int limit=mr.getInt("limit"),total=mr.getInt("total");
+            if(limit<=0||(entries.length()==0&&offset<total))throw new Exception("Incomplete standings");
+            if(offset+limit>=total)break;
+            offset+=limit;
+        }
+        return result;
     }
-    private static String get(String address) throws Exception {
-        HttpURLConnection connection = (HttpURLConnection) new URL(address).openConnection();
-        connection.setConnectTimeout(15000);
-        connection.setReadTimeout(15000);
-        connection.setRequestProperty("Accept", "application/json");
-        try {
-            int status = connection.getResponseCode();
-            if (status != 200) throw new Exception("Jolpica HTTP " + status);
-            try (InputStream input = connection.getInputStream();
-                 ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                byte[] buffer = new byte[8192]; int count;
-                while ((count = input.read(buffer)) != -1) output.write(buffer, 0, count);
-                return new String(output.toByteArray(), StandardCharsets.UTF_8);
-            }
-        } finally { connection.disconnect(); }
+    private static boolean match(JSONObject e,boolean team,String id,String title) {
+        if(team)return id.equals(e.optString("constructorId"));
+        return id.equals(e.optString("driverId"))||id.equals(e.optString("code"))
+                ||(title!=null&&title.equals((e.optString("givenName")+" "+e.optString("familyName")).trim()));
     }
 }

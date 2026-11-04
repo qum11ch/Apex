@@ -818,4 +818,46 @@
     <string name="bh_error">History could not be loaded or the circuit could not be matched unambiguously. No outcome is inferred.</string>
     <string name="bh_generic">This Yes/No question has no configured historical metric. Use the description supplied by its author.</string>
     <string name="bh_season">This history card requires a specific circuit and weekend. A season-wide metric has not been configured.</string>
+
+    <string name="pf_period">Season %1$s · points after round %2$d</string>
+    <string name="pf_before">Before this round</string>
+    <string name="pf_championship_points">Championship points · Jolpica standings</string>
+    <string name="pf_loading">Loading weekend points…</string>
+    <string name="pf_history_error">The championship total is loaded; weekend history is unavailable.</string>
+    <string name="pf_average">Average points per weekend: %1$s · weekends: %2$d</string>
+    <string name="pf_races">Main races with local recorded results: %1$d</string>
+    <string name="pf_period_weekends">Verified completed weekends in the period: %1$d</string>
+    <string name="pf_skipped">Excluded incomplete or unverified rounds: %1$d</string>
+    <string name="pf_calendar_mismatch">Sprint data differs from the local calendar: %1$d. Published sprint results are included.</string>
+    <string name="pf_total_mismatch">The session-points sum differs from standings; the championship total is not overwritten.</string>
+    <string name="pf_parts">%1$s\n(%2$s + %3$s)</string>
+    <string name="pf_weekend_history">Latest 5 weekends · race + sprint points</string>
+    <string name="pf_race_performance">Main-race performance</string>
+    <string name="pf_wins">Wins</string>
+    <string name="pf_podiums">Podiums</string>
+    <string name="pf_retirements">Retirements</string>
+    <string name="pf_main_history">Latest 5 main races · finishes</string>
+    <string name="pf_empty">No completed records for this period</string>
+    <string name="pf_nc">Not classified</string>
+    <string name="pf_note">Weekend averages use the same verified weekends for all participants; a driver absent from a complete result set contributes zero points. Main-race wins, podiums and retirements use local recorded results and exclude sprints. For teams, podiums and retirements count drivers. A driver standings total is not split by teams after a transfer.</string>
+
+    <string name="bh2_coverage">Unknown outcomes: %1$d · sessions: %2$d · failed requests: %3$d</string>
+    <string name="bh2_network_error">Data request failed</string>
+    <string name="bh2_sc_rule">SC and VSC are independent. Positive means a recognised observed deployment message. Negative requires recognised session boundaries and no unknown messages for that channel. Other cases remain unknown. This is a heuristic, not an official settlement rule.</string>
+
+    <string name="bh3_rain_caption">races with rain detected in the timing window</string>
+    <string name="bh3_sc_caption">sessions with recorded SC</string>
+    <string name="bh3_counts">Not detected: %1$d\nUncertain: %2$d\nSessions examined: %3$d · request errors: %4$d</string>
+    <string name="bh3_vsc_counts">VSC separately — recorded: %1$d, not detected: %2$d, uncertain: %3$d</string>
+    <string name="bh3_coverage_gap">Rain was not detected in available readings; coverage of the race window is incomplete.</string>
+    <string name="bh3_window_unknown">Race timing boundaries could not be resolved.</string>
+    <string name="bh3_network_error">Data request failed</string>
+    <string name="bh3_rain_rule">Rain is checked between the timing start and the first track-wide chequered flag. Start is a recognised lap-1 control message or a first-lap timing timestamp. If either boundary is missing, the outcome stays uncertain. Dry coverage still requires gaps no larger than 5 minutes. Timing and message timestamps can be approximate; this is not an official settlement rule.</string>
+
+    <string name="bh4_unavailable_years">Years that could not be checked: %1$s. History is incomplete.</string>
+
+    <string name="rd_average_finish">Mean numeric finishing position</string>
+    <string name="rd_numeric_finishes">Positions used in the mean</string>
+    <string name="rd_race_note">Main races only. The mean uses recorded numeric finishing positions, excluding R/W/D/NC statuses. It is not a full performance ranking: compare it with retirements and the sample sizes. Sprint results and championship points do not affect this mean or the existing race-duel score.</string>
+    <string name="rd_not_classified">Not classified</string>
 </resources>

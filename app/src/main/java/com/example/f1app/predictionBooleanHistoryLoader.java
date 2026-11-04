@@ -2,172 +2,333 @@ package com.example.f1app;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.io.InputStream;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
+
+import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public final class predictionBooleanHistoryLoader {
-    public enum State { YES, NO, UNKNOWN }
-    public interface Callback { void onLoaded(Data data); void onError(String message); }
-    public static final class Row {
-        public String date, circuit;
-        public State rain = State.UNKNOWN, sc = State.UNKNOWN, vsc = State.UNKNOWN;
-    }
-    public static final class Data {
-        public final List<Row> rows = new ArrayList<>();
-    }
-    private static final ExecutorService IO = Executors.newSingleThreadExecutor();
+    private static final String TAG = "BooleanHistory";
+    private static final int MAX_RACES = 10;
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
-    private static final String BASE = "https://api.openf1.org/v1/";
-    private static final long GAP_MS = 5 * 60 * 1000L;
 
-    public void load(String location, String circuitName, String circuitId,
-                     String beforeDate, Callback callback) {
-        IO.execute(() -> {
+    public interface Callback {
+        void onLoaded(Data data);
+        void onError(String message);
+    }
+
+    public enum State {
+        YES,
+        NO,
+        UNKNOWN
+    }
+
+    public static final class Row {
+        public final int sessionKey;
+        public final String circuit;
+        public final String date;
+        public final State rain;
+        public final String rainReason;
+        public final String rainError;
+        public final State sc;
+        public final State vsc;
+        public final String safetyError;
+
+        Row(
+                int sessionKey,
+                String circuit,
+                String date,
+                State rain,
+                String rainReason,
+                String rainError,
+                State sc,
+                State vsc,
+                String safetyError
+        ) {
+            this.sessionKey = sessionKey;
+            this.circuit = circuit;
+            this.date = date;
+            this.rain = rain;
+            this.rainReason = rainReason;
+            this.rainError = rainError;
+            this.sc = sc;
+            this.vsc = vsc;
+            this.safetyError = safetyError;
+        }
+    }
+
+    public static final class Data {
+        public final List<Row> rows;
+        public final int failedRequests;
+        public final List<Integer> unavailableYears;
+
+        public Data(
+                List<Row> rows,
+                int failedRequests,
+                List<Integer> unavailableYears
+        ) {
+            this.rows = Collections.unmodifiableList(new ArrayList<>(rows));
+            this.failedRequests = failedRequests;
+            this.unavailableYears = Collections.unmodifiableList(
+                    new ArrayList<>(unavailableYears)
+            );
+        }
+    }
+
+    private final Map<Integer, Data> cache = new HashMap<>();
+
+    public void load(
+            String location,
+            String circuitName,
+            String circuitId,
+            String firstPracticeDate,
+            Callback callback
+    ) {
+        new Thread(() -> {
             try {
-                Instant cutoff = java.time.LocalDate.parse(beforeDate)
-                        .atStartOfDay(java.time.ZoneOffset.UTC).toInstant();
-                Instant now = Instant.now();
-                Instant end = cutoff.isBefore(now) ? cutoff : now;
-                int lastYear = Math.min(end.atOffset(java.time.ZoneOffset.UTC).getYear(),
-                        now.atOffset(java.time.ZoneOffset.UTC).getYear());
-                List<JSONObject> candidates = new ArrayList<>();
-                Set<Integer> keys = new HashSet<>();
-                for (int year = 2023; year <= lastYear; year++) {
-                    JSONArray sessions = get("sessions?year=" + year + "&session_name=Race");
-                    for (int i = 0; i < sessions.length(); i++) {
-                        JSONObject s = sessions.getJSONObject(i);
-                        if (!"Race".equals(s.optString("session_name")) || s.optBoolean("is_cancelled", false)) continue;
-                        if (!matches(s, location, circuitName, circuitId)) continue;
-                        int key = s.getInt("circuit_key");
-                        keys.add(key);
-                        Instant finish = instant(s.getString("date_end"));
-                        if (finish.isBefore(end)) candidates.add(s);
-                    }
-                }
-                if (keys.size() != 1) throw new Exception("Circuit match is missing or ambiguous");
-                candidates.sort((a,b) -> a.optString("date_start").compareTo(b.optString("date_start")));
-                Data data = new Data();
-                Set<Integer> seen = new HashSet<>();
-                for (int i = candidates.size()-1; i >= 0 && data.rows.size() < 5; i--) {
-                    JSONObject s = candidates.get(i);
-                    int session = s.getInt("session_key");
-                    if (!seen.add(session)) continue;
-                    Instant start = instant(s.getString("date_start"));
-                    Instant finish = instant(s.getString("date_end"));
-                    if (!finish.isAfter(start)) continue;
-                    Row row = new Row();
-                    row.date = start.atOffset(java.time.ZoneOffset.UTC).toLocalDate().toString();
-                    row.circuit = s.optString("circuit_short_name", location);
-                    try { row.rain = rain(get("weather?session_key="+session), start, finish); }
-                    catch (Exception error) { row.rain = State.UNKNOWN; }
-                    try { safety(get("race_control?session_key="+session), start, finish, row); }
-                    catch (Exception error) { row.sc = State.UNKNOWN; row.vsc = State.UNKNOWN; }
-                    data.rows.add(row);
-                }
+                Data data = loadSync(
+                        location,
+                        circuitName,
+                        circuitId,
+                        firstPracticeDate
+                );
+
                 MAIN.post(() -> callback.onLoaded(data));
+
             } catch (Exception error) {
-                MAIN.post(() -> callback.onError(error.getMessage()));
+                Log.e(TAG, "History load failed", error);
+                MAIN.post(() -> callback.onError(error.toString()));
             }
-        });
+        }).start();
     }
 
-    private static boolean matches(JSONObject session, String... localNames) {
-        String location = normal(session.optString("location"));
-        String circuit = normal(session.optString("circuit_short_name"));
-        for (String name : localNames) {
-            String n = normal(name);
-            if (!n.isEmpty() && (n.equals(location) || n.equals(circuit))) return true;
+    private Data loadSync(
+            String location,
+            String circuitName,
+            String circuitId,
+            String firstPracticeDate
+    ) throws Exception {
+        if (firstPracticeDate == null || firstPracticeDate.trim().isEmpty()) {
+            throw new IOException("First practice date is required");
         }
-        return false;
-    }
-    private static String normal(String value) {
-        if (value == null) return "";
-        return Normalizer.normalize(value, Normalizer.Form.NFD)
-                .replaceAll("\\p{M}", "").toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
-    }
-    private static Instant instant(String value) { return OffsetDateTime.parse(value).toInstant(); }
 
-    private static State rain(JSONArray data, Instant start, Instant end) {
-        List<Long> dry = new ArrayList<>();
-        for (int i=0;i<data.length();i++) {
-            JSONObject item = data.optJSONObject(i);
-            if (item == null || item.isNull("date") || item.isNull("rainfall")) continue;
+        Instant upper = Instant.parse(firstPracticeDate.trim());
+        int cacheKey = upper.hashCode();
+
+        Data cached = cache.get(cacheKey);
+
+        if (cached != null) {
+            return cached;
+        }
+
+        List<Integer> unavailableYears = new ArrayList<>();
+        List<JSONObject> candidates = new ArrayList<>();
+        Set<Integer> keys = new LinkedHashSet<>();
+        int loadedYears = 0;
+
+        for (int year = 2025; year >= 2023; year--) {
+            JSONArray list;
+
             try {
-                Instant date = instant(item.getString("date"));
-                if (date.isBefore(start) || date.isAfter(end)) continue;
-                Object flag = item.get("rainfall");
-                if (!(flag instanceof Number)) continue;
-                double value = ((Number)flag).doubleValue();
-                if (value == 1) return State.YES;
-                if (value == 0) dry.add(date.toEpochMilli());
-            } catch (Exception ignored) { }
-        }
-        if (dry.size()<2) return State.UNKNOWN;
-        Collections.sort(dry);
-        if (dry.get(0)-start.toEpochMilli()>GAP_MS
-                || end.toEpochMilli()-dry.get(dry.size()-1)>GAP_MS) return State.UNKNOWN;
-        for (int i=1;i<dry.size();i++) if (dry.get(i)-dry.get(i-1)>GAP_MS) return State.UNKNOWN;
-        return State.NO;
-    }
+                list = get("sessions?year=" + year + "&session_name=Race");
+                loadedYears++;
 
-    private static void safety(JSONArray data, Instant start, Instant end, Row row) {
-        boolean started=false, ended=false, ambiguous=false;
-        for (int i=0;i<data.length();i++) {
-            JSONObject item=data.optJSONObject(i);
-            if(item==null)continue;
-            try {
-                Instant date=instant(item.getString("date"));
-                if(date.isBefore(start)||date.isAfter(end))continue;
-                String message=item.optString("message").toUpperCase(Locale.ROOT)
-                        .trim().replaceAll("\\s+"," ");
-                String category=item.optString("category");
-                if(message.equals("SESSION STARTED"))started=true;
-                if(message.equals("SESSION FINISHED")||message.equals("SESSION ENDED")
-                        ||"CHEQUERED".equals(item.optString("flag")))ended=true;
-                boolean virtual=message.contains("VIRTUAL SAFETY CAR");
-                boolean vEvidence=virtual&&(message.contains("DEPLOYED")||message.contains("ENDING"));
-                boolean scEvidence=!virtual&&(message.equals("SAFETY CAR DEPLOYED")
-                        ||message.equals("SAFETY CAR IN THIS LAP"));
-                if(vEvidence)row.vsc=State.YES;
-                if(scEvidence)row.sc=State.YES;
-                if("SafetyCar".equalsIgnoreCase(category) && !vEvidence && !scEvidence) ambiguous=true;
-            }catch(Exception ignored){ }
-        }
-        // NO means no recognised deployment in a bounded log, not proof from an empty response.
-        if(started&&ended&&!ambiguous) {
-            if(row.sc!=State.YES)row.sc=State.NO;
-            if(row.vsc!=State.YES)row.vsc=State.NO;
-        }
-    }
+            } catch (Exception error) {
+                unavailableYears.add(year);
+                Log.w(TAG, "Sessions unavailable for year=" + year, error);
+                continue;
+            }
 
-    private static JSONArray get(String query) throws Exception {
-        for(int attempt=0;attempt<3;attempt++) {
-            HttpURLConnection c=(HttpURLConnection)new URL(BASE+query).openConnection();
-            c.setConnectTimeout(15000); c.setReadTimeout(15000);
-            c.setRequestProperty("Accept","application/json");
-            try {
-                int status=c.getResponseCode();
-                if(status==429&&attempt<2){Thread.sleep(2000L*(attempt+1));continue;}
-                if(status!=200)throw new Exception("OpenF1 HTTP "+status);
-                try(InputStream in=c.getInputStream();ByteArrayOutputStream out=new ByteArrayOutputStream()) {
-                    byte[] buffer=new byte[8192];int n;
-                    while((n=in.read(buffer))!=-1)out.write(buffer,0,n);
-                    JSONArray data=new JSONArray(new String(out.toByteArray(),StandardCharsets.UTF_8));
-                    Thread.sleep(1000);
-                    return data;
+            for (int i = 0; i < list.length(); i++) {
+                JSONObject session = list.getJSONObject(i);
+
+                if (!"Race".equals(session.optString("session_name"))
+                        || session.optBoolean("is_cancelled", false)) {
+                    continue;
                 }
-            }finally{c.disconnect();}
+
+                if (!match(session, location, circuitName, circuitId)) {
+                    continue;
+                }
+
+                Instant finish = Instant.parse(session.getString("date_end"));
+
+                if (!finish.isBefore(upper)) {
+                    continue;
+                }
+
+                keys.add(session.getInt("circuit_key"));
+                candidates.add(session);
+            }
         }
-        throw new Exception("OpenF1 rate limit");
+
+        if (loadedYears == 0) {
+            throw new IOException(
+                    "OpenF1 sessions unavailable for all requested years"
+            );
+        }
+
+        List<Integer> resolvedKeys = predictionCircuitKeyResolver.resolve(
+                circuitId,
+                circuitName,
+                location,
+                new ArrayList<>(keys)
+        );
+
+        if (resolvedKeys.isEmpty()) {
+            if (!unavailableYears.isEmpty()) {
+                throw new IOException(
+                        "Circuit lookup incomplete; unavailable years="
+                                + unavailableYears
+                );
+            }
+
+            Data empty = new Data(Collections.emptyList(), 0, unavailableYears);
+            cache.put(cacheKey, empty);
+            return empty;
+        }
+
+        List<Row> rows = new ArrayList<>();
+        Set<Integer> seen = new HashSet<>();
+        int failed = unavailableYears.size();
+
+        for (JSONObject session : candidates) {
+            int key = session.getInt("circuit_key");
+
+            if (!resolvedKeys.contains(key) || !seen.add(key)) {
+                continue;
+            }
+
+            String sessionKey = String.valueOf(session.getInt("session_key"));
+            Instant finish = Instant.parse(session.getString("date_end"));
+            Row row = rainRow(session, sessionKey, finish);
+
+            if (row != null) {
+                rows.add(row);
+            }
+
+            if (rows.size() >= MAX_RACES) {
+                break;
+            }
+        }
+
+        rows.sort((left, right) -> right.date.compareTo(left.date));
+
+        Data data = new Data(rows, failed, unavailableYears);
+        cache.put(cacheKey, data);
+        return data;
+    }
+
+    private Row rainRow(
+            JSONObject session,
+            String sessionKey,
+            Instant finish
+    ) {
+        String circuit = session.optString("circuit_short_name", "");
+        String date = session.optString("date_start", "");
+
+        try {
+            JSONArray weather = get(
+                    "weather?session_key=" + sessionKey
+            );
+
+            boolean rainSeen = false;
+            int samples = 0;
+
+            for (int i = 0; i < weather.length(); i++) {
+                JSONObject item = weather.getJSONObject(i);
+                Instant time = Instant.parse(item.getString("date"));
+
+                if (time.isAfter(finish)
+                        || time.isBefore(finish.minus(Duration.ofHours(6)))) {
+                    continue;
+                }
+
+                double rainfall = item.optDouble("rainfall", 0);
+                samples++;
+
+                if (rainfall > 0) {
+                    rainSeen = true;
+                }
+            }
+
+            if (samples == 0) {
+                return new Row(
+                        Integer.parseInt(sessionKey),
+                        circuit,
+                        date,
+                        State.UNKNOWN,
+                        "MEASUREMENT_GAP",
+                        null,
+                        State.UNKNOWN,
+                        State.UNKNOWN,
+                        null
+                );
+            }
+
+            return new Row(
+                    Integer.parseInt(sessionKey),
+                    circuit,
+                    date,
+                    rainSeen ? State.YES : State.NO,
+                    null,
+                    null,
+                    State.UNKNOWN,
+                    State.UNKNOWN,
+                    null
+            );
+
+        } catch (Exception error) {
+            Log.e(TAG, "Rain/window failed: session=" + sessionKey, error);
+
+            return new Row(
+                    Integer.parseInt(sessionKey),
+                    circuit,
+                    date,
+                    State.UNKNOWN,
+                    null,
+                    error.toString(),
+                    State.UNKNOWN,
+                    State.UNKNOWN,
+                    error.toString()
+            );
+        }
+    }
+
+    private boolean match(
+            JSONObject session,
+            String location,
+            String circuitName,
+            String circuitId
+    ) {
+        String sessionLocation = session.optString("location", "");
+        String sessionCircuit = session.optString("circuit_short_name", "");
+        String sessionCountry = session.optString("country_name", "");
+
+        return equalsIgnoreCase(sessionLocation, location)
+                || equalsIgnoreCase(sessionCircuit, circuitName)
+                || equalsIgnoreCase(sessionCountry, circuitId);
+    }
+
+    private boolean equalsIgnoreCase(String left, String right) {
+        return left != null
+                && right != null
+                && left.trim().equalsIgnoreCase(right.trim());
+    }
+
+    private JSONArray get(String path) throws Exception {
+        return new JSONArray(predictionOpenF1Http.get(path));
     }
 }

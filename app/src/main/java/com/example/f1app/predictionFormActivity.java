@@ -4,14 +4,12 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
-import android.view.ContextThemeWrapper;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,18 +100,12 @@ public class predictionFormActivity extends AppCompatActivity {
     private TextView predictionStatsBody;
     private ProgressBar predictionStatsProgress;
 
-    private predictionStatsLoader statsLoader;
-    private predictionDuelStatsCalculator duelStatsCalculator;
-
     private String headToHeadChoiceAId;
     private String headToHeadChoiceATitle;
     private String headToHeadChoiceBId;
     private String headToHeadChoiceBTitle;
 
     private String predictionCategory;
-
-    private predictionSingleStatsCalculator singleStatsCalculator;
-    private predictionTeamStatsCalculator teamStatsCalculator;
 
     private FrameLayout predictionStatsCustomContent;
 
@@ -214,11 +206,6 @@ public class predictionFormActivity extends AppCompatActivity {
         predictionStatsBody = findViewById(R.id.predictionStatsBody);
         predictionStatsProgress = findViewById(R.id.predictionStatsProgress);
         predictionStatsCustomContent = findViewById(R.id.predictionStatsCustomContent);
-
-        statsLoader = new predictionStatsLoader();
-        duelStatsCalculator = new predictionDuelStatsCalculator();
-        singleStatsCalculator = new predictionSingleStatsCalculator();
-        teamStatsCalculator = new predictionTeamStatsCalculator();
 
         predictionWeekendCard = findViewById(R.id.predictionWeekendCard);
         predictionWeekendContent = findViewById(R.id.predictionWeekendContent);
@@ -766,14 +753,20 @@ public class predictionFormActivity extends AppCompatActivity {
         final String description = predictionDescription;
         booleanHistoryMessage(R.string.bh_loading);
         predictionStatsProgress.setVisibility(View.VISIBLE);
-        booleanHistoryLoader.load(track.location, track.circuitName, track.circuitId,
-                track.firstPracticeDate, new predictionBooleanHistoryLoader.Callback() {
+        booleanHistoryLoader.load(
+                track.location,
+                track.circuitName,
+                track.circuitId,
+                track.firstPracticeDate,
+                new predictionBooleanHistoryLoader.Callback() {
                     private boolean outdated() {
                         return request != booleanHistoryRequest || isFinishing() || isDestroyed();
                     }
                     @Override public void onLoaded(predictionBooleanHistoryLoader.Data data) {
                         if (outdated()) return;
                         predictionStatsProgress.setVisibility(View.GONE);
+                        predictionStatsTitle.setText("rain".equals(type)
+                                ? R.string.bh_rain_title : R.string.bh_sc_title);
                         predictionBooleanHistoryRenderer.render(
                                 predictionStatsCustomContent, type, description, data);
                         predictionStatsBody.setVisibility(View.GONE);
