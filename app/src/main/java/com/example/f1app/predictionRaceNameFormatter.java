@@ -7,22 +7,15 @@ import android.content.Context;
 import java.util.Locale;
 
 public final class predictionRaceNameFormatter {
-
     private predictionRaceNameFormatter() {
     }
 
-    public static String getName(
-            Context context,
-            String raceName
-    ) {
+    public static String getName(Context context, String raceName) {
         if (raceName == null || raceName.trim().isEmpty()) {
             return "—";
         }
 
-        String key = raceName.trim()
-                .toLowerCase(Locale.ROOT)
-                .replaceAll("\\s+", "_");
-
+        String key = raceName.trim().toLowerCase(Locale.ROOT).replaceAll("\\s+", "_");
         int resourceId = getStringByName(key + "_text");
 
         if (resourceId == 0) {
@@ -32,11 +25,7 @@ public final class predictionRaceNameFormatter {
         return context.getString(resourceId);
     }
 
-    public static String getNameWithSeason(
-            Context context,
-            String raceName,
-            String season
-    ) {
+    public static String getNameWithSeason(Context context, String raceName, String season) {
         String name = getName(context, raceName);
 
         if (season == null || season.trim().isEmpty()) {

@@ -106,7 +106,7 @@ public final class jolpicaPointsLoader {
     }
     private static Table read(boolean teams, String season, Integer round)throws Exception {
         String base="https://api.jolpi.ca/ergast/f1/" + season + "/"
-                + (round == null ? " " : round + "/") + (teams ? "constructorStandings/" : "driverStandings/");
+                + (round == null ? "" : round + "/") + (teams ? "constructorStandings/" : "driverStandings/");
         Table result = new Table();
         int offset = 0;
         while (true) {

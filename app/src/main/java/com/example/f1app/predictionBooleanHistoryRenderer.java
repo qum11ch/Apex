@@ -1,50 +1,64 @@
 package com.example.f1app;
 
 import android.content.Context;
-import android.view.*;
-import android.widget.*;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public final class predictionBooleanHistoryRenderer {
-    private predictionBooleanHistoryRenderer(){}
-
-    public static void message(ViewGroup container,String description,int messageId) {
-        View root=create(container,description);
-        root.findViewById(R.id.bhStats).setVisibility(View.GONE);
-        set(root,R.id.bhMessage,container.getContext().getString(messageId));
+    private predictionBooleanHistoryRenderer() {
     }
 
-    public static void render(ViewGroup container,String type,String description,predictionBooleanHistoryLoader.Data data) {
-        Context c=container.getContext();
-        View root=create(container,description);
+    public static void message(ViewGroup container, String description, int messageId) {
+        View root = create(container, description);
+
+        root.findViewById(R.id.bhStats).setVisibility(View.GONE);
+        set(root, R.id.bhMessage, container.getContext().getString(messageId));
+    }
+
+    public static void render(ViewGroup container, String type, String description, predictionBooleanHistoryLoader.Data data) {
+        Context context = container.getContext();
+        View root = create(container, description);
+
         root.findViewById(R.id.bhMessage).setVisibility(View.GONE);
 
-        boolean rain="rain".equals(type);
-        int yes=0, no=0, unknown=0, vy=0, vno=0, vu=0;
+        boolean isRain = "rain".equals(type);
 
-        for (predictionBooleanHistoryLoader.Row row:data.rows) {
-            predictionBooleanHistoryLoader.State s=rain?row.rain:row.sc;
-            if (s == predictionBooleanHistoryLoader.State.YES) {
+        int yes = 0;
+        int no = 0;
+        int unknown = 0;
+
+        int virtualYes = 0;
+        int virtualNo = 0;
+        int virtualUnknown = 0;
+
+        for (predictionBooleanHistoryLoader.Row row : data.rows) {
+            predictionBooleanHistoryLoader.State state = isRain ? row.rain : row.sc;
+
+            if (state == predictionBooleanHistoryLoader.State.YES) {
                 yes++;
-            }
-            else if (s == predictionBooleanHistoryLoader.State.NO) {
+            } else if (state == predictionBooleanHistoryLoader.State.NO) {
                 no++;
+            } else {
+                unknown++;
             }
-            else unknown++;
 
-            if (row.vsc==predictionBooleanHistoryLoader.State.YES)
-            {
-                vy++;
+            if (row.vsc == predictionBooleanHistoryLoader.State.YES) {
+                virtualYes++;
+            } else if (row.vsc == predictionBooleanHistoryLoader.State.NO) {
+                virtualNo++;
+            } else {
+                virtualUnknown++;
             }
-            else if (row.vsc==predictionBooleanHistoryLoader.State.NO){
-                vno++;
-            }
-            else vu++;
         }
 
-        set(root,R.id.bhRatio,String.valueOf(yes));
-        set(root,R.id.bhCaption,c.getString(rain?R.string.bh3_rain_caption:R.string.bh3_sc_caption));
+        set(root, R.id.bhRatio, String.valueOf(yes));
+        set(root, R.id.bhCaption, context.getString(isRain ? R.string.bh3_rain_caption : R.string.bh3_sc_caption));
 
-        String coverage = c.getString(
+        String coverage = context.getString(
                 R.string.bh3_counts,
                 no,
                 unknown,
@@ -53,73 +67,91 @@ public final class predictionBooleanHistoryRenderer {
         );
 
         if (!data.unavailableYears.isEmpty()) {
-            coverage += "\n" + c.getString(
-                    R.string.bh4_unavailable_years,
-                    android.text.TextUtils.join(
-                            ", ",
-                            data.unavailableYears
-                    )
-            );
+            String unavailableYears = TextUtils.join(", ", data.unavailableYears);
+
+            coverage += "\n" + context.getString(R.string.bh4_unavailable_years, unavailableYears);
         }
 
         set(root, R.id.bhUnknown, coverage);
 
-        root.findViewById(R.id.bhVirtual).setVisibility(rain?View.GONE:View.VISIBLE);
+        root.findViewById(R.id.bhVirtual).setVisibility(isRain ? View.GONE : View.VISIBLE);
+        set(root, R.id.bhVirtual, context.getString(R.string.bh3_vsc_counts, virtualYes, virtualNo, virtualUnknown));
+        set(root, R.id.bhRule, context.getString(isRain ? R.string.bh3_rain_rule : R.string.bh2_sc_rule));
 
-        set(root,R.id.bhVirtual,c.getString(R.string.bh3_vsc_counts,vy,vno,vu));
-        set(root,R.id.bhRule,c.getString(rain?R.string.bh3_rain_rule:R.string.bh2_sc_rule));
+        LinearLayout rows = root.findViewById(R.id.bhRows);
 
-        LinearLayout rows=root.findViewById(R.id.bhRows);
+        for (predictionBooleanHistoryLoader.Row item : data.rows) {
+            View row = LayoutInflater.from(context).inflate(R.layout.item_prediction_boolean_history, rows, false);
 
-        for (predictionBooleanHistoryLoader.Row item:data.rows) {
-            View row=LayoutInflater.from(c).inflate(R.layout.item_prediction_boolean_history,rows,false);
-            set(row,R.id.bhRaceDate,item.circuit+" · "+item.date);
-            String value;
-            if (rain) {
-                if (item.rainError!=null)
-                {
-                    value=c.getString(R.string.bh3_network_error);
-                }
-                else if (item.rain==predictionBooleanHistoryLoader.State.UNKNOWN){
-                    value=rainUnknown(c,item.rainReason);
-                }
-                else {
-                    value=state(c,item.rain);
-                }
-            } else {
-                value=item.safetyError!=null?c.getString(R.string.bh3_network_error)
-                        :c.getString(R.string.bh_sc_vsc_row,state(c,item.sc),state(c,item.vsc));
+            set(row, R.id.bhRaceDate, item.circuit + " · " + item.date);
+            set(row, R.id.bhOutcome, outcome(context, isRain, item));
+
+            rows.addView(row);
+        }
+
+        root.findViewById(R.id.bhEmpty).setVisibility(data.rows.isEmpty() ? View.VISIBLE : View.GONE);
+    }
+
+    private static String outcome(Context context, boolean isRain, predictionBooleanHistoryLoader.Row item) {
+        if (isRain) {
+            if (item.rainError != null) {
+                return context.getString(R.string.bh3_network_error);
             }
-            set(row,R.id.bhOutcome,value);rows.addView(row);
+
+            if (item.rain == predictionBooleanHistoryLoader.State.UNKNOWN) {
+                return rainUnknown(context, item.rainReason);
+            }
+
+            return state(context, item.rain);
         }
-        root.findViewById(R.id.bhEmpty).setVisibility(data.rows.isEmpty()?View.VISIBLE:View.GONE);
+
+        if (item.safetyError != null) {
+            return context.getString(R.string.bh3_network_error);
+        }
+
+        return context.getString(
+                R.string.bh_sc_vsc_row,
+                state(context, item.sc),
+                state(context, item.vsc)
+        );
     }
 
-    private static String rainUnknown(Context c,String reason) {
-        if ("EDGE_GAP".equals(reason)||"MEASUREMENT_GAP".equals(reason)){
-            return c.getString(R.string.bh3_coverage_gap);
+    private static String rainUnknown(Context context, String reason) {
+        if ("EDGE_GAP".equals(reason) || "MEASUREMENT_GAP".equals(reason)) {
+            return context.getString(R.string.bh3_coverage_gap);
         }
-        if (reason!=null&&reason.startsWith("RACE_")) {
-            return c.getString(R.string.bh3_window_unknown);
+
+        if (reason != null && reason.startsWith("RACE_")) {
+            return context.getString(R.string.bh3_window_unknown);
         }
-        return c.getString(R.string.bh_no_data);
+
+        return context.getString(R.string.bh_no_data);
     }
 
-    private static View create(ViewGroup container,String description) {
+    private static View create(ViewGroup container, String description) {
         container.removeAllViews();
-        View root=LayoutInflater.from(container.getContext()).inflate(R.layout.view_prediction_boolean_history,container,false);
+
+        View root = LayoutInflater.from(container.getContext()).inflate(R.layout.view_prediction_boolean_history, container, false);
+
         container.addView(root);
         root.findViewById(R.id.bhHeading).setVisibility(View.GONE);
-        //TextView d=root.findViewById(R.id.bhDescription);
-        //if(description==null||description.trim().isEmpty())d.setVisibility(View.GONE);else d.setText(description.trim());
+
         return root;
     }
 
-    private static String state(Context c,predictionBooleanHistoryLoader.State s){
-        return c.getString(s==predictionBooleanHistoryLoader.State.YES?R.string.bh_yes:s==predictionBooleanHistoryLoader.State.NO?R.string.bh_no:R.string.bh_no_data);
+    private static String state(Context context, predictionBooleanHistoryLoader.State state) {
+        if (state == predictionBooleanHistoryLoader.State.YES) {
+            return context.getString(R.string.bh_yes);
+        }
+
+        if (state == predictionBooleanHistoryLoader.State.NO) {
+            return context.getString(R.string.bh_no);
+        }
+
+        return context.getString(R.string.bh_no_data);
     }
 
-    private static void set(View root,int id,String value){
-        ((TextView)root.findViewById(id)).setText(value);
+    private static void set(View root, int id, String value) {
+        ((TextView) root.findViewById(id)).setText(value);
     }
 }

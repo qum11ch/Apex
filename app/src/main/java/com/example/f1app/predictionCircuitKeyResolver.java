@@ -1,7 +1,6 @@
 package com.example.f1app;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,40 +8,35 @@ import java.util.Locale;
 import java.util.Set;
 
 public final class predictionCircuitKeyResolver {
-    private predictionCircuitKeyResolver(){}
+    private predictionCircuitKeyResolver() {
+    }
 
-    public static List<Integer> resolve(
-            String circuitId,
-            String circuitName,
-            String location,
-            List<Integer> candidateKeys
-    ) {
+    public static List<Integer> resolve(String circuitId, String circuitName, String location, List<Integer> candidateKeys) {
         if (candidateKeys == null || candidateKeys.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<Integer> result = new ArrayList<>(candidateKeys);
 
-        Integer exact = exactKey(circuitId);
-        if (exact != null) {
-            return contains(result, exact)
-                    ? Collections.singletonList(exact)
-                    : Collections.emptyList();
+        Integer exactKey = exactKey(circuitId);
+
+        if (exactKey != null) {
+            return result.contains(exactKey) ? Collections.singletonList(exactKey) : Collections.emptyList();
         }
 
-        List<Integer> known = knownKeys(circuitId, circuitName, location);
+        List<Integer> knownKeys = knownKeys(circuitId, circuitName, location);
 
-        if (!known.isEmpty()) {
-            List<Integer> filtered = new ArrayList<>();
+        if (!knownKeys.isEmpty()) {
+            List<Integer> filteredKeys = new ArrayList<>();
 
-            for (Integer key : result) {
-                if (known.contains(key)) {
-                    filtered.add(key);
+            for (Integer candidateKey : result) {
+                if (knownKeys.contains(candidateKey)) {
+                    filteredKeys.add(candidateKey);
                 }
             }
 
-            if (!filtered.isEmpty()) {
-                return filtered;
+            if (!filteredKeys.isEmpty()) {
+                return filteredKeys;
             }
         }
 
@@ -72,67 +66,41 @@ public final class predictionCircuitKeyResolver {
         }
     }
 
-    private static List<Integer> knownKeys(
-            String circuitId,
-            String circuitName,
-            String location
-    ) {
+    private static List<Integer> knownKeys(String circuitId, String circuitName, String location) {
         String id = normalize(circuitId);
         String name = normalize(circuitName);
         String place = normalize(location);
 
         Set<Integer> keys = new LinkedHashSet<>();
 
-        if ("interlagos".equals(id)
-                || containsAny(name, "interlagos", "jose carlos pace")
-                || containsAny(place, "sao paulo", "são paulo")) {
+        if ("interlagos".equals(id) || containsAny(name, "interlagos", "jose carlos pace") || containsAny(place, "sao paulo", "são paulo")) {
             keys.add(63);
         }
 
-        if ("monza".equals(id)
-                || containsAny(name, "monza", "nazionale monza")
-                || containsAny(place, "monza")) {
+        if ("monza".equals(id) || containsAny(name, "monza", "nazionale monza") || containsAny(place, "monza")) {
             keys.add(14);
         }
 
-        if ("silverstone".equals(id)
-                || containsAny(name, "silverstone")
-                || containsAny(place, "silverstone")) {
+        if ("silverstone".equals(id) || containsAny(name, "silverstone") || containsAny(place, "silverstone")) {
             keys.add(9);
         }
 
-        if ("spa".equals(id)
-                || containsAny(name, "spa-francorchamps", "spa francorchamps")
-                || containsAny(place, "spa", "stavelot")) {
+        if ("spa".equals(id) || containsAny(name, "spa-francorchamps", "spa francorchamps") || containsAny(place, "spa", "stavelot")) {
             keys.add(13);
         }
 
-        if ("monaco".equals(id)
-                || containsAny(name, "monaco", "monte carlo")
-                || containsAny(place, "monaco", "monte carlo")) {
+        if ("monaco".equals(id) || containsAny(name, "monaco", "monte carlo") || containsAny(place, "monaco", "monte carlo")) {
             keys.add(6);
         }
 
-        if ("suzuka".equals(id)
-                || containsAny(name, "suzuka")
-                || containsAny(place, "suzuka")) {
+        if ("suzuka".equals(id) || containsAny(name, "suzuka") || containsAny(place, "suzuka")) {
             keys.add(22);
         }
 
         return new ArrayList<>(keys);
     }
 
-    private static boolean contains(
-            List<Integer> values,
-            Integer value
-    ) {
-        return values != null && values.contains(value);
-    }
-
-    private static boolean containsAny(
-            String value,
-            String... needles
-    ) {
+    private static boolean containsAny(String value, String... needles) {
         if (value == null || value.isEmpty()) {
             return false;
         }
@@ -147,8 +115,6 @@ public final class predictionCircuitKeyResolver {
     }
 
     private static String normalize(String value) {
-        return value == null
-                ? ""
-                : value.trim().toLowerCase(Locale.ROOT);
+        return value == null ? "" : value.trim().toLowerCase(Locale.ROOT);
     }
 }
