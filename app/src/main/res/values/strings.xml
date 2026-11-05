@@ -463,7 +463,7 @@
     <string name="prediction_unknown_option_type">Error: Unknown option type</string>
     <string name="prediction_load_error">Error loading prediction</string>
     <string name="prediction_drivers_error">Failed to load drivers</string>
-    <string name="prediction_constructors_error">Failed to load constructors</string>
+    <string name="prediction_constructors_error">Could not load teams</string>
     <string name="prediction_choice">Your current prediction: </string>
     <string name="prediction_result_correct">Correct</string>
     <string name="prediction_result_incorrect">Incorrect</string>
@@ -778,16 +778,17 @@
     <string name="sp_before_season">Before the first round: no completed championship rounds.</string>
     <string name="sp_driver_note">A driver total is not split between constructors if the driver changed teams.</string>
 
-    <string name="spw_period">Season %1$s · standings after round %2$d</string>
+    <string name="spw_period">Season %1$s · points after round %2$d</string>
     <string name="spw_a">Team A</string>
     <string name="spw_b">Team B</string>
     <string name="spw_total">Championship points · races and sprints</string>
     <string name="spw_drivers_source">Total: Jolpica driver standings. A driver total is not split between teams after a transfer.</string>
     <string name="spw_teams_source">Total: Jolpica constructor standings.</string>
     <string name="spw_average">Average points per weekend</string>
-    <string name="spw_count">Fully loaded weekends in the period: %1$d</string>
-    <string name="spw_skipped">Rounds with missing race or expected sprint results excluded: %1$d</string>
+    <string name="spw_count">Weekends included: %1$d</string>
+    <string name="spw_skipped">Rounds without race or expected sprint results excluded: %1$d</string>
     <string name="spw_recent">Latest 5 weekends</string>
+
     <string name="spw_parts_caption">Columns follow the participant order above. Breakdown: race + sprint.</string>
     <string name="spw_total_parts">%1$s\n(%2$s + %3$s)</string>
     <string name="spw_loading">Loading race and sprint points…</string>
@@ -812,26 +813,25 @@
     <string name="bh_empty">No matching completed sessions were found.</string>
     <string name="bh_rain_rule">Rain: rainfall=1 within the OpenF1 session interval. No rain is reported only with valid dry samples spanning the interval and gaps no larger than 5 minutes; otherwise data is unknown. This is a sensor history, not proof of conditions at every point of the circuit.</string>
     <string name="bh_sc_rule">SC and VSC are classified separately from recognised race-control messages in the session interval. Unrecognised SafetyCar messages or missing session boundaries yield unknown, not no. This card does not define how the prediction is settled.</string>
-    <string name="bh_source">Source: OpenF1, available history from 2023. Up to 5 sessions strictly before this weekend. Historical frequency is not a forecast probability.</string>
     <string name="bh_loading">Loading OpenF1 history…</string>
     <string name="bh_waiting_track">Waiting for circuit information…</string>
-    <string name="bh_error">History could not be loaded or the circuit could not be matched unambiguously. No outcome is inferred.</string>
+    <string name="bh_error">Could not load history for this circuit. Historical statistics are unavailable.</string>
+    <string name="bh_source">Source: OpenF1. Available history from 2023, up to 5 races at this circuit before the selected weekend. Historical frequency is not the probability of a future event.</string>
     <string name="bh_generic">This Yes/No question has no configured historical metric. Use the description supplied by its author.</string>
     <string name="bh_season">This history card requires a specific circuit and weekend. A season-wide metric has not been configured.</string>
 
-    <string name="pf_period">Season %1$s · points after round %2$d</string>
-    <string name="pf_before">Before this round</string>
-    <string name="pf_championship_points">Championship points · Jolpica standings</string>
-    <string name="pf_loading">Loading weekend points…</string>
-    <string name="pf_history_error">The championship total is loaded; weekend history is unavailable.</string>
+    <string name="pf_period">Season %1$s · points after round %2$d</string><string name="pf_before">Before the selected round</string>
+    <string name="pf_championship_points">Standings points · source: Jolpica</string>
+    <string name="pf_loading">Loading points by weekend…</string>
+    <string name="pf_history_error">Standings points are loaded. Weekend points history is unavailable.</string>
     <string name="pf_average">Average points per weekend: %1$s · weekends: %2$d</string>
-    <string name="pf_races">Main races with local recorded results: %1$d</string>
-    <string name="pf_period_weekends">Verified completed weekends in the period: %1$d</string>
-    <string name="pf_skipped">Excluded incomplete or unverified rounds: %1$d</string>
-    <string name="pf_calendar_mismatch">Sprint data differs from the local calendar: %1$d. Published sprint results are included.</string>
-    <string name="pf_total_mismatch">The session-points sum differs from standings; the championship total is not overwritten.</string>
+    <string name="pf_races">Main races with results in the app database: %1$d</string>
+    <string name="pf_period_weekends">Weekends included: %1$d</string>
+    <string name="pf_skipped">Incomplete rounds or rounds with insufficient data excluded: %1$d</string>
+    <string name="pf_calendar_mismatch">Rounds with conflicting sprint information: %1$d. Published sprint results are included.</string>
+    <string name="pf_total_mismatch">Points from the loaded weekends differ from the standings total for the selected period. The main total uses Jolpica standings.</string>
     <string name="pf_parts">%1$s\n(%2$s + %3$s)</string>
-    <string name="pf_weekend_history">Latest 5 weekends · race + sprint points</string>
+    <string name="pf_weekend_history">Latest 5 weekends · race and sprint points</string>
     <string name="pf_race_performance">Main-race performance</string>
     <string name="pf_wins">Wins</string>
     <string name="pf_podiums">Podiums</string>
@@ -843,22 +843,22 @@
 
     <string name="bh2_coverage">Unknown outcomes: %1$d · sessions: %2$d · failed requests: %3$d</string>
     <string name="bh2_network_error">Data request failed</string>
-    <string name="bh2_sc_rule">SC and VSC are independent. Positive means a recognised observed deployment message. Negative requires recognised session boundaries and no unknown messages for that channel. Other cases remain unknown. This is a heuristic, not an official settlement rule.</string>
+    <string name="bh2_sc_rule">SC and VSC are tracked separately using recognised messages about their deployment. Absence is reported only with established race boundaries, no parsing errors and no ambiguous messages for the relevant type. Otherwise, data is insufficient. The available log may be incomplete. These statistics do not determine the result of your prediction.</string>
 
-    <string name="bh3_rain_caption">races with rain detected in the timing window</string>
-    <string name="bh3_sc_caption">sessions with recorded SC</string>
     <string name="bh3_counts">Not detected: %1$d\nUncertain: %2$d\nSessions examined: %3$d · request errors: %4$d</string>
-    <string name="bh3_vsc_counts">VSC separately — recorded: %1$d, not detected: %2$d, uncertain: %3$d</string>
-    <string name="bh3_coverage_gap">Rain was not detected in available readings; coverage of the race window is incomplete.</string>
-    <string name="bh3_window_unknown">Race timing boundaries could not be resolved.</string>
-    <string name="bh3_network_error">Data request failed</string>
-    <string name="bh3_rain_rule">Rain is checked between the timing start and the first track-wide chequered flag. Start is a recognised lap-1 control message or a first-lap timing timestamp. If either boundary is missing, the outcome stays uncertain. Dry coverage still requires gaps no larger than 5 minutes. Timing and message timestamps can be approximate; this is not an official settlement rule.</string>
+    <string name="bh3_rain_caption">races with rain detected in the checked interval</string>
+    <string name="bh3_sc_caption">races with SC detected</string>
+    <string name="bh3_vsc_counts">VSC — detected: %1$d · not detected: %2$d · insufficient data: %3$d</string>
+    <string name="bh3_coverage_gap">No rain was detected in the available readings, but they do not provide sufficient coverage of the full race interval.</string>
+    <string name="bh3_window_unknown">Insufficient data to determine the start or end of the checked race interval.</string>
+    <string name="bh3_network_error">Could not load data. The result is undetermined.</string>
+    <string name="bh3_rain_rule">Rain is checked from the timing-based race start to the first track-wide chequered flag. The start is identified from a lap-1 control message or a first-lap start timestamp. No rain is reported only with sufficient coverage: gaps between readings and at the interval boundaries must not exceed 5 minutes. If the boundaries or coverage cannot be established, data is insufficient. Timestamps may be approximate. These statistics do not determine the result of your prediction.</string>
 
     <string name="bh4_unavailable_years">Years that could not be checked: %1$s. History is incomplete.</string>
 
-    <string name="rd_average_finish">Mean numeric finishing position</string>
-    <string name="rd_numeric_finishes">Positions used in the mean</string>
-    <string name="rd_race_note">Main races only. The mean uses recorded numeric finishing positions, excluding R/W/D/NC statuses. It is not a full performance ranking: compare it with retirements and the sample sizes. Sprint results and championship points do not affect this mean or the existing race-duel score.</string>
+    <string name="rd_average_finish">Average finishing position</string>
+    <string name="rd_numeric_finishes">Results used in the average</string>
+    <string name="rd_race_note">This card compares finishing positions in main races. The average uses numeric positions only, excluding R/W/D/NC statuses. Consider the number of results and retirements. Race and sprint points are calculated separately in the weekend points statistics.</string>
     <string name="rd_not_classified">Not classified</string>
 
     <string name="pp_choose_team">Choose a team</string>
@@ -869,6 +869,9 @@
     <string name="pp_change">Change</string>
     <string name="pp_select">Select</string>
     <string name="pp_cancel">Cancel</string>
-    <string name="pp_empty">No matching participants</string>
+    <string name="pp_empty">No results found. Try a different search.</string>
     <string name="pp_page">%1$d / %2$d</string>
+
+    <string name="bh_counts_rain">No rain detected: %1$d\nInsufficient data: %2$d\nRaces checked: %3$d · history loading errors: %4$d</string>
+    <string name="bh_counts_sc">No SC detected: %1$d\nInsufficient data: %2$d\nRaces checked: %3$d · history loading errors: %4$d</string>
 </resources>

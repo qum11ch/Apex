@@ -59,7 +59,7 @@ public final class predictionBooleanHistoryRenderer {
         set(root, R.id.bhCaption, context.getString(isRain ? R.string.bh3_rain_caption : R.string.bh3_sc_caption));
 
         String coverage = context.getString(
-                R.string.bh3_counts,
+                isRain ? R.string.bh_counts_rain : R.string.bh_counts_sc,
                 no,
                 unknown,
                 data.rows.size(),

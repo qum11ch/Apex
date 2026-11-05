@@ -82,4 +82,5 @@
     <color name="neuro_text">#191B20</color>
     <color name="neuro_secondary">#595E69</color>
     <color name="neuro_accent">#C50020</color>
+    <color name="prediction_race_button_color">#38393E</color>
 </resources>

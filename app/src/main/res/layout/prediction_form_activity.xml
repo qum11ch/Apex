@@ -201,6 +201,9 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
+                            android:indeterminate="true"
+                            android:indeterminateTint="@color/progressBarColor"
+                            android:indeterminateTintMode="src_atop"
                             android:visibility="gone" />
                     </LinearLayout>
 
@@ -229,7 +232,10 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
                             android:layout_marginBottom="12dp"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                            android:indeterminate="true"
+                            android:indeterminateTint="@color/progressBarColor"
+                            android:indeterminateTintMode="src_atop"/>
 
                         <TextView
                             android:id="@+id/predictionWeekendError"
@@ -241,12 +247,17 @@
                             android:visibility="gone" />
 
                         <Button
+                            android:textAppearance="@style/TextStyle.GoodTiming.Regular"
                             android:id="@+id/predictionWeekendOpenButton"
                             style="@style/ButtonStyle"
+                            android:backgroundTint="@color/grey"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="12dp"
+                            android:textSize="12sp"
                             android:minHeight="48dp"
+                            android:textAllCaps="true"
+                            android:textColor="@color/stroke_option_color"
                             android:text="@string/prediction_stats_open_weekend"
                             android:visibility="gone" />
 
@@ -353,7 +364,6 @@
                     </LinearLayout>
                     <LinearLayout
                         android:id="@+id/aboutPrediction"
-                        android:layout_marginTop="20dp"
                         android:layout_marginStart="20dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -408,6 +418,9 @@
                 android:textStyle="bold" />
 
             <ProgressBar
+                android:indeterminate="true"
+                android:indeterminateTint="@color/progressBarColor"
+                android:indeterminateTintMode="src_atop"
                 android:id="@+id/saveProgress"
                 android:layout_width="50dp"
                 android:layout_height="50dp"

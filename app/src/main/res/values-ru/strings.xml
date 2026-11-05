@@ -311,7 +311,6 @@
     <string name="argentine_grand_prix_text">Гран-при Аргентины</string>
     <string name="san_marino_grand_prix_text">Гран-при Сан-Марино</string>
 
-
     <string name="barcelona_grand_prix_locality">Испания</string>
     <string name="brazilian_grand_prix_locality">Бразилия</string>
     <string name="abu_dhabi_grand_prix_locality">Абу-Даби</string>
@@ -409,10 +408,10 @@
     <string name="conventional_events_text">Обычных Гран-при:</string>
     <string name="sprint_events_text">Спринт Гран-при:</string>
     <string name="max_points_events_text">Максимум очков можно набрать:</string>
-    <string name="winner_wdc_info_text">Для каждого пилота рассчитывается максимально возможное количеств очков до конца сезона. Если оно выше текущего результата лидера, пилот сохраняет шанс на титул.</string>
+    <string name="winner_wdc_info_text">Для каждого пилота рассчитывается максимально возможное количество очков до конца сезона. Если оно выше текущего результата лидера, пилот сохраняет шанс на титул.</string>
     <string name="winner_wdc_zero_chances">Математических шансов нет</string>
 
-    <string name="prediction_weekend_round">%1$s • Раунд %2$d</string>
+    <string name="prediction_weekend_round">%1$s • Этап %2$d</string>
     <string name="prediction_season">Сезон %1$s</string>
 
     <string name="prediction_answer_prefix">Ваш ответ:</string>
@@ -643,7 +642,7 @@
     <string name="pred_rules_button">О пользовательских прогнозах</string>
 
     <string name="prediction_stats_title">Статистика перед прогнозом</string>
-    <string name="prediction_stats_open_weekend">Открыть Гран-при</string>
+    <string name="prediction_stats_open_weekend">Перейти к Гран-при</string>
     <string name="prediction_stats_loading">Загружаем статистику…</string>
     <string name="prediction_stats_unavailable">Недостаточно данных для статистики</string>
     <string name="prediction_stats_error">Не удалось загрузить статистику</string>
@@ -704,7 +703,7 @@
     <string name="pc_length">Длина круга</string>
     <string name="pc_distance">Дистанция гонки</string>
     <string name="pc_opened">Открыта</string>
-    <string name="pc_altitude">Высота</string>
+    <string name="pc_altitude">Высота над уровнем моря</string>
     <string name="pc_record">Рекорд круга</string>
     <string name="pc_km">%1$s км</string>
     <string name="pc_m">%1$s м</string>
@@ -755,16 +754,16 @@
     <string name="sp_before_season">До первого этапа: завершённых раундов чемпионата ещё нет.</string>
     <string name="sp_driver_note">Если пилот менял команду, его сумма здесь не разбита по конструкторам.</string>
 
-    <string name="spw_period">Сезон %1$s · зачёт после раунда %2$d</string>
+    <string name="spw_period">Сезон %1$s · очки после этапа %2$d</string>
     <string name="spw_a">Команда A</string>
     <string name="spw_b">Команда B</string>
     <string name="spw_total">Очки чемпионата · гонки и спринты</string>
     <string name="spw_drivers_source">Итог: зачёт пилотов Jolpica. При смене команды сумма пилота не разбита по командам.</string>
     <string name="spw_teams_source">Итог: зачёт конструкторов Jolpica.</string>
     <string name="spw_average">Средние очки за уик-энд</string>
-    <string name="spw_count">Полностью загруженных уик-эндов в периоде: %1$d</string>
-    <string name="spw_skipped">Исключено раундов без результатов гонки или ожидаемого спринта: %1$d</string>
-    <string name="spw_recent">Последние 5 уик-эндов</string>
+    <string name="spw_count">Уикендов в расчёте: %1$d</string>
+    <string name="spw_skipped">Исключено этапов без результатов гонки или ожидаемого спринта: %1$d</string>
+    <string name="spw_recent">Последние 5 уикендов</string>
     <string name="spw_parts_caption">Колонки соответствуют участникам выше. Разбивка: гонка + спринт.</string>
     <string name="spw_total_parts">%1$s\n(%2$s + %3$s)</string>
     <string name="spw_loading">Загрузка очков гонок и спринтов…</string>
@@ -789,26 +788,26 @@
     <string name="bh_empty">Подходящие завершённые сессии не найдены.</string>
     <string name="bh_rain_rule">Дождь: rainfall=1 в интервале сессии OpenF1. «Не обнаружено» — только при сухих измерениях по всему интервалу с разрывами не более 5 минут; иначе нет данных. Это история датчика, не подтверждение условий в каждой точке трассы.</string>
     <string name="bh_sc_rule">SC и VSC учитываются отдельно по распознанным сообщениям Race Control в интервале сессии. Нераспознанные сообщения SafetyCar и отсутствие границ журнала дают «нет данных», а не «нет». Карточка не задаёт правило зачёта прогноза.</string>
-    <string name="bh_source">Источник: OpenF1, доступная история с 2023 года. До 5 сессий строго до этого уик-энда. Историческая частота — не вероятность будущего события.</string>
     <string name="bh_loading">Загрузка истории OpenF1…</string>
     <string name="bh_waiting_track">Ожидание информации о трассе…</string>
-    <string name="bh_error">Не удалось загрузить историю или однозначно сопоставить трассу. Исход не определяется.</string>
+    <string name="bh_error">Не удалось загрузить историю для этой трассы. Историческая статистика недоступна.</string>
+    <string name="bh_source">Источник: OpenF1. Доступная история с 2023 года, до 5 гонок на этой трассе до выбранного уикенда. Историческая частота не является вероятностью будущего события.</string>
     <string name="bh_generic">Для этого вопроса «Да / Нет» не настроен исторический показатель. Ориентируйтесь на описание автора.</string>
     <string name="bh_season">Для этой исторической карточки нужны конкретная трасса и уик-энд. Показатель для всего сезона пока не настроен.</string>
 
     <string name="pf_period">Сезон %1$s · очки после раунда %2$d</string>
-    <string name="pf_before">До этого этапа</string>
-    <string name="pf_championship_points">Очки чемпионата · зачёт Jolpica</string>
-    <string name="pf_loading">Загрузка очков уик-эндов…</string>
-    <string name="pf_history_error">Итоговые очки загружены; история уик-эндов недоступна.</string>
-    <string name="pf_average">Средние очки за уик-энд: %1$s · уик-эндов: %2$d</string>
-    <string name="pf_races">Основных гонок с записанными локальными результатами: %1$d</string>
-    <string name="pf_period_weekends">Подтверждённых завершённых уик-эндов в периоде: %1$d</string>
-    <string name="pf_skipped">Исключено неполных или неподтверждённых раундов: %1$d</string>
-    <string name="pf_calendar_mismatch">Данные спринта расходятся с локальным календарём: %1$d. Опубликованные результаты спринта учтены.</string>
-    <string name="pf_total_mismatch">Сумма сессионных очков отличается от зачёта; итог чемпионата не подменяется.</string>
+    <string name="pf_before">До выбранного этапа</string>
+    <string name="pf_championship_points">Очки в зачёте · источник: Jolpica</string>
+    <string name="pf_loading">Загрузка очков по уикендам…</string>
+    <string name="pf_history_error">Очки в зачёте загружены. История очков по уикендам недоступна.</string>
+    <string name="pf_average">Средние очки за уикенд: %1$s · уикендов: %2$d</string>
+    <string name="pf_races">Основных гонок с результатами в базе приложения: %1$d</string>
+    <string name="pf_period_weekends">Уикендов в расчёте: %1$d</string>
+    <string name="pf_skipped">Исключено незавершённых этапов или этапов с недостаточными данными: %1$d</string>
+    <string name="pf_calendar_mismatch">Этапов с расхождением данных о спринте: %1$d. В расчёт включены опубликованные результаты спринта.</string>
+    <string name="pf_total_mismatch">Сумма очков по загруженным уикендам отличается от зачёта за выбранный период. Основное значение показано по данным Jolpica.</string>
     <string name="pf_parts">%1$s\n(%2$s + %3$s)</string>
-    <string name="pf_weekend_history">Последние 5 уик-эндов · очки гонки + спринта</string>
+    <string name="pf_weekend_history">Последние 5 уикендов · очки гонки и спринта</string>
     <string name="pf_race_performance">Результаты основных гонок</string>
     <string name="pf_wins">Победы</string>
     <string name="pf_podiums">Подиумы</string>
@@ -820,23 +819,24 @@
 
     <string name="bh2_coverage">Неизвестных исходов: %1$d · сессий: %2$d · ошибок запросов: %3$d</string>
     <string name="bh2_network_error">Ошибка загрузки данных</string>
-    <string name="bh2_sc_rule">SC и VSC учитываются независимо. Положительный исход — распознанное сообщение о фактическом развёртывании. Отрицательный требует распознанных границ сессии и отсутствия неизвестных сообщений этого типа. Иначе исход неизвестен. Это эвристика, не официальное правило зачёта.</string>
+    <string name="bh2_sc_rule">SC и VSC учитываются отдельно по распознанным сообщениям об их применении. Отсутствие события отмечается только при установленных границах гонки и отсутствии ошибок разбора и неоднозначных сообщений соответствующего типа. Иначе данных недостаточно. Доступный журнал может быть неполным. Эта статистика не определяет результат вашего прогноза.</string>
 
-    <string name="bh3_rain_caption">гонок с обнаруженным дождём в интервале по таймингу</string>
-    <string name="bh3_sc_caption">сессий с зафиксированным SC</string>
     <string name="bh3_counts">Не обнаружено: %1$d\nНе установлено: %2$d\nРассмотрено сессий: %3$d · ошибок запросов: %4$d</string>
-    <string name="bh3_vsc_counts">VSC отдельно — зафиксировано: %1$d, не обнаружено: %2$d, не установлено: %3$d</string>
-    <string name="bh3_coverage_gap">В доступных измерениях дождь не обнаружен; покрытие интервала гонки неполное.</string>
-    <string name="bh3_window_unknown">Не удалось установить границы гонки по таймингу.</string>
-    <string name="bh3_network_error">Ошибка загрузки данных</string>
-    <string name="bh3_rain_rule">Дождь проверяется между стартом по таймингу и первым общим клетчатым флагом. Старт — распознанное сообщение первого круга или отметка начала первого круга. Если границы отсутствуют, исход не установлен. Для сухого интервала по-прежнему нужны разрывы измерений не более 5 минут. Временные отметки могут быть приблизительными; это не официальное правило зачёта.</string>
+    <string name="bh3_rain_caption">гонок с обнаруженным дождём в проверяемом интервале</string>
+    <string name="bh3_sc_caption">гонок с обнаруженным SC</string>
+    <string name="bh3_vsc_counts">VSC — обнаружено: %1$d · не обнаружено: %2$d · недостаточно данных: %3$d</string>
+    <string name="bh3_coverage_gap">Дождь не обнаружен в доступных измерениях, но их недостаточно, чтобы проверить весь интервал гонки.</string>
+    <string name="bh3_window_unknown">Недостаточно данных для определения начала или конца проверяемого интервала гонки.</string>
+    <string name="bh3_network_error">Не удалось загрузить данные. Результат не установлен.</string>
+    <string name="bh3_rain_rule">Дождь проверяется от старта гонки по таймингу до первого клетчатого флага для всей трассы. Старт определяется по сообщению первого круга или времени начала первого круга. Отсутствие дождя отмечается только при достаточном покрытии: промежутки между измерениями и пропуски у границ интервала — не более 5 минут. Если границы или покрытие установить нельзя, данных недостаточно. Временные отметки могут быть приблизительными. Эта статистика не определяет результат вашего прогноза.</string>
+
 
     <string name="bh4_unavailable_years">Не удалось проверить годы: %1$s. История неполная.</string>
 
-    <string name="rd_average_finish">Средняя числовая позиция финиша</string>
-    <string name="rd_numeric_finishes">Позиций учтено в среднем</string>
-    <string name="rd_race_note">Только основные гонки. Среднее считается по записанным числовым финишным позициям, без статусов R/W/D/NC. Это не полная оценка выступлений: учитывайте сходы и размер выборки. Спринты и очки чемпионата не влияют на это среднее и существующий счёт гоночной дуэли.</string>
-    <string name="rd_not_classified">Не классиф.</string>
+    <string name="rd_average_finish">Средняя финишная позиция</string>
+    <string name="rd_numeric_finishes">Результатов в расчёте среднего</string>
+    <string name="rd_race_note">Здесь сравниваются финишные позиции в основных гонках. Среднее рассчитывается только по числовым позициям, без статусов \"Сход\"/\"НУ\"/\"ДСК\"/\"Н/З\". Очки гонок и спринтов учитываются отдельно — в статистике очков за уикенд.</string>
+    <string name="rd_not_classified">Не классифицирован</string>
 
     <string name="pp_choose_team">Выберите команду</string>
     <string name="pp_choose_driver">Выберите пилота</string>
@@ -846,6 +846,9 @@
     <string name="pp_change">Изменить</string>
     <string name="pp_select">Выбрать</string>
     <string name="pp_cancel">Отмена</string>
-    <string name="pp_empty">Участники не найдены</string>
-    <string name="pp_page">%1$d / %2$d</string>
+    <string name="pp_empty">Ничего не найдено. Измените поисковый запрос.</string>
+    <string name="pp_page">%1$d/%2$d</string>
+
+    <string name="bh_counts_rain">Без обнаруженного дождя: %1$d\nНедостаточно данных: %2$d\nГонок проверено: %3$d · ошибок загрузки истории: %4$d</string>
+    <string name="bh_counts_sc">Без обнаруженного SC: %1$d\nНедостаточно данных: %2$d\nГонок проверено: %3$d · ошибок загрузки истории: %4$d</string>
 </resources>
