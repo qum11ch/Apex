@@ -731,7 +731,7 @@
     <string name="pc_record">Lap record</string>
     <string name="pc_km">%1$s km</string>
     <string name="pc_m">%1$s m</string>
-    <string name="pc_note">Circuit facts only. The database has no weather or safety-car history, so this card does not estimate outcome probability.</string>
+    <string name="pc_note">Track specs.</string>
     <string name="pc_title">About the circuit</string>
 
     <string name="tq_title">Teams in qualifying</string>
@@ -755,7 +755,6 @@
     <string name="tr_columns">Grand Prix · team A finishes / team B finishes</string>
     <string name="tr_empty">No races with two completed result records for each team in this period.</string>
     <string name="tr_not_classified">Not classified</string>
-    <string name="tr_note">Each pair shows both drivers: numeric positions first, then statuses. Only R counts as a retirement. Statuses are excluded from mean finishing position. Two valid records per team are required. This card does not define the prediction settlement rule.</string>
 
     <string name="dp_title">Drivers: points contribution</string>
     <string name="dp_main_points">Points from main races in the compared period</string>
@@ -874,4 +873,6 @@
 
     <string name="bh_counts_rain">No rain detected: %1$d\nInsufficient data: %2$d\nRaces checked: %3$d · history loading errors: %4$d</string>
     <string name="bh_counts_sc">No SC detected: %1$d\nInsufficient data: %2$d\nRaces checked: %3$d · history loading errors: %4$d</string>
+
+    <string name="refresh">Refresh</string>
 </resources>

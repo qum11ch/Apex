@@ -707,7 +707,7 @@
     <string name="pc_record">Рекорд круга</string>
     <string name="pc_km">%1$s км</string>
     <string name="pc_m">%1$s м</string>
-    <string name="pc_note">Только характеристики трассы. В базе нет истории погоды и появлений машины безопасности, поэтому карточка не оценивает вероятность исхода.</string>
+    <string name="pc_note">Справочная информация о трассе.</string>
     <string name="pc_title">О трассе</string>
 
     <string name="tq_title">Команды в квалификации</string>
@@ -731,7 +731,6 @@
     <string name="tr_columns">Гран-при · финиши команды A / команды B</string>
     <string name="tr_empty">В этом периоде нет гонок с двумя завершёнными записями результатов у каждой команды.</string>
     <string name="tr_not_classified">Не классиф.</string>
-    <string name="tr_note">В паре показаны оба пилота: сначала числовые позиции, затем статусы. Сход — только R. Статусы не входят в среднюю позицию. Нужны две корректные записи у каждой команды. Карточка не задаёт правило определения результата прогноза.</string>
 
     <string name="dp_title">Пилоты: вклад в очки</string>
     <string name="dp_main_points">Очки основных гонок в сравниваемом периоде</string>
@@ -851,4 +850,6 @@
 
     <string name="bh_counts_rain">Без обнаруженного дождя: %1$d\nНедостаточно данных: %2$d\nГонок проверено: %3$d · ошибок загрузки истории: %4$d</string>
     <string name="bh_counts_sc">Без обнаруженного SC: %1$d\nНедостаточно данных: %2$d\nГонок проверено: %3$d · ошибок загрузки истории: %4$d</string>
+
+    <string name="refresh">Обновить</string>
 </resources>

@@ -133,6 +133,12 @@ public final class jolpicaSessions {
         queue(context).add(request);
     }
 
+    public static void clearCache() {
+        synchronized (CACHE) {
+            CACHE.clear();
+        }
+    }
+
     private static void deliverCached(
             Session session,
             JSONObject response,

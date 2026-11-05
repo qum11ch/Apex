@@ -49,6 +49,9 @@ public final class predictionBooleanHistoryLoader {
     private static final java.util.concurrent.ScheduledExecutorService RETRY_SCHEDULER =
             Executors.newSingleThreadScheduledExecutor();
 
+    private static final Set<Integer> WEATHER_RETRY_ATTEMPTED =
+            java.util.Collections.newSetFromMap(new java.util.concurrent.ConcurrentHashMap<>());
+
     private static final long WEATHER_RETRY_DELAY_MS = 5000;
 
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
@@ -192,6 +195,10 @@ public final class predictionBooleanHistoryLoader {
                         );
 
                 if (!window.resolved) {
+                    return;
+                }
+
+                if (!WEATHER_RETRY_ATTEMPTED.add(row.sessionKey)) {
                     return;
                 }
 
@@ -1036,9 +1043,11 @@ public final class predictionBooleanHistoryLoader {
         return response;
     }
 
+    @SuppressWarnings("unused")
     public static void clearResponseCache() {
         synchronized (RESPONSE_CACHE) {
             RESPONSE_CACHE.clear();
+            WEATHER_RETRY_ATTEMPTED.clear();
         }
     }
 

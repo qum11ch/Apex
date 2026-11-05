@@ -166,12 +166,4 @@
         android:textSize="13sp"
         android:visibility="gone"
         android:layout_marginTop="8dp"/>
-    <TextView
-        android:text="@string/tr_note"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/text_color_main"
-        android:textSize="12sp"
-        android:layout_marginTop="12dp"
-        android:alpha="0.65"/>
 </LinearLayout>

@@ -19,13 +19,13 @@
                 android:id="@+id/header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <RelativeLayout
+                <LinearLayout
+                    android:orientation="horizontal"
                     android:layout_marginTop="16dp"
                     android:id="@+id/headerLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
                     <ImageButton
-                        android:layout_centerVertical="true"
                         android:id="@+id/backButton"
                         android:layout_width="56dp"
                         android:layout_height="56dp"
@@ -36,11 +36,9 @@
                     <TextView
                         android:id="@+id/prediction_title"
                         android:gravity="center"
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/backButton"
-                        android:layout_alignParentEnd="true"
-                        android:layout_marginEnd="32dp"
                         android:minHeight="40dp"
                         android:textAlignment="center"
                         android:textColor="@color/white"
@@ -49,7 +47,16 @@
                         android:lineSpacingMultiplier="1.15"
                         android:lineSpacingExtra="2dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-                </RelativeLayout>
+                    <ImageButton
+                        android:id="@+id/refreshButton"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/refresh"
+                        android:padding="12dp"
+                        android:src="@android:drawable/ic_popup_sync"
+                        app:tint="@color/white" />
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/prediction_header"
                     android:layout_width="match_parent"

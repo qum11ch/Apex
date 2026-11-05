@@ -156,6 +156,8 @@ public class predictionFormActivity extends AppCompatActivity {
     private final List<predictionBooleanHistoryLoader.Row> booleanHistoryRows =
             new ArrayList<>();
 
+    private ImageButton refreshButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -205,6 +207,9 @@ public class predictionFormActivity extends AppCompatActivity {
         saveProgress = findViewById(R.id.saveProgress);
         points = findViewById(R.id.points);
 
+        refreshButton = findViewById(R.id.refreshButton);
+        refreshButton.setOnClickListener(v -> refreshPrediction());
+
         rootRef = FirebaseDatabase.getInstance().getReference();
         functions = FirebaseFunctions.getInstance("us-central1");
 
@@ -248,6 +253,33 @@ public class predictionFormActivity extends AppCompatActivity {
         drawable.setColor(backgroundColor);
         drawable.setStroke(dpToPx(1), strokeColor);
         points.setBackground(drawable);
+
+        loadPrediction(predictionFormActivity.this);
+    }
+
+    private void refreshPrediction() {
+        if (savingPrediction) {
+            return;
+        }
+
+        predictionBooleanHistoryLoader.clearResponseCache();
+        predictionPointsHttp.clearCache();
+        jolpicaSessions.clearCache();
+
+        booleanHistoryRequest++;
+        singleCardRequest++;
+        teamQualifyingRequest++;
+        teamRaceCardRequest++;
+        standingsPointsRequest++;
+        weekendCardRequest++;
+
+        booleanHistoryRows.clear();
+
+        selectedOptionCard.setVisibility(View.GONE);
+        twoOptionsContainer.setVisibility(View.GONE);
+        predictionStatsCard.setVisibility(View.GONE);
+        predictionStatsCustomContent.removeAllViews();
+        predictionStatsProgress.setVisibility(View.GONE);
 
         loadPrediction(predictionFormActivity.this);
     }
