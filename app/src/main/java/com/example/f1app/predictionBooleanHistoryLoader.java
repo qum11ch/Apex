@@ -528,77 +528,177 @@ public final class predictionBooleanHistoryLoader {
         return State.NO;
     }
 
-    private static void safety(JSONArray control, Instant start, Instant end, Row row) {
-        boolean started = false;
-        boolean ended = false;
-        boolean ambiguous = false;
+    private static void safety(JSONArray control, Instant metaStart, Instant metaEnd, Row row) {
+        row.sc = State.UNKNOWN;
+        row.vsc = State.UNKNOWN;
+
+        Instant raceStart = null;
+        Instant raceEnd = null;
+
+        Instant earliest = metaStart.minusSeconds(300);
+        Instant now = Instant.now();
+
+        List<JSONObject> entries = new ArrayList<>();
+
+        int invalidCount = 0;
 
         for (int i = 0; i < control.length(); i++) {
             JSONObject item = control.optJSONObject(i);
 
             if (item == null) {
+                invalidCount++;
+
                 continue;
             }
 
             try {
                 Instant time = instant(item.getString("date"));
 
-                if (time.isBefore(start) || time.isAfter(end)) {
+                if (time.isBefore(earliest) || time.isAfter(now)) {
                     continue;
                 }
+
+                entries.add(item);
 
                 String message = item.optString("message")
                         .toUpperCase(Locale.ROOT)
                         .trim()
                         .replaceAll("\\s+", " ");
 
-                String category = item.optString("category");
+                boolean startMessage = "SESSION STARTED".equals(message)
+                        || "RACE STARTED".equals(message);
 
-                if ("SESSION STARTED".equals(message)) {
-                    started = true;
+                if (startMessage && item.optInt("lap_number", -1) == 1) {
+                    if (raceStart == null || time.isBefore(raceStart)) {
+                        raceStart = time;
+                    }
                 }
+            } catch (Exception error) {
+                invalidCount++;
 
-                if ("SESSION FINISHED".equals(message)
-                        || "SESSION ENDED".equals(message)
-                        || "CHEQUERED".equals(item.optString("flag"))) {
-                    ended = true;
-                }
-
-                boolean virtual = message.contains("VIRTUAL SAFETY CAR");
-
-                boolean virtualEvidence = virtual
-                        && (message.contains("DEPLOYED") || message.contains("ENDING"));
-
-                boolean safetyEvidence = !virtual
-                        && ("SAFETY CAR DEPLOYED".equals(message)
-                        || "SAFETY CAR IN THIS LAP".equals(message));
-
-                if (virtualEvidence) {
-                    row.vsc = State.YES;
-                }
-
-                if (safetyEvidence) {
-                    row.sc = State.YES;
-                }
-
-                if ("SafetyCar".equalsIgnoreCase(category)
-                        && !virtualEvidence
-                        && !safetyEvidence) {
-                    ambiguous = true;
-                }
-            } catch (Exception ignored) {
+                Log.w(TAG, "SafetyInvalid"
+                        + "; session=" + row.sessionKey
+                        + "; item=" + item, error);
             }
         }
 
-        if (started && ended && !ambiguous) {
-            if (row.sc != State.YES) {
+        if (raceStart != null) {
+            for (JSONObject item : entries) {
+                Instant time = instant(item.optString("date"));
+
+                String message = item.optString("message")
+                        .toUpperCase(Locale.ROOT)
+                        .trim()
+                        .replaceAll("\\s+", " ");
+
+                boolean trackScope = "Track".equalsIgnoreCase(item.optString("scope"));
+
+                boolean chequered = "CHEQUERED".equalsIgnoreCase(item.optString("flag"))
+                        || "CHEQUERED FLAG".equals(message);
+
+                if (trackScope && chequered && time.isAfter(raceStart)) {
+                    if (raceEnd == null || time.isBefore(raceEnd)) {
+                        raceEnd = time;
+                    }
+                }
+            }
+        }
+
+        boolean bounded = raceStart != null
+                && raceEnd != null
+                && raceEnd.isAfter(raceStart)
+                && raceEnd.toEpochMilli() - raceStart.toEpochMilli()
+                <= 8 * 60 * 60 * 1000L;
+
+        Instant evidenceStart = raceStart == null ? metaStart : raceStart;
+        Instant evidenceEnd = bounded ? raceEnd : now;
+
+        boolean ambiguousSc = false;
+        boolean ambiguousVsc = false;
+
+        int insideCount = 0;
+
+        for (JSONObject item : entries) {
+            Instant time = instant(item.optString("date"));
+
+            if (time.isBefore(evidenceStart) || time.isAfter(evidenceEnd)) {
+                continue;
+            }
+
+            insideCount++;
+
+            String message = item.optString("message")
+                    .toUpperCase(Locale.ROOT)
+                    .trim()
+                    .replaceAll("\\s+", " ");
+
+            String category = item.optString("category");
+
+            boolean virtual = message.contains("VIRTUAL SAFETY CAR");
+
+            boolean vscEvidence = virtual
+                    && (message.contains("DEPLOYED") || message.contains("ENDING"));
+
+            boolean scEvidence = !virtual
+                    && ("SAFETY CAR DEPLOYED".equals(message)
+                    || "SAFETY CAR IN THIS LAP".equals(message));
+
+            boolean knownScMessage = !virtual
+                    && "SAFETY CAR THROUGH THE PIT LANE".equals(message);
+
+            if (vscEvidence) {
+                row.vsc = State.YES;
+            }
+
+            if (scEvidence) {
+                row.sc = State.YES;
+            }
+
+            if ("SafetyCar".equalsIgnoreCase(category)
+                    && !vscEvidence
+                    && !scEvidence
+                    && !knownScMessage) {
+                if (virtual) {
+                    ambiguousVsc = true;
+                } else if (message.contains("SAFETY CAR")) {
+                    ambiguousSc = true;
+                } else {
+                    ambiguousSc = true;
+                    ambiguousVsc = true;
+                }
+
+                Log.d(TAG, "SafetyAmbiguous"
+                        + "; session=" + row.sessionKey
+                        + "; item=" + item);
+            }
+        }
+
+        boolean canInferAbsence = bounded && invalidCount == 0;
+
+        if (canInferAbsence) {
+            if (row.sc != State.YES && !ambiguousSc) {
                 row.sc = State.NO;
             }
 
-            if (row.vsc != State.YES) {
+            if (row.vsc != State.YES && !ambiguousVsc) {
                 row.vsc = State.NO;
             }
         }
+
+        Log.d(TAG, "SafetyDecision"
+                + "; session=" + row.sessionKey
+                + "; bounded=" + bounded
+                + "; raceStart=" + raceStart
+                + "; raceEnd=" + raceEnd
+                + "; metaStart=" + metaStart
+                + "; metaEnd=" + metaEnd
+                + "; entries=" + control.length()
+                + "; inside=" + insideCount
+                + "; invalid=" + invalidCount
+                + "; ambiguousSc=" + ambiguousSc
+                + "; ambiguousVsc=" + ambiguousVsc
+                + "; sc=" + row.sc
+                + "; vsc=" + row.vsc);
     }
 
     private static JSONArray get(String path) throws Exception {
