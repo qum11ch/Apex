@@ -1,33 +1,194 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-<TextView android:id="@+id/singleName" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="20sp" android:textStyle="bold" />
-<TextView android:id="@+id/singleContext" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:alpha="0.7" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/singlePoints" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="34sp" android:textStyle="bold" android:layout_marginTop="16dp"/>
-<TextView android:text="@string/pf_championship_points" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:alpha="0.7"/>
-<TextView android:id="@+id/singleAverage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="14sp" android:layout_marginTop="12dp"/>
-<TextView android:id="@+id/singleCoverage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/singleCalendarWarning" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/singleTotalWarning" android:text="@string/pf_total_mismatch" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/singleWeekendCaption" android:text="@string/pf_weekend_history" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" android:layout_marginTop="16dp"/>
-<LinearLayout android:id="@+id/singleWeekendRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
-<View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="16dp" android:layout_marginBottom="16dp"/>
-<TextView android:text="@string/pf_race_performance" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" />
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="12dp">
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:paddingEnd="6dp">
-<TextView android:id="@+id/singleWins" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="22sp" android:textStyle="bold" />
-<TextView android:text="@string/pf_wins" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:alpha="0.7"/>
-</LinearLayout>
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:paddingEnd="6dp">
-<TextView android:id="@+id/singlePodiums" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="22sp" android:textStyle="bold" />
-<TextView android:text="@string/pf_podiums" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:alpha="0.7"/>
-</LinearLayout>
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:paddingEnd="6dp">
-<TextView android:id="@+id/singleRetirements" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="22sp" android:textStyle="bold" />
-<TextView android:text="@string/pf_retirements" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:alpha="0.7"/>
-</LinearLayout>
-</LinearLayout>
-<TextView android:id="@+id/singleCount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="8dp" android:alpha="0.7"/>
-<TextView android:text="@string/pf_main_history" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" android:layout_marginTop="16dp"/>
-<LinearLayout android:id="@+id/singleRecentRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"/>
-<TextView android:text="@string/pf_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="12dp" android:alpha="0.65"/>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/singleName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/singleContext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="13sp"
+        android:alpha="0.7"
+        android:layout_marginTop="4dp"/>
+    <TextView
+        android:id="@+id/singlePoints"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+    <TextView
+        android:text="@string/pf_championship_points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:alpha="0.7"/>
+    <TextView
+        android:id="@+id/singleAverage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="14sp"
+        android:layout_marginTop="12dp"/>
+    <TextView
+        android:id="@+id/singleCoverage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"/>
+    <TextView
+        android:id="@+id/singleCalendarWarning"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"/>
+    <TextView
+        android:id="@+id/singleTotalWarning"
+        android:text="@string/pf_total_mismatch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="4dp"/>
+    <TextView
+        android:id="@+id/singleWeekendCaption"
+        android:text="@string/pf_weekend_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+    <LinearLayout
+        android:id="@+id/singleWeekendRows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/text_color_main"
+        android:alpha="0.12"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp"/>
+    <TextView
+        android:text="@string/pf_race_performance"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="15sp" android:textStyle="bold" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:layout_marginTop="12dp">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="0dp"
+            android:paddingEnd="6dp">
+            <TextView
+                android:id="@+id/singleWins"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView
+                android:text="@string/pf_wins"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="0dp"
+            android:paddingEnd="6dp">
+            <TextView
+                android:id="@+id/singlePodiums"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="22sp" android:textStyle="bold" />
+            <TextView
+                android:text="@string/pf_podiums"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingStart="0dp"
+            android:paddingEnd="6dp">
+            <TextView
+                android:id="@+id/singleRetirements"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+            <TextView
+                android:text="@string/pf_retirements"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="12sp"
+                android:alpha="0.7"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/singleCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="8dp"
+        android:alpha="0.7"/>
+    <TextView
+        android:text="@string/pf_main_history"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"/>
+    <LinearLayout
+        android:id="@+id/singleRecentRows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"/>
+    <TextView
+        android:text="@string/pf_note"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="12dp"
+        android:alpha="0.65"/>
 </LinearLayout>

@@ -41,7 +41,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.shawnlin.numberpicker.NumberPicker;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -85,7 +84,13 @@ public class predictionFormActivity extends AppCompatActivity {
     private TextView pointsEarnedInfo;
     private TextView pointsEarned;
     private LinearLayout statusLayout;
-    private NumberPicker answerPicker;
+    private LinearLayout selectedOptionCard;
+    private ImageView selectedOptionImage;
+    private TextView selectedOptionName;
+    private TextView selectedOptionAction;
+    private predictionParticipantPickerDialog participantDialog;
+    private boolean savingPrediction;
+    private final Map<String, favoriteItem> participantItems = new HashMap<>();
     private Button saveButton;
     private ProgressBar saveProgress;
     private TextView points;
@@ -111,6 +116,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
     private final predictionSingleCardLoader singleCardLoader = new predictionSingleCardLoader();
     private int singleCardRequest = 0;
+
 
 
     private LinearLayout predictionWeekendCard;
@@ -187,7 +193,11 @@ public class predictionFormActivity extends AppCompatActivity {
         pointsEarned = findViewById(R.id.pointsEarned);
         pointsEarnedInfo = findViewById(R.id.pointsEarnedInfo);
         submittedAtInfo = findViewById(R.id.submittedAtInfo);
-        answerPicker = findViewById(R.id.answer_picker);
+        selectedOptionCard = findViewById(R.id.selectedOptionCard);
+        selectedOptionImage = findViewById(R.id.selectedOptionImage);
+        selectedOptionName = findViewById(R.id.selectedOptionName);
+        selectedOptionAction = findViewById(R.id.selectedOptionAction);
+        selectedOptionCard.setOnClickListener(view -> showParticipantPicker());
         saveButton = findViewById(R.id.saveButton);
         saveProgress = findViewById(R.id.saveProgress);
         points = findViewById(R.id.points);
@@ -219,7 +229,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
         storage = FirebaseStorage.getInstance();
 
-        answerPicker.setVisibility(View.GONE);
+        selectedOptionCard.setVisibility(View.GONE);
         twoOptionsContainer.setVisibility(View.GONE);
 
         if (predictionId == null || predictionId.trim().isEmpty()) {
@@ -326,6 +336,18 @@ public class predictionFormActivity extends AppCompatActivity {
 
         ViewCompat.requestApplyInsets(root);
         savePanel.post(updateScrollReserve);
+    }
+
+    @Override
+    protected void onDestroy() {
+        singleCardRequest++;
+
+        if (participantDialog != null) {
+            participantDialog.dismiss();
+            participantDialog = null;
+        }
+
+        super.onDestroy();
     }
 
     private void loadPrediction(Context context) {
@@ -808,6 +830,7 @@ public class predictionFormActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         options.clear();
+                        participantItems.clear();
 
                         for (DataSnapshot child : snapshot.getChildren()) {
                             String status = child.child("status")
@@ -825,7 +848,9 @@ public class predictionFormActivity extends AppCompatActivity {
                                 continue;
                             }
 
-                            options.add(new predictionOption(id, title));
+                            predictionOption option = new predictionOption(id, title);
+                            options.add(option);
+                            participantItems.put(id, createParticipantItem(option, child, false));
                         }
 
                         options.sort(Comparator.comparing(
@@ -854,6 +879,7 @@ public class predictionFormActivity extends AppCompatActivity {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         options.clear();
+                        participantItems.clear();
 
                         for (DataSnapshot child : snapshot.getChildren()) {
                             String id = child.child("constructorId")
@@ -866,7 +892,9 @@ public class predictionFormActivity extends AppCompatActivity {
                                 continue;
                             }
 
-                            options.add(new predictionOption(id, title));
+                            predictionOption option = new predictionOption(id, title);
+                            options.add(option);
+                            participantItems.put(id, createParticipantItem(option, child, true));
                         }
 
                         options.sort(Comparator.comparing(
@@ -914,46 +942,185 @@ public class predictionFormActivity extends AppCompatActivity {
 
     private void setupOptionPicker() {
         twoOptionsContainer.setVisibility(View.GONE);
-        answerPicker.setVisibility(View.VISIBLE);
-
-        String[] titles = new String[options.size()];
-
-        for (int i = 0; i < options.size(); i++) {
-            titles[i] = options.get(i).getTitle();
-        }
 
         if (options.isEmpty()) {
-            Toast.makeText(
-                    predictionFormActivity.this,
-                    getString(R.string.prediction_unknown_option_type),
-                    Toast.LENGTH_LONG).show();
+            selectedOptionCard.setVisibility(View.GONE);
+            Toast.makeText(this, R.string.prediction_unknown_option_type, Toast.LENGTH_LONG).show();
             saveButton.setEnabled(false);
+
             return;
         }
 
-        answerPicker.setDisplayedValues(null);
-        answerPicker.setMinValue(0);
-        answerPicker.setMaxValue(options.size() - 1);
-        answerPicker.setDisplayedValues(titles);
-        answerPicker.setWrapSelectorWheel(true);
-        answerPicker.setValue(0);
-
-        answerPicker.setOnValueChangedListener(
-                (picker, oldValue, newValue) ->
-                        updateSelectedOption(newValue)
-        );
+        selectedOptionCard.setVisibility(View.VISIBLE);
+        selectedOptionCard.setEnabled(!savingPrediction);
+        selectedOptionAction.setText(R.string.pp_change);
+        ((TextView) findViewById(R.id.choicePrediction_hint)).setText(R.string.pp_your_answer);
 
         updateSelectedOption(0);
     }
 
+    private favoriteItem createParticipantItem(predictionOption option, DataSnapshot snapshot, boolean team) {
+        String title = option.getTitle();
+
+        if (team) {
+            return new favoriteItem(
+                    option.getId(), "", "", title,
+                    getString(R.string.team_description),
+                    "teams/" + option.getId() + "_" + predictionSeason + ".png",
+                    false, true, null
+            );
+        }
+
+        int split = title.lastIndexOf(' ');
+        String name = split > 0 ? title.substring(0, split) : title;
+        String family = split > 0 ? title.substring(split + 1) : "";
+        String driverId = snapshot.child("driverId").getValue(String.class);
+        String lastEntry = snapshot.child("lastEntry").getValue(String.class);
+        String imageId = driverId == null || driverId.trim().isEmpty()
+                ? option.getId().toLowerCase(Locale.ROOT)
+                : driverId.trim();
+
+        return new favoriteItem(
+                title, name, family, "",
+                getString(R.string.driver_active_text) + " " + getString(R.string.driver_description),
+                "drivers/" + imageId + "_" + predictionSeason + ".png",
+                false, false, lastEntry
+        );
+    }
+
+    private void showParticipantPicker() {
+        if (savingPrediction || options.isEmpty() || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        if (participantDialog != null && participantDialog.isShowing()) {
+            return;
+        }
+
+        boolean team = "constructor".equals(optionType);
+        List<favoriteItem> items = new ArrayList<>();
+        String currentValue = null;
+
+        for (predictionOption option : options) {
+            favoriteItem item = participantItems.get(option.getId());
+
+            if (item == null) {
+                continue;
+            }
+
+            items.add(item);
+
+            if (java.util.Objects.equals(option.getId(), selectedOptionId)) {
+                currentValue = item.value;
+            }
+        }
+
+        if (items.isEmpty()) {
+            return;
+        }
+
+        predictionParticipantPickerDialog dialog = new predictionParticipantPickerDialog(
+                this,
+                getString(team
+                        ? R.string.pp_choose_team
+                        : R.string.pp_choose_driver),
+                items,
+                currentValue,
+                item -> {
+                    if (savingPrediction || isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    for (int i = 0; i < options.size(); i++) {
+                        predictionOption option = options.get(i);
+                        String value = team ? option.getId() : option.getTitle();
+
+                        if (java.util.Objects.equals(value, item.value)) {
+                            updateSelectedOption(i);
+
+                            return;
+                        }
+                    }
+                }
+        );
+
+        participantDialog = dialog;
+        dialog.setOnDismissListener(ignored -> {
+            if (participantDialog == dialog) {
+                participantDialog = null;
+            }
+        });
+        dialog.show();
+    }
+
+    private void renderSelectedParticipant(predictionOption option) {
+        selectedOptionName.setText(option.getTitle());
+        selectedOptionCard.setContentDescription(option.getTitle() + ". " + selectedOptionAction.getText());
+
+        ViewGroup.LayoutParams imageParams = selectedOptionImage.getLayoutParams();
+        imageParams.width = dpToPx("constructor".equals(optionType) ? 100 : 52);
+        imageParams.height = dpToPx(52);
+        selectedOptionImage.setLayoutParams(imageParams);
+
+        selectedOptionImage.setScaleType("constructor".equals(optionType)
+                ? ImageView.ScaleType.FIT_CENTER
+                : ImageView.ScaleType.CENTER_CROP);
+
+        Glide.with(this).clear(selectedOptionImage);
+        selectedOptionImage.setImageResource(R.drawable.placeholder_driver);
+
+        favoriteItem item = participantItems.get(option.getId());
+
+        if (item == null || item.imagePath == null) {
+            return;
+        }
+
+        String requestedId = option.getId();
+
+        storage.getReference().child(item.imagePath).getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    if (isFinishing() || isDestroyed()
+                            || !java.util.Objects.equals(requestedId, selectedOptionId)) {
+                        return;
+                    }
+
+                    Glide.with(this)
+                            .load(uri)
+                            .placeholder(R.drawable.placeholder_driver)
+                            .error(R.drawable.placeholder_driver)
+                            .into(selectedOptionImage);
+                });
+    }
+
     private void updateSelectedOption(int index) {
-        if (index < 0 || index >= options.size()) return;
+        if (index < 0 || index >= options.size()) {
+            return;
+        }
+
         predictionOption option = options.get(index);
+        boolean changed = !java.util.Objects.equals(selectedOptionId, option.getId())
+                || !java.util.Objects.equals(selectedOptionTitle, option.getTitle());
+
         selectedOptionId = option.getId();
         selectedOptionTitle = option.getTitle();
-        if ("boolean".equals(optionType)) return;
-        if ("constructor".equals(optionType)) updateConstructorStats(option);
-        else if ("driver".equals(optionType)) updateSingleOptionStats(option);
+
+        if ("boolean".equals(optionType)) {
+            return;
+        }
+
+        if (!changed) {
+            return;
+        }
+
+        renderSelectedParticipant(option);
+
+        android.util.Log.d("SingleCardSelection", "SELECTED; id=" + selectedOptionId);
+
+        if ("constructor".equals(optionType)) {
+            updateConstructorStats(option);
+        } else if ("driver".equals(optionType)) {
+            updateSingleOptionStats(option);
+        }
     }
 
     private void loadSavedAnswer(Context context) {
@@ -1024,8 +1191,7 @@ public class predictionFormActivity extends AppCompatActivity {
                 continue;
             }
 
-            if (answerPicker.getVisibility() == View.VISIBLE) {
-                answerPicker.setValue(i);
+            if (selectedOptionCard.getVisibility() == View.VISIBLE) {
                 updateSelectedOption(i);
             } else {
                 selectedOptionId = options.get(i).getId();
@@ -1161,10 +1327,16 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void setSavingState(boolean saving) {
+        savingPrediction = saving;
         saveButton.setEnabled(!saving);
-
-        answerPicker.setEnabled(!saving);
+        selectedOptionCard.setEnabled(!saving);
+        selectedOptionCard.setAlpha(saving ? 0.6f : 1f);
         twoOptionsContainer.setEnabled(!saving);
+
+        if (saving && participantDialog != null) {
+            participantDialog.dismiss();
+            participantDialog = null;
+        }
 
         saveProgress.setVisibility(saving ? View.VISIBLE : View.INVISIBLE);
     }
@@ -1203,7 +1375,7 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void setupHeadToHeadCards(Context context) {
-        answerPicker.setVisibility(View.GONE);
+        selectedOptionCard.setVisibility(View.GONE);
         twoOptionsContainer.setVisibility(View.VISIBLE);
 
         twoOptionsContainer.removeAllViews();
@@ -1886,7 +2058,7 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void setupTwoOptionButtons(Context context) {
-        answerPicker.setVisibility(View.GONE);
+        selectedOptionCard.setVisibility(View.GONE);
         twoOptionsContainer.setVisibility(View.VISIBLE);
 
         twoOptionsContainer.removeAllViews();

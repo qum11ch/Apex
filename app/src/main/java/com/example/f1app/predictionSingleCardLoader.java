@@ -13,6 +13,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public final class predictionSingleCardLoader {
     public interface Callback {
         void onLoaded(Data data);
@@ -53,12 +55,82 @@ public final class predictionSingleCardLoader {
     }
 
     private static final List<String> NON_NUMERIC_RESULTS = Arrays.asList("R", "W", "D", "NC");
+    private static final AtomicInteger LOAD_SEQUENCE = new AtomicInteger();
 
     private final DatabaseReference root = FirebaseDatabase.getInstance().getReference();
     private final jolpicaPointsLoader standings = new jolpicaPointsLoader();
     private final predictionWeekendPointsLoader weekends = new predictionWeekendPointsLoader();
 
     public void load(String season, Integer beforeRound, boolean team, String id, String title, Callback callback) {
+        final int loadId = LOAD_SEQUENCE.incrementAndGet();
+        final long startedAt = android.os.SystemClock.elapsedRealtime();
+
+        Log.d("SingleCardTrace", "START"
+                + "; load=" + loadId
+                + "; season=" + season
+                + "; beforeRound=" + beforeRound
+                + "; team=" + team
+                + "; id=" + id
+                + "; title=" + title);
+
+        loadInternal(season, beforeRound, team, id, title, new Callback() {
+            private int callbackCount;
+
+            @Override
+            public void onLoaded(Data data) {
+                callbackCount++;
+
+                String phase;
+
+                if (data.historyLoading) {
+                    phase = "BASE_READY";
+                } else if (data.historyError) {
+                    phase = "HISTORY_ERROR";
+                } else if (data.history != null) {
+                    phase = "HISTORY_READY";
+                } else {
+                    phase = "OTHER";
+                }
+
+                String historySum = data.history == null
+                        ? "none"
+                        : String.valueOf(data.history.sumA());
+
+                String weekends = data.history == null
+                        ? "none"
+                        : String.valueOf(data.history.rows.size());
+
+                Log.d("SingleCardTrace", "CALLBACK"
+                        + "; load=" + loadId
+                        + "; callback=" + callbackCount
+                        + "; phase=" + phase
+                        + "; id=" + id
+                        + "; title=" + data.title
+                        + "; beforeRound=" + beforeRound
+                        + "; throughRound=" + data.throughRound
+                        + "; standings=" + data.points
+                        + "; historySum=" + historySum
+                        + "; weekends=" + weekends
+                        + "; elapsedMs="
+                        + (android.os.SystemClock.elapsedRealtime() - startedAt));
+
+                callback.onLoaded(data);
+            }
+
+            @Override
+            public void onError() {
+                Log.e("SingleCardTrace", "ERROR"
+                        + "; load=" + loadId
+                        + "; id=" + id
+                        + "; elapsedMs="
+                        + (android.os.SystemClock.elapsedRealtime() - startedAt));
+
+                callback.onError();
+            }
+        });
+    }
+
+    private void loadInternal(String season, Integer beforeRound, boolean team, String id, String title, Callback callback) {
         if (beforeRound != null && beforeRound < 1) {
             callback.onError();
 
@@ -272,6 +344,12 @@ public final class predictionSingleCardLoader {
             public void onError(String message) {
                 data.historyLoading = false;
                 data.historyError = true;
+
+                Log.e("SingleCardPoints", "History failed"
+                        + "; season=" + season
+                        + "; id=" + total.idA
+                        + "; throughRound=" + total.round
+                        + "; message=" + message);
 
                 callback.onLoaded(data);
             }

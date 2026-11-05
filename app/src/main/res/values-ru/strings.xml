@@ -837,4 +837,15 @@
     <string name="rd_numeric_finishes">Позиций учтено в среднем</string>
     <string name="rd_race_note">Только основные гонки. Среднее считается по записанным числовым финишным позициям, без статусов R/W/D/NC. Это не полная оценка выступлений: учитывайте сходы и размер выборки. Спринты и очки чемпионата не влияют на это среднее и существующий счёт гоночной дуэли.</string>
     <string name="rd_not_classified">Не классиф.</string>
+
+    <string name="pp_choose_team">Выберите команду</string>
+    <string name="pp_choose_driver">Выберите пилота</string>
+    <string name="pp_search_team">Поиск команды</string>
+    <string name="pp_search_driver">Поиск пилота</string>
+    <string name="pp_your_answer">Ваш ответ</string>
+    <string name="pp_change">Изменить</string>
+    <string name="pp_select">Выбрать</string>
+    <string name="pp_cancel">Отмена</string>
+    <string name="pp_empty">Участники не найдены</string>
+    <string name="pp_page">%1$d / %2$d</string>
 </resources>

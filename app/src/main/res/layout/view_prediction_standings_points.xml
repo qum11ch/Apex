@@ -1,41 +1,245 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-<TextView android:id="@+id/spwContext" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:alpha="0.65" android:layout_marginBottom="12dp"/>
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-<TextView android:id="@+id/spwCodeA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" android:gravity="center"/>
-<TextView android:id="@+id/spwNameA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:gravity="center" android:alpha="0.75" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/spwPointsA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="34sp" android:textStyle="bold" android:gravity="center" android:layout_marginTop="12dp"/>
-</LinearLayout>
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-<TextView android:id="@+id/spwCodeB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" android:gravity="center"/>
-<TextView android:id="@+id/spwNameB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:gravity="center" android:alpha="0.75" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/spwPointsB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="34sp" android:textStyle="bold" android:gravity="center" android:layout_marginTop="12dp"/>
-</LinearLayout>
-</LinearLayout>
-<TextView android:text="@string/spw_total" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.75"/>
-<TextView android:id="@+id/spwSource" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="12dp" android:alpha="0.65"/>
-<TextView android:id="@+id/spwHistoryState" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:layout_marginTop="16dp"/>
-<LinearLayout android:id="@+id/spwHistory" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
-<View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="16dp" android:layout_marginBottom="12dp"/>
-<TextView android:text="@string/spw_average" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="14sp" android:textStyle="bold" />
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="8dp">
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-<TextView android:id="@+id/spwSideA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.7"/>
-<TextView android:id="@+id/spwAverageA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="22sp" android:textStyle="bold" android:gravity="center"/>
-</LinearLayout>
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
-<TextView android:id="@+id/spwSideB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.7"/>
-<TextView android:id="@+id/spwAverageB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="22sp" android:textStyle="bold" android:gravity="center"/>
-</LinearLayout>
-</LinearLayout>
-<TextView android:id="@+id/spwCount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="8dp" android:alpha="0.7"/>
-<TextView android:id="@+id/spwSkipped" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="4dp"/>
-<TextView android:text="@string/spw_recent" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" android:layout_marginTop="16dp"/>
-<TextView android:text="@string/spw_parts_caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="4dp" android:alpha="0.7"/>
-<LinearLayout android:id="@+id/spwRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp"/>
-<TextView android:id="@+id/spwEmpty" android:text="@string/spw_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:visibility="gone" android:layout_marginTop="8dp"/>
-<TextView android:id="@+id/spwMismatch" android:text="@string/spw_mismatch" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:visibility="gone" android:layout_marginTop="12dp"/>
-<TextView android:text="@string/spw_mean_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="12dp" android:alpha="0.65"/>
-</LinearLayout>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/spwContext"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:alpha="0.65"
+        android:layout_marginBottom="12dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:id="@+id/spwCodeA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/spwNameA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:alpha="0.75"
+                android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/spwPointsA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="12dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:id="@+id/spwCodeB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/spwNameB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="13sp"
+                android:gravity="center"
+                android:alpha="0.75"
+                android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/spwPointsB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="12dp"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:text="@string/spw_total"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:alpha="0.75"/>
+    <TextView
+        android:id="@+id/spwSource"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:layout_marginTop="12dp"
+        android:alpha="0.65"/>
+    <TextView
+        android:id="@+id/spwHistoryState"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="13sp"
+        android:layout_marginTop="16dp"/>
+    <LinearLayout
+        android:id="@+id/spwHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/text_color_main"
+            android:alpha="0.12"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="12dp"/>
+        <TextView
+            android:text="@string/spw_average"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:baselineAligned="false"
+            android:layout_marginTop="8dp">
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/spwSideA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:alpha="0.7"/>
+                <TextView
+                    android:id="@+id/spwAverageA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/spwSideB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="12sp"
+                    android:gravity="center"
+                    android:alpha="0.7"/>
+                <TextView
+                    android:id="@+id/spwAverageB"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:gravity="center"/>
+            </LinearLayout>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/spwCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="12sp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.7"/>
+        <TextView
+            android:id="@+id/spwSkipped"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"/>
+        <TextView
+            android:text="@string/spw_recent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:layout_marginTop="16dp"/>
+        <TextView
+            android:text="@string/spw_parts_caption"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="12sp"
+            android:layout_marginTop="4dp"
+            android:alpha="0.7"/>
+        <LinearLayout
+            android:id="@+id/spwRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/spwEmpty"
+            android:text="@string/spw_empty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="13sp"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"/>
+        <TextView
+            android:id="@+id/spwMismatch"
+            android:text="@string/spw_mismatch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="12sp"
+            android:visibility="gone"
+            android:layout_marginTop="12dp"/>
+        <TextView
+            android:text="@string/spw_mean_note"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/text_color_main"
+            android:textSize="12sp"
+            android:layout_marginTop="12dp"
+            android:alpha="0.65"/>
+    </LinearLayout>
 </LinearLayout>

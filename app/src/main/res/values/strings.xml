@@ -860,4 +860,15 @@
     <string name="rd_numeric_finishes">Positions used in the mean</string>
     <string name="rd_race_note">Main races only. The mean uses recorded numeric finishing positions, excluding R/W/D/NC statuses. It is not a full performance ranking: compare it with retirements and the sample sizes. Sprint results and championship points do not affect this mean or the existing race-duel score.</string>
     <string name="rd_not_classified">Not classified</string>
+
+    <string name="pp_choose_team">Choose a team</string>
+    <string name="pp_choose_driver">Choose a driver</string>
+    <string name="pp_search_team">Search teams</string>
+    <string name="pp_search_driver">Search drivers</string>
+    <string name="pp_your_answer">Your answer</string>
+    <string name="pp_change">Change</string>
+    <string name="pp_select">Select</string>
+    <string name="pp_cancel">Cancel</string>
+    <string name="pp_empty">No matching participants</string>
+    <string name="pp_page">%1$d / %2$d</string>
 </resources>

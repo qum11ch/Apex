@@ -1,23 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-<LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-<TextView android:id="@+id/dpCodeA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="16sp" android:textStyle="bold" android:gravity="center"/>
-<TextView android:id="@+id/dpNameA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.7" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/dpPointsA" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="34sp" android:textStyle="bold" android:gravity="center" android:layout_marginTop="12dp"/>
-</LinearLayout>
-<LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-<TextView android:id="@+id/dpCodeB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="16sp" android:textStyle="bold" android:gravity="center"/>
-<TextView android:id="@+id/dpNameB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.7" android:layout_marginTop="4dp"/>
-<TextView android:id="@+id/dpPointsB" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="34sp" android:textStyle="bold" android:gravity="center" android:layout_marginTop="12dp"/>
-</LinearLayout>
-</LinearLayout>
-<TextView android:text="@string/dp_main_points" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:gravity="center" android:alpha="0.7"/>
-<TextView android:id="@+id/dpCount" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:gravity="center" android:layout_marginTop="8dp"/>
-<LinearLayout android:id="@+id/dpMetrics" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="12dp"/>
-<View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="12dp" android:layout_marginBottom="16dp"/>
-<TextView android:text="@string/dp_recent" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="15sp" android:textStyle="bold" />
-<LinearLayout android:id="@+id/dpRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp"/>
-<TextView android:id="@+id/dpEmpty" android:text="@string/dp_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="13sp" android:visibility="gone" android:layout_marginTop="8dp"/>
-<TextView android:text="@string/dp_note" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_color_main" android:textSize="12sp" android:layout_marginTop="12dp" android:alpha="0.65"/>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:id="@+id/dpCodeA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/dpNameA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:alpha="0.7"
+                android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/dpPointsA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="12dp"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:id="@+id/dpCodeB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"/>
+            <TextView
+                android:id="@+id/dpNameB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="12sp"
+                android:gravity="center"
+                android:alpha="0.7"
+                android:layout_marginTop="4dp"/>
+            <TextView
+                android:id="@+id/dpPointsB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_color_main"
+                android:textSize="34sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginTop="12dp"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:text="@string/dp_main_points"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:alpha="0.7"/>
+    <TextView
+        android:id="@+id/dpCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="13sp"
+        android:gravity="center"
+        android:layout_marginTop="8dp"/>
+    <LinearLayout
+        android:id="@+id/dpMetrics"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="12dp"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/text_color_main"
+        android:alpha="0.12"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="16dp"/>
+    <TextView
+        android:text="@string/dp_recent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="15sp"
+        android:textStyle="bold" />
+    <LinearLayout
+        android:id="@+id/dpRows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="8dp"/>
+    <TextView
+        android:id="@+id/dpEmpty"
+        android:text="@string/dp_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/text_color_main"
+        android:textSize="13sp"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"/>
 </LinearLayout>

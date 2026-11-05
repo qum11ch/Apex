@@ -94,7 +94,7 @@ public final class predictionStandingsPointsRenderer {
         if (history.calendarMismatches > 0) {
             String calendarWarning = context.getString(R.string.pf_calendar_mismatch, history.calendarMismatches);
 
-            coverage += coverage.isEmpty() ? "" : "\n" + calendarWarning;
+            coverage += (coverage.isEmpty() ? "" : "\n") + calendarWarning;
         }
 
         root.findViewById(R.id.spwSkipped).setVisibility(coverage.isEmpty() ? View.GONE : View.VISIBLE);
