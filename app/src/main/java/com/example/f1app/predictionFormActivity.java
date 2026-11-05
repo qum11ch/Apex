@@ -153,6 +153,9 @@ public class predictionFormActivity extends AppCompatActivity {
     private final predictionBooleanHistoryLoader booleanHistoryLoader =
             new predictionBooleanHistoryLoader();
 
+    private final List<predictionBooleanHistoryLoader.Row> booleanHistoryRows =
+            new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -784,16 +787,63 @@ public class predictionFormActivity extends AppCompatActivity {
                     private boolean outdated() {
                         return request != booleanHistoryRequest || isFinishing() || isDestroyed();
                     }
+
+                    @Override
+                    public void onRowLoaded(predictionBooleanHistoryLoader.Row row) {
+                        if (outdated()) {
+                            return;
+                        }
+
+                        predictionStatsProgress.setVisibility(View.GONE);
+                        predictionStatsTitle.setText(
+                                "rain".equals(type)
+                                        ? R.string.bh_rain_title
+                                        : R.string.bh_sc_title
+                        );
+
+                        predictionBooleanHistoryRenderer.render(
+                                predictionStatsCustomContent,
+                                type,
+                                description,
+                                buildDataWithRow(row)
+                        );
+
+                        predictionStatsBody.setVisibility(View.GONE);
+                        predictionStatsCustomContent.setVisibility(View.VISIBLE);
+                    }
+
                     @Override public void onLoaded(predictionBooleanHistoryLoader.Data data) {
                         if (outdated()) return;
                         predictionStatsProgress.setVisibility(View.GONE);
                         predictionStatsTitle.setText("rain".equals(type)
                                 ? R.string.bh_rain_title : R.string.bh_sc_title);
+
+                        booleanHistoryRows.clear();
+                        booleanHistoryRows.addAll(data.rows);
+
                         predictionBooleanHistoryRenderer.render(
                                 predictionStatsCustomContent, type, description, data);
                         predictionStatsBody.setVisibility(View.GONE);
                         predictionStatsCustomContent.setVisibility(View.VISIBLE);
                     }
+
+                    private predictionBooleanHistoryLoader.Data buildDataWithRow(
+                            predictionBooleanHistoryLoader.Row updatedRow
+                    ) {
+                        for (int i = 0; i < booleanHistoryRows.size(); i++) {
+                            if (booleanHistoryRows.get(i).sessionKey == updatedRow.sessionKey) {
+                                booleanHistoryRows.set(i, updatedRow);
+                                break;
+                            }
+                        }
+
+                        return new predictionBooleanHistoryLoader.Data(
+                                booleanHistoryRows,
+                                0,
+                                new ArrayList<>()
+                        );
+                    }
+
                     @Override
                     public void onError(String message) {
                         if (outdated()) {

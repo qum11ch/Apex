@@ -16,6 +16,10 @@ import android.text.Spanned;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 
+import android.os.SystemClock;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 public final class jolpicaSessions {
 
     public enum Session {
@@ -49,6 +53,22 @@ public final class jolpicaSessions {
         return queue;
     }
 
+    private static final long CACHE_TTL_MS = 60 * 60 * 1000L;
+    private static final int CACHE_LIMIT = 32;
+
+    private static final Map<String, CachedJson> CACHE =
+            new LinkedHashMap<>(16, 0.75f, true);
+
+    private static final class CachedJson {
+        final JSONObject response;
+        final long storedAtMs;
+
+        CachedJson(JSONObject response) {
+            this.response = response;
+            this.storedAtMs = SystemClock.elapsedRealtime();
+        }
+    }
+
     public static void load(
             Context context,
             String season,
@@ -60,6 +80,18 @@ public final class jolpicaSessions {
                 + season + "/" + round + "/" + session.endpoint
                 + "/?format=json&limit=100";
 
+        synchronized (CACHE) {
+            CachedJson cached = CACHE.get(url);
+
+            if (cached != null
+                    && SystemClock.elapsedRealtime() - cached.storedAtMs < CACHE_TTL_MS) {
+                deliverCached(session, cached.response, callback);
+                return;
+            }
+
+            CACHE.remove(url);
+        }
+
         JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET, url, null,
                 response -> {
@@ -68,6 +100,15 @@ public final class jolpicaSessions {
                                 .getJSONObject("MRData")
                                 .getJSONObject("RaceTable")
                                 .getJSONArray("Races");
+
+                        synchronized (CACHE) {
+                            CACHE.put(url, new CachedJson(response));
+
+                            while (CACHE.size() > CACHE_LIMIT) {
+                                String oldestKey = CACHE.keySet().iterator().next();
+                                CACHE.remove(oldestKey);
+                            }
+                        }
 
                         if (races.length() == 0) {
                             callback.onNoResults(session);
@@ -90,6 +131,35 @@ public final class jolpicaSessions {
         );
 
         queue(context).add(request);
+    }
+
+    private static void deliverCached(
+            Session session,
+            JSONObject response,
+            Callback callback
+    ) {
+        try {
+            JSONArray races = response
+                    .getJSONObject("MRData")
+                    .getJSONObject("RaceTable")
+                    .getJSONArray("Races");
+
+            if (races.length() == 0) {
+                callback.onNoResults(session);
+                return;
+            }
+
+            JSONObject race = races.getJSONObject(0);
+            JSONArray results = race.optJSONArray(session.listName);
+
+            if (results == null || results.length() == 0) {
+                callback.onNoResults(session);
+            } else {
+                callback.onResults(session, results);
+            }
+        } catch (Exception error) {
+            callback.onError(session, error);
+        }
     }
 
 

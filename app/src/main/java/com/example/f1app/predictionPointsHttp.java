@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 
 public final class predictionPointsHttp {
-    private static final long TTL_MS = 5 * 60 * 1000L;
+    private static final long TTL_MS = 60 * 60 * 1000L;
     private static final int MAX_ENTRIES = 96;
     private static final int MAX_RESPONSE_BYTES = 8 * 1024 * 1024;
     private static final int MAX_RETRY_DELAY_MS = 30000;

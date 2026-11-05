@@ -46,15 +46,22 @@ public final class predictionBooleanHistoryLoader {
     private static final ExecutorService WEATHER_PREFETCH =
             Executors.newFixedThreadPool(2);
 
+    private static final java.util.concurrent.ScheduledExecutorService RETRY_SCHEDULER =
+            Executors.newSingleThreadScheduledExecutor();
+
+    private static final long WEATHER_RETRY_DELAY_MS = 5000;
+
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
     public interface Callback {
+        void onRowLoaded(Row row);
+
         void onLoaded(Data data);
 
         void onError(String message);
     }
 
-    private static final long RESPONSE_TTL_MS = 10 * 60 * 1000L;
+    private static final long RESPONSE_TTL_MS = 24 * 60 * 60 * 1000L;
     private static final int RESPONSE_CACHE_LIMIT = 24;
     private static final int MAX_CACHED_CHARS = 512 * 1024;
     private static final long REQUEST_INTERVAL_MS = 1000;
@@ -96,6 +103,9 @@ public final class predictionBooleanHistoryLoader {
         public final String circuit;
         public final String date;
 
+        public long raceStartMs;
+        public long raceEndMs;
+
         public State rain = State.UNKNOWN;
         public String rainReason;
         public String rainError;
@@ -128,7 +138,13 @@ public final class predictionBooleanHistoryLoader {
             long startedAt = android.os.SystemClock.elapsedRealtime();
 
             try {
-                Data data = loadSync(location, circuitName, circuitId, firstPracticeDate);
+                Data data = loadSync(
+                        location,
+                        circuitName,
+                        circuitId,
+                        firstPracticeDate,
+                        callback
+                );
 
                 Log.d(TAG, "HistoryTiming"
                         + "; circuit=" + circuitId
@@ -137,7 +153,11 @@ public final class predictionBooleanHistoryLoader {
                         + "; elapsedMs="
                         + (android.os.SystemClock.elapsedRealtime() - startedAt));
 
-                MAIN.post(() -> callback.onLoaded(data));
+                MAIN.post(() -> {
+                    callback.onLoaded(data);
+
+                    scheduleWeatherRetries(data, callback);
+                });
             } catch (Exception error) {
                 Log.e(TAG, "History load failed"
                         + "; elapsedMs="
@@ -148,7 +168,68 @@ public final class predictionBooleanHistoryLoader {
         });
     }
 
-    private Data loadSync(String location, String circuitName, String circuitId, String firstPracticeDate) throws Exception {
+    private void scheduleWeatherRetries(Data data, Callback callback) {
+        for (Row row : data.rows) {
+            if (row.rain != State.UNKNOWN || row.rainError == null) {
+                continue;
+            }
+
+            scheduleWeatherRetry(row, callback);
+        }
+    }
+
+    private void scheduleWeatherRetry(Row row, Callback callback) {
+        RETRY_SCHEDULER.schedule(() -> {
+            try {
+                JSONArray control = getRaceControl(row.sessionKey);
+
+                predictionRaceWindowResolver.Window window =
+                        predictionRaceWindowResolver.resolve(
+                                row.sessionKey,
+                                Instant.ofEpochMilli(row.raceStartMs),
+                                Instant.ofEpochMilli(row.raceEndMs),
+                                control
+                        );
+
+                if (!window.resolved) {
+                    return;
+                }
+
+                JSONArray weather = getWeather(row.sessionKey);
+
+                State rain = rain(
+                        weather,
+                        Instant.ofEpochMilli(window.startMs),
+                        Instant.ofEpochMilli(window.endMs)
+                );
+
+                if (rain == State.UNKNOWN) {
+                    row.rainReason = "MEASUREMENT_GAP";
+                } else {
+                    row.rainReason = null;
+                }
+
+                row.rain = rain;
+                row.rainError = null;
+
+                Log.d(TAG, "WeatherRetry"
+                        + "; session=" + row.sessionKey
+                        + "; rain=" + row.rain);
+
+                MAIN.post(() -> callback.onRowLoaded(row));
+            } catch (Exception error) {
+                Log.w(TAG, "Weather retry failed: session=" + row.sessionKey, error);
+            }
+        }, WEATHER_RETRY_DELAY_MS, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+
+    private Data loadSync(
+            String location,
+            String circuitName,
+            String circuitId,
+            String firstPracticeDate,
+            Callback callback
+    ) throws Exception {
         if (firstPracticeDate == null || firstPracticeDate.trim().isEmpty()) {
             throw new IOException("First practice date is required");
         }
@@ -288,6 +369,9 @@ public final class predictionBooleanHistoryLoader {
                     start.atOffset(ZoneOffset.UTC).toLocalDate().toString()
             );
 
+            row.raceStartMs = start.toEpochMilli();
+            row.raceEndMs = finish.toEpochMilli();
+
             JSONArray control = null;
             String controlError = null;
 
@@ -406,6 +490,10 @@ public final class predictionBooleanHistoryLoader {
             }
 
             rows.add(row);
+
+            final Row rowSnapshot = row;
+
+            MAIN.post(() -> callback.onRowLoaded(rowSnapshot));
 
             Log.d(TAG, "Result: session=" + sessionKey
                     + "; circuit=" + row.circuit
