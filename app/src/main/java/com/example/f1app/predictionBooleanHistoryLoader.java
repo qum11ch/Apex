@@ -25,8 +25,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public final class predictionBooleanHistoryLoader {
     private static final String TAG = "BooleanHistory";
@@ -39,12 +43,46 @@ public final class predictionBooleanHistoryLoader {
     private static final long GAP_MS = 5 * 60 * 1000L;
 
     private static final ExecutorService IO = Executors.newSingleThreadExecutor();
+    private static final ExecutorService WEATHER_PREFETCH =
+            Executors.newFixedThreadPool(2);
+
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
     public interface Callback {
         void onLoaded(Data data);
 
         void onError(String message);
+    }
+
+    private static final long RESPONSE_TTL_MS = 10 * 60 * 1000L;
+    private static final int RESPONSE_CACHE_LIMIT = 24;
+    private static final int MAX_CACHED_CHARS = 512 * 1024;
+    private static final long REQUEST_INTERVAL_MS = 1000;
+
+    private static final int DEFAULT_CONNECT_TIMEOUT_MS = 15000;
+    private static final int DEFAULT_READ_TIMEOUT_MS = 30000;
+
+    private static final int WEATHER_CONNECT_TIMEOUT_MS = 8000;
+    private static final int WEATHER_READ_TIMEOUT_MS = 10000;
+
+    private static final int RACE_CONTROL_CONNECT_TIMEOUT_MS = 8000;
+    private static final int RACE_CONTROL_READ_TIMEOUT_MS = 15000;
+
+    private static final Map<String, CachedResponse> RESPONSE_CACHE =
+            new LinkedHashMap<>(16, 0.75f, true);
+
+    private static final Object REQUEST_PACE = new Object();
+
+    private static long lastRequestStartMs;
+
+    private static final class CachedResponse {
+        final String body;
+        final long storedAtMs;
+
+        CachedResponse(String body) {
+            this.body = body;
+            this.storedAtMs = android.os.SystemClock.elapsedRealtime();
+        }
     }
 
     public enum State {
@@ -87,12 +125,23 @@ public final class predictionBooleanHistoryLoader {
 
     public void load(String location, String circuitName, String circuitId, String firstPracticeDate, Callback callback) {
         IO.execute(() -> {
+            long startedAt = android.os.SystemClock.elapsedRealtime();
+
             try {
                 Data data = loadSync(location, circuitName, circuitId, firstPracticeDate);
 
+                Log.d(TAG, "HistoryTiming"
+                        + "; circuit=" + circuitId
+                        + "; rows=" + data.rows.size()
+                        + "; errors=" + data.failedRequests
+                        + "; elapsedMs="
+                        + (android.os.SystemClock.elapsedRealtime() - startedAt));
+
                 MAIN.post(() -> callback.onLoaded(data));
             } catch (Exception error) {
-                Log.e(TAG, "History load failed", error);
+                Log.e(TAG, "History load failed"
+                        + "; elapsedMs="
+                        + (android.os.SystemClock.elapsedRealtime() - startedAt), error);
 
                 MAIN.post(() -> callback.onError(error.toString()));
             }
@@ -186,6 +235,38 @@ public final class predictionBooleanHistoryLoader {
         candidates.sort((left, right) ->
                 right.optString("date_start").compareTo(left.optString("date_start")));
 
+        Map<Integer, CompletableFuture<JSONArray>> controlFutures =
+                new LinkedHashMap<>();
+
+        Map<Integer, CompletableFuture<JSONArray>> weatherFutures =
+                new LinkedHashMap<>();
+
+        for (int i = 0; i < candidates.size() && i < MAX_RACES; i++) {
+            int prefetchSessionKey = candidates.get(i).getInt("session_key");
+
+            controlFutures.put(
+                    prefetchSessionKey,
+                    CompletableFuture.supplyAsync(() -> {
+                        try {
+                            return getRaceControl(prefetchSessionKey);
+                        } catch (Exception error) {
+                            throw new CompletionException(error);
+                        }
+                    }, WEATHER_PREFETCH)
+            );
+
+            weatherFutures.put(
+                    prefetchSessionKey,
+                    CompletableFuture.supplyAsync(() -> {
+                        try {
+                            return getWeather(prefetchSessionKey);
+                        } catch (Exception error) {
+                            throw new CompletionException(error);
+                        }
+                    }, WEATHER_PREFETCH)
+            );
+        }
+
         List<Row> rows = new ArrayList<>();
         Set<Integer> seenSessions = new HashSet<>();
 
@@ -207,61 +288,121 @@ public final class predictionBooleanHistoryLoader {
                     start.atOffset(ZoneOffset.UTC).toLocalDate().toString()
             );
 
+            JSONArray control = null;
+            String controlError = null;
+
             try {
-                predictionRaceWindowResolver.Window window =
-                        predictionRaceWindowResolver.resolve(sessionKey, start, finish);
+                CompletableFuture<JSONArray> controlFuture =
+                        controlFutures.get(sessionKey);
 
-                Log.d(TAG, "Rain window: session=" + sessionKey
-                        + "; resolved=" + window.resolved
-                        + "; source=" + window.source
-                        + "; reason=" + window.reason
-                        + "; start=" + Instant.ofEpochMilli(window.startMs)
-                        + "; end=" + Instant.ofEpochMilli(window.endMs)
-                        + "; metaStart=" + start
-                        + "; metaEnd=" + finish);
-
-                if (!window.resolved) {
-                    row.rain = State.UNKNOWN;
-                    row.rainReason = window.reason;
+                if (controlFuture != null) {
+                    control = controlFuture.join();
                 } else {
-                    Instant rainStart = Instant.ofEpochMilli(window.startMs);
-                    Instant rainEnd = Instant.ofEpochMilli(window.endMs);
-
-                    JSONArray weather = get("weather?session_key=" + sessionKey);
-
-                    logWeatherCoverage(sessionKey, weather, rainStart, rainEnd);
-
-                    row.rain = rain(weather, rainStart, rainEnd);
-
-                    if (row.rain == State.UNKNOWN) {
-                        row.rainReason = "MEASUREMENT_GAP";
-                    }
+                    control = getRaceControl(sessionKey);
                 }
+
+                Log.d(TAG, "SharedControl"
+                        + "; session=" + sessionKey
+                        + "; entries=" + control.length());
+
             } catch (InterruptedException error) {
                 Thread.currentThread().interrupt();
 
                 throw error;
-            } catch (Exception error) {
-                row.rainError = error.toString();
+            } catch (CompletionException error) {
+                Throwable cause = error.getCause() != null
+                        ? error.getCause()
+                        : error;
+
+                controlError = cause.toString();
                 failedRequests++;
 
-                Log.w(TAG, "Rain window or weather failed: session=" + sessionKey, error);
+                Log.w(TAG, "Shared race control failed: session=" + sessionKey, cause);
+            } catch (Exception error) {
+                controlError = error.toString();
+                failedRequests++;
+
+                Log.w(TAG, "Shared race control failed: session=" + sessionKey, error);
             }
 
-            try {
-                JSONArray control = get("race_control?session_key=" + sessionKey);
+            if (control == null) {
+                row.rainError = controlError;
+                row.safetyError = controlError;
+            } else {
+                try {
+                    safety(control, start, finish, row);
+                    logRaceControlBoundaries(sessionKey, control);
+                } catch (Exception error) {
+                    row.sc = State.UNKNOWN;
+                    row.vsc = State.UNKNOWN;
+                    row.safetyError = error.toString();
 
-                safety(control, start, finish, row);
-                logRaceControlBoundaries(sessionKey, control);
-            } catch (InterruptedException error) {
-                Thread.currentThread().interrupt();
+                    Log.w(TAG, "Safety analysis failed: session=" + sessionKey, error);
+                }
 
-                throw error;
-            } catch (Exception error) {
-                row.safetyError = error.toString();
-                failedRequests++;
+                try {
+                    predictionRaceWindowResolver.Window window =
+                            predictionRaceWindowResolver.resolve(
+                                    sessionKey,
+                                    start,
+                                    finish,
+                                    control
+                            );
 
-                Log.w(TAG, "Race control failed: session=" + sessionKey, error);
+                    Log.d(TAG, "Rain window: session=" + sessionKey
+                            + "; resolved=" + window.resolved
+                            + "; source=" + window.source
+                            + "; reason=" + window.reason
+                            + "; start=" + Instant.ofEpochMilli(window.startMs)
+                            + "; end=" + Instant.ofEpochMilli(window.endMs)
+                            + "; metaStart=" + start
+                            + "; metaEnd=" + finish);
+
+                    if (!window.resolved) {
+                        row.rain = State.UNKNOWN;
+                        row.rainReason = window.reason;
+                    } else {
+                        Instant rainStart = Instant.ofEpochMilli(window.startMs);
+                        Instant rainEnd = Instant.ofEpochMilli(window.endMs);
+
+                        CompletableFuture<JSONArray> weatherFuture =
+                                weatherFutures.get(sessionKey);
+
+                        JSONArray weather;
+
+                        if (weatherFuture != null) {
+                            weather = weatherFuture.join();
+                        } else {
+                            weather = getWeather(sessionKey);
+                        }
+
+                        logWeatherCoverage(sessionKey, weather, rainStart, rainEnd);
+
+                        row.rain = rain(weather, rainStart, rainEnd);
+
+                        if (row.rain == State.UNKNOWN) {
+                            row.rainReason = "MEASUREMENT_GAP";
+                        }
+                    }
+                } catch (InterruptedException error) {
+                    Thread.currentThread().interrupt();
+
+                    throw error;
+                } catch (CompletionException error) {
+                    Throwable cause = error.getCause() != null
+                            ? error.getCause()
+                            : error;
+
+                    row.rainError = cause.toString();
+                    failedRequests++;
+
+                    Log.w(TAG, "Rain prefetch or weather failed: session=" + sessionKey, cause);
+                } catch (Exception error) {
+                    row.rainError = error.toString();
+                    failedRequests++;
+
+                    Log.w(TAG, "Rain window or weather failed: session=" + sessionKey, error);
+                }
             }
 
             rows.add(row);
@@ -279,6 +420,37 @@ public final class predictionBooleanHistoryLoader {
         }
 
         return new Data(rows, failedRequests, unavailableYears);
+    }
+
+    private static JSONArray getWeather(int sessionKey) throws Exception {
+        String path = "weather?session_key=" + sessionKey;
+
+        long startedAt = android.os.SystemClock.elapsedRealtime();
+
+        try {
+            JSONArray response = getCached(
+                    path,
+                    WEATHER_CONNECT_TIMEOUT_MS,
+                    WEATHER_READ_TIMEOUT_MS,
+                    false
+            );
+
+            Log.d(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; entries=" + response.length());
+
+            return response;
+        } catch (Exception error) {
+            Log.w(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; error=" + error);
+
+            throw error;
+        }
     }
 
     private static void logRaceControlBoundaries(int sessionKey, JSONArray control) {
@@ -702,17 +874,127 @@ public final class predictionBooleanHistoryLoader {
     }
 
     private static JSONArray get(String path) throws Exception {
+        long startedAt = android.os.SystemClock.elapsedRealtime();
+
+        try {
+            JSONArray response = download(path);
+
+            Log.d(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; entries=" + response.length());
+
+            return response;
+        } catch (Exception error) {
+            Log.w(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; error=" + error);
+
+            throw error;
+        }
+    }
+
+    private static JSONArray getCached(
+            String path,
+            int connectTimeoutMs,
+            int readTimeoutMs,
+            boolean retryOnTimeout
+    ) throws Exception {
+        long now = android.os.SystemClock.elapsedRealtime();
+        String cachedBody = null;
+
+        synchronized (RESPONSE_CACHE) {
+            CachedResponse cached = RESPONSE_CACHE.get(path);
+
+            if (cached != null) {
+                if (now - cached.storedAtMs < RESPONSE_TTL_MS) {
+                    cachedBody = cached.body;
+                } else {
+                    RESPONSE_CACHE.remove(path);
+                }
+            }
+        }
+
+        if (cachedBody != null) {
+            Log.d(TAG, "HTTP cache hit; path=" + path);
+
+            return new JSONArray(cachedBody);
+        }
+
+        JSONArray response = download(
+                path,
+                connectTimeoutMs,
+                readTimeoutMs,
+                retryOnTimeout
+        );
+
+        String body = response.toString();
+
+        if (body.length() <= MAX_CACHED_CHARS) {
+            synchronized (RESPONSE_CACHE) {
+                RESPONSE_CACHE.put(path, new CachedResponse(body));
+
+                while (RESPONSE_CACHE.size() > RESPONSE_CACHE_LIMIT) {
+                    String oldestKey = RESPONSE_CACHE.keySet().iterator().next();
+
+                    RESPONSE_CACHE.remove(oldestKey);
+                }
+            }
+        }
+
+        return response;
+    }
+
+    public static void clearResponseCache() {
+        synchronized (RESPONSE_CACHE) {
+            RESPONSE_CACHE.clear();
+        }
+    }
+
+    private static void paceRequest() throws InterruptedException {
+        synchronized (REQUEST_PACE) {
+            long now = android.os.SystemClock.elapsedRealtime();
+            long wait = REQUEST_INTERVAL_MS - (now - lastRequestStartMs);
+
+            if (wait > 0) {
+                Thread.sleep(wait);
+            }
+
+            lastRequestStartMs = android.os.SystemClock.elapsedRealtime();
+        }
+    }
+
+    private static JSONArray download(String path) throws Exception {
+        return download(
+                path,
+                DEFAULT_CONNECT_TIMEOUT_MS,
+                DEFAULT_READ_TIMEOUT_MS,
+                true
+        );
+    }
+
+    private static JSONArray download(
+            String path,
+            int connectTimeoutMs,
+            int readTimeoutMs,
+            boolean retryOnTimeout
+    ) throws Exception {
         String address = BASE_URL + path;
         IOException failure = null;
 
         for (int attempt = 0; attempt < 3; attempt++) {
             long retryDelayMs = 2000L * (attempt + 1);
 
+            paceRequest();
+
             HttpURLConnection connection =
                     (HttpURLConnection) new URL(address).openConnection();
 
-            connection.setConnectTimeout(15000);
-            connection.setReadTimeout(30000);
+            connection.setConnectTimeout(connectTimeoutMs);
+            connection.setReadTimeout(readTimeoutMs);
             connection.setRequestProperty("Accept", "application/json");
 
             try {
@@ -788,8 +1070,6 @@ public final class predictionBooleanHistoryLoader {
                             + "; entries=" + result.length()
                             + "; url=" + address);
 
-                    Thread.sleep(1000);
-
                     return result;
                 }
             } catch (SocketTimeoutException error) {
@@ -801,7 +1081,7 @@ public final class predictionBooleanHistoryLoader {
 
                 Log.w(TAG, failure.getMessage());
 
-                if (attempt == 2) {
+                if (!retryOnTimeout || attempt == 2) {
                     throw failure;
                 }
             } finally {
@@ -814,5 +1094,36 @@ public final class predictionBooleanHistoryLoader {
         throw failure == null
                 ? new IOException("OpenF1 request failed; " + address)
                 : failure;
+    }
+
+    private static JSONArray getRaceControl(int sessionKey) throws Exception {
+        String path = "race_control?session_key=" + sessionKey;
+
+        long startedAt = android.os.SystemClock.elapsedRealtime();
+
+        try {
+            JSONArray response = getCached(
+                    path,
+                    RACE_CONTROL_CONNECT_TIMEOUT_MS,
+                    RACE_CONTROL_READ_TIMEOUT_MS,
+                    false
+            );
+
+            Log.d(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; entries=" + response.length());
+
+            return response;
+        } catch (Exception error) {
+            Log.w(TAG, "RequestTiming"
+                    + "; path=" + path
+                    + "; elapsedMs="
+                    + (android.os.SystemClock.elapsedRealtime() - startedAt)
+                    + "; error=" + error);
+
+            throw error;
+        }
     }
 }

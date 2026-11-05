@@ -35,6 +35,19 @@ public final class predictionRaceWindowResolver {
     public static Window resolve(int session, Instant metaStart, Instant metaEnd) throws Exception {
         JSONArray control = get("race_control?session_key=" + session);
 
+        return resolve(session, metaStart, metaEnd, control);
+    }
+
+    public static Window resolve(
+            int session,
+            Instant metaStart,
+            Instant metaEnd,
+            JSONArray control
+    ) throws Exception {
+        if (control == null) {
+            throw new IllegalArgumentException("Race control data is required");
+        }
+
         Long started = null;
         List<Long> finishFlags = new ArrayList<>();
 
