@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
@@ -207,14 +208,34 @@ public final class predictionBooleanHistoryLoader {
             );
 
             try {
-                JSONArray weather = get("weather?session_key=" + sessionKey);
+                predictionRaceWindowResolver.Window window =
+                        predictionRaceWindowResolver.resolve(sessionKey, start, finish);
 
-                logWeatherCoverage(sessionKey, weather, start, finish);
+                Log.d(TAG, "Rain window: session=" + sessionKey
+                        + "; resolved=" + window.resolved
+                        + "; source=" + window.source
+                        + "; reason=" + window.reason
+                        + "; start=" + Instant.ofEpochMilli(window.startMs)
+                        + "; end=" + Instant.ofEpochMilli(window.endMs)
+                        + "; metaStart=" + start
+                        + "; metaEnd=" + finish);
 
-                row.rain = rain(weather, start, finish);
+                if (!window.resolved) {
+                    row.rain = State.UNKNOWN;
+                    row.rainReason = window.reason;
+                } else {
+                    Instant rainStart = Instant.ofEpochMilli(window.startMs);
+                    Instant rainEnd = Instant.ofEpochMilli(window.endMs);
 
-                if (row.rain == State.UNKNOWN) {
-                    row.rainReason = "MEASUREMENT_GAP";
+                    JSONArray weather = get("weather?session_key=" + sessionKey);
+
+                    logWeatherCoverage(sessionKey, weather, rainStart, rainEnd);
+
+                    row.rain = rain(weather, rainStart, rainEnd);
+
+                    if (row.rain == State.UNKNOWN) {
+                        row.rainReason = "MEASUREMENT_GAP";
+                    }
                 }
             } catch (InterruptedException error) {
                 Thread.currentThread().interrupt();
@@ -224,7 +245,7 @@ public final class predictionBooleanHistoryLoader {
                 row.rainError = error.toString();
                 failedRequests++;
 
-                Log.w(TAG, "Weather failed: session=" + sessionKey, error);
+                Log.w(TAG, "Rain window or weather failed: session=" + sessionKey, error);
             }
 
             try {
@@ -319,51 +340,6 @@ public final class predictionBooleanHistoryLoader {
                         + "; item=" + timedEntries.get(i));
             }
         }
-    }
-
-    private static Instant firstCommonChequered(
-            JSONArray control,
-            Instant start,
-            Instant sessionEnd
-    ) {
-        Instant first = null;
-
-        for (int i = 0; i < control.length(); i++) {
-            JSONObject item = control.optJSONObject(i);
-
-            if (item == null
-                    || !"CHEQUERED".equalsIgnoreCase(item.optString("flag"))) {
-                continue;
-            }
-
-            Log.d(TAG, "Chequered candidate: " + item);
-
-            if (!item.isNull("driver_number")) {
-                continue;
-            }
-
-            String scope = item.optString("scope", "");
-
-            if (!scope.isEmpty() && !"Track".equalsIgnoreCase(scope)) {
-                continue;
-            }
-
-            try {
-                Instant time = instant(item.getString("date"));
-
-                if (!time.isAfter(start) || time.isAfter(sessionEnd)) {
-                    continue;
-                }
-
-                if (first == null || time.isBefore(first)) {
-                    first = time;
-                }
-            } catch (Exception error) {
-                Log.w(TAG, "Invalid chequered timestamp: " + item, error);
-            }
-        }
-
-        return first;
     }
 
     private static Instant parseCutoff(String value) {
@@ -627,53 +603,116 @@ public final class predictionBooleanHistoryLoader {
 
     private static JSONArray get(String path) throws Exception {
         String address = BASE_URL + path;
+        IOException failure = null;
 
         for (int attempt = 0; attempt < 3; attempt++) {
-            HttpURLConnection connection = (HttpURLConnection) new URL(address).openConnection();
+            long retryDelayMs = 2000L * (attempt + 1);
+
+            HttpURLConnection connection =
+                    (HttpURLConnection) new URL(address).openConnection();
 
             connection.setConnectTimeout(15000);
-            connection.setReadTimeout(15000);
+            connection.setReadTimeout(30000);
             connection.setRequestProperty("Accept", "application/json");
 
             try {
+                Log.d(TAG, "HTTP request"
+                        + "; attempt=" + (attempt + 1)
+                        + "; url=" + address);
+
                 int status = connection.getResponseCode();
 
-                if (status == 429 && attempt < 2) {
-                    Thread.sleep(2000L * (attempt + 1));
+                if (status == 429) {
+                    failure = new IOException("OpenF1 HTTP 429; " + address);
 
-                    continue;
-                }
-
-                if (status != 200) {
-                    throw new IOException("OpenF1 HTTP " + status + "; " + address);
-                }
-
-                try (InputStream input = connection.getInputStream();
-                     ByteArrayOutputStream output = new ByteArrayOutputStream()) {
-                    byte[] buffer = new byte[8192];
-                    int read;
-
-                    while ((read = input.read(buffer)) != -1) {
-                        if (output.size() + read > MAX_RESPONSE_BYTES) {
-                            throw new IOException("OpenF1 response too large");
-                        }
-
-                        output.write(buffer, 0, read);
+                    if (attempt == 2) {
+                        throw failure;
                     }
 
-                    JSONArray result = new JSONArray(
-                            new String(output.toByteArray(), StandardCharsets.UTF_8)
-                    );
+                    String retryAfter = connection.getHeaderField("Retry-After");
+
+                    if (retryAfter != null) {
+                        try {
+                            long seconds = Long.parseLong(retryAfter.trim());
+
+                            if (seconds < 0 || seconds > 30) {
+                                throw new IOException(
+                                        "OpenF1 retry deferred; Retry-After="
+                                                + retryAfter + "; " + address
+                                );
+                            }
+
+                            retryDelayMs = Math.max(retryDelayMs, seconds * 1000L);
+                        } catch (NumberFormatException error) {
+                            throw new IOException(
+                                    "OpenF1 retry deferred; Retry-After="
+                                            + retryAfter + "; " + address,
+                                    error
+                            );
+                        }
+                    }
+
+                    Log.w(TAG, "HTTP rate limit"
+                            + "; attempt=" + (attempt + 1)
+                            + "; retryDelayMs=" + retryDelayMs
+                            + "; url=" + address);
+                } else {
+                    if (status != 200) {
+                        throw new IOException("OpenF1 HTTP " + status + "; " + address);
+                    }
+
+                    JSONArray result;
+
+                    try (InputStream input = connection.getInputStream();
+                         ByteArrayOutputStream output = new ByteArrayOutputStream()) {
+                        byte[] buffer = new byte[8192];
+                        int read;
+
+                        while ((read = input.read(buffer)) != -1) {
+                            if (output.size() + read > MAX_RESPONSE_BYTES) {
+                                throw new IOException(
+                                        "OpenF1 response too large; " + address
+                                );
+                            }
+
+                            output.write(buffer, 0, read);
+                        }
+
+                        result = new JSONArray(
+                                new String(output.toByteArray(), StandardCharsets.UTF_8)
+                        );
+                    }
+
+                    Log.d(TAG, "HTTP success"
+                            + "; attempt=" + (attempt + 1)
+                            + "; entries=" + result.length()
+                            + "; url=" + address);
 
                     Thread.sleep(1000);
 
                     return result;
                 }
+            } catch (SocketTimeoutException error) {
+                failure = new IOException(
+                        "OpenF1 timeout; attempt=" + (attempt + 1)
+                                + "; " + address,
+                        error
+                );
+
+                Log.w(TAG, failure.getMessage());
+
+                if (attempt == 2) {
+                    throw failure;
+                }
             } finally {
                 connection.disconnect();
             }
+
+            Thread.sleep(retryDelayMs);
         }
 
-        throw new IOException("OpenF1 rate limit; " + address);
+        throw failure == null
+                ? new IOException("OpenF1 request failed; " + address)
+                : failure;
     }
 }
