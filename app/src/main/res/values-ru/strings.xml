@@ -890,4 +890,17 @@
     <string name="public_favorite_load_error">Не удалось загрузить</string>
     <string name="public_favorite_image_unavailable">Изображение недоступно</string>
     <string name="public_favorites_error">Не удалось загрузить избранное пользователя.</string>
+
+    <string name="public_stats_heading">Статистика прогнозов</string>
+    <string name="public_stats_loading">Загружаем статистику…</string>
+    <string name="public_stats_total_predictions">Прогнозов</string>
+    <string name="public_stats_without_position">Без позиции в рейтинге</string>
+    <string name="public_stats_counts">Прогнозов: %1$s\nВерных: %2$s · Неверных: %3$s\nНичьих: %4$s · Ожидают: %5$s</string>
+
+    <string name="public_stats_position_points">Место %1$s\nОчки: %2$s</string>
+
+    <string name="public_stats_correct_label">Верные</string>
+    <string name="public_stats_incorrect_label">Неверные</string>
+    <string name="public_stats_ties_label">Ничьи</string>
+    <string name="public_stats_pending_label">Ожидают результата</string>
 </resources>

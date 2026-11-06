@@ -150,7 +150,7 @@
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/public_profile_rank"
+                                android:text="@string/public_stats_total_predictions"
                                 android:textSize="14sp"
                                 android:textColor="@color/grey"
                                 android:textAlignment="center"
@@ -218,6 +218,15 @@
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
                         </LinearLayout>
                     </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/publicProfileRankings"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="13dp"
+                        android:layout_marginEnd="13dp"
+                        android:layout_marginTop="16dp"
+                        android:orientation="vertical" />
 
                     <TextView
                         android:id="@+id/publicProfileRatingMessage"

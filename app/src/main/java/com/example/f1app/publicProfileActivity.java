@@ -35,6 +35,10 @@ import com.google.firebase.storage.StorageReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import android.widget.LinearLayout;
+
+import java.util.List;
+
 public class publicProfileActivity extends AppCompatActivity {
 
     public static final String EXTRA_UID = "profileUid";
@@ -76,6 +80,8 @@ public class publicProfileActivity extends AppCompatActivity {
     private TextView favoriteTeamState;
     private TextView favoriteDriverState;
 
+    private LinearLayout rankingsContainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +121,8 @@ public class publicProfileActivity extends AppCompatActivity {
 
         favoriteTeamState.setTextSize(14);
         favoriteDriverState.setTextSize(14);
+
+        rankingsContainer = findViewById(R.id.publicProfileRankings);
 
         findViewById(R.id.team_layout).setClickable(false);
         findViewById(R.id.driver_layout).setClickable(false);
@@ -193,6 +201,13 @@ public class publicProfileActivity extends AppCompatActivity {
 
         resetFavorites();
 
+        rankingsContainer.removeAllViews();
+
+        scopeText.setText(R.string.public_stats_heading);
+
+        ratingMessage.setText(R.string.public_stats_loading);
+        ratingMessage.setVisibility(View.VISIBLE);
+
         progress.setVisibility(View.VISIBLE);
         errorBox.setVisibility(View.GONE);
         content.setVisibility(View.VISIBLE);
@@ -200,7 +215,6 @@ public class publicProfileActivity extends AppCompatActivity {
         initial.setText("");
 
         stats.setVisibility(View.GONE);
-        ratingMessage.setVisibility(View.GONE);
 
         GlideApp.with(avatar).clear(avatar);
         avatar.setVisibility(View.GONE);
@@ -218,13 +232,7 @@ public class publicProfileActivity extends AppCompatActivity {
                 .child(profileUid)
                 .get();
 
-        Task<DataSnapshot> ratingTask = db
-                .getReference("leaderboard")
-                .child(ratingScope)
-                .child(profileUid)
-                .get();
-
-        Tasks.whenAllComplete(profileTask, ratingTask)
+        Tasks.whenAllComplete(profileTask)
                 .addOnCompleteListener(done -> {
                     if (!active(request)) return;
 
@@ -290,24 +298,290 @@ public class publicProfileActivity extends AppCompatActivity {
 
                     content.setVisibility(View.VISIBLE);
 
-                    if (!ratingTask.isSuccessful()) {
-                        Log.e(
-                                "PublicProfile",
-                                "Failed to load rating",
-                                ratingTask.getException()
-                        );
-
-                        showError(
-                                R.string.public_profile_rating_error,
-                                true
-                        );
-                    } else {
-                        showRating(ratingTask.getResult());
-                    }
+                    loadPublicStatistics(request);
 
                     loadAvatar(request);
                     loadFavorites(request);
                 });
+    }
+
+    private void loadPublicStatistics(int request) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("profileUid", profileUid);
+
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("getPublicProfileStatistics")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    if (!active(request)) return;
+
+                    try {
+                        renderPublicStatistics(result.getData());
+                    } catch (RuntimeException exception) {
+                        Log.e(
+                                "PublicProfile",
+                                "Invalid public statistics response",
+                                exception
+                        );
+
+                        showPublicStatisticsError();
+                    }
+                })
+                .addOnFailureListener(exception -> {
+                    if (!active(request)) return;
+
+                    Log.e(
+                            "PublicProfile",
+                            "Failed to load public statistics",
+                            exception
+                    );
+
+                    showPublicStatisticsError();
+                });
+    }
+
+    private void showPublicStatisticsError() {
+        stats.setVisibility(View.GONE);
+        rankingsContainer.removeAllViews();
+
+        ratingMessage.setText(
+                R.string.public_profile_rating_error
+        );
+        ratingMessage.setVisibility(View.VISIBLE);
+
+        showError(
+                R.string.public_profile_rating_error,
+                true
+        );
+    }
+
+    private Map<?, ?> requireStatsMap(Object value) {
+        if (!(value instanceof Map)) {
+            throw new IllegalStateException("Expected statistics object");
+        }
+
+        return (Map<?, ?>) value;
+    }
+
+    private double requireStatNumber(Map<?, ?> data, String key) {
+        Object value = data.get(key);
+
+        if (!(value instanceof Number)) {
+            throw new IllegalStateException("Missing number: " + key);
+        }
+
+        double number = ((Number) value).doubleValue();
+
+        if (!Double.isFinite(number) || number < 0) {
+            throw new IllegalStateException("Invalid number: " + key);
+        }
+
+        return number;
+    }
+
+    private long requireStatCount(Map<?, ?> data, String key) {
+        double number = requireStatNumber(data, key);
+
+        if (number != Math.rint(number) || number > Long.MAX_VALUE) {
+            throw new IllegalStateException("Invalid count: " + key);
+        }
+
+        return (long) number;
+    }
+
+    private String formatStatPoints(double value) {
+        NumberFormat format = NumberFormat.getNumberInstance();
+        format.setMaximumFractionDigits(2);
+        return format.format(value);
+    }
+
+    private void renderPublicStatistics(Object response) {
+        Map<?, ?> root = requireStatsMap(response);
+        Map<?, ?> totals = requireStatsMap(root.get("totals"));
+
+        Object rankingsValue = root.get("rankings");
+
+        if (!(rankingsValue instanceof List)) {
+            throw new IllegalStateException("Missing rankings array");
+        }
+
+        NumberFormat integers = NumberFormat.getIntegerInstance();
+
+        long totalPredictions =
+                requireStatCount(totals, "predictionsCount");
+
+        long totalCorrect =
+                requireStatCount(totals, "correctPredictions");
+
+        double earnedPoints =
+                requireStatNumber(totals, "earnedPoints");
+
+        /*
+         * Сначала строим всё во временном контейнере.
+         * При ошибочном ответе не оставляем половину списка.
+         */
+        LinearLayout temporary = new LinearLayout(this);
+        temporary.setOrientation(LinearLayout.VERTICAL);
+
+        for (Object value : (List<?>) rankingsValue) {
+            Map<?, ?> entry = requireStatsMap(value);
+
+            Object scopeValue = entry.get("scope");
+
+            if (!(scopeValue instanceof String)) {
+                throw new IllegalStateException("Missing ranking scope");
+            }
+
+            String scope = (String) scopeValue;
+
+            if (!"global".equals(scope)
+                    && !scope.matches("[0-9]{4}")) {
+                throw new IllegalStateException("Invalid ranking scope");
+            }
+
+            View row = getLayoutInflater().inflate(
+                    R.layout.item_public_profile_rating,
+                    temporary,
+                    false
+            );
+            TextView title =
+                    row.findViewById(R.id.publicRatingTitle);
+
+            LinearLayout primaryRow =
+                    row.findViewById(R.id.publicRatingPrimaryRow);
+
+            LinearLayout resultsRow =
+                    row.findViewById(R.id.publicRatingResultsRow);
+
+            TextView pendingView =
+                    row.findViewById(R.id.publicRatingPending);
+
+            title.setText("global".equals(scope)
+                    ? getString(R.string.leaderboard_global)
+                    : getString(
+                    R.string.public_profile_season,
+                    scope
+            ));
+
+            String rankText = "—";
+            String pointsText = "—";
+
+            if (entry.get("rank") != null) {
+                long rankValue = requireStatCount(entry, "rank");
+
+                if (rankValue < 1) {
+                    throw new IllegalStateException("Invalid rank");
+                }
+
+                rankText = integers.format(rankValue);
+
+                pointsText = formatStatPoints(
+                        requireStatNumber(entry, "totalPoints")
+                );
+            }
+
+            addRatingStat(
+                    primaryRow,
+                    rankText,
+                    R.string.public_profile_rank
+            );
+
+            addRatingStat(
+                    primaryRow,
+                    pointsText,
+                    R.string.public_profile_points
+            );
+
+            addRatingStat(
+                    primaryRow,
+                    integers.format(
+                            requireStatCount(entry, "predictionsCount")
+                    ),
+                    R.string.public_stats_total_predictions
+            );
+
+            addRatingStat(
+                    resultsRow,
+                    integers.format(
+                            requireStatCount(entry, "correctPredictions")
+                    ),
+                    R.string.public_stats_correct_label
+            );
+
+            addRatingStat(
+                    resultsRow,
+                    integers.format(
+                            requireStatCount(entry, "incorrectPredictions")
+                    ),
+                    R.string.public_stats_incorrect_label
+            );
+
+            addRatingStat(
+                    resultsRow,
+                    integers.format(
+                            requireStatCount(entry, "tiePredictions")
+                    ),
+                    R.string.public_stats_ties_label
+            );
+
+            pendingView.setText(integers.format(
+                    requireStatCount(entry, "pendingPredictions")
+            ));
+
+            temporary.addView(row);
+        }
+
+        // Существующие три колонки аккаунта.
+        rank.setText(integers.format(totalPredictions));
+        points.setText(formatStatPoints(earnedPoints));
+        correct.setText(integers.format(totalCorrect));
+
+        rankingsContainer.removeAllViews();
+
+        while (temporary.getChildCount() > 0) {
+            View row = temporary.getChildAt(0);
+            temporary.removeViewAt(0);
+            rankingsContainer.addView(row);
+        }
+
+        ratingMessage.setVisibility(View.GONE);
+        stats.setVisibility(View.VISIBLE);
+    }
+
+    private void addRatingStat(
+            LinearLayout parent,
+            String value,
+            int labelRes
+    ) {
+        View tile = getLayoutInflater().inflate(
+                R.layout.item_public_profile_stat,
+                parent,
+                false
+        );
+
+        TextView valueView = tile.findViewById(R.id.publicStatValue);
+        TextView labelView = tile.findViewById(R.id.publicStatLabel);
+
+        valueView.setText(value);
+        labelView.setText(labelRes);
+
+        int gap = Math.round(
+                5 * getResources().getDisplayMetrics().density
+        );
+
+        LinearLayout.LayoutParams params =
+                new LinearLayout.LayoutParams(
+                        0,
+                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                        1f
+                );
+
+        int index = parent.getChildCount();
+
+        params.setMarginStart(index == 0 ? 0 : gap);
+        params.setMarginEnd(index == 2 ? 0 : gap);
+
+        parent.addView(tile, params);
     }
 
     private void resetFavorites() {
@@ -326,60 +600,6 @@ public class publicProfileActivity extends AppCompatActivity {
 
         favoriteTeamState.setVisibility(View.VISIBLE);
         favoriteDriverState.setVisibility(View.VISIBLE);
-    }
-
-    private void showRating(DataSnapshot snapshot) {
-        if (snapshot == null || !snapshot.exists()) {
-            stats.setVisibility(View.GONE);
-            ratingMessage.setText(
-                    R.string.public_profile_not_ranked
-            );
-            ratingMessage.setVisibility(View.VISIBLE);
-            return;
-        }
-
-        double rankValue = numeric(
-                snapshot.child("rank").getValue()
-        );
-
-        double pointsValue = numeric(
-                snapshot.child("totalPoints").getValue()
-        );
-
-        double correctValue = numeric(
-                snapshot.child("correctPredictions").getValue()
-        );
-
-        if (!Double.isFinite(rankValue)
-                || rankValue < 1
-                || rankValue != Math.rint(rankValue)
-                || !Double.isFinite(pointsValue)
-                || pointsValue < 0
-                || !Double.isFinite(correctValue)
-                || correctValue < 0
-                || correctValue != Math.rint(correctValue)) {
-
-            showError(
-                    R.string.public_profile_rating_error,
-                    true
-            );
-            return;
-        }
-
-        NumberFormat integerFormat =
-                NumberFormat.getIntegerInstance();
-
-        NumberFormat pointsFormat =
-                NumberFormat.getNumberInstance();
-
-        pointsFormat.setMaximumFractionDigits(2);
-
-        rank.setText(integerFormat.format(rankValue));
-        points.setText(pointsFormat.format(pointsValue));
-        correct.setText(integerFormat.format(correctValue));
-
-        ratingMessage.setVisibility(View.GONE);
-        stats.setVisibility(View.VISIBLE);
     }
 
     private double numeric(Object value) {

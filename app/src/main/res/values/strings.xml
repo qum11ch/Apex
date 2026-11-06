@@ -915,4 +915,17 @@
     <string name="public_favorite_load_error">Could not load</string>
     <string name="public_favorite_image_unavailable">Image unavailable</string>
     <string name="public_favorites_error">Could not load this profile’s favorites.</string>
+
+    <string name="public_stats_heading">Prediction statistics</string>
+    <string name="public_stats_loading">Loading statistics…</string>
+    <string name="public_stats_total_predictions">Predictions</string>
+    <string name="public_stats_without_position">Not ranked</string>
+    <string name="public_stats_counts">Predictions: %1$s\nCorrect: %2$s · Incorrect: %3$s\nTies: %4$s · Pending: %5$s</string>
+
+    <string name="public_stats_position_points">Position %1$s\nPoints: %2$s</string>
+
+    <string name="public_stats_correct_label">Correct</string>
+    <string name="public_stats_incorrect_label">Incorrect</string>
+    <string name="public_stats_ties_label">Ties</string>
+    <string name="public_stats_pending_label">Awaiting results</string>
 </resources>
