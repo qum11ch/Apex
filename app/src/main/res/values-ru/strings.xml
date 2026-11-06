@@ -847,4 +847,11 @@
     <string name="bh_counts_sc">Без обнаруженного SC: %1$d\nНедостаточно данных: %2$d\nГонок проверено: %3$d · ошибок загрузки истории: %4$d</string>
 
     <string name="refresh">Обновить</string>
+
+    <string name="leaderboard_title">Лидерборд</string>
+
+    <string name="leaderboard_season">Сезон</string>
+    <string name="leaderboard_global">Всего</string>
+    <string name="leaderboard_empty">Пока нет результатов</string>
+    <string name="leaderboard_error">Не удалось загрузить лидерборд</string>
 </resources>

@@ -94,6 +94,10 @@
         <activity
             android:name=".predictionFormActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".leaderboardActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

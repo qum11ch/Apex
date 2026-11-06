@@ -284,6 +284,25 @@
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
+                    <Button
+                        android:layout_below="@id/userPredictionsButton"
+                        android:id="@+id/leaderboardButton"
+                        style="@style/ButtonStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginTop="9dp"
+                        android:layout_marginEnd="10dp"
+                        android:gravity="center"
+                        android:elevation="0dp"
+                        android:enabled="true"
+                        android:text="@string/leaderboard_title"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/white"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
                     <TextView
                         android:textColor="@color/text_color_main"
                         android:textAllCaps="true"
@@ -292,7 +311,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="10dp"
                         android:layout_marginEnd="10dp"
-                        android:layout_below="@id/userPredictionsButton"
+                        android:layout_below="@id/leaderboardButton"
                         android:text="@string/top_drivers"
                         android:textSize="16sp"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold"

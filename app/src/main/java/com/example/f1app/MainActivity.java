@@ -234,6 +234,18 @@ public class MainActivity extends AppCompatActivity {
 
         Button openUsersPredictionsButton = findViewById(R.id.userPredictionsButton);
 
+        Button leaderboardButton = findViewById(R.id.leaderboardButton);
+
+        leaderboardButton.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    leaderboardActivity.class
+            );
+
+            intent.putExtra("currentSeason", currentSeason);
+            startActivity(intent);
+        });
+
         if (currentUser == null) {
             openUsersPredictionsButton.setVisibility(View.GONE);
         } else {

@@ -872,4 +872,12 @@
     <string name="bh_counts_sc">No SC detected: %1$d\nInsufficient data: %2$d\nRaces checked: %3$d · history loading errors: %4$d</string>
 
     <string name="refresh">Refresh</string>
+
+    <string name="leaderboard_title">Leaderboard</string>
+
+    <string name="leaderboard_season">Season</string>
+    <string name="leaderboard_global">Global</string>
+    <string name="leaderboard_empty">No results yet</string>
+    <string name="leaderboard_error">Failed to load leaderboard</string>
+
 </resources>
