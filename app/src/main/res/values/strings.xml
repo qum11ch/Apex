@@ -890,9 +890,21 @@
     <string name="lb_not_ranked">You are not in this ranking yet</string>
     <string name="lb_sign_in">Sign in to see your position</string>
     <string name="lb_near_unavailable">Your position is not available in this ranking yet. You can view the top participants.</string>
-    <string name="lb_name_you">%1$s · You</string>
+    <string name="lb_name_you">%1$s (You)</string>
     <string name="lb_correct">Correct answers: %1$d</string>
     <string name="lb_season_missing">The season was not provided. Please reopen the leaderboard from the home screen.</string>
 
     <string name="lb_personal_summary">Your position: #%1$d · %2$d points</string>
+
+    <string name="public_profile_title">Profile</string>
+    <string name="public_profile_rank">Position</string>
+    <string name="public_profile_points">Points</string>
+    <string name="public_profile_correct">Correct answers</string>
+    <string name="public_profile_season">Season %1$s</string>
+    <string name="public_profile_retry">Retry</string>
+    <string name="public_profile_invalid">Could not open this profile.</string>
+    <string name="public_profile_unavailable">This profile is unavailable.</string>
+    <string name="public_profile_load_error">Could not load the profile.</string>
+    <string name="public_profile_rating_error">Could not load the ranking statistics.</string>
+    <string name="public_profile_not_ranked">No position in this ranking yet.</string>
 </resources>

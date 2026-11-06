@@ -98,6 +98,10 @@
         <activity
             android:name=".leaderboardActivity"
             android:exported="false" />
+
+        <activity
+            android:name=".publicProfileActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

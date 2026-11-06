@@ -97,13 +97,6 @@
 
         </LinearLayout>
 
-        <View
-            android:id="@+id/separatorLine"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/separator_header" />
-
-
         <androidx.core.widget.NestedScrollView
             android:id="@+id/contentScroll"
             android:layout_width="match_parent"

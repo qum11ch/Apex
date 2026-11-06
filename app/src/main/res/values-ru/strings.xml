@@ -865,9 +865,21 @@
     <string name="lb_not_ranked">Вы пока не участвуете в этом рейтинге</string>
     <string name="lb_sign_in">Войдите, чтобы видеть свою позицию</string>
     <string name="lb_near_unavailable">В этом рейтинге вашей позиции пока нет. Вы можете посмотреть топ участников.</string>
-    <string name="lb_name_you">%1$s · Вы</string>
+    <string name="lb_name_you">%1$s (Вы)</string>
     <string name="lb_correct">Верных ответов: %1$d</string>
     <string name="lb_season_missing">Не передан сезон. Откройте лидерборд заново с главного экрана.</string>
 
     <string name="lb_personal_summary">Ваше место: %1$d · Очки: %2$d</string>
+
+    <string name="public_profile_title">Профиль</string>
+    <string name="public_profile_rank">Место</string>
+    <string name="public_profile_points">Очки</string>
+    <string name="public_profile_correct">Верные ответы</string>
+    <string name="public_profile_season">Сезон %1$s</string>
+    <string name="public_profile_retry">Повторить</string>
+    <string name="public_profile_invalid">Не удалось открыть этот профиль.</string>
+    <string name="public_profile_unavailable">Этот профиль недоступен.</string>
+    <string name="public_profile_load_error">Не удалось загрузить профиль.</string>
+    <string name="public_profile_rating_error">Не удалось загрузить статистику рейтинга.</string>
+    <string name="public_profile_not_ranked">Пока нет позиции в этом рейтинге.</string>
 </resources>

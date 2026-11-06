@@ -63,6 +63,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.functions.FirebaseFunctions;
+
 public class accountSettingsActivity extends AppCompatActivity {
 
     private RelativeLayout changeAvatarLayout;
@@ -454,8 +456,8 @@ public class accountSettingsActivity extends AppCompatActivity {
     private void saveBackgroundColor(
             String ownerUid,
             int color,
-            backgroundColorPickerDialog dialog) {
-
+            backgroundColorPickerDialog dialog
+    ) {
         FirebaseUser user =
                 FirebaseAuth.getInstance().getCurrentUser();
 
@@ -471,7 +473,6 @@ public class accountSettingsActivity extends AppCompatActivity {
             return;
         }
 
-        // Непрозрачный цвет в формате #RRGGBB.
         final int opaqueColor = Color.rgb(
                 Color.red(color),
                 Color.green(color),
@@ -484,24 +485,15 @@ public class accountSettingsActivity extends AppCompatActivity {
                 opaqueColor & 0xFFFFFF
         );
 
-        Map<String, Object> updates = new HashMap<>();
-
-        updates.put(
-                "users/" + ownerUid + "/background_color",
-                hexColor
-        );
-
-        updates.put(
-                "publicProfiles/" + ownerUid + "/background_color",
-                hexColor
-        );
+        Map<String, Object> data = new HashMap<>();
+        data.put("backgroundColor", hexColor);
 
         dialog.setSaving(true);
 
-        FirebaseDatabase.getInstance()
-                .getReference()
-                .updateChildren(updates)
-                .addOnSuccessListener(unused -> {
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("setProfileCoverColor")
+                .call(data)
+                .addOnSuccessListener(result -> {
                     if (isFinishing() || isDestroyed()) {
                         return;
                     }
@@ -511,14 +503,40 @@ public class accountSettingsActivity extends AppCompatActivity {
 
                     if (currentUser == null
                             || !ownerUid.equals(currentUser.getUid())) {
-
                         dialog.dismiss();
                         return;
                     }
 
-                    // Меняем экран только после успешной записи.
-                    applyBackgroundColor(opaqueColor);
+                    Object response = result.getData();
 
+                    if (!(response instanceof Map)) {
+                        handleCoverSaveFailure(
+                                ownerUid,
+                                dialog,
+                                new IllegalStateException(
+                                        "Invalid setProfileCoverColor response"
+                                )
+                        );
+                        return;
+                    }
+
+                    Map<?, ?> responseMap = (Map<?, ?>) response;
+
+                    if (!Boolean.TRUE.equals(responseMap.get("success"))
+                            || !hexColor.equals(
+                            responseMap.get("backgroundColor")
+                    )) {
+                        handleCoverSaveFailure(
+                                ownerUid,
+                                dialog,
+                                new IllegalStateException(
+                                        "Unexpected setProfileCoverColor result"
+                                )
+                        );
+                        return;
+                    }
+
+                    applyBackgroundColor(opaqueColor);
                     dialog.dismiss();
 
                     Toast.makeText(
@@ -527,27 +545,50 @@ public class accountSettingsActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT
                     ).show();
                 })
-                .addOnFailureListener(error -> {
-                    Log.e(
-                            "BackgroundColor",
-                            "Failed to save background color",
-                            error
-                    );
+                .addOnFailureListener(error ->
+                        handleCoverSaveFailure(
+                                ownerUid,
+                                dialog,
+                                error
+                        )
+                );
+    }
 
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
+    private void handleCoverSaveFailure(
+            String ownerUid,
+            backgroundColorPickerDialog dialog,
+            Exception error
+    ) {
+        Log.e(
+                "ProfileCover",
+                "Failed to save profile cover color",
+                error
+        );
 
-                    if (dialog.isShowing()) {
-                        dialog.setSaving(false);
-                    }
+        if (isFinishing() || isDestroyed()) {
+            return;
+        }
 
-                    Toast.makeText(
-                            this,
-                            R.string.background_color_save_error,
-                            Toast.LENGTH_LONG
-                    ).show();
-                });
+        FirebaseUser currentUser =
+                FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser == null
+                || !ownerUid.equals(currentUser.getUid())) {
+            dialog.dismiss();
+            return;
+        }
+
+        if (!dialog.isShowing()) {
+            return;
+        }
+
+        dialog.setSaving(false);
+
+        Toast.makeText(
+                this,
+                R.string.background_color_save_error,
+                Toast.LENGTH_LONG
+        ).show();
     }
 
     private int dp(float value) {

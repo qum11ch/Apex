@@ -809,6 +809,10 @@ public final class leaderboardScreenController {
         public void onBindViewHolder(RowHolder holder, int position) {
             leaderboardEntry entry = entries.get(position);
 
+            holder.itemView.setOnClickListener(v ->
+                    openPublicProfile(entry.uid)
+            );
+
             String username = entry.username == null
                     || entry.username.trim().isEmpty()
                     ? "—" : entry.username.trim();
@@ -825,7 +829,9 @@ public final class leaderboardScreenController {
             holder.itemView.setAlpha(1f);
             holder.itemView.setSelected(entry.isMe);
 
-            holder.itemView.setBackgroundColor(color(
+            View row = holder.itemView.findViewById(R.id.lbRow);
+
+            row.setBackgroundColor(color(
                     entry.isMe
                             ? R.color.neuro_selected
                             : R.color.colorPrimary
@@ -895,6 +901,7 @@ public final class leaderboardScreenController {
         public void onViewRecycled(RowHolder holder) {
             holder.boundUid = null;
             GlideApp.with(holder.avatar).clear(holder.avatar);
+            holder.itemView.setOnClickListener(null);
             super.onViewRecycled(holder);
         }
 
@@ -959,5 +966,29 @@ public final class leaderboardScreenController {
             params.topMargin = dp(3);
             names.addView(correct, params);
         }
+    }
+
+    private void openPublicProfile(String uid) {
+        if (uid == null
+                || uid.isEmpty()
+                || destroyed
+                || activity.isFinishing()
+                || activity.isDestroyed()) {
+            return;
+        }
+
+        android.content.Intent intent = new android.content.Intent(
+                activity,
+                publicProfileActivity.class
+        );
+
+        intent.putExtra(publicProfileActivity.EXTRA_UID, uid);
+        intent.putExtra(publicProfileActivity.EXTRA_SEASON, season);
+        intent.putExtra(
+                publicProfileActivity.EXTRA_SCOPE,
+                databaseScope()
+        );
+
+        activity.startActivity(intent);
     }
 }
