@@ -12,21 +12,20 @@
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="horizontal"
+        android:minHeight="72dp"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
-
-        android:minHeight="80dp"
-        android:paddingTop="14dp"
-        android:paddingBottom="14dp">
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
         <TextView
             android:id="@+id/lbRank"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:textStyle="bold"
             android:layout_width="40dp"
+            android:gravity="start|center_vertical"
             android:textColor="@color/text_color_main"
-            android:textSize="18sp"/>
+            android:textSize="16sp"/>
 
         <androidx.cardview.widget.CardView
             android:layout_marginStart="10dp"
@@ -64,8 +63,8 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/text_color_main"
-            android:textStyle="bold"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textStyle="bold"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -79,8 +78,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/text_color_main"
-                android:textSize="22sp"
-                android:textStyle="bold" />
+                android:textSize="20sp"
+                android:textStyle="bold"/>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -99,6 +98,6 @@
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/separator_header"
-        android:alpha="0.15"/>
+        android:background="@color/stroke_option_color"
+        android:alpha="1"/>
 </LinearLayout>

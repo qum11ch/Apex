@@ -880,4 +880,19 @@
     <string name="leaderboard_empty">No results yet</string>
     <string name="leaderboard_error">Failed to load leaderboard</string>
     <string name="leaderboard_avatar">User avatar</string>
+
+    <string name="lb_top">Top 50</string>
+    <string name="lb_near">Around me</string>
+    <string name="lb_retry">Retry</string>
+    <string name="lb_loading">Loading your position…</string>
+    <string name="lb_personal_title">Your position · %1$s</string>
+    <string name="lb_personal_error">Could not load your position</string>
+    <string name="lb_not_ranked">You are not in this ranking yet</string>
+    <string name="lb_sign_in">Sign in to see your position</string>
+    <string name="lb_near_unavailable">Your position is not available in this ranking yet. You can view the top participants.</string>
+    <string name="lb_name_you">%1$s · You</string>
+    <string name="lb_correct">Correct answers: %1$d</string>
+    <string name="lb_season_missing">The season was not provided. Please reopen the leaderboard from the home screen.</string>
+
+    <string name="lb_personal_summary">Your position: #%1$d · %2$d points</string>
 </resources>

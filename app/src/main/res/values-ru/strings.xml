@@ -855,4 +855,19 @@
     <string name="leaderboard_empty">Пока нет результатов</string>
     <string name="leaderboard_error">Не удалось загрузить лидерборд</string>
     <string name="leaderboard_avatar">Аватар пользователя</string>
+
+    <string name="lb_top">Топ-50</string>
+    <string name="lb_near">Рядом со мной</string>
+    <string name="lb_retry">Повторить</string>
+    <string name="lb_loading">Загружаем вашу позицию…</string>
+    <string name="lb_personal_title">Ваша позиция · %1$s</string>
+    <string name="lb_personal_error">Не удалось загрузить вашу позицию</string>
+    <string name="lb_not_ranked">Вы пока не участвуете в этом рейтинге</string>
+    <string name="lb_sign_in">Войдите, чтобы видеть свою позицию</string>
+    <string name="lb_near_unavailable">В этом рейтинге вашей позиции пока нет. Вы можете посмотреть топ участников.</string>
+    <string name="lb_name_you">%1$s · Вы</string>
+    <string name="lb_correct">Верных ответов: %1$d</string>
+    <string name="lb_season_missing">Не передан сезон. Откройте лидерборд заново с главного экрана.</string>
+
+    <string name="lb_personal_summary">Ваше место: %1$d · Очки: %2$d</string>
 </resources>

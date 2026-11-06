@@ -57,13 +57,13 @@ public class leaderboardActivity extends AppCompatActivity {
     private final leaderboardAdapter adapter = new leaderboardAdapter();
     private final leaderboardLoader loader = new leaderboardLoader();
 
+    private leaderboardScreenController screenController;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_leaderboard);
-
-        setupLeaderboardInsets();
 
         if (!checkConnection(getApplicationContext())) {
             startActivity(connectionLostScreen
@@ -89,17 +89,42 @@ public class leaderboardActivity extends AppCompatActivity {
         seasonButton = findViewById(R.id.seasonScopeButton);
         globalButton = findViewById(R.id.globalScopeButton);
 
-        list.setLayoutManager(new LinearLayoutManager(this));
-        list.setAdapter(adapter);
-
         findViewById(R.id.backButton).setOnClickListener(v -> finish());
 
-        seasonButton.setOnClickListener(v -> setScope(SCOPE_SEASON));
-        globalButton.setOnClickListener(v -> setScope(SCOPE_GLOBAL));
-
-        setScope(SCOPE_SEASON);
         setupScopeAppearance();
 
+        String season = currentSeason == null ? "" : currentSeason.trim();
+
+        if (season.isEmpty()) {
+            progress.setVisibility(View.GONE);
+            errorText.setText(R.string.lb_season_missing);
+            errorText.setVisibility(View.VISIBLE);
+            return;
+        }
+
+        screenController = new leaderboardScreenController(
+                this,
+                season,
+                selectedScope -> {
+                    currentScope = selectedScope;
+                    styleScopeButton(
+                            seasonButton,
+                            SCOPE_SEASON.equals(selectedScope)
+                    );
+                    styleScopeButton(
+                            globalButton,
+                            SCOPE_GLOBAL.equals(selectedScope)
+                    );
+                }
+        );
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (screenController != null) {
+            screenController.destroy();
+        }
+        super.onDestroy();
     }
 
     private void setupLeaderboardInsets() {
