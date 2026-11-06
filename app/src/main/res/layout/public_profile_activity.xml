@@ -288,24 +288,11 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="48dp">
-
-                                <ImageButton
-                                    android:id="@+id/editTeam"
-                                    android:layout_width="48dp"
-                                    android:layout_height="48dp"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_centerVertical="true"
-                                    android:padding="5dp"
-                                    android:background="?attr/selectableItemBackgroundBorderless"
-                                    android:src="@drawable/ic_edit"
-                                    app:tint="?android:attr/textColorPrimary" />
-
                                 <TextView
                                     android:id="@+id/favTeam_header"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:minHeight="48dp"
-                                    android:layout_toStartOf="@id/editTeam"
                                     android:layout_centerVertical="true"
                                     android:paddingStart="4dp"
                                     android:paddingEnd="4dp"
@@ -341,9 +328,10 @@
                                         android:scaleType="fitCenter"
                                         android:visibility="invisible" />
                                     <TextView
-                                        android:text="+"
+                                        android:text="@string/public_favorite_loading"
+                                        android:textSize="14sp"
                                         android:textStyle="normal"
-                                        android:textSize="48sp"
+                                        android:visibility="visible"
                                         android:textColor="@color/grey"
                                         android:id="@+id/noTeam"
                                         android:layout_width="match_parent"
@@ -352,8 +340,7 @@
                                         android:layout_marginStart="8dp"
                                         android:layout_marginEnd="8dp"
                                         android:gravity="center"
-                                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                                        android:visibility="invisible" />
+                                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
                                 </RelativeLayout>
 
                                 <RelativeLayout
@@ -389,24 +376,11 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:minHeight="48dp">
-
-                                <ImageButton
-                                    android:id="@+id/editDriver"
-                                    android:layout_width="48dp"
-                                    android:layout_height="48dp"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_centerVertical="true"
-                                    android:padding="5dp"
-                                    android:background="?attr/selectableItemBackgroundBorderless"
-                                    android:src="@drawable/ic_edit"
-                                    app:tint="?android:attr/textColorPrimary" />
-
                                 <TextView
                                     android:id="@+id/favTeam_driver"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:minHeight="48dp"
-                                    android:layout_toStartOf="@id/editDriver"
                                     android:layout_centerVertical="true"
                                     android:paddingStart="4dp"
                                     android:paddingEnd="4dp"
@@ -441,9 +415,10 @@
                                         android:scaleType="fitCenter" />
                                     <TextView
                                         android:id="@+id/noDriver"
-                                        android:text="+"
-                                        android:textSize="48sp"
+                                        android:text="@string/public_favorite_loading"
+                                        android:textSize="14sp"
                                         android:textStyle="normal"
+                                        android:visibility="visible"
                                         android:textColor="@color/grey"
                                         android:layout_width="match_parent"
                                         android:layout_height="wrap_content"
@@ -451,8 +426,7 @@
                                         android:layout_marginStart="8dp"
                                         android:layout_marginEnd="8dp"
                                         android:gravity="center"
-                                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                                        android:visibility="invisible" />
+                                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"  />
                                 </RelativeLayout>
 
                                 <LinearLayout

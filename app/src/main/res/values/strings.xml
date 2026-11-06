@@ -907,4 +907,12 @@
     <string name="public_profile_load_error">Could not load the profile.</string>
     <string name="public_profile_rating_error">Could not load the ranking statistics.</string>
     <string name="public_profile_not_ranked">No position in this ranking yet.</string>
+
+    <string name="public_favorite_loading">Loading…</string>
+    <string name="public_favorite_not_selected">Not selected</string>
+    <string name="public_favorite_team_empty">No favorite team selected</string>
+    <string name="public_favorite_driver_empty">No favorite driver selected</string>
+    <string name="public_favorite_load_error">Could not load</string>
+    <string name="public_favorite_image_unavailable">Image unavailable</string>
+    <string name="public_favorites_error">Could not load this profile’s favorites.</string>
 </resources>

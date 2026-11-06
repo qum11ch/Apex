@@ -882,4 +882,12 @@
     <string name="public_profile_load_error">Не удалось загрузить профиль.</string>
     <string name="public_profile_rating_error">Не удалось загрузить статистику рейтинга.</string>
     <string name="public_profile_not_ranked">Пока нет позиции в этом рейтинге.</string>
+
+    <string name="public_favorite_loading">Загрузка…</string>
+    <string name="public_favorite_not_selected">Не выбрано</string>
+    <string name="public_favorite_team_empty">Любимая команда не выбрана</string>
+    <string name="public_favorite_driver_empty">Любимый пилот не выбран</string>
+    <string name="public_favorite_load_error">Не удалось загрузить</string>
+    <string name="public_favorite_image_unavailable">Изображение недоступно</string>
+    <string name="public_favorites_error">Не удалось загрузить избранное пользователя.</string>
 </resources>

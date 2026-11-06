@@ -29,6 +29,12 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.text.NumberFormat;
 import java.util.Locale;
 
+import com.google.firebase.functions.FirebaseFunctions;
+import com.google.firebase.storage.StorageReference;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class publicProfileActivity extends AppCompatActivity {
 
     public static final String EXTRA_UID = "profileUid";
@@ -58,6 +64,18 @@ public class publicProfileActivity extends AppCompatActivity {
 
     private int generation;
 
+    private String assetSeason;
+
+    private ImageView favoriteTeamImage;
+    private ImageView favoriteDriverImage;
+
+    private TextView favoriteTeamName;
+    private TextView favoriteDriverName;
+    private TextView favoriteDriverFamilyName;
+
+    private TextView favoriteTeamState;
+    private TextView favoriteDriverState;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,6 +103,22 @@ public class publicProfileActivity extends AppCompatActivity {
         ratingMessage = findViewById(R.id.publicProfileRatingMessage);
         errorText = findViewById(R.id.publicProfileError);
 
+        favoriteTeamImage = findViewById(R.id.teamCar);
+        favoriteDriverImage = findViewById(R.id.driver_image);
+
+        favoriteTeamName = findViewById(R.id.teamName);
+        favoriteDriverName = findViewById(R.id.driverName);
+        favoriteDriverFamilyName = findViewById(R.id.driverFamilyName);
+
+        favoriteTeamState = findViewById(R.id.noTeam);
+        favoriteDriverState = findViewById(R.id.noDriver);
+
+        favoriteTeamState.setTextSize(14);
+        favoriteDriverState.setTextSize(14);
+
+        findViewById(R.id.team_layout).setClickable(false);
+        findViewById(R.id.driver_layout).setClickable(false);
+
         findViewById(R.id.backButton)
                 .setOnClickListener(v -> finish());
 
@@ -104,8 +138,11 @@ public class publicProfileActivity extends AppCompatActivity {
 
         profileUid = getIntent().getStringExtra(EXTRA_UID);
         String season = getIntent().getStringExtra(EXTRA_SEASON);
-        String requestedScope =
-                getIntent().getStringExtra(EXTRA_SCOPE);
+        String requestedScope = getIntent().getStringExtra(EXTRA_SCOPE);
+
+        assetSeason = season != null && season.matches("[0-9]{4}")
+                ? season
+                : null;
 
         if (!validUid(profileUid)) {
             showError(R.string.public_profile_invalid, false);
@@ -153,6 +190,8 @@ public class publicProfileActivity extends AppCompatActivity {
         if (ratingScope == null || !validUid(profileUid)) return;
 
         final int request = ++generation;
+
+        resetFavorites();
 
         progress.setVisibility(View.VISIBLE);
         errorBox.setVisibility(View.GONE);
@@ -267,7 +306,26 @@ public class publicProfileActivity extends AppCompatActivity {
                     }
 
                     loadAvatar(request);
+                    loadFavorites(request);
                 });
+    }
+
+    private void resetFavorites() {
+        GlideApp.with(favoriteTeamImage).clear(favoriteTeamImage);
+        GlideApp.with(favoriteDriverImage).clear(favoriteDriverImage);
+
+        favoriteTeamImage.setVisibility(View.INVISIBLE);
+        favoriteDriverImage.setVisibility(View.INVISIBLE);
+
+        favoriteTeamName.setText("");
+        favoriteDriverName.setText("");
+        favoriteDriverFamilyName.setText("");
+
+        favoriteTeamState.setText(R.string.public_favorite_loading);
+        favoriteDriverState.setText(R.string.public_favorite_loading);
+
+        favoriteTeamState.setVisibility(View.VISIBLE);
+        favoriteDriverState.setVisibility(View.VISIBLE);
     }
 
     private void showRating(DataSnapshot snapshot) {
@@ -349,9 +407,15 @@ public class publicProfileActivity extends AppCompatActivity {
                 .addOnSuccessListener(uri -> {
                     if (!active(request)) return;
 
+                    avatar.setVisibility(View.VISIBLE);
+                    initial.setVisibility(View.VISIBLE);
+
                     GlideApp.with(avatar)
                             .load(uri)
-                            .centerCrop()
+                            .override(
+                                    Math.round(100 * getResources().getDisplayMetrics().density),
+                                    Math.round(100 * getResources().getDisplayMetrics().density)
+                            )
                             .listener(new RequestListener<Drawable>() {
                                 @Override
                                 public boolean onLoadFailed(
@@ -361,6 +425,12 @@ public class publicProfileActivity extends AppCompatActivity {
                                         boolean isFirstResource
                                 ) {
                                     if (!active(request)) return true;
+
+                                    Log.w(
+                                            "PublicProfile",
+                                            "Avatar image load failed; uid=" + profileUid,
+                                            exception
+                                    );
 
                                     avatar.setVisibility(View.GONE);
                                     initial.setVisibility(View.VISIBLE);
@@ -385,11 +455,359 @@ public class publicProfileActivity extends AppCompatActivity {
                             .into(avatar);
                 })
                 .addOnFailureListener(exception -> {
+                    Log.w(
+                            "PublicProfile",
+                            "Avatar URL unavailable; uid=" + profileUid,
+                            exception
+                    );
+
                     if (!active(request)) return;
 
                     avatar.setVisibility(View.GONE);
                     initial.setVisibility(View.VISIBLE);
                 });
+    }
+
+    private String favoriteValue(Object value) {
+        if (!(value instanceof String)) return null;
+
+        String text = ((String) value).trim();
+
+        return text.isEmpty() || "null".equalsIgnoreCase(text)
+                ? null
+                : text;
+    }
+
+    private void loadFavorites(int request) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("profileUid", profileUid);
+
+        FirebaseFunctions.getInstance("us-central1")
+                .getHttpsCallable("getPublicProfileFavorites")
+                .call(data)
+                .addOnSuccessListener(result -> {
+                    if (!active(request)) return;
+
+                    if (!(result.getData() instanceof Map)) {
+                        showFavoritesError();
+                        return;
+                    }
+
+                    Map<?, ?> favorites = (Map<?, ?>) result.getData();
+
+                    if (!favorites.containsKey("choiceTeam")
+                            || !favorites.containsKey("choiceDriver")) {
+                        showFavoritesError();
+                        return;
+                    }
+
+                    String team = favoriteValue(
+                            favorites.get("choiceTeam")
+                    );
+
+                    String driver = favoriteValue(
+                            favorites.get("choiceDriver")
+                    );
+
+                    if (team == null) {
+                        favoriteTeamName.setText(
+                                R.string.public_favorite_not_selected
+                        );
+                        favoriteTeamState.setText(
+                                R.string.public_favorite_team_empty
+                        );
+                        favoriteTeamState.setVisibility(View.VISIBLE);
+                    } else {
+                        favoriteTeamName.setText(team);
+                        loadFavoriteTeam(team, request);
+                    }
+
+                    if (driver == null) {
+                        favoriteDriverName.setText(
+                                R.string.public_favorite_not_selected
+                        );
+                        favoriteDriverFamilyName.setText("");
+                        favoriteDriverState.setText(
+                                R.string.public_favorite_driver_empty
+                        );
+                        favoriteDriverState.setVisibility(View.VISIBLE);
+                    } else {
+                        // Не пытаемся угадать структуру составного имени.
+                        favoriteDriverName.setText(driver);
+                        favoriteDriverFamilyName.setText("");
+                        loadFavoriteDriver(driver, request);
+                    }
+                })
+                .addOnFailureListener(exception -> {
+                    if (!active(request)) return;
+
+                    Log.e(
+                            "PublicProfile",
+                            "Failed to load public favorites",
+                            exception
+                    );
+
+                    showFavoritesError();
+                });
+    }
+
+    private void showFavoritesError() {
+        favoriteTeamImage.setVisibility(View.INVISIBLE);
+        favoriteDriverImage.setVisibility(View.INVISIBLE);
+
+        favoriteTeamState.setText(
+                R.string.public_favorite_load_error
+        );
+        favoriteDriverState.setText(
+                R.string.public_favorite_load_error
+        );
+
+        favoriteTeamState.setVisibility(View.VISIBLE);
+        favoriteDriverState.setVisibility(View.VISIBLE);
+
+        // Используем уже существующую общую кнопку повтора.
+        showError(R.string.public_favorites_error, true);
+    }
+
+    private void loadFavoriteTeam(String team, int request) {
+        FirebaseDatabase.getInstance()
+                .getReference("constructors")
+                .orderByChild("name")
+                .equalTo(team)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!active(request)) return;
+
+                    String teamId = null;
+
+                    for (DataSnapshot child : snapshot.getChildren()) {
+                        Object value = child.child("constructorId").getValue();
+
+                        if (value instanceof String
+                                && !((String) value).trim().isEmpty()) {
+                            teamId = ((String) value).trim();
+                            break;
+                        }
+                    }
+
+                    if (teamId == null || assetSeason == null) {
+                        showFavoriteImageUnavailable(
+                                favoriteTeamImage,
+                                favoriteTeamState
+                        );
+                        return;
+                    }
+
+                    StorageReference image = FirebaseStorage.getInstance()
+                            .getReference()
+                            .child("teams")
+                            .child(
+                                    teamId.trim().toLowerCase(Locale.ROOT)
+                                            + "_" + assetSeason + ".png"
+                            );
+
+                    loadFavoriteImage(
+                            image,
+                            null,
+                            favoriteTeamImage,
+                            favoriteTeamState,
+                            request
+                    );
+                })
+                .addOnFailureListener(exception -> {
+                    if (!active(request)) return;
+
+                    Log.w(
+                            "PublicProfile",
+                            "Favorite team lookup failed",
+                            exception
+                    );
+
+                    showFavoriteImageUnavailable(
+                            favoriteTeamImage,
+                            favoriteTeamState
+                    );
+                });
+    }
+
+    private void loadFavoriteDriver(String driver, int request) {
+        FirebaseDatabase.getInstance()
+                .getReference("drivers")
+                .child(driver)
+                .get()
+                .addOnSuccessListener(snapshot -> {
+                    if (!active(request)) return;
+
+                    String driverId = favoriteValue(
+                            snapshot.child("driverId").getValue()
+                    );
+
+                    String code = favoriteValue(
+                            snapshot.child("driversCode").getValue()
+                    );
+
+                    String lastEntry = favoriteValue(
+                            snapshot.child("lastEntry").getValue()
+                    );
+
+                    String year = null;
+
+                    if (lastEntry != null) {
+                        java.util.regex.Matcher matcher =
+                                java.util.regex.Pattern
+                                        .compile("[0-9]{4}")
+                                        .matcher(lastEntry);
+
+                        if (matcher.find()) {
+                            year = matcher.group();
+                        }
+                    }
+
+                    if (year == null || (driverId == null && code == null)) {
+                        showFavoriteImageUnavailable(
+                                favoriteDriverImage,
+                                favoriteDriverState
+                        );
+                        return;
+                    }
+
+                    StorageReference drivers = FirebaseStorage.getInstance()
+                            .getReference()
+                            .child("drivers");
+
+                    StorageReference fallback = code == null
+                            ? null
+                            : drivers.child(
+                            code.trim().toLowerCase(Locale.ROOT)
+                                    + "_" + year + ".png"
+                    );
+
+                    StorageReference preferred = driverId == null
+                            ? fallback
+                            : drivers.child(
+                            driverId.trim() + "_" + year + ".png"
+                    );
+
+                    loadFavoriteImage(
+                            preferred,
+                            driverId == null ? null : fallback,
+                            favoriteDriverImage,
+                            favoriteDriverState,
+                            request
+                    );
+                })
+                .addOnFailureListener(exception -> {
+                    if (!active(request)) return;
+
+                    Log.w(
+                            "PublicProfile",
+                            "Favorite driver lookup failed",
+                            exception
+                    );
+
+                    showFavoriteImageUnavailable(
+                            favoriteDriverImage,
+                            favoriteDriverState
+                    );
+                });
+    }
+
+    private void loadFavoriteImage(
+            StorageReference source,
+            StorageReference fallback,
+            ImageView target,
+            TextView state,
+            int request
+    ) {
+        if (!active(request)) return;
+
+        if (source == null) {
+            showFavoriteImageUnavailable(target, state);
+            return;
+        }
+
+        Log.d(
+                "PublicProfile",
+                "Loading favorite image: " + source.getPath()
+        );
+
+        source.getDownloadUrl()
+                .addOnSuccessListener(uri -> {
+                    if (!active(request)) return;
+
+                    target.setVisibility(View.VISIBLE);
+
+                    GlideApp.with(target)
+                            .load(uri)
+                            .fitCenter()
+                            .listener(new RequestListener<Drawable>() {
+                                @Override
+                                public boolean onLoadFailed(
+                                        GlideException exception,
+                                        Object model,
+                                        Target<Drawable> glideTarget,
+                                        boolean isFirstResource
+                                ) {
+                                    if (!active(request)) return true;
+
+                                    Log.w(
+                                            "PublicProfile",
+                                            "Favorite image decode failed",
+                                            exception
+                                    );
+
+                                    showFavoriteImageUnavailable(target, state);
+                                    return false;
+                                }
+
+                                @Override
+                                public boolean onResourceReady(
+                                        Drawable resource,
+                                        Object model,
+                                        Target<Drawable> glideTarget,
+                                        DataSource dataSource,
+                                        boolean isFirstResource
+                                ) {
+                                    if (!active(request)) return true;
+
+                                    state.setVisibility(View.GONE);
+                                    target.setVisibility(View.VISIBLE);
+                                    return false;
+                                }
+                            })
+                            .into(target);
+                })
+                .addOnFailureListener(exception -> {
+                    if (!active(request)) return;
+
+                    if (fallback != null) {
+                        loadFavoriteImage(
+                                fallback,
+                                null,
+                                target,
+                                state,
+                                request
+                        );
+                        return;
+                    }
+
+                    Log.w(
+                            "PublicProfile",
+                            "Favorite image URL unavailable",
+                            exception
+                    );
+
+                    showFavoriteImageUnavailable(target, state);
+                });
+    }
+
+    private void showFavoriteImageUnavailable(
+            ImageView image,
+            TextView state
+    ) {
+        image.setVisibility(View.INVISIBLE);
+        state.setText(R.string.public_favorite_image_unavailable);
+        state.setVisibility(View.VISIBLE);
     }
 
     private void showError(int message, boolean canRetry) {
