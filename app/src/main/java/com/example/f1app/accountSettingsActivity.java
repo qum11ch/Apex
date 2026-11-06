@@ -782,7 +782,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         DatabaseReference rootRef =
                 FirebaseDatabase.getInstance().getReference();
 
-        rootRef.child("leaderboards")
+        rootRef.child("leaderboard")
                 .get()
                 .addOnSuccessListener(snapshot -> {
                     Map<String, Object> updates = new HashMap<>();
@@ -796,7 +796,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                                 && seasonSnapshot.child(uid).exists()) {
 
                             updates.put(
-                                    "/leaderboards/"
+                                    "/leaderboard/"
                                             + season
                                             + "/"
                                             + uid,
@@ -831,7 +831,7 @@ public class accountSettingsActivity extends AppCompatActivity {
                 .addOnFailureListener(error -> {
                     Log.e(
                             "DeleteAccount",
-                            "Failed to read leaderboards",
+                            "Failed to read leaderboard",
                             error
                     );
 

@@ -416,8 +416,6 @@
     <string name="predict_button">Neural Prediction</string>
     <string name="predict_quali">Qualifying</string>
     <string name="predict_sprint_quali">Spring Qualifying</string>
-    <string name="predict_info_text">Here you can get a prediction of the qualification results of any 2026 Grand-Prix of your choice. To do this you need to select a Grand Prix from the list and the type of qualification you want to get. The prediction may not match the actual qualification results due to many factors. It is also worth noting that the prediction is made based on the drivers points THIS MOMENT, for this reason the closer the event is, the closer the prediction will be to the actual results.</string>
-    <string name="warning_it">Attention! Getting the prediction may take some time! Approximate waiting time up to 2 minutes depending on your Internet connection!</string>
     <string name="qualifying_text">Qualifying</string>
     <string name="sprint_qualifying_text">Sprint Qualifying</string>
     <string name="yes_text">Yes</string>
@@ -667,11 +665,12 @@
 
     <string name="pred_rules_button">About Predictions</string>
 
-    <string name="prediction_stats_title">Pre-prediction stats</string>
+    <string name="prediction_stats_title">Statistics</string>
     <string name="prediction_stats_open_weekend">Open Grand Prix</string>
-    <string name="prediction_stats_loading">Loading stats…</string>
-    <string name="prediction_stats_unavailable">Not enough data for stats</string>
+    <string name="prediction_stats_loading">Loading statistics…</string>
+    <string name="prediction_stats_unavailable">Statistics unavailable</string>
     <string name="prediction_stats_error">Failed to load stats</string>
+
     <string name="prediction_stats_duel_race_title">Race head-to-head</string>
     <string name="prediction_stats_duel_score">Score</string>
     <string name="prediction_stats_average_points">Average points</string>
@@ -742,7 +741,6 @@
     <string name="tq_recent">Latest 5 qualifying sessions</string>
     <string name="tq_columns">Grand Prix · positions of team A / team B</string>
     <string name="tq_empty">No sessions with two recorded positions for each team in this period.</string>
-    <string name="tq_note">Each pair lists both drivers, best position first. Only sessions with two valid positions per team are included. These statistics do not define the prediction settlement rule.</string>
 
     <string name="tr_title">Teams in races</string>
     <string name="tr_side_a">Team A</string>
@@ -811,7 +809,6 @@
     <string name="bh_recent">Latest available Race sessions at this circuit</string>
     <string name="bh_empty">No matching completed sessions were found.</string>
     <string name="bh_rain_rule">Rain: rainfall=1 within the OpenF1 session interval. No rain is reported only with valid dry samples spanning the interval and gaps no larger than 5 minutes; otherwise data is unknown. This is a sensor history, not proof of conditions at every point of the circuit.</string>
-    <string name="bh_sc_rule">SC and VSC are classified separately from recognised race-control messages in the session interval. Unrecognised SafetyCar messages or missing session boundaries yield unknown, not no. This card does not define how the prediction is settled.</string>
     <string name="bh_loading">Loading OpenF1 history…</string>
     <string name="bh_waiting_track">Waiting for circuit information…</string>
     <string name="bh_error">Could not load history for this circuit. Historical statistics are unavailable.</string>
@@ -842,7 +839,7 @@
 
     <string name="bh2_coverage">Unknown outcomes: %1$d · sessions: %2$d · failed requests: %3$d</string>
     <string name="bh2_network_error">Data request failed</string>
-    <string name="bh2_sc_rule">SC and VSC are tracked separately using recognised messages about their deployment. Absence is reported only with established race boundaries, no parsing errors and no ambiguous messages for the relevant type. Otherwise, data is insufficient. The available log may be incomplete. These statistics do not determine the result of your prediction.</string>
+    <string name="bh2_sc_rule">SC and VSC are accounted for separately. \"No\" means the event was not detected in the available data; in case of incomplete or ambiguous data, the status may be \"Insufficient data\".</string>
 
     <string name="bh3_counts">Not detected: %1$d\nUncertain: %2$d\nSessions examined: %3$d · request errors: %4$d</string>
     <string name="bh3_rain_caption">races with rain detected in the checked interval</string>
@@ -851,7 +848,7 @@
     <string name="bh3_coverage_gap">No rain was detected in the available readings, but they do not provide sufficient coverage of the full race interval.</string>
     <string name="bh3_window_unknown">Insufficient data to determine the start or end of the checked race interval.</string>
     <string name="bh3_network_error">Could not load data. The result is undetermined.</string>
-    <string name="bh3_rain_rule">Rain is checked from the timing-based race start to the first track-wide chequered flag. The start is identified from a lap-1 control message or a first-lap start timestamp. No rain is reported only with sufficient coverage: gaps between readings and at the interval boundaries must not exceed 5 minutes. If the boundaries or coverage cannot be established, data is insufficient. Timestamps may be approximate. These statistics do not determine the result of your prediction.</string>
+    <string name="bh3_rain_rule">Rain is checked for the entire race interval based on available data. \"No\" means no rain was detected; in case of incomplete coverage or unclear boundaries, the status will be \"Insufficient data\".</string>
 
     <string name="bh4_unavailable_years">Years that could not be checked: %1$s. History is incomplete.</string>
 
