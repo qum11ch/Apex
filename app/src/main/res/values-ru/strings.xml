@@ -851,7 +851,8 @@
     <string name="leaderboard_title">Лидерборд</string>
 
     <string name="leaderboard_season">Сезон</string>
-    <string name="leaderboard_global">Всего</string>
+    <string name="leaderboard_global">Глобально</string>
     <string name="leaderboard_empty">Пока нет результатов</string>
     <string name="leaderboard_error">Не удалось загрузить лидерборд</string>
+    <string name="leaderboard_avatar">Аватар пользователя</string>
 </resources>

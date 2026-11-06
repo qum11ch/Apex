@@ -15,72 +15,86 @@
             android:id="@+id/header"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:orientation="vertical"
             android:paddingTop="16dp"
-            android:paddingBottom="20dp"
+            android:paddingBottom="16dp"
             android:background="@color/header_color">
 
-            <ImageButton
-                android:id="@+id/backButton"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:background="@android:color/transparent"
-                android:contentDescription="@string/back"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                android:src="@drawable/back_arrow" />
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="56dp">
 
-            <TextView
-                android:id="@+id/leaderboardTitle"
-                android:text="@string/leaderboard_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:gravity="center"
-                android:textAllCaps="true"
-                android:textStyle="bold"
-                android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
-                android:textColor="@color/white"
-                android:textSize="22sp"/>
+                <TextView
+                    android:id="@+id/leaderboardTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="56dp"
+                    android:layout_marginEnd="56dp"
+                    android:gravity="center"
+                    android:text="@string/leaderboard_title"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textSize="22sp" />
+
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="start|center_vertical"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/back_arrow"
+                    android:paddingStart="15dp"
+                    android:paddingEnd="15dp"
+                    android:src="@drawable/back_arrow" />
+
+            </FrameLayout>
 
             <LinearLayout
                 android:id="@+id/scopeButtons"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                android:padding="4dp">
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/seasonScopeButton"
-                    style="@style/ButtonStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:minWidth="0dp"
-                    android:minHeight="0dp"
+                    android:minHeight="48dp"
+                    android:gravity="center"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/leaderboard_season"
-                    android:textSize="12sp" />
+                    android:textAllCaps="false"
+                    android:textSize="14sp" />
 
-                <Button
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/globalScopeButton"
-                    style="@style/ButtonStyle"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:layout_marginStart="4dp"
                     android:minWidth="0dp"
-                    android:minHeight="0dp"
+                    android:minHeight="48dp"
+                    android:gravity="center"
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:text="@string/leaderboard_global"
-                    android:textSize="12sp" />
+                    android:textAllCaps="false"
+                    android:textSize="14sp" />
+
             </LinearLayout>
+
         </LinearLayout>
 
         <View

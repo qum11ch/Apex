@@ -72,7 +72,7 @@ public class leaderboardAdapter extends RecyclerView.Adapter<leaderboardAdapter.
         if (NO_AVATAR.equals(url) || !uid.equals(h.boundUid)) return;
         h.avatar.setVisibility(View.VISIBLE);
         h.initial.setVisibility(View.GONE);
-        GlideApp.with(h.avatar).load(url).circleCrop().into(h.avatar);
+        GlideApp.with(h.avatar).load(url).into(h.avatar);
     }
 
     @Override

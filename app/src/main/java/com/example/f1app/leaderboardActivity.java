@@ -32,6 +32,14 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.res.ColorStateList;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.RippleDrawable;
+
+import java.util.Locale;
+
 public class leaderboardActivity extends AppCompatActivity {
 
     private static final String SCOPE_SEASON = "season";
@@ -73,17 +81,6 @@ public class leaderboardActivity extends AppCompatActivity {
 
         controller.setAppearanceLightStatusBars(false);
 
-        CoordinatorLayout root = findViewById(R.id.leaderboardRoot);
-
-        if (!checkLightTheme(leaderboardActivity.this)) {
-            root.setBackground(
-                    ContextCompat.getDrawable(
-                            leaderboardActivity.this,
-                            R.drawable.black_gradient
-                    )
-            );
-        }
-
         currentSeason = getIntent().getStringExtra("currentSeason");
 
         list = findViewById(R.id.leaderboardList);
@@ -101,6 +98,8 @@ public class leaderboardActivity extends AppCompatActivity {
         globalButton.setOnClickListener(v -> setScope(SCOPE_GLOBAL));
 
         setScope(SCOPE_SEASON);
+        setupScopeAppearance();
+
     }
 
     private void setupLeaderboardInsets() {
@@ -159,8 +158,8 @@ public class leaderboardActivity extends AppCompatActivity {
     private void setScope(String scope) {
         currentScope = scope;
 
-        seasonButton.setSelected(SCOPE_SEASON.equals(scope));
-        globalButton.setSelected(SCOPE_GLOBAL.equals(scope));
+        styleScopeButton(seasonButton, SCOPE_SEASON.equals(scope));
+        styleScopeButton(globalButton, SCOPE_GLOBAL.equals(scope));
 
         load();
     }
@@ -205,5 +204,63 @@ public class leaderboardActivity extends AppCompatActivity {
                 errorText.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private int dp(float value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    private GradientDrawable roundedBackground(int color, float radiusDp) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(color);
+        drawable.setCornerRadius(dp(radiusDp));
+        return drawable;
+    }
+
+    private void setupScopeAppearance() {
+        boolean light = checkLightTheme(this);
+
+        View container = findViewById(R.id.scopeButtons);
+        container.setBackground(roundedBackground(
+                getColor(R.color.account_settings_input_color),
+                14
+        ));
+
+        String season = currentSeason == null ? "" : currentSeason.trim();
+
+        seasonButton.setText(
+                season.isEmpty()
+                        ? getString(R.string.leaderboard_season)
+                        : getString(R.string.leaderboard_season) + " " + season
+        );
+
+        globalButton.setText(R.string.leaderboard_global);
+    }
+
+    private void styleScopeButton(Button button, boolean selected) {
+        boolean light = checkLightTheme(this);
+
+        int surface = selected
+                ? getColor(R.color.colorPrimary)
+                : Color.TRANSPARENT;
+
+        int text = selected
+                ? getColor(R.color.text_color_main)
+                : getColor(R.color.grey);
+
+        button.setBackgroundTintList(null);
+        ViewCompat.setBackgroundTintList(button, null);
+        button.setBackground(new RippleDrawable(
+                ColorStateList.valueOf(
+                        light ? 0x16000000 : 0x22FFFFFF
+                ),
+                roundedBackground(surface, 10),
+                roundedBackground(Color.WHITE, 10)
+        ));
+
+        button.setTextColor(text);
+        button.setTypeface(null, selected ? Typeface.BOLD : Typeface.NORMAL);
+        button.setSelected(selected);
+        button.setElevation(selected ? dp(2) : 0);
     }
 }

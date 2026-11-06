@@ -879,5 +879,5 @@
     <string name="leaderboard_global">Global</string>
     <string name="leaderboard_empty">No results yet</string>
     <string name="leaderboard_error">Failed to load leaderboard</string>
-
+    <string name="leaderboard_avatar">User avatar</string>
 </resources>
