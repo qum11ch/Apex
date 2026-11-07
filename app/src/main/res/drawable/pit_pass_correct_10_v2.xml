@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<vector xmlns:aapt="http://schemas.android.com/aapt" xmlns:android="http://schemas.android.com/apk/res/android" android:width="64dp" android:height="64dp" android:viewportWidth="128" android:viewportHeight="128">
+  <path android:pathData="M35.000 10.000L93.000 10.000L118.000 35.000L118.000 93.000L93.000 118.000L35.000 118.000L10.000 93.000L10.000 35.000Z" android:fillColor="#1B2227" />
+  <path android:pathData="M36.000 12.000L92.000 12.000L116.000 36.000L116.000 92.000L92.000 116.000L36.000 116.000L12.000 92.000L12.000 36.000Z">
+    <aapt:attr name="android:fillColor">
+      <gradient android:type="linear" android:startX="28" android:startY="12" android:endX="103" android:endY="117">
+        <item android:offset="0" android:color="#D5D5C8" />
+        <item android:offset="0.5" android:color="#85887E" />
+        <item android:offset="1" android:color="#474E49" />
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path android:pathData="M38.000 15.000L90.000 15.000L113.000 38.000L113.000 90.000L90.000 113.000L38.000 113.000L15.000 90.000L15.000 38.000Z" android:fillColor="#39413F" />
+  <path android:pathData="M39.000 17.000L89.000 17.000L111.000 39.000L111.000 89.000L89.000 111.000L39.000 111.000L17.000 89.000L17.000 39.000Z" android:fillColor="#10171B" />
+  <path android:pathData="M41.000 20.000L87.000 20.000L108.000 41.000L108.000 87.000L87.000 108.000L41.000 108.000L20.000 87.000L20.000 41.000Z" android:fillColor="#363E42" />
+  <path android:pathData="M42.000 22.000L86.000 22.000L106.000 42.000L106.000 86.000L86.000 106.000L42.000 106.000L22.000 86.000L22.000 42.000Z">
+    <aapt:attr name="android:fillColor">
+      <gradient android:type="linear" android:startX="28" android:startY="12" android:endX="103" android:endY="117">
+        <item android:offset="0" android:color="#1E272C" />
+        <item android:offset="1" android:color="#11191E" />
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path android:pathData="M37 13H91L114 36L112 38L90 15H38L15 38L13 37Z" android:fillColor="#D5D5C8" />
+</vector>

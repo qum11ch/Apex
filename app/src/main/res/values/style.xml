@@ -312,6 +312,10 @@
     <style name="TextStyle.GoodTiming.Bold.ForHeader">
         <item name="android:textSize">22sp</item>
     </style>
+    <style name="TextStyle.GoodTiming.Bold.ForMedals">
+        <item name="android:textSize">22sp</item>
+        <item name="android:textStyle">italic</item>
+    </style>
     <style name="TextStyle.GoodTiming.Bold.Big">
         <item name="android:textSize">26sp</item>
     </style>

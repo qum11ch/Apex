@@ -928,4 +928,20 @@
     <string name="public_stats_incorrect_label">Incorrect</string>
     <string name="public_stats_ties_label">Ties</string>
     <string name="public_stats_pending_label">Awaiting results</string>
+
+    <string name="awards_preview_title">Award preview</string>
+    <string name="awards_fan_driver">Driver fan club</string>
+    <string name="awards_fan_team">Team fan club</string>
+    <string name="awards_first_correct">First correct prediction</string>
+    <string name="awards_correct_10">10 correct predictions</string>
+    <string name="awards_correct_50">50 correct predictions</string>
+    <string name="awards_correct_100">100 correct predictions</string>
+    <string name="awards_member_1_year">One year with us</string>
+    <string name="awards_member_3_year">Three years with us</string>
+    <string name="awards_member_5_year">Five years with us</string>
+    <string name="awards_season_place_1">1st place</string>
+    <string name="awards_season_place_2">2nd place</string>
+    <string name="awards_season_place_3">3rd place</string>
+    <string name="awards_preview_size">%1$d dp</string>
+    <string name="awards_preview_member">Member</string>
 </resources>

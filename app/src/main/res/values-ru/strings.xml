@@ -903,4 +903,20 @@
     <string name="public_stats_incorrect_label">Неверные</string>
     <string name="public_stats_ties_label">Ничьи</string>
     <string name="public_stats_pending_label">Ожидают результата</string>
+
+    <string name="awards_preview_title">Предпросмотр наград</string>
+    <string name="awards_fan_driver">Фанклуб пилота</string>
+    <string name="awards_fan_team">Фанклуб команды</string>
+    <string name="awards_first_correct">Первое попадание</string>
+    <string name="awards_correct_10">10 верных прогнозов</string>
+    <string name="awards_correct_50">50 верных прогнозов</string>
+    <string name="awards_correct_100">100 верных прогнозов</string>
+    <string name="awards_member_1_year">С нами 1 год</string>
+    <string name="awards_member_3_year">С нами 3 года</string>
+    <string name="awards_member_5_year">С нами 5 лет</string>
+    <string name="awards_season_place_1">1 место</string>
+    <string name="awards_season_place_2">2 место</string>
+    <string name="awards_season_place_3">3 место</string>
+    <string name="awards_preview_size">%1$d dp</string>
+    <string name="awards_preview_member">Участник</string>
 </resources>
