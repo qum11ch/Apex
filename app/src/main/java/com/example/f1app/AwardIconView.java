@@ -4,7 +4,9 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -20,21 +22,29 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import java.util.Locale;
 
+/** Typography and season revision based on the current qum11ch/Apex master. */
 public final class AwardIconView extends FrameLayout {
     private static final String TAG = "AwardIconView";
     private final ImageView base;
     private final ImageView logo;
+    private final SeasonAwardRenderer seasonalAwards;
+    private final MedalMetalText masteryMetalText;
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
-    private final Rect textBounds = new Rect();
+    private final Rect legacyBounds = new Rect();
+    private final Path glyphPath = new Path();
+    private final RectF glyphBounds = new RectF();
+    private final Typeface audiowide;
+    private final Typeface goodTimingBold;
     private String mainText = "", yearText = "";
     private float viewportW = 128f, viewportH = 128f;
     private float centerX, centerY, maxTextW, maxTextH;
-    private float yearX = 125, yearY = 94, yearW = 40, yearH = 10;
+    private float yearX = 64, yearY = 106.5f, yearW = 43, yearH = 9;
     private int textColor;
-    private int yearColor = Color.parseColor("#CFD4D6");
+    private final int yearColor = Color.parseColor("#E4E8E6");
     private int binding;
-    private boolean logoReady, mastery;
-    private float masterySkew = -0.08f;
+    private boolean logoReady, mastery, season;
+    private boolean useAudiowideForAchievements;
+    private float masterySkew = -0.04f;
     private float otherSkew = -0.18f;
     private int contentX, contentY, contentW, contentH;
     private int logoX, logoY, logoW, logoH;
@@ -43,15 +53,15 @@ public final class AwardIconView extends FrameLayout {
 
     public AwardIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        seasonalAwards = new SeasonAwardRenderer(context);
+        masteryMetalText = new MedalMetalText(context);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
-        int fontId = getResources().getIdentifier("audiowide", "font", context.getPackageName());
-        if (fontId == 0) fontId = getResources().getIdentifier(
-                "audiowide_regular", "font", context.getPackageName());
-        if (fontId == 0) throw new IllegalStateException(
-                "Add your Audiowide font as res/font/audiowide.ttf or audiowide_regular.ttf");
-        Typeface font = ResourcesCompat.getFont(context, fontId);
-        if (font == null) throw new IllegalStateException("Cannot load Audiowide");
-        textPaint.setTypeface(font);
+        // Both fonts already exist in the checked repository. No synthetic bold.
+        audiowide = ResourcesCompat.getFont(context, R.font.audiowide);
+        goodTimingBold = ResourcesCompat.getFont(context, R.font.good_timing_bd);
+        if (audiowide == null || goodTimingBold == null) {
+            throw new IllegalStateException("audiowide.ttf and good_timing_bd.ttf are required");
+        }
         textPaint.setTextAlign(Paint.Align.LEFT);
         textPaint.setFakeBoldText(false);
         textPaint.setTextScaleX(1f);
@@ -67,7 +77,6 @@ public final class AwardIconView extends FrameLayout {
         logo.setVisibility(GONE);
     }
 
-    // Compare 0f, -0.08f and -0.18f without changing the other medal categories.
     public void setMasterySkew(float skew) {
         masterySkew = skew;
         invalidate();
@@ -78,7 +87,14 @@ public final class AwardIconView extends FrameLayout {
         invalidate();
     }
 
+    /** Optional A/B test; fanclub and tenure always keep Audiowide. */
+    public void setUseAudiowideForAchievements(boolean useAudiowide) {
+        useAudiowideForAchievements = useAudiowide;
+        invalidate();
+    }
+
     public void clear() {
+        seasonalAwards.clear();
         binding++;
         GlideApp.with(logo).clear(logo);
         logo.setImageDrawable(null);
@@ -86,12 +102,10 @@ public final class AwardIconView extends FrameLayout {
         logo.setImageTintList(null);
         logo.setVisibility(GONE);
         logoReady = false;
-        mastery = false;
+        mastery = season = false;
         base.setImageDrawable(null);
         mainText = yearText = "";
         viewportW = viewportH = 128f;
-        yearX = 125; yearY = 94; yearW = 40; yearH = 10;
-        yearColor = Color.parseColor("#CFD4D6");
         setContentDescription(null);
         setOnClickListener(null);
         invalidate();
@@ -107,14 +121,24 @@ public final class AwardIconView extends FrameLayout {
         clear();
         base.setImageResource(drawable);
         setContentDescription(description);
-        if (drawable == R.drawable.pit_pass_correct_10_v2
-                || drawable == R.drawable.pit_pass_correct_50
-                || drawable == R.drawable.pit_pass_correct_100) {
+        // BEGIN SEASON_HIERARCHY_BIND
+        if (seasonalAwards.bind(drawable)) {
+            viewportW = viewportH = 128f;
+            mainText = yearText = "";
+            requestLayout();
+            invalidate();
+            return;
+        }
+        // END SEASON_HIERARCHY_BIND
+        if (drawable == R.drawable.pit_pass_correct_10_v2) {
             mastery = true;
-            String number = drawable == R.drawable.pit_pass_correct_10_v2 ? "10"
-                    : drawable == R.drawable.pit_pass_correct_50 ? "50" : "100";
-            // The SAME reference string fixes the font size for all three medals.
-            label(number, 64, 64, 76, 33, "#E7ECEB");
+            label("10", 64, 64, 78, 40, "#E9EEEB");
+        } else if (drawable == R.drawable.pit_pass_correct_50) {
+            mastery = true;
+            label("50", 64, 64, 78, 40, "#E9EEEB");
+        } else if (drawable == R.drawable.pit_pass_correct_100) {
+            mastery = true;
+            label("100", 64, 64, 82, 35, "#E9EEEB");
         } else if (drawable == R.drawable.pit_pass_one_year) {
             viewportW = viewportH = 96;
             label("1", 48, 54.5f, 29, 33, "#E4E7E5");
@@ -124,28 +148,21 @@ public final class AwardIconView extends FrameLayout {
         } else if (drawable == R.drawable.pit_pass_five_years) {
             viewportW = viewportH = 96;
             label("5", 48, 54.5f, 29, 33, "#FFE9AD");
-        } else if (drawable == R.drawable.pit_pass_season_place_1) {
-            label("1", 64, 55, 37, 43, "#F6E8C1");
-            newSeasonYear();
-        } else if (drawable == R.drawable.pit_pass_season_participant_2026) {
-            label("2026", 64, 56, 61, 21, "#E1EAF0");
-            newSeasonYear();
-        } else if (drawable == R.drawable.pit_pass_season_place_2
+        } else if (drawable == R.drawable.pit_pass_season_place_1
+                || drawable == R.drawable.pit_pass_season_place_2
                 || drawable == R.drawable.pit_pass_season_place_3) {
-            // These two old plates intentionally stay unchanged in this test.
-            viewportW = 192; viewportH = 128;
-            label(drawable == R.drawable.pit_pass_season_place_2 ? "2" : "3",
-                    94, 51.5f, 44, 47, "#222222");
+            season = true;
+            String rank = drawable == R.drawable.pit_pass_season_place_1 ? "1"
+                    : drawable == R.drawable.pit_pass_season_place_2 ? "2" : "3";
+            label(rank, 64, 50.5f, 42, 43, "#242C31");
             yearText = "2026";
+        } else if (drawable == R.drawable.pit_pass_season_participant_2026) {
+            season = true;
+            label("2026", 64, 50.5f, 63, 25, "#E7EFF3");
+            // The year is the central symbol. Do not repeat it on the base.
         }
         requestLayout();
         invalidate();
-    }
-
-    private void newSeasonYear() {
-        yearText = "2026";
-        yearX = 65; yearY = 103.5f; yearW = 39; yearH = 9;
-        yearColor = Color.parseColor("#DBE2E5");
     }
 
     public void showDriver(String driverCode, CharSequence description) {
@@ -228,24 +245,69 @@ public final class AwardIconView extends FrameLayout {
         canvas.translate(contentX + (contentW - viewportW * scale) / 2f,
                 contentY + (contentH - viewportH * scale) / 2f);
         canvas.scale(scale, scale);
-        if (!logoReady) drawLabel(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
-                textColor, mastery ? masterySkew : otherSkew, mastery ? "100" : mainText);
-        drawLabel(canvas, yearText, yearX, yearY, yearW, yearH, yearColor, 0f, yearText);
+        // BEGIN SEASON_HIERARCHY_RENDER
+        if (seasonalAwards.isActive()) {
+            seasonalAwards.draw(canvas);
+            canvas.restoreToCount(state);
+            return;
+        }
+        // END SEASON_HIERARCHY_RENDER
+        // BEGIN MASTERY_METAL_RENDER
+        if (mastery) {
+            masteryMetalText.draw(canvas, mainText);
+            canvas.restoreToCount(state);
+            return;
+        }
+        // END MASTERY_METAL_RENDER
+        if (!logoReady) {
+            if (mastery || season) {
+                Typeface face = useAudiowideForAchievements ? audiowide : goodTimingBold;
+                drawFitted(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
+                        textColor, mastery ? masterySkew : 0f, face);
+            } else {
+                // Preserve the approved font, fit and skew for fanclub and tenure.
+                drawLegacy(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
+                        textColor, otherSkew);
+            }
+        }
+        drawFitted(canvas, yearText, yearX, yearY, yearW, yearH,
+                yearColor, 0f, audiowide);
         canvas.restoreToCount(state);
     }
 
-    private void drawLabel(Canvas canvas, String text, float cx, float cy,
-            float maxWidth, float maxHeight, int color, float skew, String sizingText) {
+    private void drawFitted(Canvas canvas, String text, float cx, float cy,
+            float maxWidth, float maxHeight, int color, float skew, Typeface face) {
         if (text == null || text.isEmpty() || maxWidth <= 0 || maxHeight <= 0) return;
+        textPaint.setTypeface(face);
         textPaint.setColor(color);
         textPaint.setTextSkewX(skew);
         textPaint.setTextSize(100f);
-        textPaint.getTextBounds(sizingText, 0, sizingText.length(), textBounds);
-        if (textBounds.width() <= 0 || textBounds.height() <= 0) return;
-        float fit = Math.min(maxWidth / textBounds.width(), maxHeight / textBounds.height());
+        glyphPath.reset();
+        textPaint.getTextPath(text, 0, text.length(), 0, 0, glyphPath);
+        glyphPath.computeBounds(glyphBounds, true);
+        if (glyphBounds.isEmpty()) return;
+        // Uniform scaling of the WHOLE word. No glyph-by-glyph deformation.
+        float fit = Math.min(maxWidth / glyphBounds.width(), maxHeight / glyphBounds.height());
+        int state = canvas.save();
+        canvas.translate(cx, cy);
+        canvas.scale(fit, fit);
+        canvas.drawText(text, -glyphBounds.centerX(), -glyphBounds.centerY(), textPaint);
+        canvas.restoreToCount(state);
+    }
+
+    private void drawLegacy(Canvas canvas, String text, float cx, float cy,
+            float maxWidth, float maxHeight, int color, float skew) {
+        if (text == null || text.isEmpty() || maxWidth <= 0 || maxHeight <= 0) return;
+        textPaint.setTypeface(audiowide);
+        textPaint.setColor(color);
+        textPaint.setTextSkewX(skew);
+        textPaint.setTextSize(100f);
+        textPaint.getTextBounds(text, 0, text.length(), legacyBounds);
+        if (legacyBounds.width() <= 0 || legacyBounds.height() <= 0) return;
+        float fit = Math.min(maxWidth / legacyBounds.width(), maxHeight / legacyBounds.height());
         textPaint.setTextSize(100f * fit);
-        textPaint.getTextBounds(text, 0, text.length(), textBounds);
-        canvas.drawText(text, cx - textBounds.exactCenterX(),
-                cy - textBounds.exactCenterY(), textPaint);
+        textPaint.getTextBounds(text, 0, text.length(), legacyBounds);
+        canvas.drawText(text, cx - legacyBounds.exactCenterX(),
+                cy - legacyBounds.exactCenterY(), textPaint);
     }
 }
