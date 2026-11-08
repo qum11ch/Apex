@@ -148,9 +148,6 @@ public final class AwardIconView extends FrameLayout {
             // Крупный год по центру светлой металлической плоскости.
             label("2026", 99f, 52f, 104f, 28f, "#22262B");
 
-            // Маленький год справа на нижней тёмной части.
-            yearText = "2026";
-
             requestLayout();
             invalidate();
             return;

@@ -12,7 +12,7 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import androidx.core.content.res.ResourcesCompat;
 
-/** Warm white metal lettering for the driver badge and the participant plaque. */
+/** Bright white metal with a stronger graphite outline; existing API is unchanged. */
 public final class WhiteMetalText {
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint outline = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -24,9 +24,9 @@ public final class WhiteMetalText {
     private final Matrix fitMatrix = new Matrix();
     private final Matrix shiftMatrix = new Matrix();
     private final int[] colors = {
-            Color.rgb(244, 244, 236), Color.rgb(203, 208, 200),
-            Color.rgb(244, 244, 236), Color.rgb(203, 208, 200),
-            Color.rgb(134, 146, 138)
+            Color.rgb(255, 255, 255), Color.rgb(248, 250, 252),
+            Color.rgb(255, 255, 255), Color.rgb(248, 250, 252),
+            Color.rgb(226, 230, 235)
     };
     private final float[] stops = {0f, .30f, .46f, .56f, 1f};
     private String cachedText;
@@ -45,7 +45,7 @@ public final class WhiteMetalText {
         fill.setStyle(Paint.Style.FILL);
         outline.setStyle(Paint.Style.STROKE);
         outline.setStrokeJoin(Paint.Join.ROUND);
-        outline.setColor(Color.argb(210, 35, 44, 40));
+        outline.setColor(Color.rgb(20, 26, 31));
         lip.setStyle(Paint.Style.FILL);
     }
 
@@ -59,12 +59,12 @@ public final class WhiteMetalText {
             cachedText = text;
             cachedX = cx; cachedY = cy; cachedW = maxWidth; cachedH = maxHeight;
         }
-        lip.setColor(Color.argb(110, 244, 244, 236));
+        lip.setColor(Color.argb(180, 255, 255, 255));
         shiftMatrix.reset();
         shiftMatrix.setTranslate(.28f * reliefScale, .34f * reliefScale);
         fitted.transform(shiftMatrix, shifted);
         canvas.drawPath(shifted, lip);
-        lip.setColor(Color.argb(220, 28, 36, 33));
+        lip.setColor(Color.argb(235, 16, 23, 27));
         shiftMatrix.reset();
         shiftMatrix.setTranslate(-.38f * reliefScale, -.44f * reliefScale);
         fitted.transform(shiftMatrix, shifted);
@@ -87,7 +87,7 @@ public final class WhiteMetalText {
         source.transform(fitMatrix, fitted);
         fitted.computeBounds(bounds, true);
         reliefScale = Math.max(.35f, Math.min(1f, bounds.height() / 28f));
-        outline.setStrokeWidth(.65f * reliefScale);
+        outline.setStrokeWidth(2.2f * reliefScale);
         fill.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
                 colors, stops, Shader.TileMode.CLAMP));
         return true;

@@ -29,5 +29,4 @@
   <path android:pathData="M22 82H96L83 92H18Z" android:fillColor="#A1000B"/>
   <path android:pathData="M39 39L64 17H172L173 18H64L40 40L23 82H22Z" android:fillColor="#D5D5C8" android:fillAlpha="0.65"/>
   <path android:pathData="M18 92H83L96 82H97L83 93H18Z" android:fillColor="#D5D5C8" android:fillAlpha="0.6"/>
-  <path android:pathData="M94 99L99 89H102L97 99Z" android:fillColor="#A1000B"/>
 </vector>
