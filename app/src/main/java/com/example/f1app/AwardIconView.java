@@ -48,6 +48,12 @@ public final class AwardIconView extends FrameLayout {
     private float otherSkew = -0.18f;
     private int contentX, contentY, contentW, contentH;
     private int logoX, logoY, logoW, logoH;
+    private boolean seasonParticipant;
+
+    private boolean driverFanclub;
+
+    private final Typeface driverCodeTypeface =
+            Typeface.create("sans-serif-condensed", Typeface.BOLD);
 
     public AwardIconView(Context context) { this(context, null); }
 
@@ -66,6 +72,7 @@ public final class AwardIconView extends FrameLayout {
         textPaint.setFakeBoldText(false);
         textPaint.setTextScaleX(1f);
         textPaint.setFontFeatureSettings("tnum");
+
         base = new ImageView(context);
         base.setScaleType(ImageView.ScaleType.FIT_CENTER);
         base.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -103,6 +110,8 @@ public final class AwardIconView extends FrameLayout {
         logo.setVisibility(GONE);
         logoReady = false;
         mastery = season = false;
+        seasonParticipant = false;
+        driverFanclub = false;
         base.setImageDrawable(null);
         mainText = yearText = "";
         viewportW = viewportH = 128f;
@@ -121,6 +130,25 @@ public final class AwardIconView extends FrameLayout {
         clear();
         base.setImageResource(drawable);
         setContentDescription(description);
+
+        // Старый широкий знак участника: отдельная геометрия и типографика.
+        if (drawable == R.drawable.pit_pass_season_participant_2026) {
+            seasonParticipant = true;
+
+            viewportW = 192f;
+            viewportH = 128f;
+
+            // Крупный год по центру светлой металлической плоскости.
+            label("2026", 99f, 52f, 104f, 28f, "#22262B");
+
+            // Маленький год справа на нижней тёмной части.
+            yearText = "2026";
+
+            requestLayout();
+            invalidate();
+            return;
+        }
+
         // BEGIN SEASON_HIERARCHY_BIND
         if (seasonalAwards.bind(drawable)) {
             viewportW = viewportH = 128f;
@@ -156,19 +184,21 @@ public final class AwardIconView extends FrameLayout {
                     : drawable == R.drawable.pit_pass_season_place_2 ? "2" : "3";
             label(rank, 64, 50.5f, 42, 43, "#242C31");
             yearText = "2026";
-        } else if (drawable == R.drawable.pit_pass_season_participant_2026) {
-            season = true;
-            label("2026", 64, 50.5f, 63, 25, "#E7EFF3");
-            // The year is the central symbol. Do not repeat it on the base.
         }
+
         requestLayout();
         invalidate();
     }
 
     public void showDriver(String driverCode, CharSequence description) {
         clear();
+
+        driverFanclub = true;
         base.setImageResource(R.drawable.pit_pass_fanclub_driver);
-        label(normalize(driverCode), 64, 52, 59, 25, "#20272E");
+
+        // Спокойная, компактная надпись, без растягивания на весь щит.
+        label(normalize(driverCode), 64f, 53f, 54f, 23f, "#20272E");
+
         setContentDescription(description);
         requestLayout();
         invalidate();
@@ -245,6 +275,35 @@ public final class AwardIconView extends FrameLayout {
         canvas.translate(contentX + (contentW - viewportW * scale) / 2f,
                 contentY + (contentH - viewportH * scale) / 2f);
         canvas.scale(scale, scale);
+
+        if (seasonParticipant) {
+            // Настоящий Good Timing Bold, без искусственного утолщения.
+            // Пропорции всей надписи сохраняются.
+            drawFitted(
+                    canvas,
+                    mainText,
+                    centerX, centerY,
+                    maxTextW, maxTextH,
+                    textColor,
+                    -0.18f,
+                    goodTimingBold
+            );
+
+            // Небольшая подпись справа внизу, как на референсе.
+            drawFitted(
+                    canvas,
+                    yearText,
+                    123f, 96f,
+                    40f, 9f,
+                    yearColor,
+                    -0.18f,
+                    audiowide
+            );
+
+            canvas.restoreToCount(state);
+            return;
+        }
+
         // BEGIN SEASON_HIERARCHY_RENDER
         if (seasonalAwards.isActive()) {
             seasonalAwards.draw(canvas);
@@ -260,7 +319,17 @@ public final class AwardIconView extends FrameLayout {
         }
         // END MASTERY_METAL_RENDER
         if (!logoReady) {
-            if (mastery || season) {
+            if (driverFanclub) {
+                drawFitted(
+                        canvas,
+                        mainText,
+                        centerX, centerY,
+                        maxTextW, maxTextH,
+                        textColor,
+                        0f,
+                        driverCodeTypeface
+                );
+            } else if (mastery || season) {
                 Typeface face = useAudiowideForAchievements ? audiowide : goodTimingBold;
                 drawFitted(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
                         textColor, mastery ? masterySkew : 0f, face);
