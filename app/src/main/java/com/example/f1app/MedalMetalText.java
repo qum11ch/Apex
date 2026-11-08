@@ -12,7 +12,7 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import androidx.core.content.res.ResourcesCompat;
 
-/** Recessed metal numerals for the three current mastery backgrounds only. */
+/** Shared Oxanium Bold lettering with the original recessed mastery metal finish. */
 public final class MedalMetalText {
     private final Typeface typeface;
     private final Paint fill = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -35,6 +35,8 @@ public final class MedalMetalText {
     private final float[] stops = {0f, 0.30f, 0.46f, 0.56f, 1f};
     private final int[] gradientColors = new int[5];
     private String cachedText;
+    private float cachedCx, cachedCy, cachedW, cachedH;
+    private int cachedHi, cachedMid, cachedLo;
 
     public MedalMetalText(Context context) {
         typeface = ResourcesCompat.getFont(context, R.font.oxanium_bold);
@@ -49,15 +51,28 @@ public final class MedalMetalText {
         edge.setStyle(Paint.Style.FILL);
     }
 
-    /** Canvas must already be in the 128 x 128 mastery viewport. */
+    /** Original API and original dimensions/palettes for 10, 50 and 100. */
     public void draw(Canvas canvas, String text) {
         if (!"10".equals(text) && !"50".equals(text) && !"100".equals(text)) return;
-        if (!text.equals(cachedText)) {
-            if (!prepare(text)) return;
+        int[] palette = "50".equals(text) ? blueSteel : "100".equals(text) ? redMetal : steel;
+        draw(canvas, text, 64f, 64f,
+                "100".equals(text) ? 80f : 76f,
+                "100".equals(text) ? 35f : 40f,
+                palette[0], palette[1], palette[2]);
+    }
+
+    /** Caller supplies the label box in its own canvas viewport and the XML metal colors. */
+    public void draw(Canvas canvas, String text, float cx, float cy,
+            float maxWidth, float maxHeight, int hi, int mid, int lo) {
+        if (text == null || text.isEmpty() || maxWidth <= 0f || maxHeight <= 0f) return;
+        if (!text.equals(cachedText) || cx != cachedCx || cy != cachedCy
+                || maxWidth != cachedW || maxHeight != cachedH
+                || hi != cachedHi || mid != cachedMid || lo != cachedLo) {
+            if (!prepare(text, cx, cy, maxWidth, maxHeight, hi, mid, lo)) return;
             cachedText = text;
+            cachedCx = cx; cachedCy = cy; cachedW = maxWidth; cachedH = maxHeight;
+            cachedHi = hi; cachedMid = mid; cachedLo = lo;
         }
-        // A tiny lighter lower/right lip and darker upper/left lip imply an inset.
-        // They are sharp edge offsets, NOT a blurred shadow or extruded thickness.
         edge.setColor(withAlpha(gradientColors[0], 115));
         shift.reset();
         shift.setTranslate(0.38f, 0.48f);
@@ -71,28 +86,24 @@ public final class MedalMetalText {
         canvas.drawPath(fitted, fill);
     }
 
-    private boolean prepare(String text) {
+    private boolean prepare(String text, float cx, float cy,
+            float maxWidth, float maxHeight, int hi, int mid, int lo) {
         source.reset();
         fill.getTextPath(text, 0, text.length(), 0f, 0f, source);
         source.computeBounds(bounds, true);
         if (bounds.isEmpty()) return false;
-        float maxW = "100".equals(text) ? 80f : 76f;
-        float maxH = "100".equals(text) ? 35f : 40f;
-        float factor = Math.min(maxW / bounds.width(), maxH / bounds.height());
+        float factor = Math.min(maxWidth / bounds.width(), maxHeight / bounds.height());
         matrix.reset();
         matrix.setScale(factor, factor);
-        matrix.postTranslate(64f - bounds.centerX() * factor,
-                64f - bounds.centerY() * factor);
+        matrix.postTranslate(cx - bounds.centerX() * factor, cy - bounds.centerY() * factor);
         fitted.reset();
         source.transform(matrix, fitted);
         fitted.computeBounds(bounds, true);
-        int[] palette = "50".equals(text) ? blueSteel : "100".equals(text) ? redMetal : steel;
-        // The SAME three colors as the corresponding XML frame.
-        gradientColors[0] = palette[0];
-        gradientColors[1] = palette[1];
-        gradientColors[2] = palette[0];
-        gradientColors[3] = palette[1];
-        gradientColors[4] = palette[2];
+        gradientColors[0] = hi;
+        gradientColors[1] = mid;
+        gradientColors[2] = hi;
+        gradientColors[3] = mid;
+        gradientColors[4] = lo;
         fill.setShader(new LinearGradient(bounds.left, bounds.top, bounds.right, bounds.bottom,
                 gradientColors, stops, Shader.TileMode.CLAMP));
         return true;

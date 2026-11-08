@@ -43,13 +43,16 @@ public final class AwardIconView extends FrameLayout {
     private final int yearColor = Color.parseColor("#E4E8E6");
     private int binding;
     private boolean logoReady, mastery, season;
+    private boolean tenureMetal;
     private boolean useAudiowideForAchievements;
     private float masterySkew = -0.04f;
     private float otherSkew = -0.18f;
     private int contentX, contentY, contentW, contentH;
     private int logoX, logoY, logoW, logoH;
     private boolean seasonParticipant;
-
+    private final WhiteMetalText whiteDriverText;
+    private final WhiteMetalText whiteParticipantText;
+    private final WhiteMetalText whiteParticipantYearText;
     private boolean driverFanclub;
 
     private final Typeface driverCodeTypeface =
@@ -61,6 +64,9 @@ public final class AwardIconView extends FrameLayout {
         super(context, attrs);
         seasonalAwards = new SeasonAwardRenderer(context);
         masteryMetalText = new MedalMetalText(context);
+        whiteDriverText = new WhiteMetalText(context);
+        whiteParticipantText = new WhiteMetalText(context);
+        whiteParticipantYearText = new WhiteMetalText(context);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_YES);
         // Both fonts already exist in the checked repository. No synthetic bold.
         audiowide = ResourcesCompat.getFont(context, R.font.audiowide);
@@ -94,7 +100,7 @@ public final class AwardIconView extends FrameLayout {
         invalidate();
     }
 
-    /** Optional A/B test; fanclub and tenure always keep Audiowide. */
+    /** Legacy A/B switch; metal numerals always use the shared Oxanium renderer. */
     public void setUseAudiowideForAchievements(boolean useAudiowide) {
         useAudiowideForAchievements = useAudiowide;
         invalidate();
@@ -110,6 +116,7 @@ public final class AwardIconView extends FrameLayout {
         logo.setVisibility(GONE);
         logoReady = false;
         mastery = season = false;
+        tenureMetal = false;
         seasonParticipant = false;
         driverFanclub = false;
         base.setImageDrawable(null);
@@ -168,12 +175,15 @@ public final class AwardIconView extends FrameLayout {
             mastery = true;
             label("100", 64, 64, 82, 35, "#E9EEEB");
         } else if (drawable == R.drawable.pit_pass_one_year) {
+            tenureMetal = true;
             viewportW = viewportH = 96;
             label("1", 48, 54.5f, 29, 33, "#E4E7E5");
         } else if (drawable == R.drawable.pit_pass_three_years) {
+            tenureMetal = true;
             viewportW = viewportH = 96;
             label("3", 48, 54.5f, 29, 33, "#E1F3FF");
         } else if (drawable == R.drawable.pit_pass_five_years) {
+            tenureMetal = true;
             viewportW = viewportH = 96;
             label("5", 48, 54.5f, 29, 33, "#FFE9AD");
         } else if (drawable == R.drawable.pit_pass_season_place_1
@@ -276,28 +286,24 @@ public final class AwardIconView extends FrameLayout {
                 contentY + (contentH - viewportH * scale) / 2f);
         canvas.scale(scale, scale);
 
+        if (driverFanclub) {
+            whiteDriverText.draw(
+                    canvas, mainText,
+                    centerX, centerY, maxTextW, maxTextH
+            );
+            canvas.restoreToCount(state);
+            return;
+        }
+
         if (seasonParticipant) {
-            // Настоящий Good Timing Bold, без искусственного утолщения.
-            // Пропорции всей надписи сохраняются.
-            drawFitted(
-                    canvas,
-                    mainText,
-                    centerX, centerY,
-                    maxTextW, maxTextH,
-                    textColor,
-                    -0.18f,
-                    goodTimingBold
+            whiteParticipantText.draw(
+                    canvas, mainText,
+                    centerX, centerY, maxTextW, maxTextH
             );
 
-            // Небольшая подпись справа внизу, как на референсе.
-            drawFitted(
-                    canvas,
-                    yearText,
-                    123f, 96f,
-                    40f, 9f,
-                    yearColor,
-                    -0.18f,
-                    audiowide
+            whiteParticipantYearText.draw(
+                    canvas, yearText,
+                    123f, 96f, 40f, 9f
             );
 
             canvas.restoreToCount(state);
@@ -318,6 +324,27 @@ public final class AwardIconView extends FrameLayout {
             return;
         }
         // END MASTERY_METAL_RENDER
+        // Tenure numerals use the same font and recessed metal finish as mastery.
+        if (tenureMetal) {
+            int hi, mid, lo;
+            if ("3".equals(mainText)) {
+                hi = Color.rgb(196, 213, 236);
+                mid = Color.rgb(116, 142, 175);
+                lo = Color.rgb(62, 82, 109);
+            } else if ("5".equals(mainText)) {
+                hi = Color.rgb(255, 240, 188);
+                mid = Color.rgb(206, 167, 96);
+                lo = Color.rgb(128, 97, 52);
+            } else {
+                hi = Color.rgb(213, 213, 200);
+                mid = Color.rgb(133, 136, 126);
+                lo = Color.rgb(71, 78, 73);
+            }
+            masteryMetalText.draw(canvas, mainText, centerX, centerY,
+                    maxTextW, maxTextH, hi, mid, lo);
+            canvas.restoreToCount(state);
+            return;
+        }
         if (!logoReady) {
             if (driverFanclub) {
                 drawFitted(
@@ -334,7 +361,7 @@ public final class AwardIconView extends FrameLayout {
                 drawFitted(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
                         textColor, mastery ? masterySkew : 0f, face);
             } else {
-                // Preserve the approved font, fit and skew for fanclub and tenure.
+                // Preserve legacy lettering for remaining non-metal labels.
                 drawLegacy(canvas, mainText, centerX, centerY, maxTextW, maxTextH,
                         textColor, otherSkew);
             }
