@@ -55,6 +55,18 @@ final class AwardStrip extends LinearLayout {
         if("season_2026_participant".equals(id)) return 600;
         return 500;
     }
+    private int championshipCount(Object value) {
+        if (value instanceof Number) {
+            double n = ((Number) value).doubleValue();
+            return !Double.isNaN(n) && !Double.isInfinite(n) && n >= 0 && n <= Integer.MAX_VALUE
+                    && n == Math.rint(n) ? (int) n : 0;
+        }
+        if (value instanceof String) {
+            try { return Math.max(0, Integer.parseInt(((String)value).trim())); }
+            catch (NumberFormatException ignored) { return 0; }
+        }
+        return 0;
+    }
     private int drawable(String id) {
         switch(id) {
             case "first_correct":return R.drawable.pit_pass_first_correct;
@@ -103,7 +115,7 @@ final class AwardStrip extends LinearLayout {
             LinearLayout cell=new LinearLayout(getContext());cell.setOrientation(VERTICAL);cell.setGravity(Gravity.CENTER_HORIZONTAL);
             LayoutParams cp=new LayoutParams(compact?dp(29):dp(80),LayoutParams.WRAP_CONTENT);cp.setMarginEnd(dp(compact?1:6));addView(cell,cp);
             AwardIconView icon=new AwardIconView(getContext());cell.addView(icon,new LayoutParams(dp(compact?26:56),dp(compact?26:56)));
-            if("fan_driver".equals(id)) icon.showDriver(text(b,"code"),description);
+            if("fan_driver".equals(id)) icon.showDriver(text(b,"code"), championshipCount(b.get("championshipsCount")), description);
             else if("fan_team".equals(id)) {
                 String path=text(b,"storagePath"),fallback=text(b,"code");
                 Uri cached=LOGOS.get(path);icon.showTeam(cached,fallback,description);

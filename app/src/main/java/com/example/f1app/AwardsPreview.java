@@ -349,14 +349,15 @@ public final class AwardsPreview {
                             .getInstance()
                             .getReference("drivers")
                             .child(driverName)
-                            .child("driversCode")
                             .get()
                             .addOnSuccessListener(codeSnapshot -> {
                                 if (!previewActive(
                                         activity, badge, uid
                                 )) return;
 
-                                Object codeValue = codeSnapshot.getValue();
+                                Object codeValue = codeSnapshot
+                                        .child("driversCode")
+                                        .getValue();
 
                                 if (!(codeValue instanceof String)
                                         || ((String) codeValue)
@@ -375,6 +376,23 @@ public final class AwardsPreview {
                                     return;
                                 }
 
+                                Object rawTitles = codeSnapshot
+                                        .child("championshipsCount")
+                                        .getValue();
+
+                                int titles = 0;
+
+                                try {
+                                    if (rawTitles != null) {
+                                        titles = Math.max(
+                                                0,
+                                                Integer.parseInt(String.valueOf(rawTitles).trim())
+                                        );
+                                    }
+                                } catch (NumberFormatException ignored) {
+                                    // Без корректного числа титулов показываем обычную рамку.
+                                }
+
                                 String driverCode =
                                         ((String) codeValue)
                                                 .trim()
@@ -384,9 +402,10 @@ public final class AwardsPreview {
 
                                 badge.showDriver(
                                         driverCode,
-                                        activity.getString(
-                                                R.string.awards_fan_driver
-                                        ) + ": " + driverName
+                                        titles,
+                                        activity.getString(R.string.awards_fan_driver)
+                                                + ": "
+                                                + driverName
                                 );
                             })
                             .addOnFailureListener(error -> {

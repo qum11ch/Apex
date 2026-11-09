@@ -53,6 +53,10 @@ public final class AwardIconView extends FrameLayout {
     private final WhiteMetalText whiteDriverText;
     private final WhiteMetalText whiteParticipantText;
     private final WhiteMetalText whiteParticipantYearText;
+    private static final float FANCLUB_CENTER_X = 64f;
+    private static final float FANCLUB_CENTER_Y = 62f;
+    private int driverChampionshipsCount;
+    private final ChampionDriverOutline championDriverOutline = new ChampionDriverOutline();
     private boolean driverFanclub;
 
     private final Typeface driverCodeTypeface =
@@ -119,6 +123,7 @@ public final class AwardIconView extends FrameLayout {
         tenureMetal = false;
         seasonParticipant = false;
         driverFanclub = false;
+        driverChampionshipsCount = 0;
         base.setImageDrawable(null);
         mainText = yearText = "";
         viewportW = viewportH = 128f;
@@ -204,17 +209,29 @@ public final class AwardIconView extends FrameLayout {
         base.setImageResource(R.drawable.pit_pass_fanclub_driver);
 
         // Спокойная, компактная надпись, без растягивания на весь щит.
-        label(normalize(driverCode), 64f, 53f, 54f, 23f, "#20272E");
+        label(normalize(driverCode), FANCLUB_CENTER_X, FANCLUB_CENTER_Y, 54f, 23f, "#20272E");
 
         setContentDescription(description);
         requestLayout();
         invalidate();
     }
 
+    /** championshipsCount is the driver's personal world-title count. */
+    public void showDriver(String driverCode, int championshipsCount, CharSequence description) {
+        showDriver(driverCode, description);
+        driverChampionshipsCount = Math.max(0, championshipsCount);
+        if (driverChampionshipsCount > 0) {
+            setContentDescription(String.valueOf(description) + ", "
+                    + getContext().getString(R.string.drivers_championships)
+                    + ": " + driverChampionshipsCount);
+        }
+        invalidate();
+    }
+
     public void showTeam(Uri imageUri, String fallbackCode, CharSequence description) {
         clear();
         base.setImageResource(R.drawable.pit_pass_fanclub_team);
-        label(normalize(fallbackCode), 64, 52, 59, 25, "#DFE7EB");
+        label(normalize(fallbackCode), FANCLUB_CENTER_X, FANCLUB_CENTER_Y, 59, 25, "#DFE7EB");
         setContentDescription(description);
         requestLayout();
         invalidate();
@@ -262,7 +279,8 @@ public final class AwardIconView extends FrameLayout {
         float s = Math.min(contentW / viewportW, contentH / viewportH);
         float x = contentX + (contentW - viewportW * s) / 2f;
         float y = contentY + (contentH - viewportH * s) / 2f;
-        logoX = Math.round(x + 34 * s); logoY = Math.round(y + 31 * s);
+        logoX = Math.round(x + (FANCLUB_CENTER_X - 30f) * s);
+        logoY = Math.round(y + (FANCLUB_CENTER_Y - 24f) * s);
         logoW = Math.max(0, Math.round(60 * s)); logoH = Math.max(0, Math.round(48 * s));
         logo.measure(MeasureSpec.makeMeasureSpec(logoW, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(logoH, MeasureSpec.EXACTLY));
@@ -284,6 +302,7 @@ public final class AwardIconView extends FrameLayout {
         canvas.scale(scale, scale);
 
         if (driverFanclub) {
+            if (driverChampionshipsCount > 0) championDriverOutline.draw(canvas);
             whiteDriverText.draw(
                     canvas, mainText,
                     centerX, centerY, maxTextW, maxTextH
