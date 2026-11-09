@@ -22,7 +22,7 @@ import java.util.Collections;
 public final class AwardsUi {
     private static final String ROW_TAG="apex.awards.row";
     private AwardsUi() {}
-    public static void attachOwn(AppCompatActivity activity) {attachProfile(activity,true);}
+    public static void attachOwn(AppCompatActivity activity) {ProfileAwardsController.attach(activity);}
     public static void attachPublic(AppCompatActivity activity) {attachProfile(activity,false);}
     private static int dp(View v,int n) {return Math.round(n*v.getResources().getDisplayMetrics().density);}
     private static void attachProfile(AppCompatActivity activity,boolean own) {

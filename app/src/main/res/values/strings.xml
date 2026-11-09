@@ -951,4 +951,16 @@
     <string name="badges_load_error">Could not load awards. Tap to retry.</string>
     <string name="badges_sync_error">Could not check newly earned awards. Reopen your profile to retry.</string>
     <string name="badges_recorded_on">Added: %1$s</string>
+
+    <string name="profile_awards_title">Earned awards</string>
+    <string name="profile_awards_subtitle">Achievements and fan-club tokens</string>
+    <string name="profile_awards_refresh">Refresh</string>
+    <string name="profile_awards_empty">No awards yet. Your achievements and fan-club tokens will appear here.</string>
+    <string name="profile_awards_error">Could not load awards. Tap Refresh to try again.</string>
+    <string name="profile_awards_refresh_error">Could not refresh. Previously loaded awards are still shown.</string>
+    <string name="profile_awards_sync_error">The list is loaded, but new achievements could not be checked. Tap Refresh to retry.</string>
+    <string name="profile_awards_show_all">Show all (%1$d)</string>
+    <string name="profile_awards_collapse">Collapse</string>
+    <string name="profile_awards_count_accessibility">Earned awards: %1$d</string>
+    <string name="profile_awards_updating">Refreshing awards</string>
 </resources>

@@ -926,4 +926,16 @@
     <string name="badges_load_error">Не удалось загрузить награды. Нажми, чтобы повторить.</string>
     <string name="badges_sync_error">Не удалось проверить новые достижения. Открой профиль повторно.</string>
     <string name="badges_recorded_on">Добавлено: %1$s</string>
+
+    <string name="profile_awards_title">Полученные награды</string>
+    <string name="profile_awards_subtitle">Достижения и жетоны фанклубов</string>
+    <string name="profile_awards_refresh">Обновить</string>
+    <string name="profile_awards_empty">Пока нет наград. Здесь появятся достижения и жетоны фанклубов.</string>
+    <string name="profile_awards_error">Не удалось загрузить награды. Нажми «Обновить», чтобы повторить.</string>
+    <string name="profile_awards_refresh_error">Не удалось обновить список. Показываем ранее загруженные награды.</string>
+    <string name="profile_awards_sync_error">Список загружен, но проверить новые достижения не удалось. Нажми «Обновить».</string>
+    <string name="profile_awards_show_all">Показать все (%1$d)</string>
+    <string name="profile_awards_collapse">Свернуть</string>
+    <string name="profile_awards_count_accessibility">Полученных наград: %1$d</string>
+    <string name="profile_awards_updating">Обновление наград</string>
 </resources>
