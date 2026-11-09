@@ -963,4 +963,66 @@
     <string name="profile_awards_collapse">Collapse</string>
     <string name="profile_awards_count_accessibility">Earned awards: %1$d</string>
     <string name="profile_awards_updating">Refreshing awards</string>
+
+    <string name="awards_catalogue_title">Awards collection</string>
+    <string name="awards_catalogue_link">Collection and requirements</string>
+    <string name="awards_filter_all">All</string>
+    <string name="awards_filter_earned">Earned</string>
+    <string name="awards_filter_locked">Not earned</string>
+    <string name="awards_category_predictions">Correct predictions</string>
+    <string name="awards_category_tenure">Time with Apex</string>
+    <string name="awards_category_season">Season 2026</string>
+    <string name="awards_category_fanclubs">Fan-club tokens</string>
+    <string name="award_condition_first">Make your first correct prediction. A pending result or a tie does not count.</string>
+    <string name="award_condition_correct">Make %1$d correct predictions in total across all seasons. Pending results, incorrect predictions and ties do not count.</string>
+    <string name="award_condition_tenure">Reach %1$d completed calendar years since your Firebase Authentication account was created. The public nickname migration does not restart this period.</string>
+    <string name="award_condition_participant">Have at least one calculated answer to a season 2026 prediction. Correct, incorrect and tied results qualify. Awarded only after an administrator finalizes the season.</string>
+    <string name="award_condition_place">Finish season 2026 at rank %1$d. Ranking uses points, then correct predictions; tied results share the same rank. Awarded after season finalization, not for the current live position.</string>
+    <string name="award_condition_driver">Choose a favourite driver in your profile. This token remains active while a valid driver is selected. Champion stars reflect that driver’s personal world titles.</string>
+    <string name="award_condition_team">Choose a favourite team in your profile. This token remains active while a valid team is selected.</string>
+    <string name="awards_status_earned">Earned</string>
+    <string name="awards_status_locked">Not earned</string>
+    <string name="awards_status_active">Active</string>
+    <string name="awards_status_inactive">Inactive</string>
+    <string name="awards_status_unknown">Status unavailable</string>
+    <string name="awards_status_loading">Checking status…</string>
+    <string name="awards_waiting_issue">Requirement met; waiting for server verification</string>
+
+    <string name="awards_progress_correct">Correct predictions: %1$d / %2$d</string>
+    <string name="awards_progress_years">Completed years: %1$d / %2$d</string>
+    <string name="awards_progress_unavailable">Progress is unavailable. This is not treated as zero.</string>
+
+    <string name="awards_catalogue_count">Available: %1$d / %2$d</string>
+    <string name="awards_catalogue_loading">Loading award status…</string>
+    <string name="awards_catalogue_error">Award status could not be loaded. Requirements are still available.</string>
+    <string name="awards_catalogue_progress_error">Award status is loaded, but prediction progress could not be checked.</string>
+    <string name="awards_catalogue_retry">Refresh</string>
+    <string name="awards_catalogue_empty_filter">No awards in this filter.</string>
+    <string name="awards_details_condition">How to get it</string>
+    <string name="awards_details_recorded">Added to the collection: %1$s</string>
+    <string name="awards_details_done">Done</string>
+    <string name="awards_filter_accessibility">%1$s, selected</string>
+    <string name="awards_status_pending">Awaiting verification</string>
+    <string name="awards_details_status">Status</string>
+    <plurals name="award_condition_tenure_years">
+        <item quantity="one">Reach %1$d completed calendar year since your account was created. Public nickname migration does not restart this period.</item>
+        <item quantity="other">Reach %1$d completed calendar years since your account was created. Public nickname migration does not restart this period.</item>
+    </plurals>
+
+    <string name="displayed_award_title">Displayed award</string>
+    <string name="displayed_award_subtitle">Shown beside your nickname</string>
+    <string name="displayed_award_none">No award</string>
+    <string name="displayed_award_choose">Choose an award</string>
+    <string name="displayed_award_selected">Selected</string>
+    <string name="displayed_award_save">Save</string>
+    <string name="displayed_award_saving">Saving…</string>
+    <string name="displayed_award_loading">Loading…</string>
+    <string name="displayed_award_load_error">Could not load the selection. Tap to retry.</string>
+    <string name="displayed_award_list_error">Could not load available awards. Saving is disabled.</string>
+    <string name="displayed_award_save_error">Could not save. Your choice has not been confirmed. Try again.</string>
+    <string name="displayed_award_saved">Displayed award saved</string>
+    <string name="displayed_award_unavailable">This award is no longer available. Choose another one.</string>
+    <string name="displayed_award_hint">Only earned medals and active fan-club tokens can be selected.</string>
+    <string name="displayed_award_use">Display in profile</string>
+    <string name="displayed_award_retry">Retry</string>
 </resources>

@@ -102,6 +102,8 @@
         <activity
             android:name=".publicProfileActivity"
             android:exported="false" />
+        <activity android:name=".AwardsCollectionActivity" android:exported="false" />
+        <activity android:name=".DisplayedAwardPickerActivity" android:exported="false" />
     </application>
 
 </manifest>

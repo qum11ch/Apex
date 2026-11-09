@@ -51,6 +51,8 @@ public final class ProfileAwardsController implements DefaultLifecycleObserver {
         lp.topMargin=Math.round(16*activity.getResources().getDisplayMetrics().density);
         lp.bottomMargin=Math.round(4*activity.getResources().getDisplayMetrics().density);
         parent.addView(card,parent.indexOfChild(insertion)+1,lp);
+        card.setCollectionAction(() -> activity.startActivity(
+                new android.content.Intent(activity, AwardsCollectionActivity.class)));
         activity.getLifecycle().addObserver(new ProfileAwardsController(activity,card));
     }
     private ProfileAwardsController(AppCompatActivity activity,ProfileAwardsCard card) {

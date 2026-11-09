@@ -28,6 +28,7 @@ public final class ProfileAwardsCard extends FrameLayout {
     private final ShimmerFrameLayout shimmer,updating;
     private List<Map<String,Object>> data=Collections.emptyList();
     private boolean hasData,expanded,loading;
+    private Runnable collectionAction;
     private int columns=3,renderGeneration;
 
     public ProfileAwardsCard(Context context) {this(context,null);}
@@ -43,12 +44,16 @@ public final class ProfileAwardsCard extends FrameLayout {
         skeleton=findViewById(R.id.profileAwardsSkeleton);
         shimmer=findViewById(R.id.profileAwardsShimmer);
         updating=findViewById(R.id.profileAwardsUpdating);
-        expand.setOnClickListener(v->{expanded=!expanded;rebuild();});
+        expand.setOnClickListener(v->{if(collectionAction!=null)collectionAction.run();else {expanded=!expanded;rebuild();}});
         buildSkeleton();
     }
     private int dp(float n) {return Math.round(n*getResources().getDisplayMetrics().density);}
     private GradientDrawable surface(int color,float radius) {
         GradientDrawable shape=new GradientDrawable();shape.setColor(ContextCompat.getColor(getContext(),color));shape.setCornerRadius(dp(radius));return shape;
+    }
+    public void setCollectionAction(Runnable action) {
+        collectionAction = action;
+        updateFooter();
     }
     public void setRefreshAction(Runnable action) {refresh.setOnClickListener(v->action.run());}
     public boolean hasData() {return hasData;}
@@ -60,7 +65,7 @@ public final class ProfileAwardsCard extends FrameLayout {
             updating.setVisibility(VISIBLE);updating.startShimmer();
         } else {
             count.setText("—");count.setContentDescription(null);
-            empty.setVisibility(GONE);grid.setVisibility(GONE);expand.setVisibility(GONE);
+            empty.setVisibility(GONE);grid.setVisibility(GONE);expand.setVisibility(collectionAction == null ? GONE : VISIBLE);
             shimmer.setVisibility(VISIBLE);shimmer.startShimmer();
         }
     }
@@ -78,7 +83,7 @@ public final class ProfileAwardsCard extends FrameLayout {
         finishLoading();
         message.setText(hasData?R.string.profile_awards_refresh_error:R.string.profile_awards_error);
         message.setVisibility(VISIBLE);
-        if(!hasData) {count.setText("—");empty.setVisibility(GONE);grid.setVisibility(GONE);expand.setVisibility(GONE);}
+        if(!hasData) {count.setText("—");empty.setVisibility(GONE);grid.setVisibility(GONE);expand.setVisibility(collectionAction == null ? GONE : VISIBLE);}
     }
     public void showSyncWarning() {
         message.setText(R.string.profile_awards_sync_error);message.setVisibility(VISIBLE);
@@ -141,6 +146,11 @@ public final class ProfileAwardsCard extends FrameLayout {
         }
     }
     private void updateFooter() {
+        if (collectionAction != null) {
+            expand.setVisibility(VISIBLE);
+            expand.setText(R.string.awards_catalogue_link);
+            return;
+        }
         int preview=columns*2;
         expand.setVisibility(data.size()>preview?VISIBLE:GONE);
         expand.setText(expanded?getContext().getString(R.string.profile_awards_collapse):getContext().getString(R.string.profile_awards_show_all,data.size()));

@@ -1,0 +1,42 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/awardsCollectionRoot" android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical" android:background="@color/colorPrimary">
+    <LinearLayout android:id="@+id/awardsCollectionHeader" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:minHeight="64dp" android:orientation="horizontal" android:gravity="center_vertical"
+        android:paddingTop="12dp" android:paddingBottom="12dp" android:background="@color/account_settings_header_color">
+        <ImageButton android:id="@+id/awardsCollectionBack" android:layout_width="48dp" android:layout_height="48dp"
+            android:padding="12dp" android:src="@drawable/back_arrow" android:background="@android:color/transparent" android:contentDescription="@string/back_arrow" />
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1"
+            android:text="@string/awards_catalogue_title" android:textColor="@color/white" android:textSize="19sp"
+            android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+        android:gravity="center_vertical" android:paddingStart="16dp" android:paddingEnd="16dp">
+        <TextView android:id="@+id/awardsCollectionCount" android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:minHeight="48dp" android:gravity="center_vertical" android:text="—"
+            android:textColor="@color/text_color_main" android:textSize="14sp" android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+        <TextView android:id="@+id/awardsCollectionRefresh" android:layout_width="wrap_content" android:layout_height="48dp"
+            android:paddingStart="12dp" android:paddingEnd="12dp" android:gravity="center" android:text="@string/awards_catalogue_retry"
+            android:textColor="@color/text_color_main" android:clickable="true" android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless" android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal"
+        android:paddingStart="12dp" android:paddingEnd="12dp">
+        <TextView android:id="@+id/awardsFilterAll" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:minHeight="48dp" android:padding="8dp" android:gravity="center" android:text="@string/awards_filter_all" android:textSize="13sp"
+            android:textColor="@color/text_color_main" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/awardsFilterEarned" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:minHeight="48dp" android:padding="8dp" android:gravity="center" android:text="@string/awards_filter_earned" android:textSize="13sp"
+            android:textColor="@color/text_color_main" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+        <TextView android:id="@+id/awardsFilterLocked" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+            android:minHeight="48dp" android:padding="8dp" android:gravity="center" android:text="@string/awards_filter_locked" android:textSize="13sp"
+            android:textColor="@color/text_color_main" android:clickable="true" android:focusable="true" android:background="?attr/selectableItemBackground" />
+    </LinearLayout>
+    <TextView android:id="@+id/awardsCollectionState" android:layout_width="match_parent" android:layout_height="wrap_content"
+        android:paddingStart="16dp" android:paddingEnd="16dp" android:paddingTop="8dp" android:paddingBottom="8dp"
+        android:textColor="@color/grey" android:textSize="13sp" android:accessibilityLiveRegion="polite"
+        android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
+    <androidx.recyclerview.widget.RecyclerView android:id="@+id/awardsCollectionList" android:layout_width="match_parent"
+        android:layout_height="0dp" android:layout_weight="1" android:paddingStart="12dp" android:paddingEnd="12dp"
+        android:paddingBottom="16dp" android:clipToPadding="false" />
+</LinearLayout>

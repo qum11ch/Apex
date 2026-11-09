@@ -22,13 +22,11 @@ import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,15 +48,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import android.view.View;
-
-import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -106,6 +99,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.account_settings_page);
+        DisplayedAwardUi.attachSettings(this);
 
         setupAccountSettingsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.scrollView));
@@ -374,8 +368,7 @@ public class accountSettingsActivity extends AppCompatActivity {
             return ((ColorDrawable) background).getColor();
         }
 
-        if (android.os.Build.VERSION.SDK_INT >= 24
-                && background instanceof GradientDrawable) {
+        if (background instanceof GradientDrawable) {
 
             ColorStateList fill = ((GradientDrawable) background).getColor();
 

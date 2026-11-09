@@ -88,6 +88,7 @@ public class accountPageActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.account_page);
         AwardsUi.attachOwn(this);
+        DisplayedAwardUi.attachProfile(this, true);
 
         setupAccountInsets();
 
