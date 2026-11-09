@@ -14,11 +14,11 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/progressBarColor"
         android:indeterminateTintMode="src_atop"
-        android:visibility="visible" />
+        android:visibility="gone" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_content"
-        android:visibility="gone"
+        android:visibility="visible"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout

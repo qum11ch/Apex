@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -41,14 +42,17 @@ public final class AwardsCollectionActivity extends AppCompatActivity {
     private String ownerUid;
     private int generation,filter;
     private boolean started;
-    private TextView count,state,refresh;
+    private TextView count,state;
+    private ImageButton refresh;
     private TextView[] filters;
     private GridLayoutManager manager;
     private final CatalogueAdapter adapter=new CatalogueAdapter();
     private AwardDetailsDialog details;
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);EdgeToEdge.enable(this);setContentView(R.layout.activity_awards_collection);
-        count=findViewById(R.id.awardsCollectionCount);state=findViewById(R.id.awardsCollectionState);refresh=findViewById(R.id.awardsCollectionRefresh);
+        count=findViewById(R.id.awardsCollectionCount);
+        state=findViewById(R.id.awardsCollectionState);
+        refresh=findViewById(R.id.awardsCollectionRefresh);
         findViewById(R.id.awardsCollectionBack).setOnClickListener(v->finish());
         filters=new TextView[]{findViewById(R.id.awardsFilterAll),findViewById(R.id.awardsFilterEarned),findViewById(R.id.awardsFilterLocked)};
         for(int i=0;i<filters.length;i++) {final int index=i;filters[i].setOnClickListener(v->{filter=index;render();});}

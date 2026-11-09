@@ -945,7 +945,7 @@
     <string name="awards_filter_earned">Полученные</string>
     <string name="awards_filter_locked">Не полученные</string>
     <string name="awards_category_predictions">Точные прогнозы</string>
-    <string name="awards_category_tenure">С нами</string>
+    <string name="awards_category_tenure">Выслуга лет</string>
     <string name="awards_category_season">Сезон 2026</string>
     <string name="awards_category_fanclubs">Жетоны фанклубов</string>
     <string name="award_condition_first">Сделайте первый правильный прогноз. Ожидание результата и ничья не засчитываются.</string>

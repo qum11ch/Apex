@@ -5,11 +5,21 @@ import java.util.List;
 
 /** Conditions correspond to the supplied achievement backend; no client-side granting. */
 final class AwardCatalogue {
-    static final int PREDICTIONS=0,TENURE=1,SEASON=2,FANCLUB=3;
+    static final int
+            PREDICTIONS = 0,
+            TENURE = 1,
+            SEASON = 2,
+            FANCLUB = 3;
     static final class Entry {
         final String id;
         final int category,condition,target;
-        Entry(String id,int category,int condition,int target) {this.id=id;this.category=category;this.condition=condition;this.target=target;}
+
+        Entry(String id, int category, int condition, int target) {
+            this.id=id;
+            this.category=category;
+            this.condition=condition;
+            this.target=target;
+        }
     }
     static final List<Entry> ALL=java.util.Collections.unmodifiableList(Arrays.asList(
         new Entry("first_correct",PREDICTIONS,R.string.award_condition_first,1),
