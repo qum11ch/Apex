@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /** Short-lived, batched reads; no per-row database listeners. */
-final class AwardsRepository {
+final class awardsRepository {
     interface Callback { void accept(List<Map<String,Object>> badges, Exception error); }
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
     private static final Map<String,Entry> CACHE = new HashMap<>();
@@ -44,7 +44,7 @@ final class AwardsRepository {
         List<Callback> callbacks=WAITING.get(uid);
         if(callbacks==null) {callbacks=new ArrayList<>();WAITING.put(uid,callbacks);}
         callbacks.add(callback);
-        if(!scheduled) {scheduled=true;MAIN.postDelayed(AwardsRepository::flush,35);}
+        if(!scheduled) {scheduled=true;MAIN.postDelayed(awardsRepository::flush,35);}
     }
     private static void flush() {
         scheduled=false;

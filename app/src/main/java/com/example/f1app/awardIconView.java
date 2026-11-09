@@ -23,7 +23,7 @@ import com.bumptech.glide.request.target.Target;
 import java.util.Locale;
 
 /** Typography and season revision based on the current qum11ch/Apex master. */
-public final class AwardIconView extends FrameLayout {
+public final class awardIconView extends FrameLayout {
     private static final String TAG = "AwardIconView";
     private final ImageView base;
     private final ImageView logo;
@@ -57,19 +57,19 @@ public final class AwardIconView extends FrameLayout {
     private static final float FANCLUB_CENTER_X = 64f;
     private static final float FANCLUB_CENTER_Y = 62f;
     private int driverChampionshipsCount;
-    private final ChampionDriverMarker championDriverMarker;
+    private final championDriverMarker championDriverMarker;
     private boolean driverFanclub;
 
     private final Typeface driverCodeTypeface =
             Typeface.create("sans-serif-condensed", Typeface.BOLD);
 
-    public AwardIconView(Context context) { this(context, null); }
+    public awardIconView(Context context) { this(context, null); }
 
-    public AwardIconView(Context context, AttributeSet attrs) {
+    public awardIconView(Context context, AttributeSet attrs) {
         super(context, attrs);
         seasonalAwards = new SeasonAwardRenderer(context);
         masteryMetalText = new MedalMetalText(context);
-        championDriverMarker = new ChampionDriverMarker(context);
+        championDriverMarker = new championDriverMarker(context);
         whiteDriverText = new WhiteMetalText(context);
         whiteParticipantText = new WhiteMetalText(context);
         whiteParticipantYearText = new WhiteMetalText(context);

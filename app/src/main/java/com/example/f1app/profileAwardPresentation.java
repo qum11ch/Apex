@@ -8,9 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/** Presentation only: does not grant awards or change eligibility. */
-final class ProfileAwardPresentation {
-    private ProfileAwardPresentation() {}
+
+final class profileAwardPresentation {
+    private profileAwardPresentation() {}
     static String string(Map<String,Object> badge,String key) {
         Object value=badge.get(key);return value instanceof String?(String)value:"";
     }

@@ -12,11 +12,10 @@ import androidx.lifecycle.LifecycleOwner;
 import com.google.firebase.auth.FirebaseAuth;
 import java.util.Objects;
 
-/** Read-only public-profile binding for the shared Stage 1 awards card. */
-public final class PublicProfileAwardsController implements DefaultLifecycleObserver {
+public final class publicProfileAwardsController implements DefaultLifecycleObserver {
     private static final String TAG = "apex.public.profile.awards.stage1";
     private final AppCompatActivity activity;
-    private final ProfileAwardsCard card;
+    private final profileAwardsCard card;
     private final Handler main = new Handler(Looper.getMainLooper());
     private boolean started;
     private String uid, actor;
@@ -38,7 +37,7 @@ public final class PublicProfileAwardsController implements DefaultLifecycleObse
             }
             if (candidate.getParent() == parent) insertion = candidate;
         }
-        ProfileAwardsCard card = new ProfileAwardsCard(activity);
+        profileAwardsCard card = new profileAwardsCard(activity);
         card.setTag(TAG);
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -48,10 +47,10 @@ public final class PublicProfileAwardsController implements DefaultLifecycleObse
         parent.addView(card, parent.indexOfChild(insertion) + 1, params);
         // Do not open AwardsCollectionActivity: it reads the authenticated user's collection.
         // Without a collection action the shared card expands earned public awards in place.
-        activity.getLifecycle().addObserver(new PublicProfileAwardsController(activity, card));
+        activity.getLifecycle().addObserver(new publicProfileAwardsController(activity, card));
     }
 
-    private PublicProfileAwardsController(AppCompatActivity activity, ProfileAwardsCard card) {
+    private publicProfileAwardsController(AppCompatActivity activity, profileAwardsCard card) {
         this.activity = activity;
         this.card = card;
         card.setRefreshAction(() -> read(true));
@@ -76,14 +75,14 @@ public final class PublicProfileAwardsController implements DefaultLifecycleObse
         final int request = ++generation;
         final String requested = uid, requestedActor = actor;
         if (!active(expectedSession, requested, requestedActor)) return;
-        if (force) AwardsRepository.invalidate(requested);
+        if (force) awardsRepository.invalidate(requested);
         card.setBusy(true);
         main.postDelayed(() -> {
             if (active(expectedSession, requested, requestedActor) && request == generation) {
                 card.showLoading();
             }
         }, 120);
-        AwardsRepository.load(requested, (badges, error) -> {
+        awardsRepository.load(requested, (badges, error) -> {
             if (!active(expectedSession, requested, requestedActor) || request != generation) return;
             generation++;
             if (error != null || badges == null) {

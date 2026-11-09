@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.Objects;
 
 /** Stage 1: replaces only the personal-profile strip, using the existing repository/API. */
-public final class ProfileAwardsController implements DefaultLifecycleObserver {
+public final class profileAwardsController implements DefaultLifecycleObserver {
     private static final String TAG="apex.profile.awards.stage1";
     private final AppCompatActivity activity;
-    private final ProfileAwardsCard card;
+    private final profileAwardsCard card;
     private final Handler main=new Handler(Looper.getMainLooper());
     private boolean started;
     private boolean syncing;
@@ -46,16 +46,16 @@ public final class ProfileAwardsController implements DefaultLifecycleObserver {
             while(candidate.getParent() instanceof View&&candidate.getParent()!=parent)candidate=(View)candidate.getParent();
             if(candidate.getParent()==parent)insertion=candidate;
         }
-        ProfileAwardsCard card=new ProfileAwardsCard(activity);card.setTag(TAG);
+        profileAwardsCard card=new profileAwardsCard(activity);card.setTag(TAG);
         LinearLayout.LayoutParams lp=new LinearLayout.LayoutParams(-1,ViewGroup.LayoutParams.WRAP_CONTENT);
         lp.topMargin=Math.round(16*activity.getResources().getDisplayMetrics().density);
         lp.bottomMargin=Math.round(4*activity.getResources().getDisplayMetrics().density);
         parent.addView(card,parent.indexOfChild(insertion)+1,lp);
         card.setCollectionAction(() -> activity.startActivity(
-                new android.content.Intent(activity, AwardsCollectionActivity.class)));
-        activity.getLifecycle().addObserver(new ProfileAwardsController(activity,card));
+                new android.content.Intent(activity, awardsCollectionActivity.class)));
+        activity.getLifecycle().addObserver(new profileAwardsController(activity,card));
     }
-    private ProfileAwardsController(AppCompatActivity activity,ProfileAwardsCard card) {
+    private profileAwardsController(AppCompatActivity activity, profileAwardsCard card) {
         this.activity=activity;this.card=card;card.setRefreshAction(()->sync(true));
     }
     private boolean active(int expectedSession,String expectedUid) {
@@ -70,10 +70,10 @@ public final class ProfileAwardsController implements DefaultLifecycleObserver {
     private void read(boolean force,boolean syncWarning) {
         if(!started||uid==null)return;
         int expectedSession=session,request=++readGeneration;String requested=uid;
-        if(force)AwardsRepository.invalidate(uid);
+        if(force) awardsRepository.invalidate(uid);
         card.setBusy(true);
         scheduleLoading(expectedSession,requested,request);
-        AwardsRepository.load(uid,(badges,error)->{
+        awardsRepository.load(uid,(badges, error)->{
             if(!active(expectedSession,requested)||request!=readGeneration)return;
             // Cancel the pending loading transition before showing the result.
             readGeneration++;

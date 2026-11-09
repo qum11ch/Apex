@@ -1005,11 +1005,11 @@
     <string name="awards_status_pending">Awaiting verification</string>
     <string name="awards_details_status">Status</string>
     <plurals name="award_condition_tenure_years">
-        <item quantity="one">Reach %1$d completed calendar year since your account was created. Public nickname migration does not restart this period.</item>
-        <item quantity="other">Reach %1$d completed calendar years since your account was created. Public nickname migration does not restart this period.</item>
+        <item quantity="one">Reach %1$d completed calendar year since your account was created.</item>
+        <item quantity="other">Reach %1$d completed calendar years since your account was created.</item>
     </plurals>
 
-    <string name="displayed_award_title">Displayed award</string>
+    <string name="displayed_award_title">Displayed badge</string>
     <string name="displayed_award_subtitle">Shown beside your nickname</string>
     <string name="displayed_award_none">No award</string>
     <string name="displayed_award_choose">Choose an award</string>

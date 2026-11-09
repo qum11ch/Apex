@@ -99,7 +99,7 @@ public class accountSettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.account_settings_page);
-        DisplayedAwardUi.attachSettings(this);
+        displayedAwardUi.attachSettings(this);
 
         setupAccountSettingsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.scrollView));
@@ -298,8 +298,6 @@ public class accountSettingsActivity extends AppCompatActivity {
 
             avatarPicker.launch(request);
         });
-
-
 
         changeEmailButton.setOnClickListener(v ->
                 showChangeEmailDialog()

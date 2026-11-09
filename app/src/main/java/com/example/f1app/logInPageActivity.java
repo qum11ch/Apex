@@ -42,10 +42,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.ViewGroup;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -73,7 +69,7 @@ public class logInPageActivity extends AppCompatActivity {
         TextView reloginNotice = findViewById(R.id.reloginNotice);
 
         reloginNotice.setVisibility(
-                AuthSessionGate.shouldShowReloginNotice(this)
+                authSessionGate.shouldShowReloginNotice(this)
                         ? View.VISIBLE
                         : View.GONE
         );
@@ -796,7 +792,7 @@ public class logInPageActivity extends AppCompatActivity {
     private void openAccount(String currentSeason) {
         if (isFinishing() || isDestroyed()) return;
 
-        AuthSessionGate.clearReloginNotice(this);
+        authSessionGate.clearReloginNotice(this);
         setLoginLoading(false);
 
         Toast.makeText(

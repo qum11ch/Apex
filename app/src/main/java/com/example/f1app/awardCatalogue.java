@@ -3,8 +3,7 @@ package com.example.f1app;
 import java.util.Arrays;
 import java.util.List;
 
-/** Conditions correspond to the supplied achievement backend; no client-side granting. */
-final class AwardCatalogue {
+final class awardCatalogue {
     static final int
             PREDICTIONS = 0,
             TENURE = 1,

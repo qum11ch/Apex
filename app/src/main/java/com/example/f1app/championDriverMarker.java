@@ -12,8 +12,7 @@ import android.graphics.Shader;
 import android.graphics.Typeface;
 import androidx.core.content.res.ResourcesCompat;
 
-/** Gold title-count stars directly on the driver's existing dark face; no plaque. */
-public final class ChampionDriverMarker {
+public final class championDriverMarker {
     private final Path stars = new Path();
     private final Path number = new Path();
     private final Path source = new Path();
@@ -26,7 +25,7 @@ public final class ChampionDriverMarker {
     private int cachedTitles = -1;
     private boolean cachedCompact;
 
-    public ChampionDriverMarker(Context context) {
+    public championDriverMarker(Context context) {
         gold.setStyle(Paint.Style.FILL);
         gold.setShader(new LinearGradient(43f,30f,85f,44f,
                 new int[]{Color.rgb(255,240,188),Color.rgb(206,167,96),

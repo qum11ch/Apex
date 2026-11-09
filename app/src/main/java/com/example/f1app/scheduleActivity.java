@@ -4,11 +4,8 @@ import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
-import android.animation.ObjectAnimator;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -34,27 +31,17 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.viewpager2.widget.ViewPager2;
 
-import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -203,7 +190,7 @@ public class scheduleActivity extends AppCompatActivity {
         if (accountNavigationInProgress) return;
 
         // Сохраняем ваш механизм обязательного повторного входа.
-        if (AuthSessionGate.redirectIfRequired(this, currentSeason)) {
+        if (authSessionGate.redirectIfRequired(this, currentSeason)) {
             return;
         }
 

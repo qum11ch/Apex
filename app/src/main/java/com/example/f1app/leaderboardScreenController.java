@@ -55,7 +55,7 @@ public final class leaderboardScreenController {
 
     private final RecyclerView list;
     private final Rows adapter;
-    private final LeaderboardAwardBinder selectedAwards;
+    private final leaderboardAwardBinder selectedAwards;
     private final SwipeRefreshLayout swipe;
     private final ProgressBar progress;
     private final TextView empty;
@@ -87,7 +87,7 @@ public final class leaderboardScreenController {
             ScopeAppearance appearance
     ) {
         this.activity = activity;
-        selectedAwards = new LeaderboardAwardBinder(activity);
+        selectedAwards = new leaderboardAwardBinder(activity);
         this.appearance = appearance;
         this.season = season;
 

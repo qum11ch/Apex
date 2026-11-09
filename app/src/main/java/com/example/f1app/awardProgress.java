@@ -6,8 +6,8 @@ import java.time.ZonedDateTime;
 import java.time.Year;
 
 /** Pure calculations; missing data is not interpreted as zero. */
-final class AwardProgress {
-    private AwardProgress() {}
+final class awardProgress {
+    private awardProgress() {}
     static Integer completedYears(Long createdAt,long now) {
         if(createdAt==null||createdAt<=0||createdAt>now)return null;
         ZonedDateTime start=Instant.ofEpochMilli(createdAt).atZone(ZoneOffset.UTC);
@@ -25,12 +25,12 @@ final class AwardProgress {
         if(!Double.isFinite(value)||value<0||value!=Math.rint(value)||value>=Long.MAX_VALUE)return null;
         return ((Number)raw).longValue();
     }
-    static Long current(AwardCatalogue.Entry entry,Long correct,Integer years) {
-        if(entry.category==AwardCatalogue.PREDICTIONS)return correct;
-        if(entry.category==AwardCatalogue.TENURE)return years==null?null:years.longValue();
+    static Long current(awardCatalogue.Entry entry, Long correct, Integer years) {
+        if(entry.category== awardCatalogue.PREDICTIONS)return correct;
+        if(entry.category== awardCatalogue.TENURE)return years==null?null:years.longValue();
         return null;
     }
-    static boolean conditionMet(AwardCatalogue.Entry entry,Long correct,Integer years) {
+    static boolean conditionMet(awardCatalogue.Entry entry, Long correct, Integer years) {
         Long current=current(entry,correct,years);return current!=null&&entry.target>0&&current>=entry.target;
     }
 }

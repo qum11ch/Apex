@@ -48,10 +48,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.activity.EdgeToEdge;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -280,7 +278,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         if (accountNavigationInProgress) return;
 
         // Сохраняем ваш механизм обязательного повторного входа.
-        if (AuthSessionGate.redirectIfRequired(this, currentSeason)) {
+        if (authSessionGate.redirectIfRequired(this, currentSeason)) {
             return;
         }
 

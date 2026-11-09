@@ -1,7 +1,6 @@
 package com.example.f1app;
 
 import android.content.Context;
-import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -11,9 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import androidx.core.content.ContextCompat;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.storage.FirebaseStorage;
 import java.util.Collections;
@@ -21,22 +18,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public final class ProfileAwardsCard extends FrameLayout {
-    private static final Map<String,Uri> LOGOS=new ConcurrentHashMap<>();
+public final class profileAwardsCard extends FrameLayout {
+    private static final Map<String,Uri> LOGOS = new ConcurrentHashMap<>();
     private final TextView empty, message, expand;
     private final ImageButton refresh;
-    private final GridLayout grid,skeleton;
+    private final GridLayout grid;
     private final ShimmerFrameLayout shimmer,updating;
-    private List<Map<String,Object>> data=Collections.emptyList();
+    private List<Map<String,Object>> data = Collections.emptyList();
     private boolean hasData,expanded,loading;
     private Runnable collectionAction;
     private int columns=3,renderGeneration;
 
-    public ProfileAwardsCard(Context context) {
+    public profileAwardsCard(Context context) {
         this(context,null);
     }
 
-    public ProfileAwardsCard(Context context,AttributeSet attrs) {
+    public profileAwardsCard(Context context, AttributeSet attrs) {
         super(context,attrs);
         LayoutInflater.from(context).inflate(R.layout.view_profile_awards_card,this,true);
         refresh=findViewById(R.id.profileAwardsRefresh);
@@ -44,7 +41,6 @@ public final class ProfileAwardsCard extends FrameLayout {
         message=findViewById(R.id.profileAwardsMessage);
         expand=findViewById(R.id.profileAwardsExpand);
         grid=findViewById(R.id.profileAwardsGrid);
-        skeleton=findViewById(R.id.profileAwardsSkeleton);
         shimmer=findViewById(R.id.profileAwardsShimmer);
         updating=findViewById(R.id.profileAwardsUpdating);
         expand.setOnClickListener(v->{
@@ -55,18 +51,10 @@ public final class ProfileAwardsCard extends FrameLayout {
                 rebuild();
             }
         });
-        buildSkeleton();
     }
 
     private int dp(float n) {
         return Math.round(n*getResources().getDisplayMetrics().density);
-    }
-
-    private GradientDrawable surface(int color,float radius) {
-        GradientDrawable shape = new GradientDrawable();
-        shape.setColor(ContextCompat.getColor(getContext(),color));
-        shape.setCornerRadius(dp(radius));
-        return shape;
     }
 
     public void setCollectionAction(Runnable action) {
@@ -88,23 +76,38 @@ public final class ProfileAwardsCard extends FrameLayout {
     }
 
     public void showLoading() {
-        loading=true;
+        loading = true;
         setBusy(true);
         message.setVisibility(GONE);
-        if(hasData) {
-            updating.setContentDescription(getContext().getString(R.string.profile_awards_updating));
-            updating.setVisibility(VISIBLE);updating.startShimmer();
-        } else {
-            empty.setVisibility(GONE);
-            grid.setVisibility(GONE);
-            expand.setVisibility(collectionAction == null ? GONE : VISIBLE);
-            shimmer.setVisibility(VISIBLE);
-            shimmer.startShimmer();
+
+        if (hasData) {
+            shimmer.stopShimmer();
+            shimmer.setVisibility(GONE);
+
+            updating.setContentDescription(
+                    getContext().getString(R.string.profile_awards_updating)
+            );
+            updating.setVisibility(VISIBLE);
+            updating.startShimmer();
+
+            return;
         }
+
+        updating.stopShimmer();
+        updating.setVisibility(GONE);
+
+        empty.setVisibility(GONE);
+        grid.setVisibility(GONE);
+        expand.setVisibility(
+                collectionAction == null ? GONE : VISIBLE
+        );
+
+        shimmer.setVisibility(VISIBLE);
+        shimmer.startShimmer();
     }
 
     public void showData(List<Map<String,Object>> values) {
-        List<Map<String,Object>> normalized = ProfileAwardPresentation.normalize(values);
+        List<Map<String,Object>> normalized = profileAwardPresentation.normalize(values);
         boolean changed =! hasData || !data.equals(normalized);
         data = normalized;
         hasData = true;
@@ -133,8 +136,11 @@ public final class ProfileAwardsCard extends FrameLayout {
     }
 
     public void finishLoading() {
-        loading=false;setBusy(false);
+        loading = false;
+        setBusy(false);
+
         stopAnimations();
+
         shimmer.setVisibility(GONE);
         updating.setVisibility(GONE);
     }
@@ -163,17 +169,36 @@ public final class ProfileAwardsCard extends FrameLayout {
         setRefreshAction(()->{});
     }
 
-    @Override protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
         super.onSizeChanged(w, h, oldW, oldH);
-        float fontScale = Math.max(1f, getResources().getConfiguration().fontScale);
+
+        float fontScale = Math.max(
+                1f,
+                getResources().getConfiguration().fontScale
+        );
+
         int available = Math.max(0, w - dp(32));
-        int newColumns = Math.max(1, Math.min(4, available / Math.max(1, dp(90 * fontScale))));
+
+        int newColumns = Math.max(
+                1,
+                Math.min(
+                        4,
+                        available / Math.max(1, dp(90 * fontScale))
+                )
+        );
+
         if (newColumns != columns || w != oldW) {
             columns = newColumns;
+
             post(() -> {
-                if (getWidth() != w) return;
-                buildSkeleton();
-                if (hasData) rebuild();
+                if (getWidth() != w) {
+                    return;
+                }
+
+                if (hasData) {
+                    rebuild();
+                }
             });
         }
     }
@@ -194,37 +219,6 @@ public final class ProfileAwardsCard extends FrameLayout {
         return params;
     }
 
-    private void buildSkeleton() {
-        skeleton.removeAllViews();
-        skeleton.setColumnCount(columns);
-        for(int i = 0; i < columns * 2; i++) {
-            LinearLayout cell = new LinearLayout(getContext());
-            cell.setOrientation(LinearLayout.VERTICAL);
-            cell.setGravity(Gravity.CENTER_HORIZONTAL);
-            cell.setPadding(dp(6),dp(12),dp(6),dp(12));
-            cell.setMinimumHeight(dp(118));
-
-            View icon = new View(getContext());
-            icon.setBackground(surface(R.color.stroke_option_color,10));
-            cell.addView(icon,new LinearLayout.LayoutParams(dp(56),dp(56)));
-
-            View line = new View(getContext());
-            line.setBackground(surface(R.color.stroke_option_color,3));
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(48),dp(8));
-            lp.topMargin = dp(12);
-            cell.addView(line,lp);
-
-            View line2 = new View(getContext());
-            line2.setBackground(surface(R.color.stroke_option_color,3));
-
-            LinearLayout.LayoutParams lp2 = new LinearLayout.LayoutParams(dp(34),dp(7));
-            lp2.topMargin = dp(5);
-            cell.addView(line2,lp2);
-            cell.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
-            skeleton.addView(cell, position(i));
-        }
-    }
-
     private void updateFooter() {
         if (collectionAction != null) {
             expand.setVisibility(VISIBLE);
@@ -239,57 +233,71 @@ public final class ProfileAwardsCard extends FrameLayout {
     private void rebuild() {
         renderGeneration++;
         int request = renderGeneration;
+
         clearIcons(grid);
         grid.removeAllViews();
         grid.setColumnCount(columns);
 
-        int limit = expanded ? data.size(): Math.min(columns * 2, data.size());
-        for(int i = 0; i < limit; i++) {
-            Map<String,Object> badge = data.get(i);
-            String id = ProfileAwardPresentation.string(badge,"id");
-            String caption = getContext().getString(ProfileAwardPresentation.title(id));
-            String name = ProfileAwardPresentation.string(badge,"name");
-            String description = caption + (name.isEmpty() ? "" : ": "+name);
-            if (id.startsWith("season_")) description += " · 2026";
+        LayoutInflater inflater = LayoutInflater.from(getContext());
 
-            LinearLayout cell = new LinearLayout(getContext());
-            cell.setOrientation(LinearLayout.VERTICAL);
-            cell.setGravity(Gravity.CENTER_HORIZONTAL);
-            cell.setPadding(dp(4),dp(10),dp(4),dp(10));
-            cell.setMinimumHeight(dp(118));
-            cell.setBackground(surface(R.color.colorPrimary,12));
+        int itemCount = expanded
+                ? data.size()
+                : Math.min(columns * 2, data.size());
 
-            AwardIconView icon = new AwardIconView(getContext());
-            cell.addView(icon, new LinearLayout.LayoutParams(dp(64),dp(64)));
-            bindIcon(icon, badge, id, description, request);
+        for (int index = 0; index < itemCount; index++) {
+            Map<String, Object> badge = data.get(index);
 
-            TextView label = new TextView(getContext());
-            label.setTextAppearance(getContext(),R.style.TextStyle_Gram_Regular_Simple);
-            label.setText(caption);
-            label.setTextSize(12);
-            label.setGravity(Gravity.CENTER);
-            label.setMaxLines(3);
-            label.setTextColor(ContextCompat.getColor(getContext(), R.color.text_color_main));
-            label.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+            String id = profileAwardPresentation.string(badge, "id");
+            String caption = getContext().getString(
+                    profileAwardPresentation.title(id)
+            );
+            String name = profileAwardPresentation.string(badge, "name");
 
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1,-2);
-            lp.topMargin = dp(6);
-            cell.addView(label, lp);
-            grid.addView(cell, position(i));
+            String description = caption;
+
+            if (!name.isEmpty()) {
+                description += ": " + name;
+            }
+
+            if (id.startsWith("season_")) {
+                description += " · 2026";
+            }
+
+            View item = inflater.inflate(
+                    R.layout.item_medal,
+                    grid,
+                    false
+            );
+
+            awardIconView icon = item.findViewById(R.id.medalIcon);
+            TextView title = item.findViewById(R.id.medalTitle);
+
+            title.setText(caption);
+
+            bindIcon(
+                    icon,
+                    badge,
+                    id,
+                    description,
+                    request
+            );
+
+            grid.addView(item, position(index));
         }
+
         updateFooter();
         grid.setVisibility(data.isEmpty() ? GONE : VISIBLE);
     }
 
-    private void bindIcon(AwardIconView icon,
+    private void bindIcon(awardIconView icon,
                           Map<String,Object> badge,
                           String id,
                           String description,
                           int request) {
         if("fan_driver".equals(id)) {
-            icon.showDriver(ProfileAwardPresentation.string(badge,"code"),ProfileAwardPresentation.titles(badge.get("championshipsCount")),description);
+            icon.showDriver(profileAwardPresentation.string(badge,"code"), profileAwardPresentation.titles(badge.get("championshipsCount")),description);
         } else if("fan_team".equals(id)) {
-            String path = ProfileAwardPresentation.string(badge,"storagePath"), fallback = ProfileAwardPresentation.string(badge,"code");
+            String path = profileAwardPresentation.string(badge,"storagePath"), fallback = profileAwardPresentation.string(badge,"code");
             Uri cached = LOGOS.get(path);
             icon.showTeam(cached, fallback, description);
             if(cached == null && path.matches("teams/[a-z0-9_-]+_logo(_alt)?\\.png")) {
@@ -299,11 +307,11 @@ public final class ProfileAwardsCard extends FrameLayout {
                         icon.showTeam(uri,fallback,description);
                 }).addOnFailureListener(error->android.util.Log.w("ProfileAwards","Team logo unavailable",error));
             }
-        } else icon.showMedal(ProfileAwardPresentation.drawable(id),description);
+        } else icon.showMedal(profileAwardPresentation.drawable(id),description);
     }
 
     private void clearIcons(View view) {
-        if (view instanceof AwardIconView) ((AwardIconView)view).clear();
+        if (view instanceof awardIconView) ((awardIconView)view).clear();
         else if(view instanceof ViewGroup) {
             ViewGroup group = (ViewGroup)view;
             for(int i = 0; i < group.getChildCount(); i++)

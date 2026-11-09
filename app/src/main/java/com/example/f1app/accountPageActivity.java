@@ -87,8 +87,8 @@ public class accountPageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.account_page);
-        AwardsUi.attachOwn(this);
-        DisplayedAwardUi.attachProfile(this, true);
+        awardsUi.attachOwn(this);
+        displayedAwardUi.attachProfile(this, true);
 
         setupAccountInsets();
 
@@ -153,15 +153,6 @@ public class accountPageActivity extends AppCompatActivity {
 
             startActivity(intent);
         });
-
-        if ((getApplicationInfo().flags
-                & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-
-            findViewById(R.id.username).setOnLongClickListener(view -> {
-                AwardsPreview.show(this);
-                return true;
-            });
-        }
 
         ImageButton editTeam = findViewById(R.id.editTeam);
         ImageButton editDriver = findViewById(R.id.editDriver);

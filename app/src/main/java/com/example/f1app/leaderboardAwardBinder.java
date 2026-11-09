@@ -19,7 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /** Per-screen selection reads: coalesced by UID, up to three simultaneous requests. */
-public final class LeaderboardAwardBinder implements DefaultLifecycleObserver {
+public final class leaderboardAwardBinder implements DefaultLifecycleObserver {
     private static final int MAX_RUNNING=3;
     private static final long TTL_MS=45000L;
     private final AppCompatActivity activity;
@@ -32,23 +32,23 @@ public final class LeaderboardAwardBinder implements DefaultLifecycleObserver {
     private String actorUid;
     private View personalKey;
     private static final class Cached {
-        final DisplayedAwardApi.Selection selection;final long expires;
-        Cached(DisplayedAwardApi.Selection value){selection=value;expires=SystemClock.elapsedRealtime()+TTL_MS;}
+        final displayedAwardApi.Selection selection;final long expires;
+        Cached(displayedAwardApi.Selection value){selection=value;expires=SystemClock.elapsedRealtime()+TTL_MS;}
     }
-    private interface Callback{void accept(DisplayedAwardApi.Selection value,Exception error);}
+    private interface Callback{void accept(displayedAwardApi.Selection value, Exception error);}
     private static final class Pending {
         final String uid;final int epoch;final String actor;
         final List<Callback> callbacks=new ArrayList<>();
         Pending(String uid,int epoch,String actor){this.uid=uid;this.epoch=epoch;this.actor=actor;}
     }
     private static final class Slot {
-        final LeaderboardAwardBinder owner;
-        final AwardIconView icon;
-        final LeaderboardAwardToken token=new LeaderboardAwardToken();
+        final leaderboardAwardBinder owner;
+        final awardIconView icon;
+        final leaderboardAwardToken token=new leaderboardAwardToken();
         String uid;
-        Slot(LeaderboardAwardBinder owner,AwardIconView icon){this.owner=owner;this.icon=icon;}
+        Slot(leaderboardAwardBinder owner, awardIconView icon){this.owner=owner;this.icon=icon;}
     }
-    public LeaderboardAwardBinder(AppCompatActivity activity){
+    public leaderboardAwardBinder(AppCompatActivity activity){
         this.activity=activity;actorUid=FirebaseAuth.getInstance().getUid();activity.getLifecycle().addObserver(this);
     }
     private int dp(float value){return Math.round(value*activity.getResources().getDisplayMetrics().density);}
@@ -68,7 +68,7 @@ public final class LeaderboardAwardBinder implements DefaultLifecycleObserver {
         ViewGroup parent=(ViewGroup)text.getParent();int index=parent.indexOfChild(text);ViewGroup.LayoutParams old=text.getLayoutParams();parent.removeView(text);
         ConstraintLayout wrapper=new ConstraintLayout(activity);parent.addView(wrapper,index,old);
         if(text.getId()==View.NO_ID)text.setId(View.generateViewId());
-        AwardIconView icon=new AwardIconView(activity);icon.setId(View.generateViewId());icon.setVisibility(View.GONE);
+        awardIconView icon=new awardIconView(activity);icon.setId(View.generateViewId());icon.setVisibility(View.GONE);
         ConstraintLayout.LayoutParams tp=new ConstraintLayout.LayoutParams(-2,-2);
         tp.startToStart=0;tp.endToStart=icon.getId();tp.topToTop=0;tp.bottomToBottom=0;tp.constrainedWidth=true;tp.horizontalChainStyle=ConstraintLayout.LayoutParams.CHAIN_PACKED;tp.horizontalBias=0f;
         wrapper.addView(text,tp);
@@ -89,10 +89,10 @@ public final class LeaderboardAwardBinder implements DefaultLifecycleObserver {
             if(!alive()||slots.get(key)!=slot||!slot.token.matches(uid,token))return;
             if(error!=null){android.util.Log.w("LeaderboardAwards","Selected award unavailable; uid="+uid,error);return;}
             if(value.id==null){slot.icon.clear();slot.icon.setVisibility(View.GONE);return;}
-            AwardCatalogue.Entry entry=AwardCatalogue.find(value.id);if(entry==null)return;
-            String caption=activity.getString(ProfileAwardPresentation.title(value.id));String name=ProfileAwardPresentation.string(value.award,"name");
+            awardCatalogue.Entry entry= awardCatalogue.find(value.id);if(entry==null)return;
+            String caption=activity.getString(profileAwardPresentation.title(value.id));String name= profileAwardPresentation.string(value.award,"name");
             slot.icon.setVisibility(View.VISIBLE);
-            CatalogueAwardIcons.bind(slot.icon,entry,value.award,caption+(name.isEmpty()?"":": "+name),()->alive()&&slots.get(key)==slot&&slot.token.matches(uid,token));
+            catalogueAwardIcons.bind(slot.icon,entry,value.award,caption+(name.isEmpty()?"":": "+name),()->alive()&&slots.get(key)==slot&&slot.token.matches(uid,token));
         });
     }
     private void read(String uid,Callback callback){
@@ -107,7 +107,7 @@ public final class LeaderboardAwardBinder implements DefaultLifecycleObserver {
             Pending request=queue.remove();
             if(request.epoch!=epoch||pending.get(request.uid)!=request)continue;
             running++;
-            DisplayedAwardApi.get(request.uid,(value,error)->{
+            displayedAwardApi.get(request.uid,(value, error)->{
                 running--;
                 boolean current=alive()&&request.epoch==epoch&&Objects.equals(request.actor,FirebaseAuth.getInstance().getUid())&&pending.get(request.uid)==request;
                 if(pending.get(request.uid)==request)pending.remove(request.uid);

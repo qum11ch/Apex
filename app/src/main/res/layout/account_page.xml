@@ -14,11 +14,11 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/progressBarColor"
         android:indeterminateTintMode="src_atop"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_content"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -104,17 +104,12 @@
                     android:paddingStart="12dp"
                     android:paddingEnd="12dp">
 
-                    <TextView
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="13dp"
-                        android:minHeight="40dp"
-                        android:id="@+id/username"
+                    <include
+                        layout="@layout/view_profile_username_award"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:maxLines="1"
-                        android:textColor="@color/text_color_main"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+                        android:layout_marginStart="13dp"
+                        android:layout_marginTop="10dp" />
 
                     <TextView
                         android:layout_marginStart="13dp"

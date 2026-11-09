@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
+    android:background="@drawable/bg_displayed_award_picker_row"
+    android:minHeight="84dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:importantForAccessibility="noHideDescendants"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="12dp"
+        android:paddingBottom="10dp">
+
+        <FrameLayout
+            android:layout_width="64dp"
+            android:layout_height="64dp">
+
+            <com.example.f1app.awardIconView
+                android:id="@+id/pickerAwardIcon"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/pickerAwardNone"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="—"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/text_color_main"
+                android:textSize="24sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/pickerAwardTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+            android:textColor="@color/text_color_main"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/pickerAwardSelected"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/displayed_award_selected"
+            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+            android:textColor="@color/neuro_accent"
+            android:textSize="11sp"
+            android:visibility="invisible" />
+
+    </LinearLayout>
+
+    <!-- One click target for the whole row, including the custom medal view. -->
+    <View
+        android:id="@+id/pickerAwardClickTarget"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true" />
+
+</FrameLayout>

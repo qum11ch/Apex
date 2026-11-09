@@ -978,10 +978,10 @@
     <string name="awards_status_pending">Ожидает проверки</string>
     <string name="awards_details_status">Статус</string>
     <plurals name="award_condition_tenure_years">
-        <item quantity="one">Проведите в приложении %1$d полный календарный год с даты создания аккаунта. Переход на публичный ник не обнуляет этот срок.</item>
-        <item quantity="few">Проведите в приложении %1$d полных календарных года с даты создания аккаунта. Переход на публичный ник не обнуляет этот срок.</item>
-        <item quantity="many">Проведите в приложении %1$d полных календарных лет с даты создания аккаунта. Переход на публичный ник не обнуляет этот срок.</item>
-        <item quantity="other">Проведите в приложении %1$d полных календарных лет с даты создания аккаунта. Переход на публичный ник не обнуляет этот срок.</item>
+        <item quantity="one">Проведите в приложении %1$d полный календарный год с даты создания аккаунта.</item>
+        <item quantity="few">Проведите в приложении %1$d полных календарных года с даты создания аккаунта.</item>
+        <item quantity="many">Проведите в приложении %1$d полных календарных лет с даты создания аккаунта.</item>
+        <item quantity="other">Проведите в приложении %1$d полных календарных лет с даты создания аккаунта.</item>
     </plurals>
 
     <string name="displayed_award_title">Отображаемая награда</string>
@@ -998,6 +998,6 @@
     <string name="displayed_award_saved">Отображаемая награда сохранена</string>
     <string name="displayed_award_unavailable">Эта награда больше недоступна. Выбери другую.</string>
     <string name="displayed_award_hint">Можно выбрать только полученные медали и активные жетоны фанклубов.</string>
-    <string name="displayed_award_use">Показывать в профиле</string>
+    <string name="displayed_award_use">Отображать в профиле</string>
     <string name="displayed_award_retry">Повторить</string>
 </resources>

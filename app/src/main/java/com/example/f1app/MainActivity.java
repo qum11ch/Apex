@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
 
         ViewCompat.requestApplyInsets(root);
 
-        if (AuthSessionGate.redirectIfRequired(this, null)) {
+        if (authSessionGate.redirectIfRequired(this, null)) {
             return;
         }
 
@@ -341,7 +341,7 @@ public class MainActivity extends AppCompatActivity {
         if (accountNavigationInProgress) return;
 
         // Сохраняем ваш механизм обязательного повторного входа.
-        if (AuthSessionGate.redirectIfRequired(this, currentSeason)) {
+        if (authSessionGate.redirectIfRequired(this, currentSeason)) {
             return;
         }
 

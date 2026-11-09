@@ -6,7 +6,7 @@ import android.content.SharedPreferences;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public final class AuthSessionGate {
+public final class authSessionGate {
 
     private static final String PREFS = "auth_session_gate";
 
@@ -19,7 +19,7 @@ public final class AuthSessionGate {
     // Увеличиваем только когда нужен новый принудительный вход.
     private static final int REQUIRED_AUTH_SCHEMA = 1;
 
-    private AuthSessionGate() {
+    private authSessionGate() {
     }
 
     public static boolean redirectIfRequired(
