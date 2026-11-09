@@ -88,6 +88,7 @@ public class publicProfileActivity extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
         setContentView(R.layout.public_profile_activity);
+        AwardsUi.attachPublic(this);
 
         content = findViewById(R.id.main_content);
         cover = findViewById(R.id.header);

@@ -51,6 +51,7 @@ public class leaderboardAdapter extends RecyclerView.Adapter<leaderboardAdapter.
         h.initial.setVisibility(View.VISIBLE);
         h.avatar.setVisibility(View.GONE);
         h.boundUid = e.uid;
+        AwardsUi.bindRow(h.itemView, e.uid);
 
         String cached = AVATAR_URLS.get(e.uid);
         if (cached != null) {
@@ -66,6 +67,14 @@ public class leaderboardAdapter extends RecyclerView.Adapter<leaderboardAdapter.
                     showAvatar(h, e.uid, uri.toString());
                 })
                 .addOnFailureListener(error -> AVATAR_URLS.put(e.uid, NO_AVATAR));
+    }
+
+    @Override
+    public void onViewRecycled(@NonNull Holder h) {
+        AwardsUi.clearRow(h.itemView);
+        GlideApp.with(h.avatar).clear(h.avatar);
+        h.boundUid = null;
+        super.onViewRecycled(h);
     }
 
     private void showAvatar(Holder h, String uid, String url) {

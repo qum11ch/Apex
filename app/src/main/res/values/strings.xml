@@ -944,4 +944,11 @@
     <string name="awards_season_place_3">3rd place</string>
     <string name="awards_preview_size">%1$d dp</string>
     <string name="awards_preview_member">Member</string>
+
+    <string name="badges_section_title">Awards and tokens</string>
+    <string name="badges_loading">Loading awards…</string>
+    <string name="badges_empty">No awards yet</string>
+    <string name="badges_load_error">Could not load awards. Tap to retry.</string>
+    <string name="badges_sync_error">Could not check newly earned awards. Reopen your profile to retry.</string>
+    <string name="badges_recorded_on">Added: %1$s</string>
 </resources>

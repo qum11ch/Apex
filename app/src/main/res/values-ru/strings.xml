@@ -919,4 +919,11 @@
     <string name="awards_season_place_3">3 место</string>
     <string name="awards_preview_size">%1$d dp</string>
     <string name="awards_preview_member">Участник</string>
+
+    <string name="badges_section_title">Награды и жетоны</string>
+    <string name="badges_loading">Загрузка наград…</string>
+    <string name="badges_empty">Пока нет наград</string>
+    <string name="badges_load_error">Не удалось загрузить награды. Нажми, чтобы повторить.</string>
+    <string name="badges_sync_error">Не удалось проверить новые достижения. Открой профиль повторно.</string>
+    <string name="badges_recorded_on">Добавлено: %1$s</string>
 </resources>
