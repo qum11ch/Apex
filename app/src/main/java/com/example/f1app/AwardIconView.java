@@ -27,6 +27,7 @@ public final class AwardIconView extends FrameLayout {
     private static final String TAG = "AwardIconView";
     private final ImageView base;
     private final ImageView logo;
+    private com.bumptech.glide.RequestManager logoRequestManager;
     private final SeasonAwardRenderer seasonalAwards;
     private final MedalMetalText masteryMetalText;
     private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
@@ -114,7 +115,9 @@ public final class AwardIconView extends FrameLayout {
     public void clear() {
         seasonalAwards.clear();
         binding++;
-        GlideApp.with(logo).clear(logo);
+        if (logoRequestManager != null) {
+            logoRequestManager.clear(logo);
+        }
         logo.setImageDrawable(null);
         logo.clearColorFilter();
         logo.setImageTintList(null);
@@ -237,9 +240,13 @@ public final class AwardIconView extends FrameLayout {
         requestLayout();
         invalidate();
         if (imageUri == null) return;
+        if (!canLoadLogo()) return;
+        if (logoRequestManager == null) {
+            logoRequestManager = GlideApp.with(logo);
+        }
         final int request = binding;
         logo.setVisibility(INVISIBLE);
-        GlideApp.with(logo).load(imageUri).override(384, 384).fitCenter().dontAnimate()
+        logoRequestManager.load(imageUri).override(384, 384).fitCenter().dontAnimate()
                 .listener(new RequestListener<Drawable>() {
                     @Override public boolean onLoadFailed(GlideException error, Object model,
                             Target<Drawable> target, boolean first) {
@@ -260,6 +267,20 @@ public final class AwardIconView extends FrameLayout {
                         return false;
                     }
                 }).into(logo);
+    }
+
+    private boolean canLoadLogo() {
+        Context owner = getContext();
+        while (owner instanceof android.content.ContextWrapper) {
+            if (owner instanceof android.app.Activity) {
+                android.app.Activity activity = (android.app.Activity) owner;
+                return !activity.isDestroyed() && !activity.isFinishing();
+            }
+            Context baseContext = ((android.content.ContextWrapper) owner).getBaseContext();
+            if (baseContext == owner) break;
+            owner = baseContext;
+        }
+        return true;
     }
 
     private String normalize(String value) {

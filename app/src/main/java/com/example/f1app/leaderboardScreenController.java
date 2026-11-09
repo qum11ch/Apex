@@ -55,6 +55,7 @@ public final class leaderboardScreenController {
 
     private final RecyclerView list;
     private final Rows adapter;
+    private final LeaderboardAwardBinder selectedAwards;
     private final SwipeRefreshLayout swipe;
     private final ProgressBar progress;
     private final TextView empty;
@@ -86,6 +87,7 @@ public final class leaderboardScreenController {
             ScopeAppearance appearance
     ) {
         this.activity = activity;
+        selectedAwards = new LeaderboardAwardBinder(activity);
         this.appearance = appearance;
         this.season = season;
 
@@ -272,6 +274,8 @@ public final class leaderboardScreenController {
     }
 
     public void reload() {
+        selectedAwards.refresh();
+        selectedAwards.clearPersonal();
         final int request = ++generation;
         final String uid = FirebaseAuth.getInstance().getUid();
 
@@ -346,6 +350,7 @@ public final class leaderboardScreenController {
                             me.points
                     ));
                     personalSummary.setVisibility(View.VISIBLE);
+                    selectedAwards.bindPersonal(personalSummary, me.uid);
 
                     schedulePersonalVisibility();
                 }
@@ -778,6 +783,7 @@ public final class leaderboardScreenController {
     }
 
     public void destroy() {
+        selectedAwards.destroy();
         destroyed = true;
         generation++;
     }
@@ -807,6 +813,7 @@ public final class leaderboardScreenController {
         @Override
         public void onBindViewHolder(RowHolder holder, int position) {
             leaderboardEntry entry = entries.get(position);
+            selectedAwards.bindRow(holder.itemView, entry.uid);
 
             holder.itemView.setOnClickListener(v ->
                     openPublicProfile(entry.uid)
@@ -898,6 +905,7 @@ public final class leaderboardScreenController {
 
         @Override
         public void onViewRecycled(RowHolder holder) {
+            selectedAwards.clear(holder.itemView);
             holder.boundUid = null;
             GlideApp.with(holder.avatar).clear(holder.avatar);
             holder.itemView.setOnClickListener(null);
