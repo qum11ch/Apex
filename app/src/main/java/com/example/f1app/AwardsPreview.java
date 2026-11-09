@@ -88,19 +88,51 @@ public final class AwardsPreview {
         item(activity, medals4, R.string.awards_member_5_year).showMedal(
                 R.drawable.pit_pass_five_years, activity.getString(R.string.awards_member_5_year));
 
+        String driverCode = "HAM";
+        int championshipsCount = 7;
+
         LinearLayout sizes = row(activity, content);
+
         for (int size : new int[]{24, 32, 48}) {
             LinearLayout cell = new LinearLayout(activity);
             cell.setOrientation(LinearLayout.VERTICAL);
             cell.setGravity(Gravity.CENTER);
-            sizes.addView(cell, new LinearLayout.LayoutParams(0, -2, 1f));
+
+            sizes.addView(
+                    cell,
+                    new LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1f
+                    )
+            );
+
             AwardIconView badge = new AwardIconView(activity);
-            badge.showMedal(R.drawable.pit_pass_correct_50,
-                    activity.getString(R.string.awards_correct_50));
-            cell.addView(badge, new LinearLayout.LayoutParams(dp(activity, size), dp(activity, size)));
+
+            badge.showDriver(
+                    driverCode,
+                    championshipsCount,
+                    activity.getString(R.string.awards_fan_driver)
+                            + ": "
+                            + driverCode
+            );
+
+            cell.addView(
+                    badge,
+                    new LinearLayout.LayoutParams(
+                            dp(activity, size),
+                            dp(activity, size)
+                    )
+            );
+
             TextView label = new TextView(activity);
-            label.setText(activity.getString(R.string.awards_preview_size, size));
-            label.setTextColor(ContextCompat.getColor(activity, R.color.neuro_secondary));
+            label.setText(
+                    activity.getString(R.string.awards_preview_size, size)
+            );
+            label.setTextColor(
+                    ContextCompat.getColor(activity, R.color.neuro_secondary)
+            );
+
             cell.addView(label);
         }
 

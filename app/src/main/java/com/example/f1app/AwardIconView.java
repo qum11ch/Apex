@@ -56,7 +56,7 @@ public final class AwardIconView extends FrameLayout {
     private static final float FANCLUB_CENTER_X = 64f;
     private static final float FANCLUB_CENTER_Y = 62f;
     private int driverChampionshipsCount;
-    private final ChampionDriverOutline championDriverOutline = new ChampionDriverOutline();
+    private final ChampionDriverMarker championDriverMarker;
     private boolean driverFanclub;
 
     private final Typeface driverCodeTypeface =
@@ -68,6 +68,7 @@ public final class AwardIconView extends FrameLayout {
         super(context, attrs);
         seasonalAwards = new SeasonAwardRenderer(context);
         masteryMetalText = new MedalMetalText(context);
+        championDriverMarker = new ChampionDriverMarker(context);
         whiteDriverText = new WhiteMetalText(context);
         whiteParticipantText = new WhiteMetalText(context);
         whiteParticipantYearText = new WhiteMetalText(context);
@@ -302,7 +303,11 @@ public final class AwardIconView extends FrameLayout {
         canvas.scale(scale, scale);
 
         if (driverFanclub) {
-            if (driverChampionshipsCount > 0) championDriverOutline.draw(canvas);
+            if (driverChampionshipsCount > 0) {
+                float badgeSizeDp = Math.min(contentW, contentH)
+                        / getResources().getDisplayMetrics().density;
+                championDriverMarker.draw(canvas, driverChampionshipsCount, badgeSizeDp);
+            }
             whiteDriverText.draw(
                     canvas, mainText,
                     centerX, centerY, maxTextW, maxTextH
@@ -312,9 +317,27 @@ public final class AwardIconView extends FrameLayout {
         }
 
         if (seasonParticipant) {
+            float skewX = -0.16f;
+
+            // Запас по ширине: после скоса надпись станет немного шире.
+            float availableWidth = Math.max(
+                    1f,
+                    maxTextW - Math.abs(skewX) * maxTextH
+            );
+
+            int textState = canvas.save();
+
+            canvas.translate(centerX, centerY);
+            canvas.skew(skewX, 0f);
+            canvas.translate(-centerX, -centerY);
+
             whiteParticipantText.draw(
-                    canvas, mainText,
-                    centerX, centerY, maxTextW, maxTextH
+                    canvas,
+                    mainText,
+                    centerX,
+                    centerY,
+                    availableWidth,
+                    maxTextH
             );
 
             whiteParticipantYearText.draw(
@@ -322,6 +345,7 @@ public final class AwardIconView extends FrameLayout {
                     123f, 96f, 40f, 9f
             );
 
+            canvas.restoreToCount(textState);
             canvas.restoreToCount(state);
             return;
         }
