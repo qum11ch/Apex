@@ -155,14 +155,6 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
         NestedScrollView scrollView = findViewById(R.id.scrollView);
 
-        swipeRefresh.setColorSchemeColors(
-                ContextCompat.getColor(this, R.color.red)
-        );
-
-        swipeRefresh.setProgressBackgroundColorSchemeColor(
-                ContextCompat.getColor(this, R.color.header_color)
-        );
-
         swipeRefresh.setOnChildScrollUpCallback(
                 (parent, child) -> scrollView.canScrollVertically(-1)
         );
@@ -796,6 +788,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 getString(R.string.neuro_prediction_progress_model_put)
         );
 
+        Log.i("py_predict_results", requestData.toString() + " ");
+
         Log.i("py_predict_results", "Calling Firebase Callable Function");
 
         FirebaseFunctions functions = FirebaseFunctions.getInstance("us-central1");
@@ -1162,6 +1156,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         driversCodes.put("Valtteri Bottas", "BOT");
         driversCodes.put("Arvid Lindblad", "LIN");
         driversCodes.put("Sergio Pérez", "PER");
+        driversCodes.put("Rafael Camara", "CAM");
+        driversCodes.put("Ryo Hirakawa", "HIR");
 
         ArrayList<String> results = new ArrayList<>();
         for(int i = 0; i < drivers.size(); i++){

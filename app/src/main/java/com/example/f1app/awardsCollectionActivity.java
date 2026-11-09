@@ -546,7 +546,7 @@ public final class awardsCollectionActivity extends AppCompatActivity {
         text.setTextAppearance(
                 this,
                 heading
-                        ? R.style.TextStyle_GoodTiming_Regular_ForHeader
+                        ? R.style.TextStyle_Gram_Regular_Secondary
                         : R.style.TextStyle_Gram_Regular_Simple
         );
 
@@ -698,13 +698,13 @@ public final class awardsCollectionActivity extends AppCompatActivity {
 
             h.bar.setProgressTintList(
                     ColorStateList.valueOf(
-                            color(R.color.neuro_accent)
+                            color(R.color.text_color_main)
                     )
             );
 
             h.bar.setProgressBackgroundTintList(
                     ColorStateList.valueOf(
-                            color(R.color.stroke_option_color)
+                            color(R.color.grey)
                     )
             );
 

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -15,6 +14,13 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.Map;
 
+import android.util.Log;
+import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
+
 final class awardDetailsDialog extends Dialog {
 
     private final Context ownerContext;
@@ -22,7 +28,10 @@ final class awardDetailsDialog extends Dialog {
     private final Map<String, Object> badge;
     private final String caption;
     private final awardIconView icon;
+    private final String selectionOwnerUid;
 
+    private boolean saving;
+    private int selectionRequest;
     private boolean closed;
 
     awardDetailsDialog(
@@ -34,6 +43,8 @@ final class awardDetailsDialog extends Dialog {
             String status
     ) {
         super(context);
+
+        selectionOwnerUid = FirebaseAuth.getInstance().getUid();
 
         ownerContext = context;
         this.entry = entry;
@@ -57,7 +68,7 @@ final class awardDetailsDialog extends Dialog {
         conditionView.setText(requirement);
 
         bindIdentity();
-        bindIconState(data.known);
+        icon.setAlpha(1f);
         bindProgress(data);
         bindRecordedDate();
         bindActions();
@@ -74,15 +85,6 @@ final class awardDetailsDialog extends Dialog {
         String name = profileAwardPresentation.string(badge, "name");
         identity.setText(name);
         identity.setVisibility(name.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
-    private void bindIconState(boolean known) {
-        if (!known) {
-            icon.setAlpha(0.7f);
-            return;
-        }
-
-        icon.setAlpha(badge == null ? 0.45f : 1f);
     }
 
     private void bindProgress(awardsCollectionActivity.Snapshot data) {
@@ -145,30 +147,82 @@ final class awardDetailsDialog extends Dialog {
     }
 
     private void bindActions() {
-        View use = findViewById(R.id.awardDetailsUse);
-        View done = findViewById(R.id.awardDetailsDone);
+        TextView use = findViewById(R.id.awardDetailsUse);
 
-        boolean canChoose = badge != null && ownerContext instanceof awardsCollectionActivity;
+        boolean canChoose = badge != null
+                && ownerContext instanceof awardsCollectionActivity
+                && selectionOwnerUid != null;
+
         use.setVisibility(canChoose ? View.VISIBLE : View.GONE);
 
         if (canChoose) {
-            use.setOnClickListener(view -> {
-                if (!isOwnerAvailable()) {
-                    return;
-                }
+            use.setOnClickListener(view -> saveDisplayedAward());
+        }
+    }
 
-                dismiss();
-
-                Intent intent = new Intent(
-                        ownerContext,
-                        displayedAwardPickerActivity.class
-                );
-                intent.putExtra("preselectAwardId", entry.id);
-                ownerContext.startActivity(intent);
-            });
+    private void saveDisplayedAward() {
+        if (saving
+                || badge == null
+                || closed
+                || !isShowing()
+                || !isOwnerAvailable()
+                || selectionOwnerUid == null
+                || !Objects.equals(
+                selectionOwnerUid,
+                FirebaseAuth.getInstance().getUid()
+        )) {
+            return;
         }
 
-        done.setOnClickListener(view -> dismiss());
+        TextView use = findViewById(R.id.awardDetailsUse);
+
+        saving = true;
+        final int request = ++selectionRequest;
+
+        use.setEnabled(false);
+        use.setText(R.string.displayed_award_saving);
+
+        displayedAwardApi.set(entry.id, (selection, error) -> {
+            if (request != selectionRequest
+                    || closed
+                    || !isShowing()
+                    || !isOwnerAvailable()
+                    || !Objects.equals(
+                    selectionOwnerUid,
+                    FirebaseAuth.getInstance().getUid()
+            )) {
+                return;
+            }
+
+            saving = false;
+
+            if (error != null || selection == null) {
+                use.setEnabled(true);
+                use.setText(R.string.displayed_award_use);
+
+                Log.w(
+                        "AwardDetails",
+                        "Failed to set displayed award",
+                        error
+                );
+
+                Toast.makeText(
+                        getContext(),
+                        R.string.displayed_award_save_error,
+                        Toast.LENGTH_SHORT
+                ).show();
+
+                return;
+            }
+
+            Toast.makeText(
+                    getContext(),
+                    R.string.displayed_award_saved,
+                    Toast.LENGTH_SHORT
+            ).show();
+
+            dismiss();
+        });
     }
 
     @Override
@@ -246,7 +300,15 @@ final class awardDetailsDialog extends Dialog {
     @Override
     protected void onStop() {
         closed = true;
+        selectionRequest++;
+        saving = false;
+
+        TextView use = findViewById(R.id.awardDetailsUse);
+        use.setEnabled(true);
+        use.setText(R.string.displayed_award_use);
+
         icon.clear();
+
         super.onStop();
     }
 

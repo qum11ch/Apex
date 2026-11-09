@@ -62,16 +62,17 @@
             android:gravity="center_vertical"
             android:text="—"
             android:textColor="@color/text_color_main"
-            android:textSize="14sp"
+            android:textSize="18sp"
             android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
 
         <ImageButton
+            android:padding="14dp"
+            android:scaleType="fitCenter"
             android:id="@+id/awardsCollectionRefresh"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/refresh"
-            android:padding="12dp"
             android:src="@android:drawable/ic_popup_sync"
             app:tint="@color/text_color_main" />
     </LinearLayout>
@@ -80,7 +81,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingStart="12dp"
-        android:paddingEnd="12dp">
+        android:paddingEnd="12dp"
+        android:layout_marginBottom="5dp">
         <TextView
             android:id="@+id/awardsFilterAll"
             android:layout_width="0dp"
