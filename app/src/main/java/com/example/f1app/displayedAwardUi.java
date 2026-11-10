@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -50,18 +51,66 @@ public final class displayedAwardUi {
         observe(activity, true, icon, title, state);
     }
 
-    private static void observe(AppCompatActivity activity, boolean own, awardIconView icon, TextView title, TextView state) {
+    /**
+     * Shows the stored selection immediately, then confirms it with the server.
+     * A failed refresh never clears what is already on screen.
+     */
+    private static void observe(
+            final AppCompatActivity activity,
+            final boolean own,
+            final awardIconView icon,
+            final TextView title,
+            final TextView state
+    ) {
         activity.getLifecycle().addObserver(new DefaultLifecycleObserver() {
+
             private boolean started;
             private boolean hasValue;
             private int generation;
             private int session;
+            private int bindToken;
             private String uid;
             private String key;
+            private displayedAwardApi.Selection shown;
             private DatabaseReference watched;
             private ValueEventListener listener;
 
-            private void load() {
+            private boolean isCurrent(int request, int expectedSession, String requested) {
+                if (!started
+                        || generation != request
+                        || session != expectedSession
+                        || activity.isFinishing()
+                        || activity.isDestroyed()
+                        || !requested.equals(uid)) {
+                    return false;
+                }
+
+                return !own || requested.equals(FirebaseAuth.getInstance().getUid());
+            }
+
+            private void showCached(final int expectedSession, final String requested) {
+                displayedAwardRepository.peek(requested, cached -> {
+                    if (cached == null || hasValue) {
+                        return;
+                    }
+
+                    if (!started
+                            || session != expectedSession
+                            || activity.isFinishing()
+                            || activity.isDestroyed()
+                            || !requested.equals(uid)) {
+                        return;
+                    }
+
+                    if (own && !requested.equals(FirebaseAuth.getInstance().getUid())) {
+                        return;
+                    }
+
+                    show(cached.selection, requested);
+                });
+            }
+
+            private void load(boolean force, boolean matchRemote, String remoteId) {
                 if (!started || uid == null) {
                     return;
                 }
@@ -70,96 +119,149 @@ public final class displayedAwardUi {
                 final int expectedSession = session;
                 final String requested = uid;
 
-                displayedAwardApi.get(uid, (selection, error) -> {
-                    if (!started || generation != request || session != expectedSession
-                            || activity.isFinishing() || activity.isDestroyed() || !requested.equals(uid)) {
-                        return;
-                    }
-
-                    if (own && !requested.equals(FirebaseAuth.getInstance().getUid())) {
+                displayedAwardApi.Callback callback = (selection, error) -> {
+                    if (!isCurrent(request, expectedSession, requested)) {
                         return;
                     }
 
                     if (error != null) {
-                        android.util.Log.w("DisplayedAward", "Selection unavailable", error);
-                        if (title != null) {
-                            if (!hasValue) {
+                        Log.w("DisplayedAward", "Selection unavailable", error);
+
+                        if (!hasValue) {
+                            if (title != null) {
                                 title.setText(R.string.displayed_award_load_error);
                             }
-                            state.setText(R.string.displayed_award_load_error);
+
+                            if (state != null) {
+                                state.setText(R.string.displayed_award_load_error);
+                            }
                         }
+
                         return;
                     }
 
-                    hasValue = true;
-                    icon.clear();
+                    show(selection, requested);
+                };
 
-                    if (selection.id == null) {
-                        icon.setVisibility(View.GONE);
-                        if (title != null) {
-                            title.setText(R.string.displayed_award_none);
-                        }
-                    } else {
-                        icon.setVisibility(View.VISIBLE);
-                        awardCatalogue.Entry entry = awardCatalogue.find(selection.id);
-                        String caption = activity.getString(profileAwardPresentation.title(selection.id));
-                        String name = profileAwardPresentation.string(selection.award, "name");
+                if (matchRemote) {
+                    displayedAwardRepository.loadMatching(requested, remoteId, callback);
+                } else {
+                    displayedAwardRepository.load(requested, force, callback);
+                }
+            }
 
-                        catalogueAwardIcons.bind(
-                                icon,
-                                entry,
-                                selection.award,
-                                caption + (name.isEmpty() ? "" : ": " + name),
-                                () -> started && generation == request && session == expectedSession && requested.equals(uid)
-                        );
-
-                        if (title != null) {
-                            title.setText(caption);
-                        }
-                    }
-                    if (state != null)
+            private void show(displayedAwardApi.Selection selection, final String requested) {
+                if (hasValue && displayedAwardRepository.sameSelection(shown, selection)) {
+                    if (state != null) {
                         state.setText(R.string.displayed_award_subtitle);
-                });
+                    }
+
+                    return;
+                }
+
+                hasValue = true;
+                shown = selection;
+
+                final int token = ++bindToken;
+                icon.clear();
+
+                awardCatalogue.Entry entry = selection.id == null
+                        ? null
+                        : awardCatalogue.find(selection.id);
+
+                if (entry == null) {
+                    icon.setVisibility(View.GONE);
+
+                    if (title != null) {
+                        title.setText(R.string.displayed_award_none);
+                    }
+                } else {
+                    icon.setVisibility(View.VISIBLE);
+
+                    String caption = activity.getString(
+                            profileAwardPresentation.title(selection.id)
+                    );
+                    String name = profileAwardPresentation.string(selection.award, "name");
+
+                    catalogueAwardIcons.bind(
+                            icon,
+                            entry,
+                            selection.award,
+                            caption + (name.isEmpty() ? "" : ": " + name),
+                            () -> started && bindToken == token && requested.equals(uid)
+                    );
+
+                    if (title != null) {
+                        title.setText(caption);
+                    }
+                }
+
+                if (state != null) {
+                    state.setText(R.string.displayed_award_subtitle);
+                }
             }
 
             @Override
             public void onStart(@NonNull LifecycleOwner owner) {
-                started=true;
+                started = true;
                 session++;
-                String current = own ? FirebaseAuth.getInstance().getUid()
+
+                String current = own
+                        ? FirebaseAuth.getInstance().getUid()
                         : activity.getIntent().getStringExtra("profileUid");
-                if (!Objects.equals(current, uid)){
+
+                if (!Objects.equals(current, uid)) {
                     uid = current;
                     hasValue = false;
+                    shown = null;
+                    bindToken++;
                     icon.clear();
                     icon.setVisibility(View.GONE);
                 }
 
-                if (uid == null || uid.isEmpty() || uid.matches(".*[.#$\\[\\]/\\p{Cntrl}].*"))
+                if (uid == null
+                        || uid.isEmpty()
+                        || uid.matches(".*[.#$\\[\\]/\\p{Cntrl}].*")) {
                     return;
+                }
 
                 key = null;
-                watched = FirebaseDatabase.getInstance().getReference(own
-                        ? "users"
-                        : "publicProfiles").child(uid);
+                showCached(session, uid);
+
+                watched = FirebaseDatabase.getInstance()
+                        .getReference(own ? "users" : "publicProfiles")
+                        .child(uid);
 
                 listener = new ValueEventListener() {
+
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        String next = String.valueOf(snapshot.child("displayedAwardId").getValue());
-                        if (own)
-                            next += "|" + String.valueOf(snapshot.child("choiceDriver").getValue())
-                                    + "|" + String.valueOf(snapshot.child("choiceTeam").getValue());
-                        if (!Objects.equals(key, next)){
-                            key = next;
-                            load();
+                        Object remote = snapshot.child("displayedAwardId").getValue();
+                        String remoteId = remote instanceof String ? (String) remote : null;
+                        String next = String.valueOf(remote);
+
+                        if (own) {
+                            next += "|" + snapshot.child("choiceDriver").getValue()
+                                    + "|" + snapshot.child("choiceTeam").getValue();
+                        }
+
+                        boolean first = key == null;
+                        boolean changed = !first && !Objects.equals(key, next);
+                        key = next;
+
+                        if (changed) {
+                            load(true, false, null);
+                        } else if (first) {
+                            load(false, true, remoteId);
                         }
                     }
+
                     @Override
-                    public void onCancelled(@NonNull DatabaseError error){
-                        load();
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        load(false, false, null);
                     }
                 };
+
                 watched.addValueEventListener(listener);
             }
 
@@ -168,15 +270,20 @@ public final class displayedAwardUi {
                 started = false;
                 session++;
                 generation++;
-                if (watched != null && listener != null)
+
+                // Forget the bound view state so the next start rebinds the icon.
+                shown = null;
+
+                if (watched != null && listener != null) {
                     watched.removeEventListener(listener);
+                }
 
                 watched = null;
                 listener = null;
             }
 
             @Override
-            public void onDestroy(@NonNull LifecycleOwner owner){
+            public void onDestroy(@NonNull LifecycleOwner owner) {
                 icon.clear();
             }
         });
