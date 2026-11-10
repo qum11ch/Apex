@@ -731,6 +731,18 @@ public class publicProfileActivity extends AppCompatActivity {
                             favorites.get("choiceDriver")
                     );
 
+                    String mDriverName;
+                    String mDriverFamilyName;
+                    String[] driverFullname = driver.split(" ");
+
+                    if (driver.equals("Andrea Kimi Antonelli")) {
+                        mDriverName = driverFullname[0] + " " + driverFullname[1];
+                        mDriverFamilyName = driverFullname[2];
+                    } else {
+                        mDriverName = driverFullname[0];
+                        mDriverFamilyName = driverFullname[1];
+                    }
+
                     if (team == null) {
                         favoriteTeamName.setText(
                                 R.string.public_favorite_not_selected
@@ -754,9 +766,8 @@ public class publicProfileActivity extends AppCompatActivity {
                         );
                         favoriteDriverState.setVisibility(View.VISIBLE);
                     } else {
-                        // Не пытаемся угадать структуру составного имени.
-                        favoriteDriverName.setText(driver);
-                        favoriteDriverFamilyName.setText("");
+                        favoriteDriverName.setText(mDriverName);
+                        favoriteDriverFamilyName.setText(mDriverFamilyName);
                         loadFavoriteDriver(driver, request);
                     }
                 })

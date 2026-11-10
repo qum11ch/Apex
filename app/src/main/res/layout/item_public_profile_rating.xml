@@ -11,7 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text_color_main"
-        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
+        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+        android:textStyle="bold"
         android:textSize="16sp" />
 
     <LinearLayout

@@ -1025,4 +1025,6 @@
     <string name="displayed_award_hint">Only earned medals and active fan-club tokens can be selected.</string>
     <string name="displayed_award_use">Display in profile</string>
     <string name="displayed_award_retry">Retry</string>
+
+    <string name="displayed_award_refresh_error">Couldn’t update the list</string>
 </resources>

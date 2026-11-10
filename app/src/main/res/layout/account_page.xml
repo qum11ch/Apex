@@ -234,13 +234,15 @@
                     </LinearLayout>
 
                     <TextView
+                        android:layout_marginStart="13dp"
                         android:layout_marginTop="15dp"
                         android:gravity="bottom"
                         android:textSize="18sp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/account_fav_text"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"/>
+                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo"
+                        android:textStyle="bold"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"

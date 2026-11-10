@@ -1000,4 +1000,6 @@
     <string name="displayed_award_hint">Можно выбрать только полученные медали и активные жетоны фанклубов.</string>
     <string name="displayed_award_use">Отображать в профиле</string>
     <string name="displayed_award_retry">Повторить</string>
+
+    <string name="displayed_award_refresh_error">Не удалось обновить список</string>
 </resources>

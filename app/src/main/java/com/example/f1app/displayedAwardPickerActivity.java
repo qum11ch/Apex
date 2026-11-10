@@ -1,6 +1,8 @@
 package com.example.f1app;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +19,27 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * Chooses which earned award is shown next to the user's name.
+ *
+ * What the screen shows depends on what is known:
+ * - stored data available: the list appears at once and only a thin indicator
+ *   runs while the server is asked again;
+ * - nothing stored yet: a skeleton of the list is shown (after a short delay,
+ *   so a fast load does not flash it);
+ * - nothing stored and the request failed: a centered message with a retry button;
+ * - short messages (save error, refresh error, award no longer available)
+ *   use a banner above the save button and never replace the list.
+ */
 public final class displayedAwardPickerActivity extends AppCompatActivity {
 
     private static final String TAG = "DisplayedAwardPicker";
@@ -30,17 +47,28 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
     private static final String STATE_OWNER_UID = "ownerUid";
     private static final String STATE_HAS_CANDIDATE = "hasCandidate";
     private static final String STATE_PRESELECTION = "preselectionApplied";
+    private static final long SKELETON_DELAY_MS = 120L;
 
     private final Map<String, Map<String, Object>> available = new LinkedHashMap<>();
     private final Map<String, RowViews> rowViews = new LinkedHashMap<>();
+    private final Handler main = new Handler(Looper.getMainLooper());
+    private final Runnable revealSkeleton = this::showSkeletonNow;
 
     private LinearLayout rows;
-    private TextView state;
-    private TextView save;
+    private View scroll;
+    private View statePanel;
     private View retry;
+    private View banner;
+    private TextView bannerText;
+    private TextView bannerAction;
+    private TextView save;
+    private ShimmerFrameLayout skeleton;
+    private ShimmerFrameLayout updating;
 
     private String uid;
     private String candidate;
+    private String renderedFingerprint;
+    private Runnable bannerRunnable;
 
     private int generation;
     private int renderGeneration;
@@ -48,10 +76,15 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
     private boolean started;
     private boolean awardsLoaded;
     private boolean selectionLoaded;
+    private boolean awardsPending;
+    private boolean selectionPending;
     private boolean loadFailed;
     private boolean saving;
     private boolean preselectionApplied;
     private boolean hasCandidate;
+    private boolean skeletonScheduled;
+
+    // ---------------------------------------------------------------- lifecycle
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,13 +93,27 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_displayed_award_picker);
 
         rows = findViewById(R.id.displayedAwardPickerRows);
-        state = findViewById(R.id.displayedAwardPickerState);
-        save = findViewById(R.id.displayedAwardPickerSave);
+        scroll = findViewById(R.id.displayedAwardPickerScroll);
+        statePanel = findViewById(R.id.displayedAwardPickerStatePanel);
         retry = findViewById(R.id.displayedAwardPickerRetry);
+        banner = findViewById(R.id.displayedAwardPickerBanner);
+        bannerText = findViewById(R.id.displayedAwardPickerBannerText);
+        bannerAction = findViewById(R.id.displayedAwardPickerBannerAction);
+        save = findViewById(R.id.displayedAwardPickerSave);
+        skeleton = findViewById(R.id.displayedAwardPickerSkeleton);
+        updating = findViewById(R.id.displayedAwardPickerUpdating);
 
         findViewById(R.id.displayedAwardPickerBack).setOnClickListener(view -> finish());
-        retry.setOnClickListener(view -> load());
+        retry.setOnClickListener(view -> load(true));
         save.setOnClickListener(view -> saveChoice());
+
+        bannerAction.setOnClickListener(view -> {
+            Runnable action = bannerRunnable;
+
+            if (action != null) {
+                action.run();
+            }
+        });
 
         setupInsets();
 
@@ -135,6 +182,8 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
             hasCandidate = false;
             preselectionApplied = false;
             saving = false;
+            awardsLoaded = false;
+            selectionLoaded = false;
             available.clear();
             clearRows();
         }
@@ -146,7 +195,7 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
             return;
         }
 
-        load();
+        load(false);
     }
 
     @Override
@@ -154,6 +203,14 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
         started = false;
         generation++;
         renderGeneration++;
+        awardsPending = false;
+        selectionPending = false;
+
+        main.removeCallbacks(revealSkeleton);
+        skeletonScheduled = false;
+        skeleton.stopShimmer();
+        updating.stopShimmer();
+
         super.onStop();
     }
 
@@ -180,104 +237,171 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
                 && Objects.equals(uid, FirebaseAuth.getInstance().getUid());
     }
 
-    private boolean canSave() {
-        return awardsLoaded && selectionLoaded && !loadFailed && !saving;
+    private boolean haveData() {
+        return awardsLoaded && selectionLoaded;
     }
 
-    private void load() {
+    private boolean canSave() {
+        return haveData() && !saving;
+    }
+
+    // ------------------------------------------------------------------ loading
+
+    /**
+     * Shows stored data first, then asks the repositories for fresh data.
+     * {@code force} is used by the retry actions only: stored data stays on
+     * screen until the answer arrives.
+     */
+    private void load(boolean force) {
         if (!started || saving || uid == null) {
             return;
         }
 
-        int request = ++generation;
-        awardsLoaded = false;
-        selectionLoaded = false;
+        final int request = ++generation;
+        final String requested = uid;
+
         loadFailed = false;
+        awardsPending = true;
+        selectionPending = true;
+        hideBanner();
 
-        state.setText(R.string.displayed_award_loading);
-        retry.setVisibility(View.GONE);
-        clearRows();
-        updateControls();
+        if (force) {
+            awardsRepository.invalidate(requested);
+            displayedAwardRepository.markStale(requested);
+        }
 
-        awardsRepository.invalidate(uid);
-        awardsRepository.load(uid, (badges, error) -> {
+        updateUi();
+
+        awardsRepository.peek(requested, snapshot -> {
+            if (!active(request) || snapshot == null || awardsLoaded) {
+                return;
+            }
+
+            applyAwards(snapshot.badges);
+            render();
+        });
+
+        displayedAwardRepository.peek(requested, cached -> {
+            if (!active(request) || cached == null || selectionLoaded) {
+                return;
+            }
+
+            applySelection(cached.selection);
+            render();
+        });
+
+        awardsRepository.load(requested, (badges, error) -> {
             if (!active(request)) {
                 return;
             }
+
+            awardsPending = false;
 
             if (error != null || badges == null) {
-                failedLoad(error);
+                refreshFailed(error);
                 return;
             }
 
-            available.clear();
-
-            for (Map<String, Object> badge : profileAwardPresentation.normalize(badges)) {
-                String id = profileAwardPresentation.string(badge, "id");
-                available.put(id, badge);
-            }
-
-            awardsLoaded = true;
-            ready();
+            applyAwards(badges);
+            render();
         });
 
-        displayedAwardApi.get(uid, (value, error) -> {
+        displayedAwardRepository.load(requested, false, (value, error) -> {
             if (!active(request)) {
                 return;
             }
 
+            selectionPending = false;
+
             if (error != null || value == null) {
-                failedLoad(error);
+                refreshFailed(error);
                 return;
             }
 
-            if (!hasCandidate) {
-                candidate = value.id;
-                hasCandidate = true;
-            }
-
-            selectionLoaded = true;
-            ready();
+            applySelection(value);
+            render();
         });
     }
 
-    private void failedLoad(Exception error) {
-        loadFailed = true;
-        state.setText(R.string.displayed_award_list_error);
-        retry.setVisibility(View.VISIBLE);
-        updateControls();
-        Log.w(TAG, "Picker loading failed", error);
+    private void applyAwards(List<Map<String, Object>> badges) {
+        available.clear();
+
+        for (Map<String, Object> badge : profileAwardPresentation.normalize(badges)) {
+            String id = profileAwardPresentation.string(badge, "id");
+            available.put(id, badge);
+        }
+
+        awardsLoaded = true;
     }
 
-    private void ready() {
-        if (!awardsLoaded || !selectionLoaded || loadFailed) {
+    private void applySelection(displayedAwardApi.Selection value) {
+        // Follow the server's choice until the user picks something themselves.
+        if (!hasCandidate) {
+            candidate = value.id;
+        }
+
+        selectionLoaded = true;
+    }
+
+    private void refreshFailed(Exception error) {
+        Log.w(TAG, "Picker loading failed", error);
+
+        if (haveData()) {
+            showBanner(R.string.displayed_award_refresh_error, () -> load(true));
+        } else {
+            loadFailed = true;
+        }
+
+        updateUi();
+    }
+
+    // ---------------------------------------------------------------- rendering
+
+    private void render() {
+        if (haveData()) {
+            applyPreselection();
+
+            if (!awardsPending) {
+                dropUnavailableCandidate();
+            }
+
+            String fingerprint = awardsCacheStore.fingerprint(new ArrayList<>(available.values()));
+
+            if (!fingerprint.equals(renderedFingerprint)) {
+                renderRows();
+                renderedFingerprint = fingerprint;
+            } else {
+                updateSelection();
+            }
+        }
+
+        updateUi();
+    }
+
+    private void applyPreselection() {
+        if (preselectionApplied) {
             return;
         }
 
-        if (!preselectionApplied) {
-            String requested = getIntent().getStringExtra("preselectAwardId");
+        String requested = getIntent().getStringExtra("preselectAwardId");
 
-            if (requested != null && available.containsKey(requested)) {
-                candidate = requested;
-            }
-
+        if (requested == null) {
+            preselectionApplied = true;
+        } else if (available.containsKey(requested)) {
+            candidate = requested;
+            hasCandidate = true;
+            preselectionApplied = true;
+        } else if (!awardsPending) {
             preselectionApplied = true;
         }
+    }
 
-        boolean unavailable = candidate != null && !available.containsKey(candidate);
-
-        if (unavailable) {
+    /** Checked only against a server-confirmed list, never against stored data. */
+    private void dropUnavailableCandidate() {
+        if (candidate != null && !available.containsKey(candidate)) {
             candidate = null;
+            showBanner(R.string.displayed_award_unavailable, null);
         }
-
-        if (unavailable) {
-            state.setText(R.string.displayed_award_unavailable);
-        } else {
-            state.setText("");
-        }
-
-        retry.setVisibility(View.GONE);
-        renderRows();
     }
 
     private void renderRows() {
@@ -332,7 +456,7 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
 
             candidate = id;
             hasCandidate = true;
-            state.setText("");
+            hideBanner();
             updateSelection();
         });
 
@@ -358,6 +482,61 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
         updateControls();
     }
 
+    // -------------------------------------------------------------------- state
+
+    /** Chooses the single content of the main area and the indicators around it. */
+    private void updateUi() {
+        boolean busy = awardsPending || selectionPending;
+        boolean showList = haveData();
+        boolean showPanel = !showList && !busy && loadFailed;
+        boolean wantSkeleton = !showList && busy;
+
+        scroll.setVisibility(showList ? View.VISIBLE : View.GONE);
+        statePanel.setVisibility(showPanel ? View.VISIBLE : View.GONE);
+
+        setSkeletonWanted(wantSkeleton);
+        setUpdating(showList && (busy || saving));
+        updateControls();
+    }
+
+    private void setSkeletonWanted(boolean wanted) {
+        if (!wanted) {
+            main.removeCallbacks(revealSkeleton);
+            skeletonScheduled = false;
+            skeleton.stopShimmer();
+            skeleton.setVisibility(View.GONE);
+            return;
+        }
+
+        if (skeleton.getVisibility() == View.VISIBLE || skeletonScheduled) {
+            return;
+        }
+
+        skeletonScheduled = true;
+        main.postDelayed(revealSkeleton, SKELETON_DELAY_MS);
+    }
+
+    private void showSkeletonNow() {
+        skeletonScheduled = false;
+
+        if (!started) {
+            return;
+        }
+
+        skeleton.setVisibility(View.VISIBLE);
+        skeleton.startShimmer();
+    }
+
+    private void setUpdating(boolean on) {
+        if (on) {
+            updating.setVisibility(View.VISIBLE);
+            updating.startShimmer();
+        } else {
+            updating.stopShimmer();
+            updating.setVisibility(View.INVISIBLE);
+        }
+    }
+
     private void updateControls() {
         boolean enabled = canSave();
 
@@ -374,18 +553,33 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
         }
     }
 
+    private void showBanner(int messageRes, Runnable action) {
+        bannerRunnable = action;
+        bannerText.setText(messageRes);
+        bannerAction.setVisibility(action == null ? View.GONE : View.VISIBLE);
+        banner.setVisibility(View.VISIBLE);
+    }
+
+    private void hideBanner() {
+        bannerRunnable = null;
+        banner.setVisibility(View.GONE);
+    }
+
+    // ------------------------------------------------------------------- saving
+
     private void saveChoice() {
         if (!canSave()) {
             return;
         }
 
         saving = true;
-        int request = generation;
-        String chosen = candidate;
-        String requestedUid = uid;
 
-        updateControls();
-        state.setText(R.string.displayed_award_saving);
+        final int request = generation;
+        final String chosen = candidate;
+        final String requestedUid = uid;
+
+        hideBanner();
+        updateUi();
 
         displayedAwardApi.set(chosen, (value, error) -> {
             if (!Objects.equals(requestedUid, uid)
@@ -397,14 +591,15 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
 
             if (!active(request)) {
                 if (started && !isFinishing() && !isDestroyed()) {
-                    load();
+                    load(false);
                 }
+
                 return;
             }
 
             if (error != null || value == null) {
-                state.setText(R.string.displayed_award_save_error);
-                updateControls();
+                showBanner(R.string.displayed_award_save_error, this::saveChoice);
+                updateUi();
                 return;
             }
 
@@ -419,8 +614,11 @@ public final class displayedAwardPickerActivity extends AppCompatActivity {
         });
     }
 
+    // ------------------------------------------------------------------ cleanup
+
     private void clearRows() {
         renderGeneration++;
+        renderedFingerprint = null;
 
         if (rows != null) {
             clearIcons(rows);
