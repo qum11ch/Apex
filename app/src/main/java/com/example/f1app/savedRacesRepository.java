@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -57,7 +56,7 @@ final class savedRacesRepository {
     }
 
     private static final String TAG = "savedRacesRepository";
-    private static final int CACHE_VERSION = 1;
+    private static final int CACHE_VERSION = 2;
     private static final long FRESH_MS = 5L * 60L * 1000L;
 
     private static final ExecutorService IO = Executors.newSingleThreadExecutor(task -> {
@@ -79,7 +78,7 @@ final class savedRacesRepository {
     // ---------- disk cache (one file per account) ----------
 
     private static File cacheFile(Context context, String uid) {
-        return new File(context.getFilesDir(), "saved_races_cache_v1_" + hash(uid) + ".json");
+        return new File(context.getFilesDir(), "saved_races_cache_v" + CACHE_VERSION + "_" + hash(uid) + ".json");
     }
 
     private static String hash(String value) {
@@ -264,9 +263,7 @@ final class savedRacesRepository {
         race.scheduleKnown = true;
         race.round = number(schedule.child("round").getValue());
         race.raceDate = text(schedule.child("raceDate").getValue());
-        race.raceTime = text(schedule.child("raceTime").getValue());
         race.firstPracticeDate = text(schedule.child("FirstPractice").child("firstPracticeDate").getValue());
-        race.firstPracticeTime = text(schedule.child("FirstPractice").child("firstPracticeTime").getValue());
 
         DataSnapshot results = schedule.child("RaceResults");
         race.winnerCode = text(results.child("raceWinnerCode").getValue());
@@ -276,10 +273,10 @@ final class savedRacesRepository {
         race.fastestLapTime = text(results.child("fastestLapTime").getValue());
 
         race.sprintDate = text(schedule.child("Sprint").child("sprintRaceDate").getValue());
-        race.sprintWinnerCode = text(schedule.child("SprintResults").child("sprintWinnerCode").getValue());
 
-        DataSnapshot canceled = schedule.child("Canceled");
-        race.canceled = canceled.exists() && !Boolean.FALSE.equals(canceled.getValue());
+        // The same session list and cancel flag the schedule screen uses.
+        race.canceled = raceWeekendStatus.isCanceled(schedule);
+        race.sessions = raceWeekendStatus.sessions(schedule);
 
         race.circuitId = text(schedule.child("Circuit").child("circuitId").getValue());
 
@@ -287,11 +284,10 @@ final class savedRacesRepository {
             DataSnapshot circuit = circuits.child(race.circuitId);
             race.circuitName = text(circuit.child("circuitName").getValue());
             race.country = text(circuit.child("country").getValue());
+            race.locality = text(circuit.child("location").getValue());
             race.length = text(circuit.child("length").getValue());
             race.lapsCount = text(circuit.child("lapsCount").getValue());
             race.turnsCount = text(circuit.child("turnsCount").getValue());
-            race.lapRecordTime = text(circuit.child("lapRecordTime").getValue());
-            race.lapRecordDriver = text(circuit.child("lapRecordDriver").getValue());
         }
     }
 
@@ -301,16 +297,18 @@ final class savedRacesRepository {
      * Running and upcoming races first (the nearest one on top), then finished ones with the newest on top.
      * States depend on the current time, so the order is computed again every time the list is shown.
      */
-    static void sortForDisplay(List<savedRaceCard> races, Instant now) {
+    static void sortForDisplay(List<savedRaceCard> races, long nowMs) {
         Collections.sort(races, new Comparator<savedRaceCard>() {
             @Override
             public int compare(savedRaceCard a, savedRaceCard b) {
-                int byGroup = Integer.compare(group(a, now), group(b, now));
+                int groupA = group(a, nowMs);
+                int groupB = group(b, nowMs);
+                int byGroup = Integer.compare(groupA, groupB);
                 if (byGroup != 0) return byGroup;
 
                 long timeA = millis(a);
                 long timeB = millis(b);
-                int byTime = group(a, now) == 3
+                int byTime = groupA == 3
                         ? Long.compare(timeB, timeA)
                         : Long.compare(timeA, timeB);
 
@@ -319,13 +317,13 @@ final class savedRacesRepository {
         });
     }
 
-    private static int group(savedRaceCard race, Instant now) {
-        switch (race.stateAt(now)) {
-            case IN_PROGRESS:
+    private static int group(savedRaceCard race, long nowMs) {
+        switch (race.stateAt(nowMs)) {
+            case ONGOING:
                 return 0;
-            case RESULTS_PENDING:
+            case AWAITING_RESULTS:
                 return 1;
-            case UPCOMING:
+            case FUTURE:
                 return 2;
             default:
                 return 3;
@@ -333,8 +331,8 @@ final class savedRacesRepository {
     }
 
     private static long millis(savedRaceCard race) {
-        Instant start = race.raceStart();
-        return start != null ? start.toEpochMilli() : Long.MAX_VALUE;
+        Long start = race.raceStartMs();
+        return start != null ? start : Long.MAX_VALUE;
     }
 
     // ---------- values ----------

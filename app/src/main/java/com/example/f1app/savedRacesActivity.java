@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -42,7 +43,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -402,7 +402,7 @@ public class savedRacesActivity extends AppCompatActivity {
                         showRaces(result.races);
                     } else if (hasData) {
                         // Keep the complete data that is already on screen.
-                        showError(getString(R.string.saved_races_refresh_failed));
+                        showMessage(getString(R.string.saved_races_refresh_failed));
                     } else {
                         // Better a card without circuit facts than an empty screen; it is not cached.
                         showRaces(result.races);
@@ -418,7 +418,7 @@ public class savedRacesActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to load saved races", error);
 
                     if (hasData) {
-                        showError(getString(R.string.saved_races_refresh_failed));
+                        showMessage(getString(R.string.saved_races_refresh_failed));
                     } else {
                         showLoadError();
                     }
@@ -459,7 +459,7 @@ public class savedRacesActivity extends AppCompatActivity {
 
     private void renderList(boolean afterDataChange) {
         List<savedRaceCard> sorted = new ArrayList<>(races);
-        savedRacesRepository.sortForDisplay(sorted, Instant.now());
+        savedRacesRepository.sortForDisplay(sorted, System.currentTimeMillis());
         lastRenderAt = System.currentTimeMillis();
 
         if (sorted.isEmpty()) {
@@ -480,23 +480,18 @@ public class savedRacesActivity extends AppCompatActivity {
         }
     }
 
-    private void showError(String message) {
+    private void showMessage(String message) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     // ---------- opening a race ----------
 
     private void openRace(savedRaceCard race) {
-        if (!race.scheduleKnown) {
-            showError(getString(R.string.smth_wrong_text));
-            return;
-        }
-
         LocalDate start = race.weekendStartDate();
         LocalDate end = race.raceLocalDate();
 
-        if (start == null || end == null) {
-            showError(getString(R.string.smth_wrong_text));
+        if (!race.scheduleKnown || start == null || end == null) {
+            showMessage(getString(R.string.smth_wrong_text));
             return;
         }
 
@@ -520,8 +515,8 @@ public class savedRacesActivity extends AppCompatActivity {
         Intent intent;
 
         // The old check compared against "N/C", but the database stores "N/A" for races without results,
-        // so every upcoming race opened the finished-race screen.
-        if (race.stateAt(Instant.now()) == savedRaceCard.State.CONCLUDED) {
+        // so every upcoming race opened the finished-race screen. Now the schedule's own rule decides.
+        if (race.stateAt(System.currentTimeMillis()) == raceWeekendStatus.State.CONCLUDED) {
             intent = new Intent(this, concludedRaceActivity.class);
             bundle.putString("raceStartDay", dayStart);
             bundle.putString("raceEndDay", dayEnd);
@@ -543,8 +538,6 @@ public class savedRacesActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    // ---------- deleting ----------
-
     private void setupDeleteSwipe() {
         ItemTouchHelper.SimpleCallback callback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
@@ -554,6 +547,11 @@ public class savedRacesActivity extends AppCompatActivity {
                             @NonNull RecyclerView.ViewHolder viewHolder,
                             @NonNull RecyclerView.ViewHolder target) {
                         return false;
+                    }
+
+                    @Override
+                    public float getSwipeThreshold(@NonNull RecyclerView.ViewHolder viewHolder) {
+                        return 0.4f;
                     }
 
                     @Override
@@ -581,44 +579,47 @@ public class savedRacesActivity extends AppCompatActivity {
                             int actionState,
                             boolean isCurrentlyActive) {
 
-                        super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
-
-                        View itemView = viewHolder.itemView;
-                        Drawable icon = AppCompatResources.getDrawable(
-                                savedRacesActivity.this,
-                                R.drawable.delete_white
-                        );
-
-                        if (icon == null || dX >= 0) {
+                        if (actionState != ItemTouchHelper.ACTION_STATE_SWIPE) {
+                            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                             return;
                         }
 
-                        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
-                        int iconTop = itemView.getTop() + iconMargin;
-                        int iconBottom = iconTop + icon.getIntrinsicHeight();
-                        int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
-                        int iconRight = itemView.getRight() - iconMargin;
+                        View card = viewHolder.itemView.findViewById(R.id.cardView);
+                        View background = viewHolder.itemView.findViewById(R.id.swipeBackground);
+                        float shift = Math.min(0f, dX);
 
-                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                        // Only the card moves; the item itself stays put, so nothing gets raised or shadowed.
+                        card.setTranslationX(shift);
 
-                        RectF background = new RectF(
-                                itemView.getRight() + ((int) dX / 4) - 100,
-                                itemView.getTop(),
-                                itemView.getRight(),
-                                itemView.getBottom()
-                        );
+                        if (shift < 0f) {
+                            int width = background.getWidth();
+                            int revealed = Math.min(width, Math.round(-shift));
 
-                        Paint paint = new Paint();
-                        paint.setColor(getColor(R.color.red));
+                            // Red is visible only in the strip the card has uncovered.
+                            background.setClipBounds(new Rect(width - revealed, 0, width, background.getHeight()));
+                            background.setVisibility(View.VISIBLE);
+                        } else {
+                            background.setVisibility(View.INVISIBLE);
+                        }
+                    }
 
-                        float rounded = TypedValue.applyDimension(
-                                TypedValue.COMPLEX_UNIT_DIP,
-                                20,
-                                getResources().getDisplayMetrics()
-                        );
+                    @Override
+                    public void clearView(
+                            @NonNull RecyclerView recyclerView,
+                            @NonNull RecyclerView.ViewHolder viewHolder) {
+                        super.clearView(recyclerView, viewHolder);
 
-                        c.drawRoundRect(background, rounded, rounded, paint);
-                        icon.draw(c);
+                        View card = viewHolder.itemView.findViewById(R.id.cardView);
+                        View background = viewHolder.itemView.findViewById(R.id.swipeBackground);
+
+                        if (card != null) {
+                            card.setTranslationX(0f);
+                        }
+
+                        if (background != null) {
+                            background.setClipBounds(null);
+                            background.setVisibility(View.INVISIBLE);
+                        }
                     }
                 };
 
@@ -712,7 +713,7 @@ public class savedRacesActivity extends AppCompatActivity {
                     }
 
                     Log.e(TAG, "Failed to delete race", error);
-                    showError(getString(R.string.smth_wrong_text));
+                    showMessage(getString(R.string.smth_wrong_text));
                 });
     }
 }

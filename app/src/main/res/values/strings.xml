@@ -1090,4 +1090,16 @@
     <string name="race_unit_km">%1$s km</string>
     <string name="race_summary_fastest">Fastest lap %1$s</string>
     <string name="race_summary_circuit">%1$s km · %2$s laps</string>
+
+    <plurals name="sr_in_days">
+        <item quantity="one">In %d day</item>
+        <item quantity="other">In %d days</item>
+    </plurals>
+    <string name="sr_race_day">Race day</string>
+    <string name="sr_race_at">Race: %1$s</string>
+    <string name="sr_sprint">Sprint</string>
+    <string name="sr_fastest_lap">Fastest lap: %1$s</string>
+    <string name="sr_unit_km">%1$s km</string>
+    <string name="sr_unit_laps">%1$s laps</string>
+    <string name="sr_unit_turns">%1$s turns</string>
 </resources>

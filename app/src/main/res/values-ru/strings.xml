@@ -1067,4 +1067,18 @@
     <string name="race_unit_km">%1$s км</string>
     <string name="race_summary_fastest">Лучший круг %1$s</string>
     <string name="race_summary_circuit">%1$s км · %2$s кр.</string>
+
+    <plurals name="sr_in_days">
+        <item quantity="one">Через %d день</item>
+        <item quantity="few">Через %d дня</item>
+        <item quantity="many">Через %d дней</item>
+        <item quantity="other">Через %d дня</item>
+    </plurals>
+    <string name="sr_race_day">День гонки</string>
+    <string name="sr_race_at">Гонка: %1$s</string>
+    <string name="sr_sprint">Спринт</string>
+    <string name="sr_fastest_lap">Лучший круг: %1$s</string>
+    <string name="sr_unit_km">%1$s км</string>
+    <string name="sr_unit_laps">%1$s кр.</string>
+    <string name="sr_unit_turns">%1$s пов.</string>
 </resources>

@@ -2,10 +2,9 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
+import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +27,13 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
- * One adapter, two layouts (rows and tiles) and five race states. The data is already complete here,
+ * Rows and tiles share the look of the schedule cards: the round in the accent colour, the date pill,
+ * ShareTech info lines and the same weekend states. The data is already complete here,
  * so binding never touches the network.
  */
 public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdapter.DataHolder> {
@@ -47,7 +49,7 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
         void onDelete(savedRaceCard race);
     }
 
-    private static final String DASH = "\u2014";
+    private static final String SEPARATOR = " \u00B7 ";
 
     private final Listener listener;
     private ViewMode viewMode = ViewMode.LIST;
@@ -98,27 +100,27 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
         savedRaceCard race = getItem(position);
         Context context = holder.itemView.getContext();
-        Instant now = Instant.now();
-        savedRaceCard.State state = race.stateAt(now);
+        long now = System.currentTimeMillis();
+        raceWeekendStatus.State state = race.stateAt(now);
 
         holder.raceName.setText(displayName(context, race));
         holder.saveDate.setText(context.getString(R.string.saved_race_text) + " " + race.saveDate);
 
-        bindPlace(holder, race);
         bindRound(holder, race);
-        bindSprint(holder, race);
+        holder.canceled.setVisibility(race.canceled ? View.VISIBLE : View.GONE);
 
         if (!race.scheduleKnown) {
-            holder.state.setVisibility(View.GONE);
-            holder.podiumGroup.setVisibility(View.GONE);
-            holder.countdownGroup.setVisibility(View.GONE);
-            setVisible(holder.statsGroup, false);
-            setVisible(holder.summary, false);
-            setVisible(holder.dates, false);
+            // The schedule entry is missing: show only what the user saved.
+            hide(holder.dates);
+            hide(holder.locale);
+            hide(holder.circuit);
+            hide(holder.podiumGroup);
+            hide(holder.statusRow);
+            hide(holder.infoLine);
         } else {
-            bindState(holder.state, state);
             bindDates(holder, race);
-            bindBody(holder, race, state, now);
+            bindPlace(holder, context, race);
+            bindBody(holder, context, race, state, now);
         }
 
         holder.itemView.setOnClickListener(v -> listener.onOpen(race));
@@ -146,84 +148,23 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
         return name + " " + race.raceSeason;
     }
 
-    private static void bindPlace(DataHolder holder, savedRaceCard race) {
-        StringBuilder place = new StringBuilder();
-
-        if (!savedRaceCard.isMissing(race.circuitName)) {
-            place.append(race.circuitName);
-        }
-
-        if (!savedRaceCard.isMissing(race.country)) {
-            if (place.length() > 0) {
-                place.append(" \u00B7 ");
-            }
-            place.append(race.country);
-        }
-
-        holder.place.setText(place);
-        holder.place.setVisibility(place.length() > 0 ? View.VISIBLE : View.GONE);
-    }
-
     private static void bindRound(DataHolder holder, savedRaceCard race) {
         if (race.round > 0) {
-            holder.round.setText(holder.itemView.getContext().getString(R.string.race_round_format, race.round));
-            holder.round.setVisibility(View.VISIBLE);
+            holder.round.setText(String.valueOf(race.round));
+            holder.roundGroup.setVisibility(View.VISIBLE);
         } else {
-            holder.round.setVisibility(View.GONE);
+            holder.roundGroup.setVisibility(View.GONE);
         }
-    }
-
-    private static void bindSprint(DataHolder holder, savedRaceCard race) {
-        holder.sprint.setVisibility(race.scheduleKnown && race.isSprintWeekend() ? View.VISIBLE : View.GONE);
-    }
-
-    private static void bindState(TextView view, savedRaceCard.State state) {
-        int label;
-        int text;
-        int background;
-
-        switch (state) {
-            case IN_PROGRESS:
-                label = R.string.race_state_live;
-                text = R.color.race_state_live;
-                background = R.color.race_state_live_bg;
-                break;
-            case RESULTS_PENDING:
-                label = R.string.race_state_pending;
-                text = R.color.race_state_pending;
-                background = R.color.race_state_pending_bg;
-                break;
-            case CONCLUDED:
-                label = R.string.race_state_finished;
-                text = R.color.race_state_finished;
-                background = R.color.race_state_finished_bg;
-                break;
-            case CANCELED:
-                label = R.string.canceled_text;
-                text = R.color.race_state_canceled;
-                background = R.color.race_state_canceled_bg;
-                break;
-            default:
-                label = R.string.race_state_upcoming;
-                text = R.color.race_state_upcoming;
-                background = R.color.race_state_upcoming_bg;
-                break;
-        }
-
-        Context context = view.getContext();
-        view.setText(label);
-        view.setTextColor(ContextCompat.getColor(context, text));
-        view.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context, background)));
-        view.setVisibility(View.VISIBLE);
     }
 
     private static void bindDates(DataHolder holder, savedRaceCard race) {
-        String range = dateRange(race);
-        holder.dates.setText(range);
-        holder.dates.setVisibility(range.isEmpty() ? View.GONE : View.VISIBLE);
+        String text = datesText(race);
+        holder.dates.setText(text);
+        holder.dates.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private static String dateRange(savedRaceCard race) {
+    /** "04-06 NOV" like the schedule's date block; both months when the weekend crosses a month. */
+    private static String datesText(savedRaceCard race) {
         LocalDate end = race.raceLocalDate();
 
         if (end == null) {
@@ -231,114 +172,111 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
         }
 
         LocalDate start = race.weekendStartDate();
-        Locale locale = Locale.getDefault();
-        DateTimeFormatter full = DateTimeFormatter.ofPattern("d MMM", locale);
 
-        if (start == null || start.equals(end)) {
-            return end.format(full);
+        if (start == null) {
+            start = end;
         }
 
-        if (start.getMonth() == end.getMonth() && start.getYear() == end.getYear()) {
-            return start.getDayOfMonth() + "\u2013" + end.format(full);
+        DateTimeFormatter day = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter month = DateTimeFormatter.ofPattern("MMM");
+        String monthStart = start.format(month);
+        String monthEnd = end.format(month);
+
+        String days = start.equals(end)
+                ? end.format(day)
+                : start.format(day) + "-" + end.format(day);
+
+        return days + " " + (monthStart.equals(monthEnd) ? monthStart : monthStart + "-" + monthEnd);
+    }
+
+    private static void bindPlace(DataHolder holder, Context context, savedRaceCard race) {
+        String locale = localeLine(context, race);
+        holder.locale.setText(locale);
+        holder.locale.setVisibility(locale.isEmpty() ? View.GONE : View.VISIBLE);
+
+        String circuit = race.circuitName;
+
+        if (race.circuitId != null) {
+            try {
+                int id = getStringByName(race.circuitId + "_text");
+
+                if (id != 0) {
+                    circuit = context.getString(id);
+                }
+            } catch (RuntimeException ignored) {
+                // keep the stored circuit name
+            }
         }
 
-        return start.format(full) + " \u2013 " + end.format(full);
+        holder.circuit.setText(circuit);
+        holder.circuit.setVisibility(savedRaceCard.isMissing(circuit) ? View.GONE : View.VISIBLE);
+    }
+
+    /** Same rule as the schedule lists: city and country, without a city for Monaco and Singapore. */
+    private static String localeLine(Context context, savedRaceCard race) {
+        String country = savedRaceCard.isMissing(race.country) ? null : race.country;
+        String city = savedRaceCard.isMissing(race.locality) ? null : race.locality;
+
+        if (country == null && city == null) {
+            return "";
+        }
+
+        if (Locale.getDefault().getLanguage().equals("ru") && city != null && country != null) {
+            try {
+                ArrayList<String> localized = localizeLocality(city, country, context);
+
+                if (localized != null && localized.size() > 2 && localized.get(2) != null) {
+                    return localized.get(2);
+                }
+            } catch (RuntimeException ignored) {
+                // fall back to the English names below
+            }
+        }
+
+        if ("Monaco".equals(city) || "Singapore".equals(city)) {
+            city = null;
+        }
+
+        if (city != null && country != null) {
+            return city + ", " + country;
+        }
+
+        return country != null ? country : city;
     }
 
     // ---------- state dependent body ----------
 
-    private void bindBody(DataHolder holder, savedRaceCard race, savedRaceCard.State state, Instant now) {
-        Context context = holder.itemView.getContext();
+    private void bindBody(
+            DataHolder holder,
+            Context context,
+            savedRaceCard race,
+            raceWeekendStatus.State state,
+            long now
+    ) {
+        boolean showPodium = state == raceWeekendStatus.State.CONCLUDED && race.hasPodium();
 
-        if (state == savedRaceCard.State.CONCLUDED && race.hasPodium()) {
-            holder.podiumGroup.setVisibility(View.VISIBLE);
-            holder.countdownGroup.setVisibility(View.GONE);
-            bindPodium(holder, race);
+        holder.podiumGroup.setVisibility(showPodium ? View.VISIBLE : View.GONE);
+
+        if (showPodium) {
+            bindPodium(holder, context, race);
         } else {
-            holder.podiumGroup.setVisibility(View.GONE);
-            holder.countdownGroup.setVisibility(
-                    state == savedRaceCard.State.CONCLUDED ? View.GONE : View.VISIBLE
-            );
-            clearPodium(holder);
-            bindCountdown(holder, race, state, now);
+            clearPodiumImages(holder);
         }
 
-        if (holder.statsGroup != null) {
-            bindStats(holder, race, state);
-        }
-
-        if (holder.summary != null) {
-            bindSummary(holder, race, state);
-        }
-
-        if (holder.raceTime != null) {
-            boolean showTime = state != savedRaceCard.State.CONCLUDED
-                    && state != savedRaceCard.State.CANCELED
-                    && race.hasRaceTime()
-                    && race.raceStart() != null;
-
-            if (showTime) {
-                String when = DateTimeFormatter.ofPattern("EEE, HH:mm", Locale.getDefault())
-                        .format(race.raceStart().atZone(ZoneId.systemDefault()));
-                holder.raceTime.setText(context.getString(R.string.race_start_local, when));
-                holder.raceTime.setVisibility(View.VISIBLE);
-            } else {
-                holder.raceTime.setVisibility(View.GONE);
-            }
-        }
+        bindStatus(holder, context, race, state, now);
+        bindInfoLine(holder, context, race, state);
     }
 
-    private void bindCountdown(DataHolder holder, savedRaceCard race, savedRaceCard.State state, Instant now) {
-        Resources resources = holder.itemView.getResources();
-        String value;
-        String label;
-
-        switch (state) {
-            case IN_PROGRESS:
-                value = resources.getString(R.string.race_countdown_now_value);
-                label = resources.getString(R.string.race_countdown_now_label);
-                break;
-            case RESULTS_PENDING:
-                value = resources.getString(R.string.race_countdown_pending_value);
-                label = resources.getString(R.string.race_countdown_pending_label);
-                break;
-            case CANCELED:
-                value = resources.getString(R.string.canceled_text);
-                label = resources.getString(R.string.race_countdown_canceled_label);
-                break;
-            default:
-                LocalDate raceDay = race.raceLocalDate();
-
-                if (raceDay == null) {
-                    value = DASH;
-                    label = "";
-                } else {
-                    long days = ChronoUnit.DAYS.between(LocalDate.now(), raceDay);
-
-                    if (days <= 0) {
-                        value = resources.getString(R.string.race_countdown_today_value);
-                        label = resources.getString(R.string.race_countdown_today_label);
-                    } else {
-                        value = String.valueOf(days);
-                        label = resources.getQuantityString(R.plurals.race_days_until, (int) days);
-                    }
-                }
-                break;
-        }
-
-        holder.countdownValue.setText(value);
-        holder.countdownLabel.setText(label);
-        holder.countdownLabel.setVisibility(label.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
-    private void bindPodium(DataHolder holder, savedRaceCard race) {
-        Context context = holder.itemView.getContext();
-
+    private void bindPodium(DataHolder holder, Context context, savedRaceCard race) {
         holder.firstCode.setText(race.winnerCode);
         holder.secondCode.setText(race.secondCode);
         holder.thirdCode.setText(race.thirdCode);
 
-        if (holder.stripedFirst != null && !checkLightTheme(context)) {
+        if (holder.firstImage == null) {
+            return; // tile layout: codes only
+        }
+
+        if (!checkLightTheme(context)) {
             holder.stripedFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
             holder.stripedSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
             holder.stripedThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
@@ -358,134 +296,202 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
                 .into(view);
     }
 
-    private static void clearPodium(DataHolder holder) {
+    private static void clearPodiumImages(DataHolder holder) {
         // A recycled holder must not show the previous card's drivers when its request finishes late.
-        GlideApp.with(holder.firstImage).clear(holder.firstImage);
-        GlideApp.with(holder.secondImage).clear(holder.secondImage);
-        GlideApp.with(holder.thirdImage).clear(holder.thirdImage);
+        if (holder.firstImage != null) {
+            GlideApp.with(holder.firstImage).clear(holder.firstImage);
+            GlideApp.with(holder.secondImage).clear(holder.secondImage);
+            GlideApp.with(holder.thirdImage).clear(holder.thirdImage);
+        }
     }
 
-    private void bindStats(DataHolder holder, savedRaceCard race, savedRaceCard.State state) {
-        Context context = holder.itemView.getContext();
-        String v1;
-        String v2;
-        String v3;
-        int l1;
-        int l2;
-        int l3;
+    /** The line under the circuit: what is happening with the weekend. */
+    private void bindStatus(
+            DataHolder holder,
+            Context context,
+            savedRaceCard race,
+            raceWeekendStatus.State state,
+            long now
+    ) {
+        String text = null;
+        boolean live = false;
 
-        if (state == savedRaceCard.State.CONCLUDED) {
-            v1 = value(race.fastestLapTime);
-            v2 = value(race.fastestLapDriver);
-            l1 = R.string.race_stat_fastest_lap;
-            l2 = R.string.race_stat_fastest_driver;
+        switch (state) {
+            case ONGOING: {
+                raceWeekendStatus.SessionInfo current = raceWeekendStatus.liveSession(race.sessions, now);
+                raceWeekendStatus.SessionInfo next = raceWeekendStatus.nextSession(race.sessions, now);
 
-            if (race.isSprintWeekend()) {
-                v3 = value(race.sprintWinnerCode);
-                l3 = R.string.race_stat_sprint_winner;
-            } else {
-                v3 = value(race.lapsCount);
-                l3 = R.string.race_stat_laps;
+                if (current != null) {
+                    live = true;
+                    text = sessionName(context, current.key);
+                } else if (next != null) {
+                    text = context.getString(
+                            R.string.next_session_text,
+                            sessionName(context, next.key),
+                            localTime(next.start, "EEE HH:mm")
+                    );
+                } else {
+                    text = context.getString(R.string.awaiting_results_text);
+                }
+                break;
+            }
+            case AWAITING_RESULTS:
+                text = context.getString(R.string.awaiting_results_text);
+                break;
+            case FUTURE:
+                text = futureLine(context, race);
+                break;
+            default:
+                break; // finished and canceled races have nothing to announce
+        }
+
+        if (text == null || text.isEmpty()) {
+            holder.statusRow.setVisibility(View.GONE);
+            return;
+        }
+
+        holder.statusText.setText(text);
+        holder.liveDot.setVisibility(live ? View.VISIBLE : View.GONE);
+        holder.statusRow.setVisibility(View.VISIBLE);
+    }
+
+    private static String futureLine(Context context, savedRaceCard race) {
+        List<String> parts = new ArrayList<>();
+        LocalDate raceDay = race.raceLocalDate();
+
+        if (raceDay != null) {
+            long days = ChronoUnit.DAYS.between(LocalDate.now(), raceDay);
+
+            parts.add(days <= 0
+                    ? context.getString(R.string.sr_race_day)
+                    : context.getResources().getQuantityString(R.plurals.sr_in_days, (int) days, (int) days));
+        }
+
+        Long raceStart = race.raceStartMs();
+
+        if (raceStart != null) {
+            parts.add(context.getString(R.string.sr_race_at, localTime(raceStart, "EEE HH:mm")));
+        }
+
+        return join(parts);
+    }
+
+    private void bindInfoLine(
+            DataHolder holder,
+            Context context,
+            savedRaceCard race,
+            raceWeekendStatus.State state
+    ) {
+        List<String> parts = new ArrayList<>();
+
+        if (race.isSprintWeekend()) {
+            parts.add(context.getString(R.string.sr_sprint));
+        }
+
+        if (state == raceWeekendStatus.State.CONCLUDED) {
+            if (!savedRaceCard.isMissing(race.fastestLapTime)) {
+                String lap = race.fastestLapTime.trim();
+
+                if (!savedRaceCard.isMissing(race.fastestLapDriver) && holder.firstImage != null) {
+                    lap += SEPARATOR + race.fastestLapDriver.trim();
+                }
+
+                parts.add(context.getString(R.string.sr_fastest_lap, lap));
             }
         } else {
-            v1 = savedRaceCard.isMissing(race.length)
-                    ? DASH
-                    : context.getString(R.string.race_unit_km, race.length);
-            v2 = value(race.lapsCount);
-            v3 = value(race.turnsCount);
-            l1 = R.string.race_stat_length;
-            l2 = R.string.race_stat_laps;
-            l3 = R.string.race_stat_turns;
+            addIfPresent(parts, context, R.string.sr_unit_km, race.length);
+            addIfPresent(parts, context, R.string.sr_unit_laps, race.lapsCount);
+            addIfPresent(parts, context, R.string.sr_unit_turns, race.turnsCount);
         }
 
-        boolean empty = DASH.equals(v1) && DASH.equals(v2) && DASH.equals(v3);
-        holder.statsGroup.setVisibility(empty ? View.GONE : View.VISIBLE);
-
-        holder.stat1Value.setText(v1);
-        holder.stat2Value.setText(v2);
-        holder.stat3Value.setText(v3);
-        holder.stat1Label.setText(l1);
-        holder.stat2Label.setText(l2);
-        holder.stat3Label.setText(l3);
+        String text = join(parts);
+        holder.infoLine.setText(text);
+        holder.infoLine.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    private void bindSummary(DataHolder holder, savedRaceCard race, savedRaceCard.State state) {
-        Context context = holder.itemView.getContext();
-        String summary = "";
+    // ---------- helpers ----------
 
-        if (state == savedRaceCard.State.CONCLUDED) {
-            if (!savedRaceCard.isMissing(race.fastestLapTime)) {
-                summary = context.getString(R.string.race_summary_fastest, race.fastestLapTime);
+    private static void addIfPresent(List<String> parts, Context context, int format, String value) {
+        if (!savedRaceCard.isMissing(value)) {
+            parts.add(context.getString(format, value.trim()));
+        }
+    }
+
+    private static String join(List<String> parts) {
+        StringBuilder result = new StringBuilder();
+
+        for (String part : parts) {
+            if (result.length() > 0) {
+                result.append(SEPARATOR);
             }
-        } else if (!savedRaceCard.isMissing(race.length) && !savedRaceCard.isMissing(race.lapsCount)) {
-            summary = context.getString(R.string.race_summary_circuit, race.length, race.lapsCount);
+            result.append(part);
         }
 
-        holder.summary.setText(summary);
-        holder.summary.setVisibility(summary.isEmpty() ? View.GONE : View.VISIBLE);
+        return result.toString();
     }
 
-    private static String value(@Nullable String text) {
-        return savedRaceCard.isMissing(text) ? DASH : text.trim();
+    private static String sessionName(Context context, String key) {
+        try {
+            int id = getStringByName(key + "_text");
+
+            if (id != 0) {
+                return context.getString(id);
+            }
+        } catch (RuntimeException ignored) {
+            // fall through
+        }
+
+        return key;
     }
 
-    private static void setVisible(@Nullable View view, boolean visible) {
+    private static String localTime(long millis, String pattern) {
+        return DateTimeFormatter.ofPattern(pattern, Locale.getDefault())
+                .format(Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()));
+    }
+
+    private static void hide(@Nullable View view) {
         if (view != null) {
-            view.setVisibility(visible ? View.VISIBLE : View.GONE);
+            view.setVisibility(View.GONE);
         }
     }
 
     // ---------- holder ----------
 
     public static class DataHolder extends RecyclerView.ViewHolder {
-        final TextView raceName, place, dates, round, state, sprint, saveDate;
-        final View podiumGroup, countdownGroup;
-        final TextView countdownValue, countdownLabel, firstCode, secondCode, thirdCode;
+        final View roundGroup, podiumGroup, statusRow, liveDot;
+        final TextView round, dates, canceled, raceName, locale, circuit, statusText, infoLine, saveDate;
+        final TextView firstCode, secondCode, thirdCode;
+
+        // photos exist only in the row layout
         final ImageView firstImage, secondImage, thirdImage;
-
-        // only in the row layout
-        final View statsGroup;
-        final TextView raceTime, stat1Value, stat1Label, stat2Value, stat2Label, stat3Value, stat3Label;
         final View stripedFirst, stripedSecond, stripedThird;
-
-        // only in the tile layout
-        final TextView summary;
 
         public DataHolder(@NonNull View itemView) {
             super(itemView);
-            raceName = itemView.findViewById(R.id.raceName);
-            place = itemView.findViewById(R.id.race_place);
+            roundGroup = itemView.findViewById(R.id.round_group);
+            round = itemView.findViewById(R.id.round);
             dates = itemView.findViewById(R.id.race_dates);
-            round = itemView.findViewById(R.id.race_round);
-            state = itemView.findViewById(R.id.race_state);
-            sprint = itemView.findViewById(R.id.sprint_badge);
-            saveDate = itemView.findViewById(R.id.save_date);
+            canceled = itemView.findViewById(R.id.cnd_layout);
+            raceName = itemView.findViewById(R.id.raceName);
+            locale = itemView.findViewById(R.id.race_locale);
+            circuit = itemView.findViewById(R.id.circuitName);
 
             podiumGroup = itemView.findViewById(R.id.podium_group);
-            countdownGroup = itemView.findViewById(R.id.countdown_group);
-            countdownValue = itemView.findViewById(R.id.countdown_value);
-            countdownLabel = itemView.findViewById(R.id.countdown_label);
-
             firstCode = itemView.findViewById(R.id.firstPlace_code);
             secondCode = itemView.findViewById(R.id.secondPlace_code);
             thirdCode = itemView.findViewById(R.id.thirdPlace_code);
             firstImage = itemView.findViewById(R.id.firstPlace_image);
             secondImage = itemView.findViewById(R.id.secondPlace_image);
             thirdImage = itemView.findViewById(R.id.thirdPlace_image);
-
-            statsGroup = itemView.findViewById(R.id.stats_group);
-            raceTime = itemView.findViewById(R.id.race_time);
-            stat1Value = itemView.findViewById(R.id.stat1_value);
-            stat1Label = itemView.findViewById(R.id.stat1_label);
-            stat2Value = itemView.findViewById(R.id.stat2_value);
-            stat2Label = itemView.findViewById(R.id.stat2_label);
-            stat3Value = itemView.findViewById(R.id.stat3_value);
-            stat3Label = itemView.findViewById(R.id.stat3_label);
             stripedFirst = itemView.findViewById(R.id.stripedImg_first);
             stripedSecond = itemView.findViewById(R.id.stripedImg_second);
             stripedThird = itemView.findViewById(R.id.stripedImg_third);
 
-            summary = itemView.findViewById(R.id.race_summary);
+            statusRow = itemView.findViewById(R.id.status_row);
+            liveDot = itemView.findViewById(R.id.live_dot);
+            statusText = itemView.findViewById(R.id.status_text);
+            infoLine = itemView.findViewById(R.id.info_line);
+            saveDate = itemView.findViewById(R.id.save_date);
         }
     }
 }
