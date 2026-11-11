@@ -105,7 +105,7 @@ public class concludedRaceFragment extends Fragment {
             adapterType = parent;
 
             if (parent.equals("schedule")) {
-                seasonsResults_2024.setText(buttonText_2024);
+                seasonsResults_2024.setVisibility(View.GONE);
                 seasonsResults_2024.setOnClickListener(v -> {
                     Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
                     intent.putExtra("season", "2024");
@@ -113,10 +113,10 @@ public class concludedRaceFragment extends Fragment {
                     getActivity().overridePendingTransition(0, 0);
                 });
 
-                seasonsResults_2025.setText(buttonText_2025);
+                seasonsResults_2025.setText(R.string.ps_past_seasons_button);
                 seasonsResults_2025.setOnClickListener(v -> {
                     Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
-                    intent.putExtra("season", "2025");
+                    intent.putExtra("currentSeason", requireActivity().getIntent().getStringExtra("currentSeason"));
                     startActivity(intent);
                     getActivity().overridePendingTransition(0, 0);
                 });
@@ -222,7 +222,7 @@ public class concludedRaceFragment extends Fragment {
                 buttonText_2025 = "2025 " + getText(R.string.past_season_result);
             }
 
-            seasonsResults_2024.setText(buttonText_2024);
+            seasonsResults_2024.setVisibility(View.GONE);
             seasonsResults_2024.setOnClickListener(v -> {
                 Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
                 intent.putExtra("season", "2024");
@@ -230,10 +230,10 @@ public class concludedRaceFragment extends Fragment {
                 getActivity().overridePendingTransition(0, 0);
             });
 
-            seasonsResults_2025.setText(buttonText_2025);
+            seasonsResults_2025.setText(R.string.ps_past_seasons_button);
             seasonsResults_2025.setOnClickListener(v -> {
                 Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
-                intent.putExtra("season", "2025");
+                intent.putExtra("currentSeason", requireActivity().getIntent().getStringExtra("currentSeason"));
                 startActivity(intent);
                 getActivity().overridePendingTransition(0, 0);
             });

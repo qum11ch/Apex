@@ -96,19 +96,19 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
                                 width / 2, height);
 
                         Bitmap displayBitmap;
-                        if (datum.getTeamId().equals("audi")) {
-                            Bitmap rightHalf = Bitmap.createBitmap(resource, width / 2, 0,
-                                    width / 2, height);
-                            Matrix mirrorMatrix = new Matrix();
-                            mirrorMatrix.preScale(-1f, 1f);
-                            displayBitmap = Bitmap.createBitmap(
-                                    rightHalf, 0, 0,
-                                    rightHalf.getWidth(), rightHalf.getHeight(),
-                                    mirrorMatrix, true
-                            );
-                        } else {
-                            displayBitmap = leftHalf;
-                        }
+                        // if (datum.getTeamId().equals("audi")) {
+                            //     Bitmap rightHalf = Bitmap.createBitmap(resource, width / 2, 0,
+                            //             width / 2, height);
+                            //     Matrix mirrorMatrix = new Matrix();
+                            //     mirrorMatrix.preScale(-1f, 1f);
+                            //     displayBitmap = Bitmap.createBitmap(
+                                    //             rightHalf, 0, 0,
+                            //             rightHalf.getWidth(), rightHalf.getHeight(),
+                            //             mirrorMatrix, true
+                                    //     );
+                            // } else {
+                        displayBitmap = leftHalf;
+                        // }
 
                         holder.team_car.setImageBitmap(displayBitmap);
                         holder.team_car.setScaleType(ImageView.ScaleType.CENTER_CROP);

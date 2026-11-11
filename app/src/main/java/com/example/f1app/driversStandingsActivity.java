@@ -133,7 +133,7 @@ public class driversStandingsActivity extends AppCompatActivity {
             buttonText_2024 = "2024 " + getText(R.string.past_season_drivers);
             buttonText_2025 = "2025 " + getText(R.string.past_season_drivers);
         }
-        driversStandings_2024.setText(buttonText_2024);
+        driversStandings_2024.setVisibility(View.GONE);
         driversStandings_2024.setOnClickListener(v -> {
             Intent intent = new Intent(driversStandingsActivity.this,
                     pastSeasonDriversStandingsActivity.class);
@@ -145,12 +145,11 @@ public class driversStandingsActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
 
-        driversStandings_2025.setText(buttonText_2025);
+        driversStandings_2025.setText(R.string.ps_past_seasons_button);
         driversStandings_2025.setOnClickListener(v -> {
             Intent intent = new Intent(driversStandingsActivity.this,
                     pastSeasonDriversStandingsActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("season", "2025");
             bundle.putString("currentSeason", mCurrentSeason);
             intent.putExtras(bundle);
             driversStandingsActivity.this.startActivity(intent);
@@ -433,10 +432,6 @@ public class driversStandingsActivity extends AppCompatActivity {
                                 }
                             }
                             hideShimmer(recyclerView, shimmerFrameLayout);
-                            driversStandings_2024.animate()
-                                    .setDuration(500)
-                                    .withEndAction(() -> driversStandings_2024.setVisibility(View.VISIBLE))
-                                    .start();
 
                             driverStndLine.animate()
                                     .setDuration(500)
@@ -492,10 +487,6 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                             datum.add(smth);
 
                                                             hideShimmer(recyclerView, shimmerFrameLayout);
-                                                            driversStandings_2024.animate()
-                                                                    .setDuration(500)
-                                                                    .withEndAction(() -> driversStandings_2024.setVisibility(View.VISIBLE))
-                                                                    .start();
 
                                                             driverStndLine.animate()
                                                                     .setDuration(500)

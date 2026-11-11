@@ -42,6 +42,11 @@ import java.util.List;
 public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSeasonTeamsStandingsAdapter.DataHolder>{
     Context context;
     List<teamsList> dataList;
+    private java.util.Set<String> linkableTeams;
+
+    public void setLinkableTeams(java.util.Set<String> ids) {
+        this.linkableTeams = ids;
+    }
 
     public pastSeasonTeamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
@@ -70,8 +75,8 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
 
-        holder.teamDriverFirst.setText(getFamilyName(teamDrivers.get(0)));
-        holder.teamDriverSecond.setText(getFamilyName(teamDrivers.get(1)));
+        holder.teamDriverFirst.setText(driverLabel(teamDrivers, 0));
+        holder.teamDriverSecond.setText(driverLabel(teamDrivers, 1));
 
         holder.team_car.setScaleX(1f);
         holder.team_car.setImageDrawable(null);
@@ -118,49 +123,35 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
                         Bitmap displayBitmap = null;
                         Matrix mirrorMatrix = new Matrix();
 
-                        switch (season){
-                            case "2024":
-                                mirrorMatrix.preScale(-1f, 1f);
-                                displayBitmap = Bitmap.createBitmap(
-                                        rightHalf, 0, 0,
-                                        rightHalf.getWidth(), rightHalf.getHeight(),
-                                        mirrorMatrix, true
-                                );
-                                break;
-                            case "2025":
-                                switch (datum.getTeamId()){
-                                    case "red_bull":
-                                    case "alpine":
-                                        mirrorMatrix.preScale(-1f, 1f);
-                                        displayBitmap = Bitmap.createBitmap(
-                                                rightHalf, 0, 0,
-                                                rightHalf.getWidth(), rightHalf.getHeight(),
-                                                mirrorMatrix, true
-                                        );
-                                        break;
-                                    default:
-                                        holder.team_car.setImageBitmap(leftHalf);
-                                        displayBitmap = leftHalf;
-                                        break;
-                                }
-                                break;
-                            case "2026":
-                                if (datum.getTeamId().equals("audi")) {
+                        if (season.equals("2025")) {
+                            switch (datum.getTeamId()) {
+                                case "red_bull":
+                                case "alpine":
                                     mirrorMatrix.preScale(-1f, 1f);
                                     displayBitmap = Bitmap.createBitmap(
                                             rightHalf, 0, 0,
                                             rightHalf.getWidth(), rightHalf.getHeight(),
                                             mirrorMatrix, true
                                     );
-                                } else {
+                                    break;
+                                default:
+                                    holder.team_car.setImageBitmap(leftHalf);
                                     displayBitmap = leftHalf;
-                                }
-                                break;
+                                    break;
+                            }
+                        } else {
+                            holder.team_car.setImageBitmap(leftHalf);
+                            displayBitmap = leftHalf;
                         }
 
-                        holder.team_car.setImageBitmap(displayBitmap);
+                        holder.team_car.setImageBitmap(displayBitmap != null ? displayBitmap : leftHalf);
                         holder.team_car.setScaleType(ImageView.ScaleType.CENTER_CROP);
                         holder.team_car.setScaleX(1f);
+                    }
+
+                    @Override
+                    public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        holder.team_car.setImageResource(R.drawable.placeholder_car);
                     }
 
                     @Override
@@ -202,7 +193,11 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
             int colorRgb = Color.parseColor("#303030");
 
             if (darkTeamColor != null){
-                colorRgb = Color.parseColor(darkTeamColor);
+                try {
+                    colorRgb = Color.parseColor(darkTeamColor);
+                } catch (IllegalArgumentException ignored) {
+                    // a missing colour arrives as "#null": keep the default
+                }
             }
             int alpha = 0x66;
             int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
@@ -218,6 +213,12 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
             holder.itemTeamLine.setBackground(createFrameWithLeftOffset(colorWithAlphaLine, context));
         }
         holder.constraintLayout.setOnClickListener(v -> {
+            if (linkableTeams != null && !linkableTeams.contains(teamId)) {
+                android.widget.Toast.makeText(context, R.string.ps_team_unavailable,
+                        android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Intent intent = new Intent(context , teamPageActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("teamName", teamName);
@@ -229,6 +230,18 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
         });
 
 
+    }
+
+    private String driverLabel(ArrayList<String> drivers, int index) {
+        if (drivers == null || index >= drivers.size()) {
+            return "";
+        }
+
+        try {
+            return getFamilyName(drivers.get(index));
+        } catch (RuntimeException error) {
+            return drivers.get(index);
+        }
     }
 
     @Override

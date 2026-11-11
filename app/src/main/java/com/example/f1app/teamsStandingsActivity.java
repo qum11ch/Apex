@@ -109,7 +109,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
             buttonText_2024 = "2024 " + getText(R.string.past_season_teams);
             buttonText_2025 = "2025 " + getText(R.string.past_season_teams);
         }
-        teamsStandings_2024.setText(buttonText_2024);
+        teamsStandings_2024.setVisibility(View.GONE);
         teamsStandings_2024.setOnClickListener(v -> {
             Intent intent = new Intent(teamsStandingsActivity.this,
                     pastSeasonTeamsStandingsActivity.class);
@@ -121,12 +121,11 @@ public class teamsStandingsActivity extends AppCompatActivity {
             overridePendingTransition(0, 0);
         });
 
-        teamsStandings_2025.setText(buttonText_2025);
+        teamsStandings_2025.setText(R.string.ps_past_seasons_button);
         teamsStandings_2025.setOnClickListener(v -> {
             Intent intent = new Intent(teamsStandingsActivity.this,
                     pastSeasonTeamsStandingsActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("season", "2025");
             bundle.putString("currentSeason", mCurrentSeason);
             intent.putExtras(bundle);
             teamsStandingsActivity.this.startActivity(intent);
@@ -421,9 +420,6 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
                                                     hideShimmer(recyclerView, shimmerFrameLayout);
 
-                                                    teamsStandings_2024.animate()
-                                                            .setDuration(500)
-                                                            .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
 
                                                     teamStndLine.animate()
                                                             .setDuration(500)
@@ -488,9 +484,6 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 datum.add(smth);
 
                                                 hideShimmer(recyclerView, shimmerFrameLayout);
-                                                teamsStandings_2024.animate()
-                                                        .setDuration(500)
-                                                        .withEndAction(() -> teamsStandings_2024.setVisibility(View.VISIBLE)).start();
 
                                                 teamStndLine.animate()
                                                         .setDuration(500)

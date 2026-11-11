@@ -47,6 +47,27 @@
 
     </LinearLayout>
 
+    <!-- Season buttons: same item_season_toggle the driver and team pages use -->
+    <HorizontalScrollView
+        android:id="@+id/seasonScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        
+        android:background="@color/colorPrimary"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="6dp"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/seasonButtonsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
         style="@style/BackgroundGradient"
@@ -93,6 +114,34 @@
                 </LinearLayout>
 
             </com.facebook.shimmer.ShimmerFrameLayout>
+
+            <LinearLayout
+                android:id="@+id/state_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="48dp"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:visibility="gone"
+                >
+                <TextView
+                    android:id="@+id/state_message"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="16sp" />
+                <Button
+                    android:id="@+id/state_retry"
+                    style="@style/ButtonStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:minWidth="160dp"
+                    android:text="@string/ps_retry" />
+            </LinearLayout>
 
         </RelativeLayout>
 

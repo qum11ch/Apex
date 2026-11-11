@@ -47,18 +47,58 @@
 
     </LinearLayout>
 
+    <!-- Season buttons: same item_season_toggle the driver and team pages use -->
+    <HorizontalScrollView
+        android:id="@+id/seasonScroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/header"
+        android:background="@color/colorPrimary"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingStart="5dp"
+        android:paddingTop="10dp"
+        android:paddingEnd="5dp"
+        android:paddingBottom="6dp"
+        android:scrollbars="none">
+        <LinearLayout
+            android:id="@+id/seasonButtonsLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" />
+    </HorizontalScrollView>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
         style="@style/BackgroundGradient"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/header"
+        android:layout_below="@id/seasonScroll"
         android:layout_alignParentBottom="true">
 
-        <androidx.viewpager2.widget.ViewPager2
-            android:id="@+id/viewPager2"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/viewPager2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <TextView
+                android:id="@+id/schedule_empty"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                android:layout_marginTop="48dp"
+                android:gravity="center"
+                android:padding="24dp"
+                android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp"
+                android:visibility="gone" />
+
+        </FrameLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

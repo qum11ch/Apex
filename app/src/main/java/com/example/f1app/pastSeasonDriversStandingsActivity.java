@@ -1,19 +1,23 @@
 package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
-import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -25,10 +29,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -37,24 +39,46 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
+/**
+ * Driver standings of a past season. The newest past season opens first;
+ * the season buttons under the header switch seasons without leaving the screen.
+ */
 public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
 
-    private List<driversList> datum;
+    private static final String TAG = "pastDriversStandings";
+    private static final String STATE_SEASON = "selectedSeason";
+
+    // One list instance for the whole life of the screen: the adapter keeps a reference to it.
+    private final List<driversList> datum = new ArrayList<>();
+    private final Map<String, String> databaseTeamColors = new HashMap<>();
+    private final Set<String> knownDrivers = new HashSet<>();
+
     private RecyclerView recyclerView;
     private pastSeasonDriversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
-    private String mCurrentSeason;
-    private FirebaseStorage storage;
+    private TextView driversHeader;
+    private View stateContainer;
+    private TextView stateMessage;
+    private seasonChipsBar chips;
+    private HorizontalScrollView seasonScroll;
+
+    private RequestQueue queue;
     private StorageReference storageRef;
     private DatabaseReference rootRef;
+
+    private String mCurrentSeason;
+    private int selectedSeason;
+    private int requestToken = 0;
+    private boolean referenceLoaded = false;
+    private boolean driversKnown = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,69 +89,96 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         setupStandingsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.recyclerview_currentDrivers));
 
-        if (!checkConnection(getApplicationContext())){
+        if (!checkConnection(getApplicationContext())) {
             startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonDriversStandingsActivity.this));
-        }else{
+        } else {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonDriversStandingsActivity.this));
         }
 
-        if(!getIntent().getExtras().isEmpty()) {
-            Bundle bundle = getIntent().getExtras();
-            String mSeason = bundle.getString("season");
-            mCurrentSeason = bundle.getString("currentSeason");
+        Bundle extras = getIntent().getExtras();
+        mCurrentSeason = extras != null ? extras.getString("currentSeason") : null;
 
-            shimmerFrameLayout = findViewById(R.id.shimmer_layout);
-            shimmerFrameLayout.startShimmer();
+        int first = pastSeasons.FIRST_STANDINGS_SEASON;
+        int last = pastSeasons.lastPastSeason(mCurrentSeason);
+        String requested = savedInstanceState != null
+                ? String.valueOf(savedInstanceState.getInt(STATE_SEASON, last))
+                : (extras != null ? extras.getString("season") : null);
+        selectedSeason = pastSeasons.initial(requested, first, last);
 
-            recyclerView = findViewById(R.id.recyclerview_currentDrivers);
-            // recyclerView.setHasFixedSize(true);
+        shimmerFrameLayout = findViewById(R.id.shimmer_layout);
+        recyclerView = findViewById(R.id.recyclerview_currentDrivers);
+        swipeLayout = findViewById(R.id.swipe_layout);
+        driversHeader = findViewById(R.id.driversHeader);
+        stateContainer = findViewById(R.id.state_container);
+        stateMessage = findViewById(R.id.state_message);
+        seasonScroll = findViewById(R.id.seasonScroll);
 
-            storage = FirebaseStorage.getInstance();
-            storageRef = storage.getReference();
-            rootRef = FirebaseDatabase.getInstance().getReference();
+        queue = Volley.newRequestQueue(this);
+        storageRef = FirebaseStorage.getInstance().getReference();
+        rootRef = FirebaseDatabase.getInstance().getReference();
 
-            TextView driversHeader = findViewById(R.id.driversHeader);
+        adapter = new pastSeasonDriversStandingsAdapter(this, datum);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
 
-            String headerText;
-            if (Locale.getDefault().getLanguage().equals("ru")){
-                headerText = getString(R.string.past_season_drivers) + " " + mSeason;
-            }else{
-                headerText = mSeason + " " + getString(R.string.past_season_drivers);
-            }
-            driversHeader.setText(headerText);
+        swipeLayout.setOnChildScrollUpCallback(
+                (parent, child) -> recyclerView.canScrollVertically(-1)
+        );
 
-            datum = new ArrayList<>();
+        swipeLayout.setOnRefreshListener(() -> {
+            swipeLayout.setRefreshing(false); // the screen has its own loading skeleton
+            loadStandings();
+        });
 
-            adapter = new pastSeasonDriversStandingsAdapter(pastSeasonDriversStandingsActivity.this, datum);
-            recyclerView.setAdapter(adapter);
+        findViewById(R.id.state_retry).setOnClickListener(v -> loadStandings());
 
-            SwipeRefreshLayout swipeLayout = findViewById(R.id.swipe_layout);
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(v -> finish());
 
-            swipeLayout.setOnChildScrollUpCallback(
-                    (parent, child) -> recyclerView.canScrollVertically(-1)
-            );
+        WindowInsetsControllerCompat windowInsetsController =
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
+        windowInsetsController.setAppearanceLightStatusBars(false);
 
-            swipeLayout.setOnRefreshListener(() -> {
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                datum = new ArrayList<>();
-                getStanding(mSeason);
-                swipeLayout.setRefreshing(false);
-            });
+        List<Integer> seasons = pastSeasons.seasons(first, last);
 
-            LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
-            recyclerView.setLayoutManager(linearLayoutManager3);
+        chips = new seasonChipsBar(
+                seasonScroll,
+                findViewById(R.id.seasonButtonsLayout),
+                season -> {
+                    selectedSeason = season;
+                    loadStandings();
+                }
+        );
 
-            ImageButton backButton = findViewById(R.id.backButton);
-            backButton.setOnClickListener(v -> finish());
-
-            getStanding(mSeason);
-
-            WindowInsetsControllerCompat windowInsetsController =
-                    WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
-            windowInsetsController.setAppearanceLightStatusBars(false);
+        if (seasons.isEmpty()) {
+            seasonScroll.setVisibility(View.GONE);
+            showMessage(getString(R.string.ps_no_data), false);
+            return;
         }
+
+        chips.setSeasons(seasons, selectedSeason);
+        loadStandings();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(STATE_SEASON, selectedSeason);
+    }
+
+    @Override
+    protected void onDestroy() {
+        requestToken++;
+
+        if (queue != null) {
+            queue.cancelAll(this);
+        }
+
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout.stopShimmer();
+        }
+
+        super.onDestroy();
     }
 
     private void setupStandingsInsets() {
@@ -170,64 +221,224 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         ViewCompat.requestApplyInsets(root);
     }
 
-    public void getStanding(String seasonYear){
-        RequestQueue queue = Volley.newRequestQueue(pastSeasonDriversStandingsActivity.this);
-        String url2 = "https://api.jolpi.ca/ergast/f1/" + seasonYear + "/driverstandings/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+    // ---------- screen states ----------
+
+    private void updateHeader() {
+        String headerText;
+
+        if (Locale.getDefault().getLanguage().equals("ru")) {
+            headerText = getString(R.string.past_season_drivers) + " " + selectedSeason;
+        } else {
+            headerText = selectedSeason + " " + getString(R.string.past_season_drivers);
+        }
+
+        driversHeader.setText(headerText);
+    }
+
+    private void showLoading() {
+        stateContainer.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        shimmerFrameLayout.setVisibility(View.VISIBLE);
+        shimmerFrameLayout.startShimmer();
+    }
+
+    private void showList() {
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        stateContainer.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showMessage(String message, boolean canRetry) {
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        stateMessage.setText(message);
+        findViewById(R.id.state_retry).setVisibility(canRetry ? View.VISIBLE : View.GONE);
+        stateContainer.setVisibility(View.VISIBLE);
+    }
+
+    // ---------- loading ----------
+
+    private boolean isUnavailable() {
+        return isFinishing() || isDestroyed();
+    }
+
+    private void loadStandings() {
+        final int token = ++requestToken;
+        final int season = selectedSeason;
+
+        queue.cancelAll(this);
+        updateHeader();
+        showLoading();
+
+        loadReferenceData(() -> {
+            if (isUnavailable() || token != requestToken) {
+                return;
+            }
+
+            requestStandings(season, token);
+        });
+    }
+
+    /** Team colours and the list of drivers that have a profile page; read once per screen. */
+    private void loadReferenceData(Runnable done) {
+        if (referenceLoaded) {
+            done.run();
+            return;
+        }
+
+        final int[] pending = {2};
+        Runnable oneDone = () -> {
+            pending[0]--;
+
+            if (pending[0] == 0) {
+                referenceLoaded = true;
+                done.run();
+            }
+        };
+
+        rootRef.child("constructors").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DataSnapshot team : task.getResult().getChildren()) {
+                    String color = team.child("darkColor").getValue(String.class);
+
+                    if (team.getKey() != null && color != null) {
+                        databaseTeamColors.put(team.getKey(), color);
+                    }
+                }
+            } else {
+                Log.w(TAG, "Team colours are not available", task.getException());
+            }
+
+            oneDone.run();
+        });
+
+        rootRef.child("drivers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                for (DataSnapshot driver : task.getResult().getChildren()) {
+                    if (driver.getKey() != null) {
+                        knownDrivers.add(driver.getKey());
+                    }
+                }
+
+                driversKnown = true;
+            } else {
+                Log.w(TAG, "Driver list is not available", task.getException());
+            }
+
+            oneDone.run();
+        });
+    }
+
+    private void requestStandings(int season, int token) {
+        String url = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
+
+        JsonObjectRequest request = new JsonObjectRequest(
                 Request.Method.GET,
-                url2,
+                url,
                 null,
                 response -> {
-                    try {
-                        JSONObject MRData = response.getJSONObject("MRData");
-                        String total = MRData.getString("total");
-                        if (!total.equals("0")){
-                            JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
-                            JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
-                            for(int i = 0; i < StandingsLists.length(); i++){
-                                JSONArray DriverStandings = StandingsLists.getJSONObject(i)
-                                        .getJSONArray("DriverStandings");
-                                for(int j = 0; j < DriverStandings.length(); j++) {
-                                    String placement = DriverStandings.getJSONObject(j).getString("positionText");
-                                    String points = DriverStandings.getJSONObject(j).getString("points");
-                                    String driverName = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("givenName");
-                                    String driverFamilyName = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("familyName");
-                                    String driverCode = DriverStandings.getJSONObject(j)
-                                            .getJSONObject("Driver").getString("code");
-                                    JSONArray Constructors = DriverStandings.getJSONObject(j).getJSONArray("Constructors");
-                                    String constructorsName = Constructors.getJSONObject(Constructors.length() - 1).getString("name");
-                                    String constructorId = Constructors.getJSONObject(Constructors.length() - 1).getString("constructorId");
-
-                                    StorageReference mDriverImage = storageRef.child("drivers/" + driverCode.toLowerCase() + "_"  + seasonYear + ".png");
-
-                                    driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, seasonYear);
-                                    smth.setImageUrl(mDriverImage);
-                                    smth.setCurrentSeason(mCurrentSeason);
-                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
-                                            smth.setTeamColor(mTeamColor);
-                                        }
-
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            smth.setTeamColor("#ffffff");
-                                            Log.e(String.valueOf(pastSeasonDriversStandingsActivity.this), "Team color information getting error:" + error.getMessage());
-                                        }
-                                    });
-                                    datum.add(smth);
-                                }
-                            }
-                            hideShimmer(recyclerView, shimmerFrameLayout);
-                            adapter.notifyItemChanged(datum.size() - 1);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if (isUnavailable() || token != requestToken) {
+                        return;
                     }
-                }, error -> Toast.makeText(pastSeasonDriversStandingsActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show());
-        queue.add(jsonObjectRequest2);
+
+                    try {
+                        showStandings(parseStandings(response, season));
+                    } catch (JSONException error) {
+                        Log.e(TAG, "Unexpected standings response", error);
+                        showMessage(getString(R.string.ps_load_error), true);
+                    }
+                },
+                error -> {
+                    if (isUnavailable() || token != requestToken) {
+                        return;
+                    }
+
+                    Log.e(TAG, "Standings request failed", error);
+                    showMessage(getString(R.string.ps_load_error), true);
+                }
+        );
+
+        request.setTag(this);
+        queue.add(request);
+    }
+
+    private List<driversList> parseStandings(JSONObject response, int season) throws JSONException {
+        List<driversList> loaded = new ArrayList<>();
+        JSONObject data = response.getJSONObject("MRData");
+        JSONArray lists = data.getJSONObject("StandingsTable").optJSONArray("StandingsLists");
+
+        if (lists == null) {
+            return loaded;
+        }
+
+        for (int i = 0; i < lists.length(); i++) {
+            JSONArray standings = lists.getJSONObject(i).optJSONArray("DriverStandings");
+
+            if (standings == null) {
+                continue;
+            }
+
+            for (int j = 0; j < standings.length(); j++) {
+                JSONObject standing = standings.getJSONObject(j);
+                JSONObject driver = standing.getJSONObject("Driver");
+
+                String givenName = driver.getString("givenName");
+                String familyName = driver.getString("familyName");
+                String code = driver.optString("code", "");
+
+                if (code.isEmpty()) {
+                    code = familyName.substring(0, Math.min(3, familyName.length())).toUpperCase(Locale.ROOT);
+                }
+
+                String teamName = "";
+                String teamId = "";
+                JSONArray constructors = standing.optJSONArray("Constructors");
+
+                if (constructors != null && constructors.length() > 0) {
+                    // The last team of the season, as before.
+                    JSONObject team = constructors.getJSONObject(constructors.length() - 1);
+                    teamName = team.optString("name", "");
+                    teamId = team.optString("constructorId", "");
+                }
+
+                driversList item = new driversList(
+                        givenName,
+                        familyName,
+                        teamName,
+                        teamId,
+                        standing.getString("points"),
+                        standing.getString("positionText"),
+                        code,
+                        false,
+                        String.valueOf(season)
+                );
+
+                item.setImageUrl(storageRef.child(
+                        "drivers/" + code.toLowerCase(Locale.ROOT) + "_" + season + ".png"));
+                item.setCurrentSeason(mCurrentSeason);
+                item.setTeamColor(pastTeamPalette.resolve(teamId, databaseTeamColors.get(teamId)));
+                loaded.add(item);
+            }
+        }
+
+        return loaded;
+    }
+
+    private void showStandings(List<driversList> loaded) {
+        datum.clear();
+        datum.addAll(loaded);
+
+        // null means "the driver list could not be read": do not block any profile then.
+        adapter.setLinkableDrivers(driversKnown ? knownDrivers : null);
+        adapter.notifyDataSetChanged();
+
+        if (datum.isEmpty()) {
+            showMessage(getString(R.string.ps_no_data), false);
+        } else {
+            showList();
+            recyclerView.scrollToPosition(0);
+        }
     }
 }

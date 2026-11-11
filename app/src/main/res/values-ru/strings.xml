@@ -1081,4 +1081,11 @@
     <string name="sr_unit_km">%1$s км</string>
     <string name="sr_unit_laps">%1$s кр.</string>
     <string name="sr_unit_turns">%1$s пов.</string>
+
+    <string name="ps_past_seasons_button">Прошлые сезоны</string>
+    <string name="ps_no_data">Данных за этот сезон пока нет</string>
+    <string name="ps_load_error">Не удалось загрузить сезон. Проверьте соединение и повторите.</string>
+    <string name="ps_retry">Повторить</string>
+    <string name="ps_profile_unavailable">Профиль этого пилота пока недоступен</string>
+    <string name="ps_team_unavailable">Страница этой команды пока недоступна</string>
 </resources>

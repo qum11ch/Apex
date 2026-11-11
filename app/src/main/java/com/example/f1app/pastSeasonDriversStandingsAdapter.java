@@ -31,6 +31,12 @@ import java.util.List;
 public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<pastSeasonDriversStandingsAdapter.DataHolder> {
     Context context;
     List<driversList> dataList;
+    private java.util.Set<String> linkableDrivers;
+
+    /** Names, as stored in the drivers node, that have a profile page; null means "do not restrict". */
+    public void setLinkableDrivers(java.util.Set<String> names) {
+        this.linkableDrivers = names;
+    }
 
 
     @Override
@@ -128,7 +134,11 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
             int colorRgb = Color.parseColor("#303030");
 
             if (darkTeamColor != null){
-                colorRgb = Color.parseColor(darkTeamColor);
+                try {
+                    colorRgb = Color.parseColor(darkTeamColor);
+                } catch (IllegalArgumentException ignored) {
+                    // a missing colour arrives as "#null": keep the default
+                }
             }
 
             int alpha = 0x66;
@@ -150,6 +160,14 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
         }
 
         holder.constraintLayout.setOnClickListener(v -> {
+            String fullName = datum.getDriverName() + " " + datum.getDriverFamilyName();
+
+            if (linkableDrivers != null && !linkableDrivers.contains(fullName)) {
+                android.widget.Toast.makeText(context, R.string.ps_profile_unavailable,
+                        android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             Intent intent = new Intent(context , driverPageActivity.class);
             Bundle bundle = new Bundle();
             bundle.putString("driverName", datum.getDriverName());
