@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:cardBackgroundColor="@color/colorPrimary"
+    app:cardCornerRadius="18dp"
+    app:cardElevation="0dp">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="false">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:accessibilityHeading="true"
+                android:text="@string/leaderboard_consent_title"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textStyle="bold"
+                android:textColor="@color/text_color_main"
+                android:textSize="20sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/leaderboard_consent_message"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/text_color_main"
+                android:textSize="14sp" />
+
+            <Button
+                style="@style/LogoutButtonStyle"
+                android:textStyle="bold"
+                android:id="@+id/leaderboardConsentAccept"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:text="@string/leaderboard_consent_accept"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/neuro_accent"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/leaderboardConsentCancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:padding="12dp"
+                android:text="@string/leaderboard_consent_cancel"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/grey"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.cardview.widget.CardView>

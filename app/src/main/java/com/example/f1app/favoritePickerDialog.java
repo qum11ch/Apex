@@ -356,12 +356,12 @@ public class favoritePickerDialog extends Dialog {
         filtersLayout.removeAllViews();
         filterButtons.clear();
 
-        addFilterButton(DriverFilter.ALL, "Все");
-        addFilterButton(DriverFilter.ACTIVE, "Действующие");
-        addFilterButton(DriverFilter.RESERVE, "Резервные");
-        addFilterButton(DriverFilter.RETIRED, "Завершили карьеру");
-        addFilterButton(DriverFilter.CHAMPIONS, "Чемпионы");
-        addFilterButton(DriverFilter.LEGENDS, "Легенды");
+        addFilterButton(DriverFilter.ALL, getContext().getString(R.string.filter_all_text));
+        addFilterButton(DriverFilter.ACTIVE, getContext().getString(R.string.filter_active_text));
+        addFilterButton(DriverFilter.RESERVE, getContext().getString(R.string.filter_reserve_text));
+        addFilterButton(DriverFilter.RETIRED, getContext().getString(R.string.filter_retired_text));
+        addFilterButton(DriverFilter.CHAMPIONS, getContext().getString(R.string.filter_champions_text));
+        addFilterButton(DriverFilter.LEGENDS, getContext().getString(R.string.filter_legends_text));
 
         updateFilterButtons();
     }
@@ -528,7 +528,7 @@ public class favoritePickerDialog extends Dialog {
     }
 
     private void loadDriverFilterData() {
-        filterMessage.setText("Загружаем фильтры…");
+        filterMessage.setText(getContext().getString(R.string.loading_filters));
         filterMessage.setVisibility(View.VISIBLE);
 
         driversRef = FirebaseDatabase.getInstance()
@@ -605,8 +605,7 @@ public class favoritePickerDialog extends Dialog {
                 }
 
                 filterMessage.setText(
-                        "Не удалось загрузить фильтры. "
-                                + "Доступен полный список."
+                        getContext().getString(R.string.filter_error)
                 );
 
                 filterMessage.setVisibility(View.VISIBLE);

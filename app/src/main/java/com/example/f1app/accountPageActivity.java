@@ -499,7 +499,6 @@ public class accountPageActivity extends AppCompatActivity {
                                         : choiceTeam;
 
                         showMainContent(publicUsername);
-                        // setupToolbar(publicUsername);
 
                         setUserStats(uid);
 
@@ -660,76 +659,6 @@ public class accountPageActivity extends AppCompatActivity {
         main_content.setVisibility(View.VISIBLE);
         loadingProgress.setVisibility(View.GONE);
     }
-
-    // private void setupToolbar(String username) {
-    //     CollapsingToolbarLayout collapsingToolbarLayout =
-    //             findViewById(R.id.collapsing_toolbar);
-//
-    //     if (!checkLightTheme(accountPageActivity.this)) {
-    //         collapsingToolbarLayout.setBackground(
-    //                 ContextCompat.getDrawable(
-    //                         accountPageActivity.this,
-    //                         R.drawable.black_gradient
-    //                 )
-    //         );
-    //     }
-//
-    //     AppBarLayout appBarLayout = findViewById(R.id.appbar);
-    //     Toolbar toolbar = findViewById(R.id.toolbar);
-//
-    //     appBarLayout.addOnOffsetChangedListener(
-    //             new AppBarLayout.OnOffsetChangedListener() {
-//
-    //                 boolean isShow = true;
-    //                 int scrollRange = -1;
-//
-    //                 @Override
-    //                 public void onOffsetChanged(
-    //                         AppBarLayout appBarLayout,
-    //                         int verticalOffset) {
-//
-    //                     if (scrollRange == -1) {
-    //                         scrollRange =
-    //                                 appBarLayout.getTotalScrollRange();
-    //                     }
-//
-    //                     if (scrollRange + verticalOffset == 0) {
-    //                         tabUserName.setText(username);
-//
-    //                         if (!checkLightTheme(
-    //                                 accountPageActivity.this)) {
-//
-    //                             toolbar.setBackgroundColor(
-    //                                     ContextCompat.getColor(
-    //                                             getApplicationContext(),
-    //                                             R.color.darkest_grey
-    //                                     )
-    //                             );
-    //                         } else {
-    //                             toolbar.setBackgroundColor(
-    //                                     ContextCompat.getColor(
-    //                                             getApplicationContext(),
-    //                                             R.color.dark_blue
-    //                                     )
-    //                             );
-    //                         }
-//
-    //                         isShow = true;
-    //                     } else if (isShow) {
-    //                         tabUserName.setText(" ");
-//
-    //                         toolbar.setBackgroundColor(
-    //                                 ContextCompat.getColor(
-    //                                         getApplicationContext(),
-    //                                         android.R.color.transparent
-    //                                 )
-    //                         );
-//
-    //                         isShow = false;
-    //                     }
-    //                 }
-    //             });
-    // }
 
     private void loadDriverInfo(String choiceDriver) {
         DatabaseReference rootRef =

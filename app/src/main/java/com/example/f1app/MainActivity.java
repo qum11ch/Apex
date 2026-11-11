@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private SwipeRefreshLayout swipeLayout;
     private boolean accountNavigationInProgress = false;
+    private Button allDriversButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -211,6 +212,17 @@ public class MainActivity extends AppCompatActivity {
         sfPast.startShimmer();
         sfDrivers.startShimmer();
         sfTeams.startShimmer();
+
+        allDriversButton = findViewById(R.id.allDriversButton);
+        allDriversButton.setOnClickListener(v -> {
+            Intent intent = new Intent(
+                    MainActivity.this,
+                    allDriversActivity.class
+            );
+
+            intent.putExtra("currentSeason", currentSeason);
+            startActivity(intent);
+        });
 
         // rvFuture.setHasFixedSize(true);
         // rvPast.setHasFixedSize(true);
@@ -1158,18 +1170,31 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static boolean checkConnection(Context context) {
-        try {
-            ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network nw = connectivityManager.getActiveNetwork();
-            if (nw == null) return false;
-            NetworkCapabilities actNw = connectivityManager.getNetworkCapabilities(nw);
-            return actNw != null && (actNw.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
-                    || actNw.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
-                    || actNw.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
-                    || actNw.hasTransport(NetworkCapabilities.TRANSPORT_BLUETOOTH));
-        } catch (Exception e) {
+        ConnectivityManager manager = (ConnectivityManager)
+                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+        if (manager == null) {
             return false;
         }
+
+        Network network = manager.getActiveNetwork();
+
+        if (network == null) {
+            return false;
+        }
+
+        NetworkCapabilities capabilities =
+                manager.getNetworkCapabilities(network);
+
+        if (capabilities == null) {
+            return false;
+        }
+
+        return capabilities.hasCapability(
+                NetworkCapabilities.NET_CAPABILITY_INTERNET
+        ) && capabilities.hasCapability(
+                NetworkCapabilities.NET_CAPABILITY_VALIDATED
+        );
     }
 
     public static int getStringByName(String name) {

@@ -42,6 +42,14 @@
             android:layout_width="48dp"
             android:layout_height="48dp" />
     </LinearLayout>
+
+    <View
+        android:layout_below="@id/header"
+        android:id="@+id/separatorLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/separator_header" />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
         android:layout_width="match_parent"
@@ -55,16 +63,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/currentTeamsLayout"
-                android:layout_marginEnd="10dp"
-                android:layout_marginTop="20dp"
-                android:orientation="vertical"
-                style="@style/SavedRacesLayout">
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
                 <androidx.recyclerview.widget.RecyclerView
                     android:overScrollMode="never"
                     android:visibility="gone"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginEnd="15dp"
-                    android:layout_marginBottom="5dp"
                     android:layout_width="match_parent"
                     android:id="@+id/recyclerview_savedRaces"
                     android:layout_height="match_parent"
@@ -72,8 +77,6 @@
                     android:clipToPadding="false"
                     android:paddingBottom="24dp"/>
                 <com.facebook.shimmer.ShimmerFrameLayout
-                    android:layout_marginTop="15dp"
-                    android:layout_marginEnd="15dp"
                     android:id="@+id/shimmer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -93,7 +96,7 @@
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/emptySavedRaceScroll"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:fillViewport="true"
                 android:overScrollMode="never"
                 android:scrollbars="none"
@@ -105,6 +108,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:layout_marginBottom="10dp"
+                    android:minHeight="200dp"
                     android:layout_marginEnd="10dp"
                     android:visibility="visible">
                     <RelativeLayout

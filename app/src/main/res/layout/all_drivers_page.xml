@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drivers_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/header"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="16dp"
+            android:paddingBottom="20dp"
+            android:background="@color/header_color_gradient">
+
+            <ImageButton
+                android:id="@+id/backButton"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="visible"
+                android:background="@android:color/transparent"
+                android:contentDescription="@string/back_arrow"
+                android:paddingStart="15dp"
+                android:paddingEnd="15dp"
+                android:src="@drawable/back_arrow" />
+
+            <TextView
+                android:id="@+id/teamsHeader"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/all_drivers_header"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+
+            <Space
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_layout"
+            style="@style/BackgroundGradient"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:overScrollMode="never"
+                android:scrollbars="none">
+
+                <RelativeLayout
+                    android:id="@+id/drivers_scroll_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="80dp">
+
+                    <LinearLayout
+                        android:layout_marginTop="20dp"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="8dp"
+                        android:id="@+id/inputBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="68dp"
+                        android:background="@drawable/bg_input_box_picker"
+                        android:baselineAligned="false"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingStart="18dp"
+                        android:paddingEnd="18dp">
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/searchLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            app:boxStrokeColor="@color/text_color_main"
+                            android:background="@android:color/transparent"
+                            app:endIconTint="@color/text_color_secondary"
+                            app:boxBackgroundMode="none"
+                            app:endIconMode="clear_text"
+                            android:hint="@string/favorite_search_hint"
+                            app:boxStrokeWidth="0dp"
+                            app:boxStrokeWidthFocused="0dp"
+                            app:hintEnabled="false">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:hint="@string/favorite_search_driver_hint"
+                                android:textCursorDrawable="@null"
+                                app:boxStrokeWidth="0dp"
+                                app:boxStrokeWidthFocused="0dp"
+                                android:id="@+id/search"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null"
+                                android:inputType="text"
+                                android:imeOptions="actionDone"
+                                android:singleLine="true"
+                                android:textColor="@color/text_color_main"
+                                android:textColorHint="@color/text_color_secondary"
+                                android:textSize="16sp" />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/filtersLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/inputBox"
+                        android:layout_marginStart="10dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_marginBottom="10dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ToggleButton
+                                android:id="@+id/toggle_button_all"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_all_text"
+                                android:textOn="@string/filter_all_text" />
+
+                            <ToggleButton
+                                android:id="@+id/toggle_button_active"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="false"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_active_text"
+                                android:textOn="@string/filter_active_text" />
+
+                            <ToggleButton
+                                android:id="@+id/toggle_button_reserve"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="false"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_reserve_text"
+                                android:textOn="@string/filter_reserve_text" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="5dp">
+
+                            <ToggleButton
+                                android:layout_gravity="center"
+                                android:id="@+id/toggle_button_retired"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="false"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_retired_text"
+                                android:textOn="@string/filter_retired_text" />
+
+                            <ToggleButton
+                                android:id="@+id/toggle_button_champions"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="4dp"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="false"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_champions_text"
+                                android:textOn="@string/filter_champions_text" />
+
+                            <ToggleButton
+                                android:id="@+id/toggle_button_legends"
+                                style="@style/ToggleButtonPicker"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:minHeight="48dp"
+                                android:minWidth="0dp"
+                                android:checked="false"
+                                android:gravity="center"
+                                android:maxLines="2"
+                                android:textAllCaps="false"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                                android:textSize="16sp"
+                                android:textColor="@drawable/picker_toggle_text_color"
+                                android:textOff="@string/filter_legends_text"
+                                android:textOn="@string/filter_legends_text" />
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/filtersLayout">
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/recyclerview_all_drivers"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:nestedScrollingEnabled="false"
+                            android:animateLayoutChanges="false"
+                            android:overScrollMode="never"
+                            android:clipToPadding="false"
+                            android:paddingBottom="5dp"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="visible"
+                            app:duration="1500">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+
+                                <include layout="@layout/shimmer_item_all_drivers" />
+                                <include layout="@layout/shimmer_item_all_drivers" />
+                                <include layout="@layout/shimmer_item_all_drivers" />
+                                <include layout="@layout/shimmer_item_all_drivers" />
+
+                            </LinearLayout>
+
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </FrameLayout>
+                </RelativeLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    </LinearLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

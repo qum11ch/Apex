@@ -77,7 +77,6 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
         mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
                 .load(uri)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .skipMemoryCache(true)
                 .error(R.drawable.placeholder_driver)
                 .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
                         .load(R.drawable.placeholder_driver)

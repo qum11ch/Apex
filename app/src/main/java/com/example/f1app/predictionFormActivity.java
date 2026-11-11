@@ -1387,8 +1387,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
         setSavingState(true);
 
-        functions.getHttpsCallable("submitUserPrediction")
-                .call(data)
+        publicLeaderboardConsent.submit(predictionFormActivity.this, functions, data)
                 .addOnSuccessListener(result -> {
                     setSavingState(false);
                     hasSavedAnswer = true;
@@ -1400,6 +1399,10 @@ public class predictionFormActivity extends AppCompatActivity {
                 })
                 .addOnFailureListener(error -> {
                     setSavingState(false);
+
+                    if (publicLeaderboardConsent.isCancelled(error)) {
+                        return;
+                    }
                     hasSavedAnswer = true;
                     Toast.makeText(
                             predictionFormActivity.this,

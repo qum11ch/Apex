@@ -104,6 +104,7 @@
             android:exported="false" />
         <activity android:name=".awardsCollectionActivity" android:exported="false" />
         <activity android:name=".displayedAwardPickerActivity" android:exported="false" />
+        <activity android:name=".allDriversActivity" android:exported="false" />
     </application>
 
 </manifest>

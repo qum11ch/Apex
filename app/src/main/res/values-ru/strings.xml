@@ -242,7 +242,7 @@
     <string name="sprint_event_text">Спринт</string>
     <string name="sprint_quali_event_text">Квалификация к спринту</string>
     <string name="prev_race_results_text">Результат гонки в</string>
-    <string name="saved_race_text">Сохранено: \n</string>
+    <string name="saved_race_text">Сохранено:</string>
     <string name="created_at_text">В приложении с </string>
     <string name="no_fan_of_text">Не имеет любимого пилота и команду</string>
     <string name="nobody">Никто</string>
@@ -1002,4 +1002,22 @@
     <string name="displayed_award_retry">Повторить</string>
 
     <string name="displayed_award_refresh_error">Не удалось обновить список</string>
+
+    <string name="leaderboard_consent_title">Публичный рейтинг</string>
+    <string name="leaderboard_consent_message">Отправляя прогноз, вы соглашаетесь участвовать в публичном рейтинге.\n\nДругие пользователи смогут видеть ваш никнейм, аватар, очки, место в рейтинге и статистику прогнозов, а также открывать публичный профиль с его открытыми данными, включая награды и любимого пилота или команду. Место и очки обновляются после расчёта результатов прогнозов.\n\nСогласиться и отправить этот прогноз?</string>
+    <string name="leaderboard_consent_accept">Согласен, отправить</string>
+    <string name="leaderboard_consent_cancel">Отмена</string>
+    <string name="leaderboard_consent_update_required">Обновите приложение, чтобы ознакомиться с актуальным уведомлением о публичном рейтинге.</string>
+
+    <string name="all_drivers_header">Пилоты</string>
+    <string name="all_drivers_button">Все пилоты</string>
+
+    <string name="filter_all_text">Все</string>
+    <string name="filter_active_text">Действующие</string>
+    <string name="filter_reserve_text">Резервные</string>
+    <string name="filter_retired_text">Завершили карьеру</string>
+    <string name="filter_champions_text">Чемпионы</string>
+    <string name="filter_legends_text">Легенды</string>
+    <string name="loading_filters">Загружаем фильтры...</string>
+    <string name="filter_error">Не удалось загрузить фильтры. Доступен полный список</string>
 </resources>

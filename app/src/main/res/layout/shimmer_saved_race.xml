@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@android:color/transparent">
+    android:layout_height="wrap_content">
     <androidx.cardview.widget.CardView
+        app:cardElevation="0dp"
         app:cardBackgroundColor="@android:color/transparent"
         app:cardCornerRadius="0dp"
-        app:cardElevation="0dp"
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,40 +17,217 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:paddingTop="5dp"
-            android:layout_marginBottom="1dp"
-            style="@style/ItemStyle"
+        <RelativeLayout
+            android:id="@+id/content_layout"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:baselineAligned="false"
+            style="@style/ItemStylePreds"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:orientation="horizontal"
-            android:weightSum="5">
-            <View
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:paddingStart="15dp"
+            android:paddingEnd="15dp">
+            <TextView
                 style="@style/ShimmerStyle"
-                android:layout_weight="0.5"
-                android:layout_marginEnd="2dp"
-                android:layout_marginStart="2dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="0dp"
-                android:layout_height="match_parent" />
-            <View
-                style="@style/ShimmerStyle"
+                android:layout_gravity="center"
+                android:textSize="18sp"
                 android:gravity="center_vertical"
-                android:layout_marginStart="3dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:layout_width="0dp"
-                android:layout_weight="3.1"
-                android:layout_height="match_parent"
-                android:id="@+id/raceName" />
-            <View
-                android:layout_marginBottom="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_width="0dp"
-                android:layout_weight="1.4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/raceName"
+                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                android:textColor="@color/text_color_main"
+                android:textStyle="bold"/>
+
+            <LinearLayout
+                android:layout_marginTop="10dp"
+                android:id="@+id/podiumImage_layout"
+                android:baselineAligned="false"
+                android:gravity="bottom"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_below="@id/raceName"
+                android:weightSum="3">
+                <RelativeLayout
+                    android:layout_marginEnd="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="84dp"
+                    android:layout_weight="1">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
+                        android:id="@+id/stripedImg_first"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/ShimmerStyle"/>
+                    <ImageView
+                        android:id="@+id/firstPlace_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="84dp"
+                        android:scaleType="fitCenter"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="84dp"
+                    android:layout_weight="1">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
+                        android:id="@+id/stripedImg_second"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/ShimmerStyle"/>
+                    <ImageView
+                        android:id="@+id/secondPlace_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="84dp"
+                        android:scaleType="fitCenter"
+                        android:layout_alignParentBottom="true"/>
+                </RelativeLayout>
+                <RelativeLayout
+
+                    android:layout_marginStart="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="84dp"
+                    android:layout_weight="1">
+                    <com.google.android.material.imageview.ShapeableImageView
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
+                        android:id="@+id/stripedImg_third"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/ShimmerStyle"/>
+                    <ImageView
+                        android:scaleType="fitCenter"
+                        android:id="@+id/thirdPlace_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
+                </RelativeLayout>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_marginTop="5dp"
+                android:id="@+id/podiumNamesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/podiumImage_layout"
+                android:layout_marginBottom="10dp"
+                android:baselineAligned="false"
+                android:gravity="bottom"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <RelativeLayout
+                    android:layout_marginEnd="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+                    <TextView
+                        style="@style/ShimmerStyle"
+                        android:layout_width="15dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        style="@style/ShimmerStyle"
+                        android:id="@+id/firstPlace_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        tools:ignore="RtlCompat" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="15dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        style="@style/ShimmerStyle"
+                        android:id="@+id/secondPlace_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:textAlignment="center"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        tools:ignore="RtlCompat" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_marginStart="5dp"
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="15dp"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:text="@string/three"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        tools:ignore="RtlCompat" />
+
+                    <TextView
+                        style="@style/ShimmerStyle"
+                        android:id="@+id/thirdPlace_code"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:includeFontPadding="false"
+                        android:lineSpacingExtra="0dp"
+                        android:textAllCaps="true"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        tools:ignore="RtlCompat" />
+                </RelativeLayout>
+            </LinearLayout>
+
+            <TextView
+                style="@style/ShimmerStyle"
+                android:layout_below="@id/podiumNamesLayout"
+                android:layout_width="match_parent"
                 android:id="@+id/save_date"
-                android:layout_height="match_parent"
-                style="@style/ShimmerStyle"/>
-        </LinearLayout>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:textSize="14sp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:textColor="@color/text_color_thirdly"
+                android:textAppearance="@style/TextStyle.Gram.Regular" />
+        </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

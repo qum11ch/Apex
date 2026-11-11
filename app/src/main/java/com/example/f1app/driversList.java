@@ -15,6 +15,10 @@ public class driversList {
     private String currentSeason;
     private String teamColor;
     private StorageReference imageUrl;
+    private StorageReference driverImageRef;
+    private String status;
+    private int championships;
+    private boolean legend;
 
 
     public driversList(String driverName, String driverFamilyName, String driverTeam, String constructorId, String driverPoints, String driverPlacement, String driverCode, boolean startSeason, String season) {
@@ -44,9 +48,40 @@ public class driversList {
         this.imageUrl = imageUrl;
     }
 
+    public StorageReference getDriverImageRef() {
+        return driverImageRef;
+    }
+
+    public void setDriverImageRef(StorageReference ref) {
+        this.driverImageRef = ref;
+    }
 
     public String getDriverName() {
         return driverName;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public int getChampionships() {
+        return championships;
+    }
+
+    public void setChampionships(int championships) {
+        this.championships = championships;
+    }
+
+    public boolean isLegend() {
+        return legend;
+    }
+
+    public void setLegend(boolean legend) {
+        this.legend = legend;
     }
 
     public String getCurrentSeason(){
