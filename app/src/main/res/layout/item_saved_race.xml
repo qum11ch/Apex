@@ -27,7 +27,7 @@
         android:outlineProvider="none"
         android:stateListAnimator="@null"
 
-        style="@style/ItemStylePreds"
+        android:background="@drawable/bg_saved_race_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -100,7 +100,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="@color/month_color"
+                android:backgroundTint="@color/colorPrimary"
                 android:paddingStart="8dp"
                 android:paddingTop="2dp"
                 android:paddingEnd="8dp"
@@ -117,7 +117,7 @@
             android:layout_marginTop="6dp"
             android:ellipsize="end"
             android:maxLines="2"
-            android:textAppearance="@style/TextStyle.Gram.Bold.ForTab"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
             android:textColor="@color/text_color_main"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -139,6 +139,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
@@ -146,14 +147,14 @@
             android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
             android:textSize="16sp" />
 
-        <!-- Finished race: the podium, as it was on the card before -->
         <LinearLayout
             android:id="@+id/podium_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            android:layout_marginBottom="10dp">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -311,7 +312,6 @@
             android:id="@+id/status_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:visibility="gone">
@@ -329,7 +329,8 @@
                 android:layout_weight="1"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="0dp"
-                android:textAppearance="@style/TextStyle.ShareTechCYR"
+                android:textAppearance="@style/TextStyle.Gram.Regular"
+                android:textStyle="bold"
                 android:textColor="@color/text_color_main"
                 android:textSize="14sp" />
         </LinearLayout>
@@ -338,12 +339,12 @@
             android:id="@+id/info_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:maxLines="2"
-            android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+            android:textAppearance="@style/TextStyle.Gram.Regular"
+            android:textColor="@color/text_color_secondary"
             android:textSize="14sp"
             android:visibility="gone" />
 
@@ -351,11 +352,11 @@
             android:id="@+id/save_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextStyle.Gram.Regular"
-            android:textColor="@color/text_color_thirdly"
+            android:textColor="@color/text_color_secondary"
             android:textSize="14sp" />
     </LinearLayout>
 </FrameLayout>

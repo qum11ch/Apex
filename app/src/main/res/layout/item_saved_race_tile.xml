@@ -25,9 +25,7 @@
         android:id="@+id/cardView"
         android:outlineProvider="none"
         android:stateListAnimator="@null"
-
-        android:minHeight="200dp"
-        style="@style/ItemStylePreds"
+        android:background="@drawable/bg_saved_race_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -99,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
-            android:backgroundTint="@color/month_color"
+            android:backgroundTint="@color/colorPrimary"
             android:paddingStart="8dp"
             android:paddingTop="2dp"
             android:paddingEnd="8dp"
@@ -114,10 +112,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="6dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="2"
             android:minLines="2"
-            android:textAppearance="@style/TextStyle.Gram.Bold.ForTab"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
             android:textColor="@color/text_color_main"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -146,126 +145,135 @@
             android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
             android:textSize="13sp" />
 
-        <LinearLayout
-            android:id="@+id/podium_group"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:weightSum="3">
-
+            android:layout_marginBottom="10dp"
+            android:minHeight="34dp">
             <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:includeFontPadding="false"
-                    android:text="@string/one"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                    android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/firstPlace_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:includeFontPadding="false"
-                    android:text="@string/two"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                    android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/secondPlace_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="30dp"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="4dp"
-                    android:includeFontPadding="false"
-                    android:text="@string/three"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                    android:textSize="12sp" />
-                <TextView
-                    android:id="@+id/thirdPlace_code"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:includeFontPadding="false"
-                    android:textAllCaps="true"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                    android:textSize="15sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/status_row"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:visibility="gone">
-            <View
-                android:id="@+id/live_dot"
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="6dp"
-                android:background="@drawable/live_dot"
-                android:visibility="gone" />
-            <TextView
-                android:id="@+id/status_text"
-                android:layout_width="0dp"
+                android:id="@+id/podium_group"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
-                android:textAppearance="@style/TextStyle.ShareTechCYR"
-                android:textColor="@color/text_color_main"
-                android:textSize="13sp" />
-        </LinearLayout>
+                android:layout_gravity="center_vertical"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:weightSum="3">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/one"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/firstPlace_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/two"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/secondPlace_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
+                        android:includeFontPadding="false"
+                        android:text="@string/three"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textSize="12sp" />
+                    <TextView
+                        android:id="@+id/thirdPlace_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="15sp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/status_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+                <View
+                    android:id="@+id/live_dot"
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="6dp"
+                    android:background="@drawable/live_dot"
+                    android:visibility="gone" />
+                <TextView
+                    android:id="@+id/status_text"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:includeFontPadding="false"
+                    android:lineSpacingExtra="0dp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="13sp" />
+            </LinearLayout>
+        </FrameLayout>
 
         <TextView
             android:id="@+id/info_line"
+            android:maxLines="2"
+            android:minLines="2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
-            android:maxLines="2"
-            android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+            android:textAppearance="@style/TextStyle.Gram.Regular"
+            android:textColor="@color/text_color_secondary"
             android:textSize="13sp"
             android:visibility="gone" />
 
@@ -273,11 +281,11 @@
             android:id="@+id/save_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textAppearance="@style/TextStyle.Gram.Regular"
-            android:textColor="@color/text_color_thirdly"
+            android:textColor="@color/text_color_secondary"
             android:textSize="12sp" />
     </LinearLayout>
 </FrameLayout>

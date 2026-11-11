@@ -539,6 +539,9 @@ public class savedRacesActivity extends AppCompatActivity {
     }
 
     private void setupDeleteSwipe() {
+        final int corner = Math.round(TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 8, getResources().getDisplayMetrics()));
+
         ItemTouchHelper.SimpleCallback callback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
@@ -596,7 +599,8 @@ public class savedRacesActivity extends AppCompatActivity {
                             int revealed = Math.min(width, Math.round(-shift));
 
                             // Red is visible only in the strip the card has uncovered.
-                            background.setClipBounds(new Rect(width - revealed, 0, width, background.getHeight()));
+                            background.setClipBounds(new Rect(
+                                    Math.max(0, width - revealed - corner), 0, width, background.getHeight()));
                             background.setVisibility(View.VISIBLE);
                         } else {
                             background.setVisibility(View.INVISIBLE);
