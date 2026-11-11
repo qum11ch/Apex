@@ -2,10 +2,11 @@
 <RelativeLayout
     android:id="@+id/saved_races_root"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/colorPrimary">
+
     <LinearLayout
         android:orientation="horizontal"
         android:gravity="center_vertical"
@@ -38,9 +39,16 @@
             android:textColor="@color/white"
             android:textSize="22sp"/>
 
-        <Space
+        <!-- Takes the place of the old 48dp spacer, so the title stays centered. -->
+        <ImageButton
+            android:id="@+id/view_mode_button"
             android:layout_width="48dp"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/saved_races_view_as_tiles"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_view_mode_tiles" />
     </LinearLayout>
 
     <View
@@ -56,47 +64,100 @@
         android:layout_height="match_parent"
         android:layout_below="@id/header"
         android:layout_alignParentBottom="true">
-        <RelativeLayout
+
+        <!-- Horizontal system insets are added to this container's padding in code. -->
+        <FrameLayout
+            android:id="@+id/saved_stage"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <RelativeLayout
+
+            <!-- 5dp container padding + 5dp item margin = the 10dp edge used before. -->
+            <FrameLayout
+                android:id="@+id/saved_content"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/currentTeamsLayout"
-                android:paddingStart="10dp"
-                android:paddingEnd="10dp"
-                android:layout_marginTop="10dp"
-                android:orientation="vertical">
+                android:layout_height="match_parent"
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:paddingTop="5dp">
+
                 <androidx.recyclerview.widget.RecyclerView
-                    android:overScrollMode="never"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
                     android:id="@+id/recyclerview_savedRaces"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:nestedScrollingEnabled="true"
+                    android:visibility="gone"
+                    android:overScrollMode="never"
                     android:clipToPadding="false"
-                    android:paddingBottom="24dp"/>
+                    android:paddingBottom="24dp" />
+
                 <com.facebook.shimmer.ShimmerFrameLayout
                     android:id="@+id/shimmer_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:visibility="visible"
                     app:duration="1500">
-                    <LinearLayout
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/skeleton_rows"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <include layout="@layout/shimmer_saved_race" />
+                            <include layout="@layout/shimmer_saved_race" />
+                            <include layout="@layout/shimmer_saved_race" />
+                            <include layout="@layout/shimmer_saved_race" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/skeleton_tiles"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+                            <include layout="@layout/shimmer_saved_race_tile" />
+                            <include layout="@layout/shimmer_saved_race_tile" />
+                            <include layout="@layout/shimmer_saved_race_tile" />
+                        </LinearLayout>
+                    </FrameLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/state_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="48dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="gone">
+                    <TextView
+                        android:id="@+id/state_message"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <include layout="@layout/shimmer_saved_race" />
-                        <include layout="@layout/shimmer_saved_race" />
-                        <include layout="@layout/shimmer_saved_race" />
-                        <include layout="@layout/shimmer_saved_race" />
-                    </LinearLayout>
-                </com.facebook.shimmer.ShimmerFrameLayout>
-            </RelativeLayout>
+                        android:gravity="center"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="16sp" />
+                    <Button
+                        android:id="@+id/state_retry"
+                        style="@style/ButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:minWidth="160dp"
+                        android:text="@string/saved_races_retry" />
+                </LinearLayout>
+            </FrameLayout>
+
             <androidx.core.widget.NestedScrollView
                 android:id="@+id/emptySavedRaceScroll"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:fillViewport="true"
                 android:overScrollMode="never"
                 android:scrollbars="none"
@@ -154,6 +215,6 @@
                     </RelativeLayout>
                 </RelativeLayout>
             </androidx.core.widget.NestedScrollView>
-        </RelativeLayout>
+        </FrameLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 </RelativeLayout>

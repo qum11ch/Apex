@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="login_text">Войти</string>
     <string name="register_header">Регистрация</string>
     <string name="register_description">Создайте аккаунт, чтобы получить доступ к расширенному функционалу приложения</string>
@@ -1029,4 +1029,42 @@
     <string name="all_drivers_view_as_list">Показать списком</string>
     <string name="all_drivers_view_as_tiles">Показать плитками</string>
     <string name="all_drivers_reset_filters">Сбросить фильтры</string>
+
+    <string name="saved_races_view_as_list">Показать списком</string>
+    <string name="saved_races_view_as_tiles">Показать плитками</string>
+    <string name="saved_races_load_error">Не удалось загрузить сохранённые гонки. Проверьте соединение и повторите.</string>
+    <string name="saved_races_retry">Повторить</string>
+    <string name="saved_races_refresh_failed">Не удалось обновить гонки. Показаны сохранённые данные.</string>
+
+    <string name="race_round_format">Э%1$d</string>
+    <string name="race_state_upcoming">Скоро</string>
+    <string name="race_state_live">Гоночный уикенд</string>
+    <string name="race_state_pending">Ждём итоги</string>
+    <string name="race_state_finished">Завершена</string>
+    <string name="race_sprint_badge">Спринт</string>
+
+    <string name="race_countdown_today_value">Сегодня</string>
+    <string name="race_countdown_today_label">день гонки</string>
+    <string name="race_countdown_now_value">Сейчас</string>
+    <string name="race_countdown_now_label">идёт гоночный уикенд</string>
+    <string name="race_countdown_pending_value">Итоги</string>
+    <string name="race_countdown_pending_label">скоро появятся</string>
+    <string name="race_countdown_canceled_label">гонка не состоится</string>
+    <plurals name="race_days_until">
+        <item quantity="one" tools:ignore="ImpliedQuantity">день до гонки</item>
+        <item quantity="few">дня до гонки</item>
+        <item quantity="many">дней до гонки</item>
+        <item quantity="other">дня до гонки</item>
+    </plurals>
+    <string name="race_start_local">Старт гонки: %1$s</string>
+
+    <string name="race_stat_length">Длина</string>
+    <string name="race_stat_laps">Кругов</string>
+    <string name="race_stat_turns">Поворотов</string>
+    <string name="race_stat_fastest_lap">Лучший круг</string>
+    <string name="race_stat_fastest_driver">Пилот</string>
+    <string name="race_stat_sprint_winner">Победитель спринта</string>
+    <string name="race_unit_km">%1$s км</string>
+    <string name="race_summary_fastest">Лучший круг %1$s</string>
+    <string name="race_summary_circuit">%1$s км · %2$s кр.</string>
 </resources>

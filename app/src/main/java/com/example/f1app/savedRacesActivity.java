@@ -5,6 +5,7 @@ import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
@@ -16,18 +17,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.appcompat.widget.TooltipCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
@@ -35,81 +40,98 @@ import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 public class savedRacesActivity extends AppCompatActivity {
 
+    private static final String TAG = "savedRacesPage";
+    private static final long REBIND_AFTER_MS = 60_000L;
+
     private RecyclerView recyclerView;
-    private ImageButton backButton;
-
-    private List<savedRacesData> datum;
+    private GridLayoutManager layoutManager;
     private savedRacesAdapter adapter;
-
-    // private RelativeLayout emptySavedRaceLayout;
-
+    private ImageButton viewModeButton;
     private SwipeRefreshLayout swipeLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
-
+    private View skeletonRows;
+    private View skeletonTiles;
+    private View emptyScroll;
+    private View stateContainer;
+    private TextView stateMessage;
+    private Button stateRetry;
     private Dialog deleteRaceDialog;
 
-    private DatabaseReference savedRacesRef;
+    private final List<savedRaceCard> races = new ArrayList<>();
+    private savedRacesAdapter.ViewMode viewMode = savedRacesAdapter.ViewMode.LIST;
 
-    private View emptyScroll;
+    private String uid;
+    private int cacheToken = 0;
+    private int requestToken = 0;
+    private boolean hasData = false;
+    private boolean loading = false;
+    private long lastRenderAt = 0L;
+    private long lastCacheSavedAt = 0L;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.saved_races);
-
         setupSavedRacesInsets();
 
         if (!checkConnection(getApplicationContext())) {
             startActivity(connectionLostScreen
-                    .createShowSplashOnNetworkFailure(
-                            savedRacesActivity.this
-                    ));
+                    .createShowSplashOnNetworkFailure(savedRacesActivity.this));
         } else {
             startActivity(connectionLostScreen
-                    .createIntentHideSplashOnNetworkRecovery(
-                            savedRacesActivity.this
-                    ));
+                    .createIntentHideSplashOnNetworkRecovery(savedRacesActivity.this));
         }
 
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (user == null) {
+            openLogin();
+            return;
+        }
+
+        uid = user.getUid();
+        viewMode = loadViewMode();
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
-        shimmerFrameLayout.startShimmer();
+        skeletonRows = findViewById(R.id.skeleton_rows);
+        skeletonTiles = findViewById(R.id.skeleton_tiles);
+        emptyScroll = findViewById(R.id.emptySavedRaceScroll);
+        stateContainer = findViewById(R.id.state_container);
+        stateMessage = findViewById(R.id.state_message);
+        stateRetry = findViewById(R.id.state_retry);
+        viewModeButton = findViewById(R.id.view_mode_button);
 
         recyclerView = findViewById(R.id.recyclerview_savedRaces);
-        // recyclerView.setHasFixedSize(true);
+        recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
 
-        LinearLayoutManager linearLayoutManager =
-                new LinearLayoutManager(this);
+        layoutManager = new GridLayoutManager(this, spanCountFor(viewMode));
+        recyclerView.setLayoutManager(layoutManager);
 
-        recyclerView.setLayoutManager(linearLayoutManager);
+        adapter = new savedRacesAdapter(new savedRacesAdapter.Listener() {
+            @Override
+            public void onOpen(savedRaceCard race) {
+                openRace(race);
+            }
 
-        datum = new ArrayList<>();
-        adapter = new savedRacesAdapter(
-                savedRacesActivity.this,
-                datum
-        );
-
+            @Override
+            public void onDelete(savedRaceCard race) {
+                showDeleteRaceDialog(race);
+            }
+        });
         recyclerView.setAdapter(adapter);
 
         swipeLayout = findViewById(R.id.swipe_layout);
-
-        emptyScroll = findViewById(R.id.emptySavedRaceScroll);
 
         swipeLayout.setOnChildScrollUpCallback((parent, child) -> {
             if (emptyScroll.getVisibility() == View.VISIBLE) {
@@ -120,23 +142,10 @@ public class savedRacesActivity extends AppCompatActivity {
                     && recyclerView.canScrollVertically(-1);
         });
 
-        swipeLayout.setOnRefreshListener(() -> {
-            emptyScroll.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.GONE);
+        swipeLayout.setOnRefreshListener(() -> refresh(true));
+        stateRetry.setOnClickListener(v -> refresh(true));
 
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-
-            datum.clear();
-            adapter.notifyDataSetChanged();
-
-            loadSavedRaces();
-
-            swipeLayout.setRefreshing(false);
-        });
-
-        ShapeableImageView stripedImage =
-                findViewById(R.id.stripedImage);
+        ShapeableImageView stripedImage = findViewById(R.id.stripedImage);
 
         if (!checkLightTheme(savedRacesActivity.this)) {
             stripedImage.setBackground(
@@ -148,34 +157,75 @@ public class savedRacesActivity extends AppCompatActivity {
         }
 
         WindowInsetsControllerCompat windowInsetsController =
-                WindowCompat.getInsetsController(
-                        getWindow(),
-                        getWindow().getDecorView()
-                );
-
+                WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        backButton = findViewById(R.id.backButton);
+        ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        setupDeleteSwipe();
+        viewModeButton.setOnClickListener(v -> {
+            viewMode = viewMode == savedRacesAdapter.ViewMode.LIST
+                    ? savedRacesAdapter.ViewMode.TILES
+                    : savedRacesAdapter.ViewMode.LIST;
 
-        loadSavedRaces();
+            // The choice belongs to this screen only; other screens keep their own.
+            viewModeStore.setName(this, viewModeStore.SCREEN_SAVED_RACES, viewMode.name());
+            applyViewMode(true);
+        });
+
+        setupDeleteSwipe();
+        applyViewMode(false);
+        loadScreen();
     }
 
-    private void setupSavedRacesInsets() {
-        View root = findViewById(R.id.saved_races_root);
-        View header = findViewById(R.id.header);
+    @Override
+    protected void onResume() {
+        super.onResume();
 
-        final int rootLeft = root.getPaddingLeft();
-        final int rootTop = root.getPaddingTop();
-        final int rootRight = root.getPaddingRight();
-        final int rootBottom = root.getPaddingBottom();
+        // Countdowns and race states change with time, so draw the cards again after a pause.
+        if (hasData && adapter != null
+                && System.currentTimeMillis() - lastRenderAt > REBIND_AFTER_MS) {
+            renderList(false);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        cacheToken++;
+        requestToken++;
+
+        if (deleteRaceDialog != null && deleteRaceDialog.isShowing()) {
+            deleteRaceDialog.dismiss();
+        }
+
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout.stopShimmer();
+        }
+
+        super.onDestroy();
+    }
+
+    // ---------- insets ----------
+
+    private void setupSavedRacesInsets() {
+        final View root = findViewById(R.id.saved_races_root);
+        final View header = findViewById(R.id.header);
+        final View stage = findViewById(R.id.saved_stage);
+        final RecyclerView list = findViewById(R.id.recyclerview_savedRaces);
+        final View empty = findViewById(R.id.emptySavedRaceScroll);
 
         final int headerLeft = header.getPaddingLeft();
         final int headerTop = header.getPaddingTop();
         final int headerRight = header.getPaddingRight();
         final int headerBottom = header.getPaddingBottom();
+
+        final int stageLeft = stage.getPaddingLeft();
+        final int stageTop = stage.getPaddingTop();
+        final int stageRight = stage.getPaddingRight();
+        final int stageBottom = stage.getPaddingBottom();
+
+        final int listBottom = list.getPaddingBottom();
+        final int emptyBottom = empty.getPaddingBottom();
 
         ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
             Insets safeInsets = windowInsets.getInsets(
@@ -183,190 +233,342 @@ public class savedRacesActivity extends AppCompatActivity {
                             | WindowInsetsCompat.Type.displayCutout()
             );
 
-            view.setPadding(
-                    rootLeft + safeInsets.left,
-                    rootTop,
-                    rootRight + safeInsets.right,
-                    rootBottom + safeInsets.bottom
-            );
-
+            // The header background stays full width; its content avoids the status bar and cutouts.
             header.setPadding(
-                    headerLeft,
+                    headerLeft + safeInsets.left,
                     headerTop + safeInsets.top,
-                    headerRight,
+                    headerRight + safeInsets.right,
                     headerBottom
             );
 
-            return WindowInsetsCompat.CONSUMED;
+            stage.setPadding(
+                    stageLeft + safeInsets.left,
+                    stageTop,
+                    stageRight + safeInsets.right,
+                    stageBottom
+            );
+
+            // Cards scroll under the navigation bar and can be scrolled clear of it.
+            list.setPadding(
+                    list.getPaddingLeft(),
+                    list.getPaddingTop(),
+                    list.getPaddingRight(),
+                    listBottom + safeInsets.bottom
+            );
+
+            empty.setPadding(
+                    empty.getPaddingLeft(),
+                    empty.getPaddingTop(),
+                    empty.getPaddingRight(),
+                    emptyBottom + safeInsets.bottom
+            );
+
+            return windowInsets;
         });
 
         ViewCompat.requestApplyInsets(root);
     }
 
-    private void loadSavedRaces() {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+    // ---------- tiles / list ----------
 
-        if (user == null) {
-            startActivity_seasonData(
-                    savedRacesActivity.this,
-                    logInPageActivity.class,
-                    null
-            );
+    private savedRacesAdapter.ViewMode loadViewMode() {
+        String stored = viewModeStore.getName(
+                this,
+                viewModeStore.SCREEN_SAVED_RACES,
+                savedRacesAdapter.ViewMode.LIST.name()
+        );
 
-            finish();
+        try {
+            return savedRacesAdapter.ViewMode.valueOf(stored);
+        } catch (IllegalArgumentException error) {
+            return savedRacesAdapter.ViewMode.LIST;
+        }
+    }
+
+    private int spanCountFor(savedRacesAdapter.ViewMode mode) {
+        int widthDp = getResources().getConfiguration().screenWidthDp;
+
+        if (mode == savedRacesAdapter.ViewMode.TILES) {
+            return Math.max(2, Math.min(4, widthDp / 170));
+        }
+
+        return widthDp >= 700 ? 2 : 1;
+    }
+
+    private void applyViewMode(boolean keepPosition) {
+        int firstVisible = keepPosition
+                ? layoutManager.findFirstVisibleItemPosition()
+                : RecyclerView.NO_POSITION;
+
+        boolean tiles = viewMode == savedRacesAdapter.ViewMode.TILES;
+
+        layoutManager.setSpanCount(spanCountFor(viewMode));
+        adapter.setViewMode(viewMode);
+
+        skeletonRows.setVisibility(tiles ? View.GONE : View.VISIBLE);
+        skeletonTiles.setVisibility(tiles ? View.VISIBLE : View.GONE);
+
+        // The button shows the view that a tap will switch to.
+        String description = getString(tiles
+                ? R.string.saved_races_view_as_list
+                : R.string.saved_races_view_as_tiles);
+
+        viewModeButton.setImageResource(tiles
+                ? R.drawable.ic_view_mode_list
+                : R.drawable.ic_view_mode_tiles);
+        viewModeButton.setContentDescription(description);
+        TooltipCompat.setTooltipText(viewModeButton, description);
+
+        if (firstVisible > 0) {
+            recyclerView.scrollToPosition(firstVisible);
+        }
+    }
+
+    // ---------- loading ----------
+
+    private boolean isUnavailable() {
+        return isFinishing() || isDestroyed();
+    }
+
+    private boolean accountChanged() {
+        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+        return current == null || !current.getUid().equals(uid);
+    }
+
+    private void openLogin() {
+        startActivity_seasonData(savedRacesActivity.this, logInPageActivity.class, null);
+        finish();
+    }
+
+    private void loadScreen() {
+        showSkeleton();
+
+        final int token = ++cacheToken;
+
+        savedRacesRepository.readCache(getApplicationContext(), uid, cached -> {
+            if (isUnavailable() || token != cacheToken || accountChanged()) {
+                return;
+            }
+
+            if (cached != null) {
+                if (!hasData) {
+                    lastCacheSavedAt = cached.savedAt;
+                    showRaces(cached.races);
+                }
+
+                if (!savedRacesRepository.isFresh(cached, System.currentTimeMillis())) {
+                    refresh(false);
+                }
+            } else if (!hasData && !loading) {
+                refresh(false);
+            }
+        });
+    }
+
+    private void refresh(boolean force) {
+        if (loading && !force) {
             return;
         }
 
-        String uid = user.getUid();
+        if (accountChanged()) {
+            swipeLayout.setRefreshing(false);
+            openLogin();
+            return;
+        }
 
-        savedRacesRef = FirebaseDatabase.getInstance()
-                .getReference()
-                .child("savedRaces")
-                .child(uid);
+        loading = true;
+        final int token = ++requestToken;
+        final String requestedUid = uid;
 
-        savedRacesRef.addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (isFinishing() || isDestroyed()) {
-                            return;
-                        }
+        if (hasData) {
+            swipeLayout.setRefreshing(true);
+        } else {
+            showSkeleton();
+        }
 
-                        datum.clear();
-
-                        if (!snapshot.exists()) {
-                            showEmptyState();
-                            return;
-                        }
-
-                        for (DataSnapshot savedRaceSnap :
-                                snapshot.getChildren()) {
-
-                            String raceName =
-                                    savedRaceSnap.child("raceName")
-                                            .getValue(String.class);
-
-                            String raceSeason =
-                                    savedRaceSnap.child("raceSeason")
-                                            .getValue(String.class);
-
-                            String saveDate =
-                                    savedRaceSnap.child("saveDate")
-                                            .getValue(String.class);
-
-                            if (raceName == null
-                                    || raceSeason == null
-                                    || saveDate == null) {
-                                continue;
-                            }
-
-                            datum.add(new savedRacesData(
-                                    raceName,
-                                    raceSeason,
-                                    saveDate
-                            ));
-                        }
-
-                        if (datum.isEmpty()) {
-                            showEmptyState();
-                        } else {
-                            showRaces();
-                        }
-
-                        adapter.notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {
-
-                        if (isFinishing() || isDestroyed()) {
-                            return;
-                        }
-
-                        Log.e(
-                                "savedRacesPage",
-                                "Failed to load saved races: "
-                                        + error.getMessage()
-                        );
-
-                        showEmptyState();
-                        showError(
-                                getString(R.string.smth_wrong_text)
-                        );
-                    }
-                });
-    }
-
-    private void showEmptyState() {
-        shimmerFrameLayout.animate()
-                .setDuration(500)
-                .withEndAction(() -> {
-                    if (isFinishing() || isDestroyed()) {
+        savedRacesRepository.fetch(
+                requestedUid,
+                result -> {
+                    if (isUnavailable() || token != requestToken || accountChanged()) {
                         return;
                     }
 
-                    emptyScroll.setVisibility(View.VISIBLE);
-                    recyclerView.setVisibility(View.GONE);
+                    loading = false;
+                    swipeLayout.setRefreshing(false);
 
-                    shimmerFrameLayout.setVisibility(View.GONE);
-                    shimmerFrameLayout.stopShimmer();
-                })
-                .start();
-    }
-
-    private void showRaces() {
-        shimmerFrameLayout.animate()
-                .setDuration(500)
-                .withEndAction(() -> {
-                    if (isFinishing() || isDestroyed()) {
+                    if (result.complete) {
+                        lastCacheSavedAt = result.savedAt;
+                        savedRacesRepository.writeCache(getApplicationContext(), requestedUid, result);
+                        showRaces(result.races);
+                    } else if (hasData) {
+                        // Keep the complete data that is already on screen.
+                        showError(getString(R.string.saved_races_refresh_failed));
+                    } else {
+                        // Better a card without circuit facts than an empty screen; it is not cached.
+                        showRaces(result.races);
+                    }
+                },
+                error -> {
+                    if (isUnavailable() || token != requestToken || accountChanged()) {
                         return;
                     }
 
-                    emptyScroll.setVisibility(View.GONE);
-                    recyclerView.setVisibility(View.VISIBLE);
+                    loading = false;
+                    swipeLayout.setRefreshing(false);
+                    Log.e(TAG, "Failed to load saved races", error);
 
-                    shimmerFrameLayout.setVisibility(View.GONE);
-                    shimmerFrameLayout.stopShimmer();
-                })
-                .start();
+                    if (hasData) {
+                        showError(getString(R.string.saved_races_refresh_failed));
+                    } else {
+                        showLoadError();
+                    }
+                }
+        );
     }
+
+    // ---------- screen states ----------
+
+    private void showSkeleton() {
+        recyclerView.setVisibility(View.GONE);
+        emptyScroll.setVisibility(View.GONE);
+        stateContainer.setVisibility(View.GONE);
+        shimmerFrameLayout.setVisibility(View.VISIBLE);
+        shimmerFrameLayout.startShimmer();
+    }
+
+    private void showLoadError() {
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.GONE);
+        emptyScroll.setVisibility(View.GONE);
+        stateMessage.setText(R.string.saved_races_load_error);
+        stateContainer.setVisibility(View.VISIBLE);
+    }
+
+    private void showRaces(List<savedRaceCard> list) {
+        races.clear();
+        races.addAll(list);
+        hasData = true;
+
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        stateContainer.setVisibility(View.GONE);
+
+        renderList(true);
+    }
+
+    private void renderList(boolean afterDataChange) {
+        List<savedRaceCard> sorted = new ArrayList<>(races);
+        savedRacesRepository.sortForDisplay(sorted, Instant.now());
+        lastRenderAt = System.currentTimeMillis();
+
+        if (sorted.isEmpty()) {
+            recyclerView.setVisibility(View.GONE);
+            emptyScroll.setVisibility(View.VISIBLE);
+            adapter.submitList(sorted);
+            return;
+        }
+
+        emptyScroll.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+
+        if (afterDataChange) {
+            adapter.submitList(sorted);
+        } else {
+            // Same cards, new time: countdowns and states have to be drawn again once the list is committed.
+            adapter.submitList(sorted, () -> adapter.notifyItemRangeChanged(0, sorted.size()));
+        }
+    }
+
+    private void showError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
+    // ---------- opening a race ----------
+
+    private void openRace(savedRaceCard race) {
+        if (!race.scheduleKnown) {
+            showError(getString(R.string.smth_wrong_text));
+            return;
+        }
+
+        LocalDate start = race.weekendStartDate();
+        LocalDate end = race.raceLocalDate();
+
+        if (start == null || end == null) {
+            showError(getString(R.string.smth_wrong_text));
+            return;
+        }
+
+        DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter monthFormat = DateTimeFormatter.ofPattern("MMM");
+        String dayStart = start.format(dayFormat);
+        String dayEnd = end.format(dayFormat);
+        String monthStart = start.format(monthFormat);
+        String monthEnd = end.format(monthFormat);
+        String dateStart = race.firstPracticeDate != null ? race.firstPracticeDate : race.raceDate;
+
+        Bundle bundle = new Bundle();
+        bundle.putString("raceName", race.raceName);
+        bundle.putString("roundCount", String.valueOf(race.round));
+        bundle.putString("raceCountry", race.country);
+        bundle.putString("circuitName", race.circuitName);
+        bundle.putString("dateStart", dateStart);
+        bundle.putString("dateEnd", race.raceDate);
+        bundle.putBoolean("isCanceled", race.canceled);
+
+        Intent intent;
+
+        // The old check compared against "N/C", but the database stores "N/A" for races without results,
+        // so every upcoming race opened the finished-race screen.
+        if (race.stateAt(Instant.now()) == savedRaceCard.State.CONCLUDED) {
+            intent = new Intent(this, concludedRaceActivity.class);
+            bundle.putString("raceStartDay", dayStart);
+            bundle.putString("raceEndDay", dayEnd);
+            bundle.putString("raceStartMonth", monthStart);
+            bundle.putString("raceEndMonth", monthEnd);
+            bundle.putString("firstPlaceCode", race.winnerCode);
+            bundle.putString("secondPlaceCode", race.secondCode);
+            bundle.putString("thirdPlaceCode", race.thirdCode);
+        } else {
+            intent = new Intent(this, futureRaceActivity.class);
+            bundle.putString("futureRaceStartDay", dayStart);
+            bundle.putString("futureRaceEndDay", dayEnd);
+            bundle.putString("futureRaceStartMonth", monthStart);
+            bundle.putString("futureRaceEndMonth", monthEnd);
+            bundle.putString("circuitId", race.circuitId);
+        }
+
+        intent.putExtras(bundle);
+        startActivity(intent);
+    }
+
+    // ---------- deleting ----------
 
     private void setupDeleteSwipe() {
-        ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
-                new ItemTouchHelper.SimpleCallback(
-                        0,
-                        ItemTouchHelper.LEFT
-                ) {
+        ItemTouchHelper.SimpleCallback callback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
                     @Override
                     public boolean onMove(
                             @NonNull RecyclerView recyclerView,
                             @NonNull RecyclerView.ViewHolder viewHolder,
                             @NonNull RecyclerView.ViewHolder target) {
-
                         return false;
                     }
 
                     @Override
-                    public void onSwiped(
-                            @NonNull RecyclerView.ViewHolder viewHolder,
-                            int swipeDir) {
-
-                        if (swipeDir != ItemTouchHelper.LEFT) {
-                            return;
-                        }
-
-                        int position =
-                                viewHolder.getBindingAdapterPosition();
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int swipeDir) {
+                        int position = viewHolder.getBindingAdapterPosition();
 
                         if (position == RecyclerView.NO_POSITION
-                                || position >= datum.size()) {
-
-                            loadSavedRaces();
+                                || position >= adapter.getCurrentList().size()) {
+                            adapter.notifyDataSetChanged();
                             return;
                         }
 
-                        showDeleteRaceDialog(position);
+                        showDeleteRaceDialog(adapter.getCurrentList().get(position));
+                        // Put the swiped card back; it disappears only after the user confirms.
+                        adapter.notifyItemChanged(position);
                     }
 
                     @Override
@@ -379,113 +581,61 @@ public class savedRacesActivity extends AppCompatActivity {
                             int actionState,
                             boolean isCurrentlyActive) {
 
-                        super.onChildDraw(
-                                c,
-                                recyclerView,
-                                viewHolder,
-                                dX / 4,
-                                dY,
-                                actionState,
-                                isCurrentlyActive
-                        );
+                        super.onChildDraw(c, recyclerView, viewHolder, dX / 4, dY, actionState, isCurrentlyActive);
 
                         View itemView = viewHolder.itemView;
-
                         Drawable icon = AppCompatResources.getDrawable(
                                 savedRacesActivity.this,
                                 R.drawable.delete_white
                         );
 
-                        if (icon == null) {
+                        if (icon == null || dX >= 0) {
                             return;
                         }
 
-                        int iconMargin =
-                                (itemView.getHeight()
-                                        - icon.getIntrinsicHeight()) / 2;
+                        int iconMargin = (itemView.getHeight() - icon.getIntrinsicHeight()) / 2;
+                        int iconTop = itemView.getTop() + iconMargin;
+                        int iconBottom = iconTop + icon.getIntrinsicHeight();
+                        int iconLeft = itemView.getRight() - iconMargin - icon.getIntrinsicWidth();
+                        int iconRight = itemView.getRight() - iconMargin;
 
-                        int iconTop =
-                                itemView.getTop()
-                                + iconMargin;
+                        icon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
 
-                        int iconBottom =
-                                iconTop
-                                        + icon.getIntrinsicHeight();
+                        RectF background = new RectF(
+                                itemView.getRight() + ((int) dX / 4) - 100,
+                                itemView.getTop(),
+                                itemView.getRight(),
+                                itemView.getBottom()
+                        );
 
-                        if (dX < 0) {
-                            int iconLeft =
-                                    itemView.getRight()
-                                            - iconMargin
-                                            - icon.getIntrinsicWidth();
+                        Paint paint = new Paint();
+                        paint.setColor(getColor(R.color.red));
 
-                            int iconRight =
-                                    itemView.getRight()
-                                            - iconMargin;
+                        float rounded = TypedValue.applyDimension(
+                                TypedValue.COMPLEX_UNIT_DIP,
+                                20,
+                                getResources().getDisplayMetrics()
+                        );
 
-                            icon.setBounds(
-                                    iconLeft,
-                                    iconTop,
-                                    iconRight,
-                                    iconBottom
-                            );
-
-                            int backgroundCornerOffset = 100;
-
-                            int marginBottom =
-                                    (int) TypedValue.applyDimension(
-                                            TypedValue.COMPLEX_UNIT_DIP,
-                                            0,
-                                            getResources()
-                                                    .getDisplayMetrics()
-                                    );
-
-                            RectF bg = new RectF(
-                                    itemView.getRight()
-                                            + ((int) dX)
-                                            - backgroundCornerOffset,
-                                    itemView.getTop(),
-                                    itemView.getRight(),
-                                    itemView.getBottom() - marginBottom
-                            );
-
-                            Paint paint = new Paint();
-                            paint.setColor(getColor(R.color.red));
-
-                            int rounded =
-                                    (int) TypedValue.applyDimension(
-                                            TypedValue.COMPLEX_UNIT_DIP,
-                                            20,
-                                            getResources()
-                                                    .getDisplayMetrics()
-                                    );
-
-                            c.drawRoundRect(
-                                    bg,
-                                    rounded,
-                                    rounded,
-                                    paint
-                            );
-                        }
-
+                        c.drawRoundRect(background, rounded, rounded, paint);
                         icon.draw(c);
                     }
                 };
 
-        ItemTouchHelper itemTouchHelper =
-                new ItemTouchHelper(simpleItemTouchCallback);
-
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+        new ItemTouchHelper(callback).attachToRecyclerView(recyclerView);
     }
 
-    private void showDeleteRaceDialog(int position) {
+    private void showDeleteRaceDialog(savedRaceCard race) {
         if (isFinishing() || isDestroyed()) {
             return;
         }
 
+        if (deleteRaceDialog != null && deleteRaceDialog.isShowing()) {
+            return;
+        }
+
         deleteRaceDialog = new Dialog(savedRacesActivity.this);
-        deleteRaceDialog.setContentView(
-                R.layout.delete_race_dialog_box
-        );
+        deleteRaceDialog.setContentView(R.layout.delete_race_dialog_box);
 
         if (deleteRaceDialog.getWindow() != null) {
             deleteRaceDialog.getWindow().setLayout(
@@ -503,89 +653,66 @@ public class savedRacesActivity extends AppCompatActivity {
 
         deleteRaceDialog.setCancelable(false);
 
-        Button cancelButton =
-                deleteRaceDialog.findViewById(R.id.cancel_button);
+        Button cancelButton = deleteRaceDialog.findViewById(R.id.cancel_button);
+        Button confirmButton = deleteRaceDialog.findViewById(R.id.confirm_button);
 
-        Button confirmButton =
-                deleteRaceDialog.findViewById(R.id.confirm_button);
-
-        cancelButton.setOnClickListener(view -> {
-            deleteRaceDialog.dismiss();
-            loadSavedRaces();
-        });
+        cancelButton.setOnClickListener(view -> deleteRaceDialog.dismiss());
 
         confirmButton.setOnClickListener(view -> {
             deleteRaceDialog.dismiss();
-
-            savedRacesData race = datum.get(position);
-
-            String modifiedRaceName = race.getRaceName()
-                    .replaceAll("\\s+", "");
-
-            String raceKey =
-                    race.getRaceSeason()
-                            + "_"
-                            + modifiedRaceName;
-
-            deleteRace(raceKey);
+            deleteRace(race);
         });
 
         deleteRaceDialog.show();
     }
 
-    private void deleteRace(String raceKey) {
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (user == null) {
-            startActivity_seasonData(
-                    savedRacesActivity.this,
-                    logInPageActivity.class,
-                    null
-            );
-
-            finish();
+    private void deleteRace(savedRaceCard race) {
+        if (accountChanged()) {
+            openLogin();
             return;
         }
 
+        final String requestedUid = uid;
+
+        // The database key is the one that was read, so a differently written key can never miss.
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("savedRaces")
-                .child(user.getUid())
-                .child(raceKey)
+                .child(requestedUid)
+                .child(race.key)
                 .removeValue()
                 .addOnSuccessListener(unused -> {
-                    if (isFinishing() || isDestroyed()) {
+                    if (isUnavailable() || accountChanged()) {
                         return;
                     }
+
+                    races.removeIf(item -> item.key.equals(race.key));
+                    renderList(true);
+
+                    // Keep the original timestamp: deleting a card does not make the other data fresher.
+                    savedRacesRepository.writeCache(
+                            getApplicationContext(),
+                            requestedUid,
+                            new savedRacesRepository.Result(
+                                    new ArrayList<>(races),
+                                    lastCacheSavedAt > 0 ? lastCacheSavedAt : System.currentTimeMillis(),
+                                    true
+                            )
+                    );
 
                     Toast.makeText(
                             savedRacesActivity.this,
                             getString(R.string.race_delete_succ_text),
                             Toast.LENGTH_SHORT
                     ).show();
-
-                    loadSavedRaces();
                 })
                 .addOnFailureListener(error -> {
-                    if (isFinishing() || isDestroyed()) {
+                    if (isUnavailable()) {
                         return;
                     }
 
-                    Log.e(
-                            "savedRacesPage",
-                            "Failed to delete race",
-                            error
-                    );
-
-                    showError(
-                            getString(R.string.smth_wrong_text)
-                    );
-
-                    loadSavedRaces();
+                    Log.e(TAG, "Failed to delete race", error);
+                    showError(getString(R.string.smth_wrong_text));
                 });
-    }
-
-    private void showError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 }

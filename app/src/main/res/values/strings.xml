@@ -1054,4 +1054,40 @@
     <string name="all_drivers_view_as_list">Show as list</string>
     <string name="all_drivers_view_as_tiles">Show as tiles</string>
     <string name="all_drivers_reset_filters">Reset filters</string>
+
+    <string name="saved_races_view_as_list">Show as list</string>
+    <string name="saved_races_view_as_tiles">Show as tiles</string>
+    <string name="saved_races_load_error">Could not load saved races. Check your connection and try again.</string>
+    <string name="saved_races_retry">Retry</string>
+    <string name="saved_races_refresh_failed">Could not update saved races. Saved data is shown.</string>
+
+    <string name="race_round_format">R%1$d</string>
+    <string name="race_state_upcoming">Upcoming</string>
+    <string name="race_state_live">Race weekend</string>
+    <string name="race_state_pending">Results soon</string>
+    <string name="race_state_finished">Finished</string>
+    <string name="race_sprint_badge">Sprint</string>
+
+    <string name="race_countdown_today_value">Today</string>
+    <string name="race_countdown_today_label">race day</string>
+    <string name="race_countdown_now_value">Now</string>
+    <string name="race_countdown_now_label">the race weekend is on</string>
+    <string name="race_countdown_pending_value">Results</string>
+    <string name="race_countdown_pending_label">will appear soon</string>
+    <string name="race_countdown_canceled_label">this race will not take place</string>
+    <plurals name="race_days_until">
+        <item quantity="one">day until the race</item>
+        <item quantity="other">days until the race</item>
+    </plurals>
+    <string name="race_start_local">Race start: %1$s</string>
+
+    <string name="race_stat_length">Length</string>
+    <string name="race_stat_laps">Laps</string>
+    <string name="race_stat_turns">Turns</string>
+    <string name="race_stat_fastest_lap">Fastest lap</string>
+    <string name="race_stat_fastest_driver">Driver</string>
+    <string name="race_stat_sprint_winner">Sprint winner</string>
+    <string name="race_unit_km">%1$s km</string>
+    <string name="race_summary_fastest">Fastest lap %1$s</string>
+    <string name="race_summary_circuit">%1$s km · %2$s laps</string>
 </resources>

@@ -90,4 +90,17 @@
     <color name="driver_status_reserve_bg">#268A5F00</color>
     <color name="driver_status_retired">#5F6368</color>
     <color name="driver_status_retired_bg">#265F6368</color>
+
+    <color name="race_state_upcoming">#1565C0</color>
+    <color name="race_state_upcoming_bg">#261565C0</color>
+    <color name="race_state_live">#C62828</color>
+    <color name="race_state_live_bg">#26C62828</color>
+    <color name="race_state_pending">#8A5F00</color>
+    <color name="race_state_pending_bg">#268A5F00</color>
+    <color name="race_state_finished">#2E7D32</color>
+    <color name="race_state_finished_bg">#262E7D32</color>
+    <color name="race_state_canceled">#B54708</color>
+    <color name="race_state_canceled_bg">#26B54708</color>
+    <color name="race_state_sprint">#6A1B9A</color>
+    <color name="race_state_sprint_bg">#266A1B9A</color>
 </resources>

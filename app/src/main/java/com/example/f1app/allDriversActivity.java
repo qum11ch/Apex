@@ -380,8 +380,11 @@ public class allDriversActivity extends AppCompatActivity {
     // ---------- tiles / list ----------
 
     private allDriversAdapter.ViewMode loadViewMode() {
-        SharedPreferences prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
-        String stored = prefs.getString(KEY_VIEW_MODE, allDriversAdapter.ViewMode.TILES.name());
+        String stored = viewModeStore.getName(
+                this,
+                viewModeStore.SCREEN_ALL_DRIVERS,
+                allDriversAdapter.ViewMode.TILES.name()
+        );
 
         try {
             return allDriversAdapter.ViewMode.valueOf(stored);
@@ -396,10 +399,7 @@ public class allDriversActivity extends AppCompatActivity {
                     ? allDriversAdapter.ViewMode.LIST
                     : allDriversAdapter.ViewMode.TILES;
 
-            getSharedPreferences(PREFS, MODE_PRIVATE)
-                    .edit()
-                    .putString(KEY_VIEW_MODE, viewMode.name())
-                    .apply();
+            viewModeStore.setName(this, viewModeStore.SCREEN_ALL_DRIVERS, viewMode.name());
 
             applyViewMode(true);
         });
