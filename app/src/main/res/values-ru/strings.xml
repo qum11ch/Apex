@@ -1020,4 +1020,13 @@
     <string name="filter_legends_text">Легенды</string>
     <string name="loading_filters">Загружаем фильтры...</string>
     <string name="filter_error">Не удалось загрузить фильтры. Доступен полный список</string>
+
+    <string name="all_drivers_load_error">Не удалось загрузить пилотов. Проверьте соединение и повторите.</string>
+    <string name="all_drivers_retry">Повторить</string>
+    <string name="all_drivers_empty">Пилоты не найдены</string>
+    <string name="all_drivers_refresh_failed">Не удалось обновить список. Показаны сохранённые данные.</string>
+
+    <string name="all_drivers_view_as_list">Показать списком</string>
+    <string name="all_drivers_view_as_tiles">Показать плитками</string>
+    <string name="all_drivers_reset_filters">Сбросить фильтры</string>
 </resources>

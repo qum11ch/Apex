@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drivers_root"
+    style="@style/BackgroundGradient"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
+    <!-- The header background is edge-to-edge; the header content is inset in code. -->
+    <FrameLayout
+        android:id="@+id/header_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@color/header_color_gradient">
 
         <LinearLayout
             android:id="@+id/header"
@@ -18,8 +21,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:paddingTop="16dp"
-            android:paddingBottom="20dp"
-            android:background="@color/header_color_gradient">
+            android:paddingBottom="20dp">
 
             <ImageButton
                 android:id="@+id/backButton"
@@ -52,87 +54,106 @@
 
         </LinearLayout>
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/swipe_layout"
-            style="@style/BackgroundGradient"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
+    </FrameLayout>
 
-            <androidx.core.widget.NestedScrollView
-                android:layout_width="match_parent"
+    <!-- Pinned: search is the main way to reach a driver, and the view switch belongs next to it. -->
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:id="@+id/inputBox"
+            android:layout_width="0dp"
+            android:layout_height="68dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_input_box_picker"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="18dp"
+            android:paddingEnd="18dp">
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/searchLayout"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
-                android:overScrollMode="never"
-                android:scrollbars="none">
+                android:layout_weight="1"
+                app:boxStrokeColor="@color/text_color_main"
+                android:background="@android:color/transparent"
+                app:endIconTint="@color/text_color_secondary"
+                app:boxBackgroundMode="none"
+                app:endIconMode="clear_text"
+                android:hint="@string/favorite_search_hint"
+                app:boxStrokeWidth="0dp"
+                app:boxStrokeWidthFocused="0dp"
+                app:hintEnabled="false">
 
-                <RelativeLayout
-                    android:id="@+id/drivers_scroll_content"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:hint="@string/favorite_search_driver_hint"
+                    android:textCursorDrawable="@null"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
+                    android:id="@+id/search"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:paddingBottom="80dp">
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:inputType="text"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:textColor="@color/text_color_main"
+                    android:textColorHint="@color/text_color_secondary"
+                    android:textSize="16sp" />
 
-                    <LinearLayout
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="8dp"
-                        android:id="@+id/inputBox"
-                        android:layout_width="match_parent"
-                        android:layout_height="68dp"
-                        android:background="@drawable/bg_input_box_picker"
-                        android:baselineAligned="false"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:paddingStart="18dp"
-                        android:paddingEnd="18dp">
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/searchLayout"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="1"
-                            app:boxStrokeColor="@color/text_color_main"
-                            android:background="@android:color/transparent"
-                            app:endIconTint="@color/text_color_secondary"
-                            app:boxBackgroundMode="none"
-                            app:endIconMode="clear_text"
-                            android:hint="@string/favorite_search_hint"
-                            app:boxStrokeWidth="0dp"
-                            app:boxStrokeWidthFocused="0dp"
-                            app:hintEnabled="false">
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:hint="@string/favorite_search_driver_hint"
-                                android:textCursorDrawable="@null"
-                                app:boxStrokeWidth="0dp"
-                                app:boxStrokeWidthFocused="0dp"
-                                android:id="@+id/search"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:background="@null"
-                                android:inputType="text"
-                                android:imeOptions="actionDone"
-                                android:singleLine="true"
-                                android:textColor="@color/text_color_main"
-                                android:textColorHint="@color/text_color_secondary"
-                                android:textSize="16sp" />
+        <ImageButton
+            android:id="@+id/view_mode_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/all_drivers_view_as_list"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_all_drivers_view_list" />
 
-                        </com.google.android.material.textfield.TextInputLayout>
-                    </LinearLayout>
+    </LinearLayout>
 
-                    <LinearLayout
-                        android:id="@+id/filtersLayout"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/inputBox"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"
-                        android:orientation="vertical">
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/content_coordinator"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content">
+        <!-- Filters scroll away with the list and return as soon as the user scrolls up. -->
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:stateListAnimator="@null"
+            app:elevation="0dp">
+
+            <LinearLayout
+                android:id="@+id/filtersLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:layout_marginBottom="10dp"
+                android:orientation="vertical"
+                app:layout_scrollFlags="scroll|enterAlways">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
                             <ToggleButton
                                 android:id="@+id/toggle_button_all"
@@ -189,12 +210,12 @@
                                 android:textColor="@drawable/picker_toggle_text_color"
                                 android:textOff="@string/filter_reserve_text"
                                 android:textOn="@string/filter_reserve_text" />
-                        </LinearLayout>
+                </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp">
 
                             <ToggleButton
                                 android:layout_gravity="center"
@@ -252,51 +273,124 @@
                                 android:textColor="@drawable/picker_toggle_text_color"
                                 android:textOff="@string/filter_legends_text"
                                 android:textOn="@string/filter_legends_text" />
-                        </LinearLayout>
-                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- 5dp list padding + 5dp item margin = the 10dp edge used by the search box and skeletons. -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_all_drivers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:animateLayoutChanges="false"
+                    android:overScrollMode="never"
+                    android:clipToPadding="false"
+                    android:paddingStart="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="16dp" />
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:duration="1500">
 
                     <FrameLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/filtersLayout">
-                        <androidx.recyclerview.widget.RecyclerView
-                            android:id="@+id/recyclerview_all_drivers"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:id="@+id/skeleton_tiles"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="gone"
-                            android:nestedScrollingEnabled="false"
-                            android:animateLayoutChanges="false"
-                            android:overScrollMode="never"
-                            android:clipToPadding="false"
-                            android:paddingBottom="5dp"
-                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+                            android:orientation="vertical">
 
-                        <com.facebook.shimmer.ShimmerFrameLayout
-                            android:id="@+id/shimmer_layout"
+                            <include layout="@layout/shimmer_item_all_drivers" />
+                            <include layout="@layout/shimmer_item_all_drivers" />
+                            <include layout="@layout/shimmer_item_all_drivers" />
+                            <include layout="@layout/shimmer_item_all_drivers" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:id="@+id/skeleton_rows"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:visibility="visible"
-                            app:duration="1500">
+                            android:orientation="vertical"
+                            android:visibility="gone">
 
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
+                            <include layout="@layout/shimmer_item_all_drivers_row" />
 
-                                <include layout="@layout/shimmer_item_all_drivers" />
-                                <include layout="@layout/shimmer_item_all_drivers" />
-                                <include layout="@layout/shimmer_item_all_drivers" />
-                                <include layout="@layout/shimmer_item_all_drivers" />
+                        </LinearLayout>
 
-                            </LinearLayout>
-
-                        </com.facebook.shimmer.ShimmerFrameLayout>
                     </FrameLayout>
-                </RelativeLayout>
 
-            </androidx.core.widget.NestedScrollView>
+                </com.facebook.shimmer.ShimmerFrameLayout>
+
+                <LinearLayout
+                    android:id="@+id/state_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|center_horizontal"
+                    android:layout_marginTop="48dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/state_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="16sp" />
+
+                    <Button
+                        android:id="@+id/state_retry"
+                        style="@style/ButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:minWidth="160dp"
+                        android:text="@string/all_drivers_retry" />
+
+                    <Button
+                        android:id="@+id/state_reset"
+                        style="@style/ButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:minWidth="160dp"
+                        android:text="@string/all_drivers_reset_filters"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </FrameLayout>
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-    </LinearLayout>
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+</LinearLayout>

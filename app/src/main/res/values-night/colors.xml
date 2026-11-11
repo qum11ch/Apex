@@ -77,4 +77,11 @@
     <color name="neuro_divider">#34363D</color>
     <color name="neuro_text">#F5F5F7</color>
     <color name="neuro_secondary">#B4B6BE</color>
+
+    <color name="driver_status_active">#5BD08A</color>
+    <color name="driver_status_active_bg">#305BD08A</color>
+    <color name="driver_status_reserve">#F2B84B</color>
+    <color name="driver_status_reserve_bg">#30F2B84B</color>
+    <color name="driver_status_retired">#A9ADB3</color>
+    <color name="driver_status_retired_bg">#30A9ADB3</color>
 </resources>

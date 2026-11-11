@@ -83,4 +83,11 @@
     <color name="neuro_secondary">#595E69</color>
     <color name="neuro_accent">#C50020</color>
     <color name="prediction_race_button_color">#38393E</color>
+
+    <color name="driver_status_active">#1B7F46</color>
+    <color name="driver_status_active_bg">#261B7F46</color>
+    <color name="driver_status_reserve">#8A5F00</color>
+    <color name="driver_status_reserve_bg">#268A5F00</color>
+    <color name="driver_status_retired">#5F6368</color>
+    <color name="driver_status_retired_bg">#265F6368</color>
 </resources>

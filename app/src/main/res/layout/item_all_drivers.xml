@@ -48,6 +48,19 @@
                 android:layout_height="wrap_content"
                 android:textAlignment="center"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+            <TextView
+                android:id="@+id/driver_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:background="@drawable/bg_driver_status"
+                android:paddingStart="10dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="10dp"
+                android:paddingBottom="3dp"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textSize="11sp"
+                android:visibility="gone" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

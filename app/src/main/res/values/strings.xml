@@ -1046,4 +1046,12 @@
     <string name="loading_filters">Loading filters...</string>
     <string name="filter_error">Failed to load filters. The full list is available.</string>
 
+    <string name="all_drivers_load_error">Could not load drivers. Check your connection and try again.</string>
+    <string name="all_drivers_retry">Retry</string>
+    <string name="all_drivers_empty">No drivers found</string>
+    <string name="all_drivers_refresh_failed">Could not update the list. Saved data is shown.</string>
+
+    <string name="all_drivers_view_as_list">Show as list</string>
+    <string name="all_drivers_view_as_tiles">Show as tiles</string>
+    <string name="all_drivers_reset_filters">Reset filters</string>
 </resources>
