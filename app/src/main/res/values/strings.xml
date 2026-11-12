@@ -1148,4 +1148,10 @@
 
     <string name="driver_seasons_title">Seasons</string>
     <string name="driver_info_title">About the driver</string>
+
+    <string name="circuit_turns">Turns</string>
+
+    <string name="user_predictions_tile_count">Predictions</string>
+    <string name="user_predictions_tile_correct">Correct</string>
+    <string name="user_predictions_tile_points">Points</string>
 </resources>

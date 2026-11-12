@@ -3,7 +3,6 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.driverStatsFragment.getCountryCode;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -29,19 +28,20 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Locale;
-
 public class raceCircuitFragment extends Fragment {
+
+    private static final String DASH = "\u2013";
+
     private TextView circuitName;
-    private TextView length;
-    private TextView lapsNum;
-    private TextView firstGP;
-    private TextView raceDist;
+    private TextView lengthValue;
+    private TextView lapsValue;
+    private TextView turnsValue;
+    private TextView distanceValue;
+    private TextView firstGPValue;
     private TextView lapRecord_time;
     private TextView lapRecord_driver;
-    private RelativeLayout contentLayout, circuitInfoLayout;
+    private View contentLayout;
     private ShimmerFrameLayout shimmerFrameLayout;
-    private View resultsLine;
 
     public raceCircuitFragment() {
         // required empty public constructor.
@@ -54,7 +54,8 @@ public class raceCircuitFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.race_circuit_fragment, container, false);
     }
 
@@ -68,94 +69,165 @@ public class raceCircuitFragment extends Fragment {
 
         TextView raceName = contentLayout.findViewById(R.id.raceName);
         circuitName = contentLayout.findViewById(R.id.circuitName);
-        length = contentLayout.findViewById(R.id.length);
-        lapsNum = contentLayout.findViewById(R.id.lapsNum);
-        firstGP = contentLayout.findViewById(R.id.firstGP);
-        raceDist = contentLayout.findViewById(R.id.raceDist);
         lapRecord_time = contentLayout.findViewById(R.id.lapRecord_time);
         lapRecord_driver = contentLayout.findViewById(R.id.lapRecord_driver);
         ImageView circuitImage = contentLayout.findViewById(R.id.circuitImage);
-        circuitInfoLayout = contentLayout.findViewById(R.id.circuitInfo_layout);
         ImageView flag = contentLayout.findViewById(R.id.flag);
         Button raceResults = contentLayout.findViewById(R.id.raceResults_history);
 
+        buildStatsTiles(
+                contentLayout.findViewById(R.id.stats_top),
+                contentLayout.findViewById(R.id.stats_bottom));
+
         shimmerFrameLayout.startShimmer();
 
-        if (!getArguments().isEmpty()){
-            String mCircuitId = getArguments().getString("circuitId");
-            String mRaceName = getArguments().getString("raceName");
-            String mCountry = getArguments().getString("raceCountry");
-            String mYear = getArguments().getString("gpYear");
+        Bundle arguments = getArguments();
 
-            String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
-            String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
-            raceName.setText(futureRaceName);
-
-            setupResultsHistory(raceResults, mRaceName, mCircuitId, mYear);
-
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-            StorageReference storageRef = storage.getReference();
-
-            StorageReference mCircuitImage = storageRef.child("circuits/" + mCircuitId + ".png");
-
-            GlideApp.with(requireContext())
-                    .load(mCircuitImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder)
-                    .into(circuitImage);
-
-            World.init(requireContext());
-            flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            rootRef.child("circuits/" + mCircuitId).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String mCircuitId = snapshot.child("circuitId").getValue(String.class);
-                    String mLength = snapshot.child("length").getValue(String.class);
-                    String mLapsNum = snapshot.child("lapsCount").getValue(String.class);
-                    String mFirstGP = snapshot.child("firstGPyear").getValue(String.class);
-                    String mRaceDist = snapshot.child("raceDistance").getValue(String.class);
-                    String mLapRecordTime = snapshot.child("lapRecordTime").getValue(String.class);
-                    String mLapRecordDriver = snapshot.child("lapRecordDriver").getValue(String.class);
-                    Integer mLapRecordYear = snapshot.child("lapRecordYear").getValue(Integer.class);
-
-                    if (mLapRecordYear == 0){
-                        lapRecord_driver.setVisibility(View.GONE);
-                    }else{
-                        String lapRecordDriverSummary = mLapRecordDriver + " (" + mLapRecordYear + ")";
-                        lapRecord_driver.setText(lapRecordDriverSummary);
-                    }
-
-                    circuitName.setText(requireContext().getString(getStringByName(mCircuitId + "_text")));
-                    length.setText(mLength);
-                    lapsNum.setText(mLapsNum);
-                    firstGP.setText(mFirstGP);
-                    raceDist.setText(mRaceDist);
-                    lapRecord_time.setText(mLapRecordTime);
-
-                    shimmerFrameLayout.animate()
-                            .setDuration(500)
-                            .withEndAction(() -> {
-                                contentLayout.setVisibility(View.VISIBLE);
-                                shimmerFrameLayout.setVisibility(View.GONE);
-                                shimmerFrameLayout.stopShimmer();
-                            })
-                            .start();
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    Log.e("futureActivityFirebaseError (Circuit Fragment)", error.getMessage());
-                }
-            });
+        if (arguments == null || arguments.isEmpty()) {
+            return;
         }
 
+        String mCircuitId = arguments.getString("circuitId");
+        String mRaceName = arguments.getString("raceName");
+        String mCountry = arguments.getString("raceCountry");
+        String mYear = arguments.getString("gpYear");
+
+        if (mCircuitId == null || mRaceName == null) {
+            return;
+        }
+
+        String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
+        int raceNameId = getStringByName(localeRaceName + "_text");
+        String title = raceNameId != 0 ? getString(raceNameId) : mRaceName;
+        raceName.setText(mYear != null ? title + " " + mYear : title);
+
+        setupResultsHistory(raceResults, mRaceName, mCircuitId, mYear);
+
+        StorageReference mCircuitImage = FirebaseStorage.getInstance()
+                .getReference()
+                .child("circuits/" + mCircuitId + ".png");
+
+        GlideApp.with(requireContext())
+                .load(mCircuitImage)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .error(R.drawable.placeholder)
+                .into(circuitImage);
+
+        if (mCountry != null) {
+            World.init(requireContext());
+            flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
+        }
+
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+        rootRef.child("circuits").child(mCircuitId)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        showCircuit(snapshot, mCircuitId);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.e("raceCircuitFragment", error.getMessage());
+                    }
+                });
     }
 
+    // ---------- statistics tiles ----------
+
+    private void buildStatsTiles(LinearLayout top, LinearLayout bottom) {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        lengthValue = addTile(inflater, top, R.string.circuit_length);
+        lapsValue = addTile(inflater, top, R.string.no_of_laps);
+        turnsValue = addTile(inflater, top, R.string.circuit_turns);
+
+        distanceValue = addTile(inflater, bottom, R.string.race_distance);
+        firstGPValue = addTile(inflater, bottom, R.string.first_grand_prix);
+    }
+
+    private TextView addTile(LayoutInflater inflater, LinearLayout parent, int label) {
+        View tile = inflater.inflate(R.layout.item_team_results_summary, parent, false);
+
+        ((TextView) tile.findViewById(R.id.summary_label)).setText(label);
+
+        TextView value = tile.findViewById(R.id.summary_value);
+        value.setText(DASH);
+
+        parent.addView(tile, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        return value;
+    }
+
+    private String text(DataSnapshot snapshot) {
+        Object value = snapshot.getValue();
+
+        if (value == null) {
+            return DASH;
+        }
+
+        String result = String.valueOf(value).trim();
+
+        return result.isEmpty() ? DASH : result;
+    }
+
+    private String withUnit(String value) {
+        return value.equals(DASH) ? value : value + " " + getString(R.string.kilometres);
+    }
+
+    private void showCircuit(DataSnapshot snapshot, String circuitId) {
+        int nameId = getStringByName(circuitId + "_text");
+        String fallbackName = snapshot.child("circuitName").getValue(String.class);
+
+        circuitName.setText(nameId != 0
+                ? getString(nameId)
+                : (fallbackName != null ? fallbackName : ""));
+
+        lengthValue.setText(withUnit(text(snapshot.child("length"))));
+        lapsValue.setText(text(snapshot.child("lapsCount")));
+        turnsValue.setText(text(snapshot.child("turnsCount")));
+        distanceValue.setText(withUnit(text(snapshot.child("raceDistance"))));
+        firstGPValue.setText(text(snapshot.child("firstGPyear")));
+
+        lapRecord_time.setText(text(snapshot.child("lapRecordTime")));
+
+        String recordDriver = snapshot.child("lapRecordDriver").getValue(String.class);
+        Object recordYear = snapshot.child("lapRecordYear").getValue();
+
+        boolean hasYear = recordYear != null
+                && !"0".equals(String.valueOf(recordYear).trim());
+
+        if (recordDriver == null || recordDriver.trim().isEmpty()) {
+            lapRecord_driver.setText("");
+        } else {
+            lapRecord_driver.setText(hasYear
+                    ? recordDriver + " (" + String.valueOf(recordYear).trim() + ")"
+                    : recordDriver);
+        }
+
+        shimmerFrameLayout.animate()
+                .setDuration(500)
+                .withEndAction(() -> {
+                    if (!isAdded()) {
+                        return;
+                    }
+
+                    contentLayout.setVisibility(View.VISIBLE);
+                    shimmerFrameLayout.setVisibility(View.GONE);
+                    shimmerFrameLayout.stopShimmer();
+                })
+                .start();
+    }
+
+    // ---------- previous races on this circuit ----------
+
     private void setupResultsHistory(Button button, String raceName, String circuitId, String gpYear) {
-        // Until earlier results are found the button stays hidden and the info block keeps its usual bottom gap.
-        setCircuitInfoBottomMargin(20);
         button.setVisibility(View.GONE);
 
         raceHistory.load(raceName, gpYear, entries -> {
@@ -163,97 +235,10 @@ public class raceCircuitFragment extends Fragment {
                 return;
             }
 
-            button.setText(getString(R.string.ps_history_button) + " \u00b7 " + entries.size());
+            button.setText(getString(R.string.ps_history_button));
             button.setVisibility(View.VISIBLE);
-            setCircuitInfoBottomMargin(0);
             button.setOnClickListener(v ->
                     raceResultsSheet.show(getParentFragmentManager(), raceName, circuitId, entries));
         });
     }
-
-    private void setCircuitInfoBottomMargin(int dp) {
-        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
-        params.bottomMargin = (int) (dp * getResources().getDisplayMetrics().density);
-        circuitInfoLayout.setLayoutParams(params);
-    }
-
-    private void checkPrevSeason(String season, String mRaceName, String circuitId,
-                                 String currentSeason, Button prevSeason){
-        String raceName;
-        switch (mRaceName){
-            case "Brazilian Grand Prix":
-                raceName = "São Paulo Grand Prix";
-                break;
-            case "Spanish Grand Prix":
-                if (currentSeason.equals("2026")){
-                    raceName = "Madrid Grand Prix";
-                }else{
-                    raceName = mRaceName;
-                }
-                break;
-            case "Barcelona Grand Prix":
-                if (currentSeason.equals("2026")){
-                    raceName = "Spanish Grand Prix";
-                }else{
-                    raceName = mRaceName;
-                }
-                break;
-            default:
-                raceName = mRaceName;
-                break;
-        }
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("schedule/season/" + season).child(raceName).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.hasChildren()){
-                    //Log.e("raceCircuit", " " + snapshot + " " + snapshot.exists());
-                    //Log.e("raceCircuit", "Has Previous Year Race" + " " + snapshot.hasChildren());
-
-                    Boolean isCanceled = snapshot.child("Canceled").getValue(Boolean.class);
-
-                    if (isCanceled == null){
-                        String mPrevGPtext;
-                        if(Locale.getDefault().getLanguage().equals("ru")){
-                            mPrevGPtext = getString(R.string.prev_race_results_text) + " " + season;
-                        }else{
-                            mPrevGPtext = season + " " + getString(R.string.prev_race_results_text);
-                        }
-                        prevSeason.setText(mPrevGPtext);
-
-                        prevSeason.setOnClickListener(view1 -> {
-                            Intent intent = new Intent(requireContext() , raceResultsActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("raceName", raceName);
-                            bundle.putString("circuitId", circuitId);
-                            bundle.putString("season", season);
-                            intent.putExtras(bundle);
-                            requireContext().startActivity(intent);
-                        });
-                    }else{
-                        prevSeason.setVisibility(View.GONE);
-                        resultsLine.setVisibility(View.GONE);
-
-                        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
-                        params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
-                        circuitInfoLayout.setLayoutParams(params);
-                    }
-                }else{
-                    prevSeason.setVisibility(View.GONE);
-                    resultsLine.setVisibility(View.GONE);
-
-                    ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
-                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
-                    circuitInfoLayout.setLayoutParams(params);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.e("raceResultsQualiAdapter: Fatal error in Firebase getting team color", " " + error.getMessage());
-            }
-        });
-    }
-
 }

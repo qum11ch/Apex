@@ -407,6 +407,18 @@ final class driverSeasonsSection {
         public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.item_driver_season_page, parent, false);
+
+            ViewGroup.LayoutParams page = view.getLayoutParams();
+            if (page == null) {
+                page = new RecyclerView.LayoutParams(
+                        parent.getMeasuredWidth(), ViewGroup.LayoutParams.WRAP_CONTENT);
+            } else {
+                page.width = parent.getMeasuredWidth();
+                page.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+            }
+            view.setLayoutParams(page);
+
+
             Holder holder = new Holder(view);
 
             int[] labels = {R.string.team_cars_position, R.string.team_results_points, R.string.wins};

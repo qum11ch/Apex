@@ -74,6 +74,8 @@ final class teamCarsSection {
     private View next;
     private CarAdapter adapter;
 
+    private int pageWidth;
+
     teamCarsSection(Fragment host, View root, String teamId, String teamName, String currentSeason) {
         this.host = host;
         this.root = root;
@@ -131,6 +133,19 @@ final class teamCarsSection {
 
         adapter = new CarAdapter();
         pager.setAdapter(adapter);
+
+        pager.setClipToPadding(true);
+        pager.setClipChildren(true);
+        pager.setPadding(0, 0, 0, 0);
+        ViewGroup hostView = root.findViewById(R.id.car_pager_host);
+        hostView.setClipToPadding(true);
+        hostView.setClipChildren(true);
+        pager.post(() -> {
+            if (!host.isAdded() || pager == null || adapter == null) return;
+            int width = pager.getWidth() - pager.getPaddingLeft() - pager.getPaddingRight();
+            adapter.setPageWidth(width);
+        });
+
 
         pager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -321,6 +336,14 @@ final class teamCarsSection {
         public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
             LayoutInflater inflater = LayoutInflater.from(parent.getContext());
             View view = inflater.inflate(R.layout.item_team_car_page, parent, false);
+
+            int width = pageWidth > 0 ? pageWidth : parent.getWidth();
+            if (width > 0) {
+                view.setLayoutParams(new RecyclerView.LayoutParams(
+                        width, ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+
+
             Holder holder = new Holder(view);
 
             int[] labels = {R.string.team_cars_position, R.string.team_results_points, R.string.wins};
@@ -342,6 +365,14 @@ final class teamCarsSection {
         @Override
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             int year = years.get(position);
+
+            if (pageWidth > 0) {
+                ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
+                if (params.width != pageWidth) {
+                    params.width = pageWidth;
+                    holder.itemView.setLayoutParams(params);
+                }
+            }
 
             holder.year.setText(String.valueOf(year));
 
@@ -401,6 +432,13 @@ final class teamCarsSection {
                     ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
 
             ViewCompat.setBackgroundTintList(holder.photoBlock, ColorStateList.valueOf(soft));
+        }
+
+        void setPageWidth(int width) {
+            if (width > 0 && pageWidth != width) {
+                pageWidth = width;
+                notifyDataSetChanged();
+            }
         }
 
         final class Holder extends RecyclerView.ViewHolder {

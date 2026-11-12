@@ -1127,4 +1127,10 @@
 
     <string name="driver_seasons_title">Сезоны</string>
     <string name="driver_info_title">О пилоте</string>
+
+    <string name="circuit_turns">Повороты</string>
+
+    <string name="user_predictions_tile_count">Прогнозов</string>
+    <string name="user_predictions_tile_correct">Угадано</string>
+    <string name="user_predictions_tile_points">Очков</string>
 </resources>

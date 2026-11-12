@@ -113,8 +113,8 @@
             android:id="@+id/favoritePager"
             android:layout_width="match_parent"
             android:layout_height="360dp"
-            android:clipToPadding="false"
-            android:clipChildren="false" />
+            android:clipToPadding="true"
+            android:clipChildren="true" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

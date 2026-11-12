@@ -63,6 +63,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import android.graphics.Color;
+
 public class userPredictionsActivity extends AppCompatActivity {
     private final List<userPrediction> userPredictions = new ArrayList<>();
 
@@ -556,11 +558,9 @@ public class userPredictionsActivity extends AppCompatActivity {
         predictionResultsChart.setUsePercentValues(false);
         predictionResultsChart.getDescription().setEnabled(false);
         predictionResultsChart.setDrawHoleEnabled(true);
-        predictionResultsChart.setHoleColor(
-                ContextCompat.getColor(context, R.color.colorPrimary)
-        );
+        predictionResultsChart.setHoleColor(Color.TRANSPARENT);
         predictionResultsChart.setHoleRadius(62f);
-        predictionResultsChart.setTransparentCircleRadius(64f);
+        predictionResultsChart.setTransparentCircleRadius(0f);
         predictionResultsChart.setCenterText(getAccuracyText(correct, incorrect, tie));
 
         Typeface typeface = ResourcesCompat.getFont(
