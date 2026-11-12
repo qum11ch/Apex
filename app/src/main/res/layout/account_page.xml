@@ -14,11 +14,11 @@
         android:indeterminate="true"
         android:indeterminateTint="@color/progressBarColor"
         android:indeterminateTintMode="src_atop"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main_content"
-        android:visibility="visible"
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
@@ -133,105 +133,121 @@
                         android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
 
                     <LinearLayout
-                        android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="70dp"
+                        android:layout_marginTop="20dp"
+                        android:background="@drawable/bg_public_stats_card"
                         android:baselineAligned="false"
+                        android:divider="@drawable/divider_public_stats"
                         android:orientation="horizontal"
-                        android:weightSum="3">
+                        android:showDividers="middle">
                         <LinearLayout
-                            android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
+                            android:layout_weight="1"
                             android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginEnd="5dp">
+                            android:paddingStart="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="14dp">
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="@string/predictions_text_lowered"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                                android:textColor="@color/grey"
+                                android:textSize="13sp" />
                             <TextView
                                 android:id="@+id/prediction_count"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:layout_marginTop="6dp"
+                                android:autoSizeMaxTextSize="28sp"
+                                android:autoSizeMinTextSize="16sp"
+                                android:autoSizeStepGranularity="1sp"
+                                android:autoSizeTextType="uniform"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="0"
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="0"/>
+                                android:textColor="@color/text_color_main"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:paddingStart="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="14dp">
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/predictions_text_lowered"
-                                android:textSize="14sp"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="@string/points_text_lowered"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
                                 android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp">
+                                android:textSize="13sp" />
                             <TextView
                                 android:id="@+id/points_earned"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:layout_marginTop="6dp"
+                                android:autoSizeMaxTextSize="28sp"
+                                android:autoSizeMinTextSize="16sp"
+                                android:autoSizeStepGranularity="1sp"
+                                android:autoSizeTextType="uniform"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="0"
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="0"/>
+                                android:textColor="@color/text_color_main"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:paddingStart="16dp"
+                            android:paddingTop="14dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="14dp">
                             <TextView
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="@string/points_text_lowered"
-                                android:textSize="14sp"
+                                android:ellipsize="end"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="@string/races_saved_text_lowered"
+                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
                                 android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginStart="5dp">
+                                android:textSize="13sp" />
                             <TextView
                                 android:id="@+id/races_saved"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
+                                android:layout_marginTop="6dp"
+                                android:autoSizeMaxTextSize="28sp"
+                                android:autoSizeMinTextSize="16sp"
+                                android:autoSizeStepGranularity="1sp"
+                                android:autoSizeTextType="uniform"
+                                android:includeFontPadding="false"
+                                android:maxLines="1"
+                                android:text="0"
                                 android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="0"/>
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/races_saved_text_lowered"
-                                android:textSize="14sp"
-                                android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
+                                android:textColor="@color/text_color_main"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
+
 
                     <TextView
                         android:layout_marginStart="13dp"

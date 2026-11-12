@@ -1117,4 +1117,10 @@
     <string name="ps_view_as_list">Show as list</string>
     <string name="ps_history_button">Past results</string>
     <string name="ps_history_subtitle">Past results</string>
+
+    <string name="public_stats_rank_global">overall</string>
+    <string name="public_stats_rank_season">this season</string>
+    <string name="public_stats_points_avg">%1$s per pick</string>
+    <string name="public_stats_pending_short">%1$s pending</string>
+    <string name="public_stats_share">%1$d%% of settled</string>
 </resources>

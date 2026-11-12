@@ -27,6 +27,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 
 import java.text.NumberFormat;
+import java.util.LinkedHashMap;
 import java.util.Locale;
 
 import com.google.firebase.functions.FirebaseFunctions;
@@ -82,6 +83,10 @@ public class publicProfileActivity extends AppCompatActivity {
 
     private LinearLayout rankingsContainer;
 
+    private LinearLayout scopeTabs;
+    private final Map<String, View> ratingRows = new LinkedHashMap<>();
+    private final Map<String, TextView> scopeTabViews = new LinkedHashMap<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,9 +109,6 @@ public class publicProfileActivity extends AppCompatActivity {
         name = findViewById(R.id.username);
         scopeText = findViewById(R.id.createdAt);
 
-        rank = findViewById(R.id.prediction_count);
-        points = findViewById(R.id.points_earned);
-        correct = findViewById(R.id.races_saved);
 
         ratingMessage = findViewById(R.id.publicProfileRatingMessage);
         errorText = findViewById(R.id.publicProfileError);
@@ -125,6 +127,7 @@ public class publicProfileActivity extends AppCompatActivity {
         favoriteDriverState.setTextSize(14);
 
         rankingsContainer = findViewById(R.id.publicProfileRankings);
+        scopeTabs = findViewById(R.id.publicProfileScopeTabs);
 
         findViewById(R.id.team_layout).setClickable(false);
         findViewById(R.id.driver_layout).setClickable(false);
@@ -204,6 +207,10 @@ public class publicProfileActivity extends AppCompatActivity {
         resetFavorites();
 
         rankingsContainer.removeAllViews();
+        scopeTabs.removeAllViews();
+        ratingRows.clear();
+        scopeTabViews.clear();
+
 
         scopeText.setText(R.string.public_stats_heading);
 
@@ -399,8 +406,6 @@ public class publicProfileActivity extends AppCompatActivity {
 
     private void renderPublicStatistics(Object response) {
         Map<?, ?> root = requireStatsMap(response);
-        Map<?, ?> totals = requireStatsMap(root.get("totals"));
-
         Object rankingsValue = root.get("rankings");
 
         if (!(rankingsValue instanceof List)) {
@@ -408,26 +413,10 @@ public class publicProfileActivity extends AppCompatActivity {
         }
 
         NumberFormat integers = NumberFormat.getIntegerInstance();
-
-        long totalPredictions =
-                requireStatCount(totals, "predictionsCount");
-
-        long totalCorrect =
-                requireStatCount(totals, "correctPredictions");
-
-        double earnedPoints =
-                requireStatNumber(totals, "earnedPoints");
-
-        /*
-         * Сначала строим всё во временном контейнере.
-         * При ошибочном ответе не оставляем половину списка.
-         */
-        LinearLayout temporary = new LinearLayout(this);
-        temporary.setOrientation(LinearLayout.VERTICAL);
+        Map<String, View> builtRows = new LinkedHashMap<>();
 
         for (Object value : (List<?>) rankingsValue) {
             Map<?, ?> entry = requireStatsMap(value);
-
             Object scopeValue = entry.get("scope");
 
             if (!(scopeValue instanceof String)) {
@@ -436,37 +425,20 @@ public class publicProfileActivity extends AppCompatActivity {
 
             String scope = (String) scopeValue;
 
-            if (!"global".equals(scope)
-                    && !scope.matches("[0-9]{4}")) {
+            if (!"global".equals(scope) && !scope.matches("[0-9]{4}")) {
                 throw new IllegalStateException("Invalid ranking scope");
             }
 
-            View row = getLayoutInflater().inflate(
-                    R.layout.item_public_profile_rating,
-                    temporary,
-                    false
-            );
-            TextView title =
-                    row.findViewById(R.id.publicRatingTitle);
-
-            LinearLayout primaryRow =
-                    row.findViewById(R.id.publicRatingPrimaryRow);
-
-            LinearLayout resultsRow =
-                    row.findViewById(R.id.publicRatingResultsRow);
-
-            TextView pendingView =
-                    row.findViewById(R.id.publicRatingPending);
-
-            title.setText("global".equals(scope)
-                    ? getString(R.string.leaderboard_global)
-                    : getString(
-                    R.string.public_profile_season,
-                    scope
-            ));
+            long predictions = requireStatCount(entry, "predictionsCount");
+            long correctCount = requireStatCount(entry, "correctPredictions");
+            long incorrectCount = requireStatCount(entry, "incorrectPredictions");
+            long tieCount = requireStatCount(entry, "tiePredictions");
+            long pendingCount = requireStatCount(entry, "pendingPredictions");
+            long settled = correctCount + incorrectCount + tieCount;
 
             String rankText = "—";
             String pointsText = "—";
+            String pointsCaption = "";
 
             if (entry.get("rank") != null) {
                 long rankValue = requireStatCount(entry, "rank");
@@ -475,85 +447,131 @@ public class publicProfileActivity extends AppCompatActivity {
                     throw new IllegalStateException("Invalid rank");
                 }
 
-                rankText = integers.format(rankValue);
+                double totalPoints = requireStatNumber(entry, "totalPoints");
 
-                pointsText = formatStatPoints(
-                        requireStatNumber(entry, "totalPoints")
-                );
+                rankText = integers.format(rankValue);
+                pointsText = formatStatPoints(totalPoints);
+
+                if (settled > 0) {
+                    pointsCaption = getString(
+                            R.string.public_stats_points_avg,
+                            formatStatPoints(totalPoints / settled)
+                    );
+                }
             }
 
-            addRatingStat(
-                    primaryRow,
-                    rankText,
-                    R.string.public_profile_rank
+            String rankCaption = getString("global".equals(scope)
+                    ? R.string.public_stats_rank_global
+                    : R.string.public_stats_rank_season);
+
+            String predictionsCaption = pendingCount > 0
+                    ? getString(R.string.public_stats_pending_short,
+                    integers.format(pendingCount))
+                    : "";
+
+            View row = getLayoutInflater().inflate(
+                    R.layout.item_public_profile_rating,
+                    rankingsContainer,
+                    false
             );
 
-            addRatingStat(
-                    primaryRow,
-                    pointsText,
-                    R.string.public_profile_points
-            );
+            LinearLayout primaryRow = row.findViewById(R.id.publicRatingPrimaryRow);
+            LinearLayout resultsRow = row.findViewById(R.id.publicRatingResultsRow);
 
-            addRatingStat(
-                    primaryRow,
-                    integers.format(
-                            requireStatCount(entry, "predictionsCount")
-                    ),
-                    R.string.public_stats_total_predictions
-            );
+            addRatingStat(primaryRow, R.string.public_profile_rank,
+                    rankText, rankCaption);
+            addRatingStat(primaryRow, R.string.public_profile_points,
+                    pointsText, pointsCaption);
+            addRatingStat(primaryRow, R.string.public_stats_total_predictions,
+                    integers.format(predictions), predictionsCaption);
 
-            addRatingStat(
-                    resultsRow,
-                    integers.format(
-                            requireStatCount(entry, "correctPredictions")
-                    ),
-                    R.string.public_stats_correct_label
-            );
+            addRatingStat(resultsRow, R.string.public_stats_correct_label,
+                    integers.format(correctCount), share(correctCount, settled));
+            addRatingStat(resultsRow, R.string.public_stats_incorrect_label,
+                    integers.format(incorrectCount), share(incorrectCount, settled));
+            addRatingStat(resultsRow, R.string.public_stats_ties_label,
+                    integers.format(tieCount), share(tieCount, settled));
 
-            addRatingStat(
-                    resultsRow,
-                    integers.format(
-                            requireStatCount(entry, "incorrectPredictions")
-                    ),
-                    R.string.public_stats_incorrect_label
-            );
-
-            addRatingStat(
-                    resultsRow,
-                    integers.format(
-                            requireStatCount(entry, "tiePredictions")
-                    ),
-                    R.string.public_stats_ties_label
-            );
-
-            pendingView.setText(integers.format(
-                    requireStatCount(entry, "pendingPredictions")
-            ));
-
-            temporary.addView(row);
+            builtRows.put(scope, row);
         }
 
-        // Существующие три колонки аккаунта.
-        rank.setText(integers.format(totalPredictions));
-        points.setText(formatStatPoints(earnedPoints));
-        correct.setText(integers.format(totalCorrect));
+        if (builtRows.isEmpty()) {
+            throw new IllegalStateException("Empty rankings");
+        }
 
+        // Всё построено без ошибок — только теперь трогаем экран.
         rankingsContainer.removeAllViews();
+        scopeTabs.removeAllViews();
+        ratingRows.clear();
+        scopeTabViews.clear();
 
-        while (temporary.getChildCount() > 0) {
-            View row = temporary.getChildAt(0);
-            temporary.removeViewAt(0);
+        for (Map.Entry<String, View> item : builtRows.entrySet()) {
+            final String scope = item.getKey();
+            View row = item.getValue();
+
+            row.setVisibility(View.GONE);
             rankingsContainer.addView(row);
+            ratingRows.put(scope, row);
+
+            TextView tab = (TextView) getLayoutInflater().inflate(
+                    R.layout.item_public_profile_segment,
+                    scopeTabs,
+                    false
+            );
+
+            tab.setText(scopeTitle(scope));
+            tab.setOnClickListener(v -> selectScope(scope));
+
+            scopeTabs.addView(tab);
+            scopeTabViews.put(scope, tab);
         }
+
+        selectScope(builtRows.containsKey(ratingScope)
+                ? ratingScope
+                : builtRows.keySet().iterator().next());
 
         ratingMessage.setVisibility(View.GONE);
         stats.setVisibility(View.VISIBLE);
     }
 
+    private String share(long part, long settled) {
+        if (settled <= 0) return "";
+
+        return getString(
+                R.string.public_stats_share,
+                (int) Math.round(100.0 * part / settled)
+        );
+    }
+
+    private String scopeTitle(String scope) {
+        return "global".equals(scope)
+                ? getString(R.string.leaderboard_global)
+                : getString(R.string.public_profile_season, scope);
+    }
+
+    private void selectScope(String scope) {
+        int selectedColor = ContextCompat.getColor(this, R.color.text_color_main);
+        int idleColor = ContextCompat.getColor(this, R.color.grey);
+
+        for (Map.Entry<String, View> item : ratingRows.entrySet()) {
+            item.getValue().setVisibility(
+                    scope.equals(item.getKey()) ? View.VISIBLE : View.GONE
+            );
+        }
+
+        for (Map.Entry<String, TextView> item : scopeTabViews.entrySet()) {
+            boolean selected = scope.equals(item.getKey());
+
+            item.getValue().setSelected(selected);
+            item.getValue().setTextColor(selected ? selectedColor : idleColor);
+        }
+    }
+
     private void addRatingStat(
             LinearLayout parent,
+            int labelRes,
             String value,
-            int labelRes
+            String caption
     ) {
         View tile = getLayoutInflater().inflate(
                 R.layout.item_public_profile_stat,
@@ -561,29 +579,15 @@ public class publicProfileActivity extends AppCompatActivity {
                 false
         );
 
-        TextView valueView = tile.findViewById(R.id.publicStatValue);
-        TextView labelView = tile.findViewById(R.id.publicStatLabel);
+        ((TextView) tile.findViewById(R.id.publicStatLabel)).setText(labelRes);
+        ((TextView) tile.findViewById(R.id.publicStatValue)).setText(value);
+        ((TextView) tile.findViewById(R.id.publicStatCaption)).setText(caption);
 
-        valueView.setText(value);
-        labelView.setText(labelRes);
-
-        int gap = Math.round(
-                5 * getResources().getDisplayMetrics().density
-        );
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        0,
-                        android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
-                        1f
-                );
-
-        int index = parent.getChildCount();
-
-        params.setMarginStart(index == 0 ? 0 : gap);
-        params.setMarginEnd(index == 2 ? 0 : gap);
-
-        parent.addView(tile, params);
+        parent.addView(tile, new LinearLayout.LayoutParams(
+                0,
+                android.view.ViewGroup.LayoutParams.WRAP_CONTENT,
+                1f
+        ));
     }
 
     private void resetFavorites() {

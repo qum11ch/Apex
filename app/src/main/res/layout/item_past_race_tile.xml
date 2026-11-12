@@ -9,7 +9,8 @@
 
     <LinearLayout
         android:id="@+id/tile_card"
-        style="@style/ItemStyle"
+        style="@style/ItemStylePreds"
+        android:backgroundTint="@color/colorPrimary"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -56,7 +57,6 @@
             android:includeFontPadding="false"
             android:lineSpacingExtra="3dp"
             android:maxLines="2"
-            android:minLines="2"
             android:textSize="15sp"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 
@@ -96,7 +96,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:includeFontPadding="false"
                         android:text="@string/one"
@@ -105,7 +106,8 @@
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
                         android:id="@+id/tile_code_first"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:includeFontPadding="false"
@@ -120,7 +122,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:includeFontPadding="false"
                         android:text="@string/two"
@@ -129,7 +132,8 @@
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
                         android:id="@+id/tile_code_second"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:includeFontPadding="false"
@@ -144,7 +148,8 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
                     <TextView
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:includeFontPadding="false"
                         android:text="@string/three"
@@ -153,7 +158,8 @@
                         android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
                     <TextView
                         android:id="@+id/tile_code_third"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
+                        android:textAlignment="center"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp"
                         android:includeFontPadding="false"

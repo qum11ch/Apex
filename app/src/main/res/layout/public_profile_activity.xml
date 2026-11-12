@@ -121,107 +121,24 @@
                         android:textSize="14sp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Simple" />
 
-                    <LinearLayout
+                    <HorizontalScrollView
                         android:id="@+id/publicProfileStats"
-                        android:layout_marginTop="20dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="70dp"
-                        android:baselineAligned="false"
-                        android:orientation="horizontal"
-                        android:weightSum="3">
+                        android:layout_marginStart="13dp"
+                        android:layout_marginTop="20dp"
+                        android:layout_marginEnd="13dp"
+                        android:overScrollMode="never"
+                        android:scrollbars="none">
+
                         <LinearLayout
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
+                            android:id="@+id/publicProfileScopeTabs"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginEnd="5dp">
-                            <TextView
-                                android:id="@+id/prediction_count"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="-"/>
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_stats_total_predictions"
-                                android:textSize="14sp"
-                                android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp">
-                            <TextView
-                                android:id="@+id/points_earned"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="-"/>
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_profile_points"
-                                android:textSize="14sp"
-                                android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
-                        </LinearLayout>
-                        <LinearLayout
-                            android:layout_height="wrap_content"
-                            android:minHeight="70dp"
-                            android:paddingTop="10dp"
-                            android:paddingBottom="10dp"
-                            android:layout_weight="1"
-                            android:layout_width="0dp"
-                            android:orientation="vertical"
-                            style="@style/ItemStylePreds"
-                            android:gravity="center"
-                            android:layout_marginStart="5dp">
-                            <TextView
-                                android:id="@+id/races_saved"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:textColor="@color/text_color_main"
-                                android:textAlignment="center"
-                                android:textSize="16sp"
-                                android:textStyle="bold"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                                android:text="-"/>
-                            <TextView
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/public_profile_correct"
-                                android:textSize="14sp"
-                                android:textColor="@color/grey"
-                                android:textAlignment="center"
-                                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"/>
-                        </LinearLayout>
-                    </LinearLayout>
+                            android:background="@drawable/bg_public_segment_track"
+                            android:orientation="horizontal"
+                            android:padding="4dp" />
+                    </HorizontalScrollView>
 
                     <LinearLayout
                         android:id="@+id/publicProfileRankings"
@@ -229,7 +146,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="13dp"
                         android:layout_marginEnd="13dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="5dp"
                         android:orientation="vertical" />
 
                     <TextView
@@ -238,7 +155,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="13dp"
                         android:layout_marginEnd="13dp"
-                        android:layout_marginTop="16dp"
+                        android:layout_marginTop="5dp"
                         android:textColor="@color/neuro_secondary"
                         android:textSize="14sp"
                         android:visibility="gone" />
@@ -287,7 +204,6 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
                         android:baselineAligned="false"
                         android:orientation="horizontal"
                         android:weightSum="2">
