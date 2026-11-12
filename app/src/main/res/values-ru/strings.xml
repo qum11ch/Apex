@@ -1124,4 +1124,7 @@
     <string name="team_stats_total_points">Очки за всё время</string>
     <string name="team_cars_newer">Более новый сезон</string>
     <string name="team_cars_older">Более ранний сезон</string>
+
+    <string name="driver_seasons_title">Сезоны</string>
+    <string name="driver_info_title">О пилоте</string>
 </resources>

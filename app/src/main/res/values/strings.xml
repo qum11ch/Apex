@@ -1145,4 +1145,7 @@
     <string name="team_stats_total_points">All-time points</string>
     <string name="team_cars_newer">Newer season</string>
     <string name="team_cars_older">Earlier season</string>
+
+    <string name="driver_seasons_title">Seasons</string>
+    <string name="driver_info_title">About the driver</string>
 </resources>

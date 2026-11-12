@@ -3,6 +3,7 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
@@ -13,12 +14,13 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 
@@ -39,14 +41,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class driverStatsFragment extends Fragment {
-    private TextView firstGP, GPcount, wins, podiums, poles, totalPoints,
-            championships, championshipsText, teamName, driverCountry, birthdate, totalFastestLaps,
-            driverAge,lastEntry, lineupHeader, deathdate;
-    private ImageView teamCar_image, flag, arrow;
-    private RelativeLayout team_layout, driverInfo_layout, deathDateLayout;
-    private LinearLayout driversTeam_layout;
-    private NestedScrollView scrollView;
 
+    private static final String DASH = "\u2013";
+
+    private TextView firstGP, lastEntry, teamName, driverCountry, birthdate, deathdate, lineupHeader;
+    private TextView championshipsValue, pointsValue, winsValue, podiumsValue, polesValue,
+            racesValue, fastestValue;
+    private ImageView teamCar_image, flag, arrow;
+    private View deathDateLayout, driversTeam_layout, teamPhotoBlock;
+    private LinearLayout statsTop, statsMid, statsBottom;
+    private NestedScrollView scrollView;
+    private View rootView;
+
+    private driverSeasonsSection seasonsSection;
 
     public driverStatsFragment() {
         // required empty public constructor.
@@ -57,21 +64,39 @@ public class driverStatsFragment extends Fragment {
         super.onCreate(savedInstanceState);
     }
 
-    public void onResume(){
+    @Override
+    public void onResume() {
         super.onResume();
-        scrollView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                scrollView.smoothScrollTo(0, 0);
-            }
-        });
-        getView().requestLayout();
+
+        if (scrollView != null) {
+            scrollView.getViewTreeObserver().addOnGlobalLayoutListener(
+                    new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            scrollView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                            scrollView.smoothScrollTo(0, 0);
+                        }
+                    });
+        }
+
+        if (getView() != null) {
+            getView().requestLayout();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        if (seasonsSection != null) {
+            seasonsSection.stop();
+        }
+
+        super.onDestroy();
     }
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.driver_page_stats_fragment, container, false);
     }
 
@@ -80,63 +105,50 @@ public class driverStatsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
+        rootView = view;
         scrollView = view.findViewById(R.id.scrollView);
 
         firstGP = view.findViewById(R.id.firstGP);
-        GPcount = view.findViewById(R.id.GP_count);
         lastEntry = view.findViewById(R.id.lastEntry);
-        wins = view.findViewById(R.id.wins);
-        podiums = view.findViewById(R.id.podiums);
-        poles = view.findViewById(R.id.poles);
-        totalPoints = view.findViewById(R.id.totalPoints);
-        championships = view.findViewById(R.id.championships);
-        championshipsText = view.findViewById(R.id.championshipsText);
-
-        teamName = view.findViewById(R.id.teamName);
         driverCountry = view.findViewById(R.id.country);
         birthdate = view.findViewById(R.id.birthdate);
-        totalFastestLaps = view.findViewById(R.id.totalFastestLaps);
-
         deathdate = view.findViewById(R.id.deathdate);
         deathDateLayout = view.findViewById(R.id.deathDateLayout);
+        flag = view.findViewById(R.id.flag);
 
-        driverAge = view.findViewById(R.id.driverAge);
+        teamName = view.findViewById(R.id.teamName);
+        teamCar_image = view.findViewById(R.id.teamCar);
+        arrow = view.findViewById(R.id.arrow);
+        driversTeam_layout = view.findViewById(R.id.driversTeam_layout);
+        teamPhotoBlock = view.findViewById(R.id.team_photo_block);
         lineupHeader = view.findViewById(R.id.lineup_header);
 
-        teamCar_image = view.findViewById(R.id.teamCar);
-        flag = view.findViewById(R.id.flag);
-        arrow = view.findViewById(R.id.arrow);
+        statsTop = view.findViewById(R.id.stats_top);
+        statsMid = view.findViewById(R.id.stats_mid);
+        statsBottom = view.findViewById(R.id.stats_bottom);
 
-        team_layout = view.findViewById(R.id.team_layout);
-        driverInfo_layout = view.findViewById(R.id.driverInfo_layout);
-
-        driversTeam_layout = view.findViewById(R.id.driversTeam_layout);
+        buildStatsTiles();
+        applyDefaultTeamCard();
 
         if (getArguments() == null) {
-            Log.e(
-                    "DriverStats",
-                    "Missing fragment arguments"
-            );
-
+            Log.e("DriverStats", "Missing fragment arguments");
             return;
         }
 
         String mDriverName = getArguments().getString("driverName");
         String mDriverFamilyName = getArguments().getString("driverFamilyName");
+        String mDriverCode = getArguments().getString("driverCode");
         String mDriverTeam = getArguments().getString("driverTeam");
         String mTeamId = getArguments().getString("driverTeamId");
         String mCurrentSeason = getArguments().getString("currentSeason");
+        int latestSeasonArg = getArguments().getInt("latestSeason", 0);
 
         if (mDriverName == null
                 || mDriverFamilyName == null
                 || mDriverTeam == null
                 || mCurrentSeason == null) {
 
-            Log.e(
-                    "DriverStats",
-                    "Missing required driver arguments"
-            );
-
+            Log.e("DriverStats", "Missing required driver arguments");
             return;
         }
 
@@ -154,161 +166,138 @@ public class driverStatsFragment extends Fragment {
                         }
 
                         if (!snapshot.exists()) {
-                            Log.e(
-                                    "DriverStats",
-                                    "Driver not found: "
-                                            + driverFullName
-                            );
-
+                            Log.e("DriverStats", "Driver not found: " + driverFullName);
                             return;
                         }
 
-                        String mFirstGP = snapshot
-                                .child("firstEntry")
-                                .getValue(String.class);
+                        String mFirstGP = snapshot.child("firstEntry").getValue(String.class);
+                        String mLastEntry = snapshot.child("lastEntry").getValue(String.class);
 
-                        String mLastEntry = snapshot
-                                .child("lastEntry")
-                                .getValue(String.class);
-
-                        String mGPcount = snapshot
-                                .child("gpEntered")
-                                .getValue(String.class);
-
-                        String mWins = snapshot
-                                .child("totalWins")
-                                .getValue(String.class);
-
-                        String mPodiums = snapshot
-                                .child("totalPodiums")
-                                .getValue(String.class);
-
-                        String mPoles = snapshot
-                                .child("polesCount")
-                                .getValue(String.class);
-
-                        String mTotalPoints = snapshot
-                                .child("totalPoints")
-                                .getValue(String.class);
-
-                        String mChampionships = snapshot
-                                .child("championshipsCount")
-                                .getValue(String.class);
-
-                        String mDriverCountry = snapshot
-                                .child("driverCountry")
-                                .getValue(String.class);
-
-                        String mBirthdate = snapshot
-                                .child("birthdayDate")
-                                .getValue(String.class);
-
-                        String mTotalFastestLaps = snapshot
-                                .child("fastestLapCount")
-                                .getValue(String.class);
-
-                        String mDeathdate = snapshot
-                                .child("deathDate")
-                                .getValue(String.class);
-
-                        if (mFirstGP == null
-                                || mLastEntry == null
-                                || mGPcount == null
-                                || mWins == null
-                                || mPodiums == null
-                                || mPoles == null
-                                || mTotalPoints == null
-                                || mChampionships == null
-                                || mDriverCountry == null
-                                || mBirthdate == null
-                                || mTotalFastestLaps == null) {
-
-                            Log.e(
-                                    "DriverStats",
-                                    "Incomplete driver data"
-                            );
-
-                            return;
-                        }
-
-                        Integer firstSeason = extractYear(mFirstGP);
                         Integer lastSeason = extractYear(mLastEntry);
 
-                        if (firstSeason == null || lastSeason == null) {
-                            Log.e(
-                                    "DriverStats",
-                                    "Invalid entry format"
-                            );
-
-                            return;
+                        if (lastSeason == null) {
+                            lastSeason = latestSeasonArg > 0
+                                    ? latestSeasonArg
+                                    : parseSeason(mCurrentSeason);
                         }
 
-                        firstGP.setText(formatRaceEntry(mFirstGP));
+                        firstGP.setText(mFirstGP != null ? formatRaceEntry(mFirstGP) : DASH);
+                        lastEntry.setText(mLastEntry != null ? formatRaceEntry(mLastEntry) : DASH);
 
-                        lastEntry.setText(formatRaceEntry(mLastEntry));
+                        championshipsValue.setText(text(snapshot.child("championshipsCount")));
+                        pointsValue.setText(text(snapshot.child("totalPoints")));
+                        winsValue.setText(text(snapshot.child("totalWins")));
+                        podiumsValue.setText(text(snapshot.child("totalPodiums")));
+                        polesValue.setText(text(snapshot.child("polesCount")));
+                        racesValue.setText(text(snapshot.child("gpEntered")));
+                        fastestValue.setText(text(snapshot.child("fastestLapCount")));
 
-                        GPcount.setText(mGPcount);
-                        wins.setText(mWins);
-                        podiums.setText(mPodiums);
-                        poles.setText(mPoles);
-                        totalPoints.setText(mTotalPoints);
-                        totalFastestLaps.setText(mTotalFastestLaps);
-
-                        int currentYear = LocalDate.now().getYear();
-
-                        if (lastSeason != currentYear) {
-
-                            String lineupHeaderText =
-                                    getString(R.string.last_text)
-                                            + " "
-                                            + getString(R.string.team);
-                            lineupHeader.setText(lineupHeaderText);
+                        if (lastSeason != LocalDate.now().getYear()) {
+                            lineupHeader.setText(getString(R.string.last_text)
+                                    + " " + getString(R.string.team));
                         }
 
-                        setupCountry(mDriverCountry);
-                        setupBirthdate(mBirthdate, mDeathdate);
-                        setupChampionships(mChampionships);
+                        String country = snapshot.child("driverCountry").getValue(String.class);
+
+                        if (country != null) {
+                            setupCountry(country);
+                        } else {
+                            driverCountry.setText(DASH);
+                            flag.setVisibility(View.GONE);
+                        }
+
+                        setupBirthdate(
+                                snapshot.child("birthdayDate").getValue(String.class),
+                                snapshot.child("deathDate").getValue(String.class));
 
                         teamName.setText(mDriverTeam);
 
                         if (mTeamId != null && !mTeamId.trim().isEmpty()) {
+                            final int finalLastSeason = lastSeason;
 
-                            setupTeamCard(
-                                    mTeamId,
-                                    mDriverTeam,
-                                    mCurrentSeason,
-                                    lastSeason
-                            );
+                            setupTeamCard(mTeamId, mDriverTeam, mCurrentSeason, finalLastSeason);
 
                             driversTeam_layout.setOnClickListener(
-                                    view1 -> openTeamPage(
-                                            mTeamId,
-                                            mDriverTeam,
-                                            mCurrentSeason,
-                                            lastSeason
-                                    )
-                            );
+                                    v -> openTeamPage(mTeamId, mDriverTeam,
+                                            mCurrentSeason, finalLastSeason));
                         } else {
                             applyDefaultTeamCard();
                         }
+
+                        seasonsSection = new driverSeasonsSection(
+                                driverStatsFragment.this,
+                                rootView,
+                                driverFullName,
+                                mDriverCode,
+                                snapshot.child("driverId").getValue(String.class),
+                                mDriverFamilyName,
+                                lastSeason);
+
+                        seasonsSection.start();
                     }
 
                     @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {
-
+                    public void onCancelled(@NonNull DatabaseError error) {
                         if (!isAdded()) {
                             return;
                         }
 
-                        Log.e(
-                                "DriverStats",
-                                "Failed to load driver",
-                                error.toException()
-                        );
+                        Log.e("DriverStats", "Failed to load driver", error.toException());
                     }
                 });
     }
+
+    // ---------- statistics tiles ----------
+
+    private void buildStatsTiles() {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        championshipsValue = addTile(inflater, statsTop, R.string.drivers_championships);
+        pointsValue = addTile(inflater, statsTop, R.string.points_earned);
+
+        winsValue = addTile(inflater, statsMid, R.string.wins);
+        podiumsValue = addTile(inflater, statsMid, R.string.podiums);
+        polesValue = addTile(inflater, statsMid, R.string.poles);
+
+        racesValue = addTile(inflater, statsBottom, R.string.gps_entered);
+        fastestValue = addTile(inflater, statsBottom, R.string.fastest_laps);
+    }
+
+    private TextView addTile(LayoutInflater inflater, LinearLayout parent, int label) {
+        View tile = inflater.inflate(R.layout.item_team_results_summary, parent, false);
+
+        ((TextView) tile.findViewById(R.id.summary_label)).setText(label);
+
+        TextView value = tile.findViewById(R.id.summary_value);
+        value.setText(DASH);
+
+        parent.addView(tile, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        return value;
+    }
+
+    private String text(DataSnapshot snapshot) {
+        Object value = snapshot.getValue();
+
+        if (value == null) {
+            return DASH;
+        }
+
+        String result = String.valueOf(value).trim();
+
+        return result.isEmpty() ? DASH : result;
+    }
+
+    private int parseSeason(String season) {
+        try {
+            return Integer.parseInt(season.trim());
+        } catch (RuntimeException error) {
+            return LocalDate.now().getYear();
+        }
+    }
+
+    // ---------- team card (the look of the account page) ----------
 
     private void setupTeamCard(
             String teamId,
@@ -328,7 +317,7 @@ public class driverStatsFragment extends Fragment {
                         }
 
                         if (!snapshot.exists()) {
-                            // Историческая команда без записи в constructors: цвет из палитры, болид по id и году.
+                            // A past team without a record in constructors: palette colour, car by id and year.
                             applyTeamColor(pastTeamPalette.resolve(teamId, null));
                             loadTeamCar(teamId, lastSeason);
                             driversTeam_layout.setOnClickListener(null);
@@ -337,14 +326,8 @@ public class driverStatsFragment extends Fragment {
                             return;
                         }
 
-
-                        String actualTeamId = snapshot
-                                .child("constructorId")
-                                .getValue(String.class);
-
-                        String teamColor = snapshot
-                                .child("color")
-                                .getValue(String.class);
+                        String actualTeamId = snapshot.child("constructorId").getValue(String.class);
+                        String teamColor = snapshot.child("color").getValue(String.class);
 
                         if (actualTeamId == null) {
                             applyDefaultTeamCard();
@@ -364,25 +347,19 @@ public class driverStatsFragment extends Fragment {
                                 carSeason = current;
                             }
                         } catch (RuntimeException ignored) {
-                            // нет enterYear или currentSeason - остаётся lastSeason
+                            // no enterYear or currentSeason: lastSeason stays
                         }
 
                         loadTeamCar(actualTeamId, carSeason);
                     }
 
                     @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {
-
+                    public void onCancelled(@NonNull DatabaseError error) {
                         if (!isAdded()) {
                             return;
                         }
 
-                        Log.e(
-                                "DriverStats",
-                                "Failed to load team",
-                                error.toException()
-                        );
+                        Log.e("DriverStats", "Failed to load team", error.toException());
 
                         applyDefaultTeamCard();
                     }
@@ -390,17 +367,10 @@ public class driverStatsFragment extends Fragment {
     }
 
     private void loadTeamCar(String teamId, int season) {
-        String imagePath =
-                "teams/"
-                        + teamId.toLowerCase()
-                        + "_"
-                        + season
-                        + ".png";
+        String imagePath = "teams/" + teamId.toLowerCase() + "_" + season + ".png";
 
         StorageReference teamCarReference =
-                FirebaseStorage.getInstance()
-                        .getReference()
-                        .child(imagePath);
+                FirebaseStorage.getInstance().getReference().child(imagePath);
 
         teamCarReference.getDownloadUrl()
                 .addOnSuccessListener(uri -> {
@@ -410,13 +380,8 @@ public class driverStatsFragment extends Fragment {
 
                     GlideApp.with(requireContext())
                             .load(uri)
-                            .transition(
-                                    DrawableTransitionOptions
-                                            .withCrossFade()
-                            )
-                            .diskCacheStrategy(
-                                    DiskCacheStrategy.ALL
-                            )
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .error(R.drawable.placeholder_car)
                             .into(teamCar_image);
                 })
@@ -425,15 +390,9 @@ public class driverStatsFragment extends Fragment {
                         return;
                     }
 
-                    Log.w(
-                            "DriverStats",
-                            "Team car not found: " + imagePath,
-                            error
-                    );
+                    Log.w("DriverStats", "Team car not found: " + imagePath, error);
 
-                    teamCar_image.setImageResource(
-                            R.drawable.placeholder_car
-                    );
+                    teamCar_image.setImageResource(R.drawable.placeholder_car);
                 });
     }
 
@@ -450,54 +409,40 @@ public class driverStatsFragment extends Fragment {
         }
 
         try {
-            int parsedColor =
-                    Color.parseColor(preparedColor);
-
-            team_layout.setBackground(
-                    createTeamCardBackground(parsedColor, 12)
-            );
-
-            driverInfo_layout.setBackground(
-                    createTeamCardBackground(parsedColor, 15)
-            );
-
-            arrow.setColorFilter(parsedColor);
+            paintTeamCard(Color.parseColor(preparedColor));
         } catch (IllegalArgumentException error) {
-            Log.w(
-                    "DriverStats",
-                    "Invalid team color: " + colorValue,
-                    error
-            );
+            Log.w("DriverStats", "Invalid team color: " + colorValue, error);
 
             applyDefaultTeamCard();
         }
     }
 
-    private GradientDrawable createTeamCardBackground(
-            int strokeColor,
-            int strokeWidthPx) {
+    /** Outline in the team colour and a softly tinted photo block, as on the account page. */
+    private void paintTeamCard(int color) {
+        float density = getResources().getDisplayMetrics().density;
 
         GradientDrawable background = new GradientDrawable();
+        background.setColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
+        background.setCornerRadius(16 * density);
+        background.setStroke(Math.round(2 * density), color);
 
-        background.setColor(
-                ContextCompat.getColor(
-                        requireContext(),
-                        R.color.white
-                )
-        );
+        driversTeam_layout.setBackground(background);
 
-        background.setCornerRadii(
-                new float[]{
-                        0, 0,
-                        30, 30,
-                        0, 0,
-                        0, 0
-                }
-        );
+        int soft = ColorUtils.compositeColors(
+                ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
 
-        background.setStroke(strokeWidthPx, strokeColor);
+        ViewCompat.setBackgroundTintList(teamPhotoBlock, ColorStateList.valueOf(soft));
 
-        return background;
+        arrow.setColorFilter(color);
+
+        if (seasonsSection != null) {
+            seasonsSection.setDefaultColor(color);
+        }
+    }
+
+    private void applyDefaultTeamCard() {
+        paintTeamCard(ContextCompat.getColor(requireContext(), R.color.grey));
+        teamCar_image.setImageResource(R.drawable.placeholder_car);
     }
 
     private void openTeamPage(
@@ -514,48 +459,29 @@ public class driverStatsFragment extends Fragment {
                 .child(teamId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(
-                            @NonNull DataSnapshot snapshot) {
-
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (!isAdded()) {
                             return;
                         }
 
-                        ArrayList<String> teamDrivers =
-                                new ArrayList<>();
+                        ArrayList<String> teamDrivers = new ArrayList<>();
 
-                        DataSnapshot driversSnapshot =
-                                snapshot.child("drivers");
-
-                        for (DataSnapshot driverSnapshot :
-                                driversSnapshot.getChildren()) {
-
-                            String teamDriverName =
-                                    driverSnapshot.getKey();
+                        for (DataSnapshot driverSnapshot : snapshot.child("drivers").getChildren()) {
+                            String teamDriverName = driverSnapshot.getKey();
 
                             if (teamDriverName != null) {
                                 teamDrivers.add(teamDriverName);
                             }
                         }
 
-                        Intent intent = new Intent(
-                                requireContext(),
-                                teamPageActivity.class
-                        );
+                        Intent intent = new Intent(requireContext(), teamPageActivity.class);
 
                         Bundle bundle = new Bundle();
 
                         bundle.putString("teamName", driverTeam);
                         bundle.putString("teamId", teamId);
-                        bundle.putStringArrayList(
-                                "teamDrivers",
-                                teamDrivers
-                        );
-
-                        bundle.putString(
-                                "currentSeason",
-                                currentSeason
-                        );
+                        bundle.putStringArrayList("teamDrivers", teamDrivers);
+                        bundle.putString("currentSeason", currentSeason);
 
                         intent.putExtras(bundle);
 
@@ -563,42 +489,17 @@ public class driverStatsFragment extends Fragment {
                     }
 
                     @Override
-                    public void onCancelled(
-                            @NonNull DatabaseError error) {
-
+                    public void onCancelled(@NonNull DatabaseError error) {
                         if (!isAdded()) {
                             return;
                         }
 
-                        Log.e(
-                                "DriverStats",
-                                "Failed to load team lineup",
-                                error.toException()
-                        );
+                        Log.e("DriverStats", "Failed to load team lineup", error.toException());
                     }
                 });
     }
 
-    private void applyDefaultTeamCard() {
-        int defaultColor = ContextCompat.getColor(
-                requireContext(),
-                R.color.grey
-        );
-
-        team_layout.setBackground(
-                createTeamCardBackground(defaultColor, 12)
-        );
-
-        driverInfo_layout.setBackground(
-                createTeamCardBackground(defaultColor, 15)
-        );
-
-        arrow.setColorFilter(defaultColor);
-        teamCar_image.setImageResource(
-                R.drawable.placeholder_car
-        );
-    }
-
+    // ---------- helpers ----------
 
     public static int calculateAge(LocalDate birthdate, LocalDate currentDate) {
         Period period = Period.between(birthdate, currentDate);
@@ -660,162 +561,88 @@ public class driverStatsFragment extends Fragment {
         String countryCode = getCountryCode(countryName);
 
         if (countryCode == null || countryCode.trim().isEmpty()) {
+            driverCountry.setText(countryName);
+            flag.setVisibility(View.GONE);
             return;
         }
 
-        Locale countryLocale = new Locale(
-                Locale.getDefault().getLanguage(),
-                countryCode
-        );
+        Locale countryLocale = new Locale(Locale.getDefault().getLanguage(), countryCode);
 
-        driverCountry.setText(
-                countryLocale.getDisplayCountry()
-        );
+        driverCountry.setText(countryLocale.getDisplayCountry());
 
         World.init(requireContext());
-        flag.setImageResource(
-                World.getFlagOf(countryCode)
-        );
+        flag.setImageResource(World.getFlagOf(countryCode));
+        flag.setVisibility(View.VISIBLE);
     }
 
-    private void setupBirthdate(
-            String birthdateValue,
-            String deathDateValueFromDb) {
-
+    private void setupBirthdate(String birthdateValue, String deathDateValueFromDb) {
         deathDateLayout.setVisibility(View.GONE);
         deathdate.setText("");
-        driverAge.setText("");
 
-        birthdate.setText(
-                birthdateValue != null ? birthdateValue : "—"
-        );
-
-        if (birthdateValue == null
-                || birthdateValue.trim().isEmpty()) {
+        if (birthdateValue == null || birthdateValue.trim().isEmpty()) {
+            birthdate.setText(DASH);
             return;
         }
 
+        String birthText = birthdateValue.trim();
+
         try {
-            LocalDate born = LocalDate.parse(
-                    birthdateValue.trim(),
-                    DateTimeFormatter.ISO_LOCAL_DATE
-            );
+            LocalDate born = LocalDate.parse(birthText, DateTimeFormatter.ISO_LOCAL_DATE);
 
             LocalDate today = LocalDate.now();
             LocalDate ageEndDate = today;
 
             if (born.isAfter(today)) {
-                throw new IllegalArgumentException(
-                        "Birthdate is in the future"
-                );
+                throw new IllegalArgumentException("Birthdate is in the future");
             }
 
-            boolean hasDeathDate =
-                    deathDateValueFromDb != null
-                            && !deathDateValueFromDb.trim().isEmpty();
+            boolean hasDeathDate = deathDateValueFromDb != null
+                    && !deathDateValueFromDb.trim().isEmpty();
 
             if (hasDeathDate) {
                 LocalDate died = LocalDate.parse(
-                        deathDateValueFromDb.trim(),
-                        DateTimeFormatter.ISO_LOCAL_DATE
-                );
+                        deathDateValueFromDb.trim(), DateTimeFormatter.ISO_LOCAL_DATE);
 
                 if (died.isBefore(born) || died.isAfter(today)) {
-                    throw new IllegalArgumentException(
-                            "Invalid death date"
-                    );
+                    throw new IllegalArgumentException("Invalid death date");
                 }
 
                 ageEndDate = died;
 
-                deathdate.setText(
-                        died.format(DateTimeFormatter.ISO_LOCAL_DATE)
-                );
-
+                deathdate.setText(died.format(DateTimeFormatter.ISO_LOCAL_DATE));
                 deathDateLayout.setVisibility(View.VISIBLE);
             }
 
             int age = Period.between(born, ageEndDate).getYears();
 
-            driverAge.setText(formatAge(age));
+            birthdate.setText(birthText + formatAge(age));
 
-        } catch (java.time.format.DateTimeParseException
-                 | IllegalArgumentException error) {
+        } catch (java.time.format.DateTimeParseException | IllegalArgumentException error) {
+            Log.e("DriverStats", "Invalid life dates: birth=" + birthdateValue
+                    + ", death=" + deathDateValueFromDb, error);
 
-            Log.e(
-                    "DriverStats",
-                    "Invalid life dates: birth="
-                            + birthdateValue
-                            + ", death="
-                            + deathDateValueFromDb,
-                    error
-            );
-
-            // При ошибочной дате не показываем выдуманный возраст.
-            driverAge.setText("");
+            // With a wrong date no invented age is shown.
+            birthdate.setText(birthText);
             deathDateLayout.setVisibility(View.GONE);
         }
     }
 
     private String formatAge(int age) {
         if (!Locale.getDefault().getLanguage().equals("ru")) {
-            return " (" + age + " "
-                    + getString(R.string.age_text) + ")";
+            return " (" + age + " " + getString(R.string.age_text) + ")";
         }
 
         int lastDigit = age % 10;
 
         if (lastDigit == 1 && age % 100 != 11) {
-            return " (" + age + " "
-                    + getString(R.string.age_text) + ")";
+            return " (" + age + " " + getString(R.string.age_text) + ")";
         }
 
-        if (lastDigit >= 2
-                && lastDigit <= 4
-                && (age % 100 < 12 || age % 100 > 14)) {
-
-            return " (" + age + " "
-                    + getString(R.string.age_text) + "a)";
+        if (lastDigit >= 2 && lastDigit <= 4 && (age % 100 < 12 || age % 100 > 14)) {
+            return " (" + age + " " + getString(R.string.age_text) + "a)";
         }
 
-        return " (" + age + " "
-                + getString(R.string.age_alt_text) + ")";
-    }
-
-    private void setupChampionships(String championshipsValue) {
-        championships.setText(championshipsValue);
-
-        if (!Locale.getDefault().getLanguage().equals("ru")) {
-            return;
-        }
-
-        try {
-            int championshipsCount = Integer.parseInt(championshipsValue);
-            int lastDigit = championshipsCount % 10;
-
-            String suffix;
-
-            if (lastDigit == 1 && championshipsCount % 100 != 11) {
-                suffix = getString(R.string.times);
-            } else if (lastDigit >= 2
-                    && lastDigit <= 4
-                    && (championshipsCount % 100 < 12
-                    || championshipsCount % 100 > 14)) {
-
-                suffix = getString(R.string.times) + "a";
-            } else {
-                suffix = getString(R.string.times);
-            }
-
-            championshipsText.setText(suffix);
-        } catch (NumberFormatException error) {
-            Log.e(
-                    "DriverStats",
-                    "Invalid championships count: "
-                            + championshipsValue,
-                    error
-            );
-        }
+        return " (" + age + " " + getString(R.string.age_alt_text) + ")";
     }
 
     public static String getCountryCode(String countryName) {

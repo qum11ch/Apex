@@ -2,6 +2,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/standings_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -46,105 +47,107 @@
             android:layout_height="48dp" />
 
     </LinearLayout>
-
-    <!-- Season buttons: same item_season_toggle the driver and team pages use -->
-    <HorizontalScrollView
-        android:id="@+id/seasonScroll"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        
-        android:background="@color/colorPrimary"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingStart="5dp"
-        android:paddingTop="10dp"
-        android:paddingEnd="5dp"
-        android:paddingBottom="6dp"
-        android:scrollbars="none">
-        <LinearLayout
-            android:id="@+id/seasonButtonsLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" />
-    </HorizontalScrollView>
-
-    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/swipe_layout"
-        style="@style/BackgroundGradient"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <RelativeLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        style="@style/BackgroundGradient">
+        <HorizontalScrollView
+            android:id="@+id/seasonScroll"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingStart="0dp"
-            android:paddingEnd="10dp">
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingStart="5dp"
+            android:paddingTop="10dp"
+            android:paddingEnd="5dp"
+            android:paddingBottom="6dp"
+            android:scrollbars="none">
+            <LinearLayout
+                android:id="@+id/seasonButtonsLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+        </HorizontalScrollView>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerview_currentDrivers"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            tools:ignore="NestedWeights">
+
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:visibility="gone"
-                android:clipToPadding="false"
-                android:paddingTop="10dp"
-                android:paddingBottom="16dp"
-                android:overScrollMode="never"
-                android:scrollbars="none" />
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp">
 
-            <com.facebook.shimmer.ShimmerFrameLayout
-                android:id="@+id/shimmer_layout"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="visible"
-                app:duration="1500">
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerview_currentDrivers"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone"
+                    android:clipToPadding="false"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="16dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none" />
+
+                <com.facebook.shimmer.ShimmerFrameLayout
+                    android:id="@+id/shimmer_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible"
+                    app:duration="1500">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+                        <include layout="@layout/shimmer_driver_standings" />
+
+                    </LinearLayout>
+
+                </com.facebook.shimmer.ShimmerFrameLayout>
 
                 <LinearLayout
+                    android:id="@+id/state_container"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <include layout="@layout/shimmer_driver_standings" />
-                    <include layout="@layout/shimmer_driver_standings" />
-                    <include layout="@layout/shimmer_driver_standings" />
-                    <include layout="@layout/shimmer_driver_standings" />
-                    <include layout="@layout/shimmer_driver_standings" />
-                    <include layout="@layout/shimmer_driver_standings" />
-
+                    android:layout_marginTop="48dp"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:visibility="gone"
+                    >
+                    <TextView
+                        android:id="@+id/state_message"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+                        android:textColor="@color/text_color_main"
+                        android:textSize="16sp" />
+                    <Button
+                        android:id="@+id/state_retry"
+                        style="@style/ButtonStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:minWidth="160dp"
+                        android:text="@string/ps_retry" />
                 </LinearLayout>
 
-            </com.facebook.shimmer.ShimmerFrameLayout>
+            </RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/state_container"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="48dp"
-                android:gravity="center_horizontal"
-                android:orientation="vertical"
-                android:padding="24dp"
-                android:visibility="gone"
-                >
-                <TextView
-                    android:id="@+id/state_message"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
-                    android:textColor="@color/text_color_main"
-                    android:textSize="16sp" />
-                <Button
-                    android:id="@+id/state_retry"
-                    style="@style/ButtonStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:minWidth="160dp"
-                    android:text="@string/ps_retry" />
-            </LinearLayout>
-
-        </RelativeLayout>
-
-    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+    </LinearLayout>
 </LinearLayout>

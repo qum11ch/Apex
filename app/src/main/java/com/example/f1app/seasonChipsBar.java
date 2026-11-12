@@ -5,11 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
-import android.widget.ToggleButton;
+import android.widget.TextView;
+
+import androidx.core.content.ContextCompat;
 
 import java.util.List;
 
-/** A row of season buttons built from the same item_season_toggle that the driver and team pages use. */
 final class seasonChipsBar {
 
     interface Listener {
@@ -25,28 +26,32 @@ final class seasonChipsBar {
         this.scroll = scroll;
         this.row = row;
         this.listener = listener;
+
+        // the track under the pills and the page margins are set here, so the three layouts stay as they are
+        row.setBackgroundResource(R.drawable.bg_public_segment_track);
+        row.setPadding(dp(4), dp(4), dp(4), dp(4));
+
+        scroll.setClipToPadding(false);
+        scroll.setPadding(dp(12), dp(10), dp(12), dp(8));
     }
 
     int getSelected() {
         return selected;
     }
 
-    /** Builds the buttons and marks one of them; does not call the listener. */
+    /** Builds the pills and marks one of them; does not call the listener. */
     void setSeasons(List<Integer> seasons, int selectedSeason) {
         Context context = row.getContext();
         row.removeAllViews();
 
         for (int season : seasons) {
-            ToggleButton button = (ToggleButton) LayoutInflater.from(context)
-                    .inflate(R.layout.item_season_toggle, row, false);
+            TextView pill = (TextView) LayoutInflater.from(context)
+                    .inflate(R.layout.item_public_profile_segment, row, false);
 
-            String text = String.valueOf(season);
-            button.setTextOn(text);
-            button.setTextOff(text);
-            button.setText(text);
-            button.setTag(season);
-            button.setOnClickListener(view -> onClick((ToggleButton) view));
-            row.addView(button);
+            pill.setText(String.valueOf(season));
+            pill.setTag(season);
+            pill.setOnClickListener(view -> onClick((TextView) view));
+            row.addView(pill);
         }
 
         select(selectedSeason);
@@ -56,28 +61,33 @@ final class seasonChipsBar {
     void select(int season) {
         selected = season;
 
+        Context context = row.getContext();
+        int selectedColor = ContextCompat.getColor(context, R.color.text_color_main);
+        int idleColor = ContextCompat.getColor(context, R.color.grey);
+
         for (int index = 0; index < row.getChildCount(); index++) {
             View child = row.getChildAt(index);
 
-            if (!(child instanceof ToggleButton)) {
+            if (!(child instanceof TextView) || child.getTag() == null) {
                 continue;
             }
 
-            ToggleButton button = (ToggleButton) child;
-            boolean isSelected = ((Integer) button.getTag()) == season;
-            button.setChecked(isSelected);
+            TextView pill = (TextView) child;
+            boolean isSelected = ((Integer) pill.getTag()) == season;
+
+            pill.setSelected(isSelected);
+            pill.setTextColor(isSelected ? selectedColor : idleColor);
 
             if (isSelected) {
-                scroll.post(() -> scroll.smoothScrollTo(Math.max(0, button.getLeft() - dp(16)), 0));
+                scroll.post(() -> scroll.smoothScrollTo(Math.max(0, pill.getLeft() - dp(16)), 0));
             }
         }
     }
 
-    private void onClick(ToggleButton button) {
-        int clicked = (Integer) button.getTag();
+    private void onClick(TextView pill) {
+        int clicked = (Integer) pill.getTag();
 
         if (clicked == selected) {
-            button.setChecked(true); // a toggle must not switch itself off
             return;
         }
 
