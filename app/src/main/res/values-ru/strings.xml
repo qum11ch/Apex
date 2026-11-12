@@ -1088,4 +1088,12 @@
     <string name="ps_retry">Повторить</string>
     <string name="ps_profile_unavailable">Профиль этого пилота пока недоступен</string>
     <string name="ps_team_unavailable">Страница этой команды пока недоступна</string>
+
+    <string name="ps_search_hint">Поиск гран-при</string>
+    <string name="ps_nothing_found">Ничего не найдено</string>
+    <string name="ps_clear_search">Очистить поиск</string>
+    <string name="ps_view_as_tiles">Показать плитками</string>
+    <string name="ps_view_as_list">Показать списком</string>
+    <string name="ps_history_button">Результаты прошлых лет</string>
+    <string name="ps_history_subtitle">Результаты прошлых лет</string>
 </resources>

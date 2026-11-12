@@ -2,9 +2,15 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
 import android.widget.TextView;
@@ -17,36 +23,31 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
 /**
- * Race results of a past season. The newest past season opens first;
- * the season buttons under the header switch seasons without leaving the screen.
+ * Race results of a past season. The newest past season opens first; the season buttons switch
+ * seasons, the search field filters the races, the header button switches cards and tiles.
  */
-public class pastSeasonScheduleActivity extends AppCompatActivity {
+public class pastSeasonScheduleActivity extends AppCompatActivity implements pastRacesFragment.Host {
 
-    private static final String TAG = "pastSchedule";
     private static final String STATE_SEASON = "selectedSeason";
+    private static final String PREFS = "past_races_view";
+    private static final String KEY_MODE = "mode";
 
     private SwipeRefreshLayout swipeLayout;
-    private ViewPager2 viewPager;
     private TextView pageHeader;
-    private TextView emptyView;
-    private seasonChipsBar chips;
+    private EditText searchInput;
+    private View searchClear;
+    private ImageButton viewModeButton;
 
     private String mCurrentSeason;
     private int selectedSeason;
-    private int requestToken = 0;
+    private int viewMode = pastRacesAdapter.MODE_LIST;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -73,11 +74,60 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         selectedSeason = pastSeasons.initial(requested, first, last);
 
         pageHeader = findViewById(R.id.pageHeader);
-        viewPager = findViewById(R.id.viewPager2);
-        emptyView = findViewById(R.id.schedule_empty);
         swipeLayout = findViewById(R.id.swipe_layout);
+        searchInput = findViewById(R.id.search_input);
+        searchClear = findViewById(R.id.search_clear);
+        viewModeButton = findViewById(R.id.view_mode_button);
 
-        swipeLayout.setOnRefreshListener(this::loadSchedule);
+        SharedPreferences prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        viewMode = prefs.getInt(KEY_MODE, pastRacesAdapter.MODE_LIST);
+        updateModeButton();
+
+        viewModeButton.setOnClickListener(v -> {
+            viewMode = viewMode == pastRacesAdapter.MODE_LIST
+                    ? pastRacesAdapter.MODE_TILES
+                    : pastRacesAdapter.MODE_LIST;
+            prefs.edit().putInt(KEY_MODE, viewMode).apply();
+            updateModeButton();
+            notifyFragment();
+        });
+
+        searchInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                searchClear.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                notifyFragment();
+            }
+        });
+
+        searchInput.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                hideKeyboard();
+                return true;
+            }
+
+            return false;
+        });
+
+        searchClear.setOnClickListener(v -> searchInput.setText(""));
+
+        swipeLayout.setOnChildScrollUpCallback((parent, child) -> {
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.races_container);
+            return fragment instanceof pastRacesFragment && ((pastRacesFragment) fragment).canScrollUp();
+        });
+
+        swipeLayout.setOnRefreshListener(() -> {
+            swipeLayout.setRefreshing(false); // the list has its own loading skeleton
+            showSeason();
+        });
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
@@ -89,24 +139,23 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         HorizontalScrollView seasonScroll = findViewById(R.id.seasonScroll);
         List<Integer> seasons = pastSeasons.seasons(first, last);
 
-        chips = new seasonChipsBar(
+        seasonChipsBar chips = new seasonChipsBar(
                 seasonScroll,
                 findViewById(R.id.seasonButtonsLayout),
                 season -> {
                     selectedSeason = season;
-                    loadSchedule();
+                    showSeason();
                 }
         );
 
         if (seasons.isEmpty()) {
             seasonScroll.setVisibility(View.GONE);
             updateHeader();
-            showEmpty();
             return;
         }
 
         chips.setSeasons(seasons, selectedSeason);
-        loadSchedule();
+        showSeason();
     }
 
     @Override
@@ -115,10 +164,64 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         outState.putInt(STATE_SEASON, selectedSeason);
     }
 
+    // ---------- pastRacesFragment.Host ----------
+
     @Override
-    protected void onDestroy() {
-        requestToken++;
-        super.onDestroy();
+    public String currentQuery() {
+        return searchInput == null ? "" : searchInput.getText().toString();
+    }
+
+    @Override
+    public int currentViewMode() {
+        return viewMode;
+    }
+
+    // ---------- screen ----------
+
+    private void showSeason() {
+        updateHeader();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.races_container, pastRacesFragment.newInstance(String.valueOf(selectedSeason)))
+                .commitAllowingStateLoss();
+    }
+
+    private void notifyFragment() {
+        Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.races_container);
+
+        if (fragment instanceof pastRacesFragment) {
+            ((pastRacesFragment) fragment).applyFilters();
+        }
+    }
+
+    private void updateModeButton() {
+        boolean tiles = viewMode == pastRacesAdapter.MODE_TILES;
+        // The button shows what a tap switches to.
+        viewModeButton.setImageResource(tiles ? R.drawable.ic_view_mode_list : R.drawable.ic_view_mode_tiles);
+        viewModeButton.setContentDescription(getString(tiles ? R.string.ps_view_as_list : R.string.ps_view_as_tiles));
+    }
+
+    private void updateHeader() {
+        String headerText;
+
+        if (Locale.getDefault().getLanguage().equals("ru")) {
+            headerText = getString(R.string.past_season_result) + " " + selectedSeason;
+        } else {
+            headerText = selectedSeason + " " + getString(R.string.past_season_result);
+        }
+
+        pageHeader.setText(headerText);
+    }
+
+    private void hideKeyboard() {
+        InputMethodManager manager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+
+        if (manager != null) {
+            manager.hideSoftInputFromWindow(searchInput.getWindowToken(), 0);
+        }
+
+        searchInput.clearFocus();
     }
 
     private void setupPagerScreenInsets() {
@@ -159,104 +262,5 @@ public class pastSeasonScheduleActivity extends AppCompatActivity {
         });
 
         ViewCompat.requestApplyInsets(root);
-    }
-
-    private void updateHeader() {
-        String headerText;
-
-        if (Locale.getDefault().getLanguage().equals("ru")) {
-            headerText = getString(R.string.past_season_result) + " " + selectedSeason;
-        } else {
-            headerText = selectedSeason + " " + getString(R.string.past_season_result);
-        }
-
-        pageHeader.setText(headerText);
-    }
-
-    private void showEmpty() {
-        swipeLayout.setRefreshing(false);
-        viewPager.setAdapter(null);
-        viewPager.setVisibility(View.GONE);
-        emptyView.setText(R.string.ps_no_data);
-        emptyView.setVisibility(View.VISIBLE);
-    }
-
-    private void showError() {
-        swipeLayout.setRefreshing(false);
-        viewPager.setAdapter(null);
-        viewPager.setVisibility(View.GONE);
-        emptyView.setText(R.string.ps_load_error);
-        emptyView.setVisibility(View.VISIBLE);
-    }
-
-    private boolean isUnavailable() {
-        return isFinishing() || isDestroyed();
-    }
-
-    private void loadSchedule() {
-        final int token = ++requestToken;
-        final int season = selectedSeason;
-
-        updateHeader();
-        swipeLayout.setRefreshing(true);
-
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-        // One read instead of a listener that rebuilt the screen on every database change.
-        rootRef.child("schedule").child("season").child(String.valueOf(season))
-                .orderByChild("round")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (isUnavailable() || token != requestToken) {
-                        return;
-                    }
-
-                    if (!task.isSuccessful()) {
-                        Log.e(TAG, "Schedule request failed", task.getException());
-                        showError();
-                        return;
-                    }
-
-                    ArrayList<String> rounds = new ArrayList<>();
-
-                    for (DataSnapshot race : task.getResult().getChildren()) {
-                        Integer round = race.child("round").getValue(Integer.class);
-
-                        if (round != null) {
-                            rounds.add(String.valueOf(round));
-                        }
-                    }
-
-                    if (rounds.isEmpty()) {
-                        showEmpty();
-                        return;
-                    }
-
-                    Bundle arguments = new Bundle();
-                    arguments.putStringArrayList("raceRound", rounds);
-                    arguments.putString("season", String.valueOf(season));
-                    arguments.putString("parent", "pastSeasonSchedule");
-                    showRaces(arguments);
-                });
-    }
-
-    private void showRaces(Bundle arguments) {
-        swipeLayout.setRefreshing(false);
-        emptyView.setVisibility(View.GONE);
-        viewPager.setVisibility(View.VISIBLE);
-
-        viewPagerAdapter raceAdapter = new viewPagerAdapter(this);
-        concludedRaceFragment fragment = new concludedRaceFragment();
-        fragment.setArguments(arguments);
-        raceAdapter.addFragment(fragment);
-
-        viewPager.setAdapter(null); // drop the previous season's fragment before a new one is attached
-        viewPager.setAdapter(raceAdapter);
-
-        View child = viewPager.getChildAt(0);
-
-        if (child instanceof RecyclerView) {
-            child.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        }
     }
 }

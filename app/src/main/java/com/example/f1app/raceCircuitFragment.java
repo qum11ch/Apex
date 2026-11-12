@@ -74,11 +74,9 @@ public class raceCircuitFragment extends Fragment {
         ImageView circuitImage = view.findViewById(R.id.circuitImage);
         circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
         ImageView flag = view.findViewById(R.id.flag);
-        Button raceResults_2025 = view.findViewById(R.id.raceResults_2025);
-        Button raceResults_2024 = view.findViewById(R.id.raceResults_2024);
+        Button raceResults = view.findViewById(R.id.raceResults_history);
         contentLayout = view.findViewById(R.id.content_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
-        resultsLine = view.findViewById(R.id.resultsLine);
 
         shimmerFrameLayout.startShimmer();
 
@@ -92,27 +90,7 @@ public class raceCircuitFragment extends Fragment {
             String futureRaceName = requireContext().getString(getStringByName(localeRaceName + "_text")) + " " + mYear;
             raceName.setText(futureRaceName);
 
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
-            switch (mYear){
-                case "2024":
-                    raceResults_2024.setVisibility(View.GONE);
-                    raceResults_2025.setVisibility(View.GONE);
-                    resultsLine.setVisibility(View.GONE);
-                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
-                    circuitInfoLayout.setLayoutParams(params);
-                    break;
-                case "2025":
-                    checkPrevSeason("2024", mRaceName, mCircuitId, mYear, raceResults_2024);
-                    raceResults_2025.setVisibility(View.GONE);
-                    resultsLine.setVisibility(View.GONE);
-                    params.bottomMargin = (int) (20 * getResources().getDisplayMetrics().density);
-                    circuitInfoLayout.setLayoutParams(params);
-                    break;
-                default:
-                    checkPrevSeason("2024", mRaceName, mCircuitId, mYear, raceResults_2024);
-                    checkPrevSeason("2025", mRaceName, mCircuitId, mYear, raceResults_2025);
-                    break;
-            }
+            setupResultsHistory(raceResults, mRaceName, mCircuitId, mYear);
 
             FirebaseStorage storage = FirebaseStorage.getInstance();
             StorageReference storageRef = storage.getReference();
@@ -172,6 +150,30 @@ public class raceCircuitFragment extends Fragment {
             });
         }
 
+    }
+
+    private void setupResultsHistory(Button button, String raceName, String circuitId, String gpYear) {
+        // Until earlier results are found the button stays hidden and the info block keeps its usual bottom gap.
+        setCircuitInfoBottomMargin(20);
+        button.setVisibility(View.GONE);
+
+        raceHistory.load(raceName, gpYear, entries -> {
+            if (!isAdded() || entries.isEmpty()) {
+                return;
+            }
+
+            button.setText(getString(R.string.ps_history_button) + " \u00b7 " + entries.size());
+            button.setVisibility(View.VISIBLE);
+            setCircuitInfoBottomMargin(0);
+            button.setOnClickListener(v ->
+                    raceResultsSheet.show(getParentFragmentManager(), raceName, circuitId, entries));
+        });
+    }
+
+    private void setCircuitInfoBottomMargin(int dp) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) circuitInfoLayout.getLayoutParams();
+        params.bottomMargin = (int) (dp * getResources().getDisplayMetrics().density);
+        circuitInfoLayout.setLayoutParams(params);
     }
 
     private void checkPrevSeason(String season, String mRaceName, String circuitId,

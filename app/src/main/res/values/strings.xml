@@ -1109,4 +1109,12 @@
     <string name="ps_retry">Retry</string>
     <string name="ps_profile_unavailable">This driver\u2019s profile is not available yet</string>
     <string name="ps_team_unavailable">This team\u2019s page is not available yet</string>
+
+    <string name="ps_search_hint">Search Grand Prix</string>
+    <string name="ps_nothing_found">Nothing found</string>
+    <string name="ps_clear_search">Clear search</string>
+    <string name="ps_view_as_tiles">Show as tiles</string>
+    <string name="ps_view_as_list">Show as list</string>
+    <string name="ps_history_button">Past results</string>
+    <string name="ps_history_subtitle">Past results</string>
 </resources>

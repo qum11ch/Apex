@@ -41,9 +41,16 @@
             android:textColor="@color/white"
             android:textSize="22sp" />
 
-        <Space
+        <!-- Takes the place of the 48dp spacer, so the title stays centred. -->
+        <ImageButton
+            android:id="@+id/view_mode_button"
             android:layout_width="48dp"
-            android:layout_height="48dp" />
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/ps_view_as_tiles"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_view_mode_tiles" />
 
     </LinearLayout>
 
@@ -68,37 +75,77 @@
             android:orientation="horizontal" />
     </HorizontalScrollView>
 
+    <LinearLayout
+        android:id="@+id/search_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/seasonScroll"
+        android:background="@color/colorPrimary"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="10dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="10dp"
+        android:paddingBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/bg_search_field"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:importantForAccessibility="no"
+                android:src="@drawable/ic_search_small"
+                android:tint="@color/text_color_secondary" />
+
+            <EditText
+                android:id="@+id/search_input"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="@string/ps_search_hint"
+                android:imeOptions="actionSearch"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:textColor="@color/text_color_main"
+                android:textColorHint="@color/text_color_secondary"
+                android:textSize="15sp" />
+
+            <ImageButton
+                android:id="@+id/search_clear"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/ps_clear_search"
+                android:padding="11dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_close_small"
+                android:tint="@color/text_color_secondary"
+                android:visibility="gone" />
+        </LinearLayout>
+    </LinearLayout>
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe_layout"
         style="@style/BackgroundGradient"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/seasonScroll"
+        android:layout_below="@id/search_row"
         android:layout_alignParentBottom="true">
 
         <FrameLayout
+            android:id="@+id/races_container"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <androidx.viewpager2.widget.ViewPager2
-                android:id="@+id/viewPager2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-
-            <TextView
-                android:id="@+id/schedule_empty"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                android:layout_marginTop="48dp"
-                android:gravity="center"
-                android:padding="24dp"
-                android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
-                android:textColor="@color/text_color_main"
-                android:textSize="16sp"
-                android:visibility="gone" />
-
-        </FrameLayout>
+            android:layout_height="match_parent" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

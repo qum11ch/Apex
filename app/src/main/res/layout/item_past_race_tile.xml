@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tile_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingStart="5dp"
+    android:paddingEnd="5dp"
+    android:paddingBottom="10dp">
+
+    <LinearLayout
+        android:id="@+id/tile_card"
+        style="@style/ItemStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="14dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tile_round"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textColor="@color/round_color"
+                android:textSize="11sp"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPTS" />
+            <TextView
+                android:id="@+id/tile_dates"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textAllCaps="true"
+                android:textColor="@color/text_color_secondary"
+                android:textSize="11sp"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPTS" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tile_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="3dp"
+            android:maxLines="2"
+            android:minLines="2"
+            android:textSize="15sp"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+
+        <TextView
+            android:id="@+id/tile_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="12sp"
+            android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/separator_header" />
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:minHeight="34dp">
+            <LinearLayout
+                android:id="@+id/tile_podium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:weightSum="3">
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/one"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                    <TextView
+                        android:id="@+id/tile_code_first"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAllCaps="true"
+                        android:textSize="14sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/two"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                    <TextView
+                        android:id="@+id/tile_code_second"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAllCaps="true"
+                        android:textSize="14sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/three"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                    <TextView
+                        android:id="@+id/tile_code_third"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAllCaps="true"
+                        android:textSize="14sp"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
+                </LinearLayout>
+            </LinearLayout>
+            <TextView
+                android:id="@+id/tile_canceled"
+                style="@style/PtsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:backgroundTint="@color/orange"
+                android:paddingStart="5dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="2dp"
+                android:text="@string/canceled_text"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                android:textColor="@color/white"
+                android:visibility="gone" />
+        </FrameLayout>
+
+    </LinearLayout>
+</FrameLayout>

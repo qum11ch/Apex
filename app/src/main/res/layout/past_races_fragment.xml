@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerview_pastRaces"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingTop="10dp"
+        android:visibility="gone" />
+
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="10dp"
+        android:paddingEnd="10dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include layout="@layout/shimmer_concluded_race" />
+            <include layout="@layout/shimmer_concluded_race" />
+            <include layout="@layout/shimmer_concluded_race" />
+            <include layout="@layout/shimmer_concluded_race" />
+            <include layout="@layout/shimmer_concluded_race" />
+
+        </LinearLayout>
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <TextView
+        android:id="@+id/races_message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|center_horizontal"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:padding="24dp"
+        android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
+        android:textColor="@color/text_color_main"
+        android:textSize="16sp"
+        android:visibility="gone" />
+
+</FrameLayout>
