@@ -277,6 +277,8 @@
     <string name="lost_connection_info">Проверьте ваше интернет-соединение и попытайтесь снова</string>
     <string name="try_again_button">Попытаться снова</string>
     <string name="not_concluded">Гран-При не завершилось (Н/З)</string>
+    <string name="pole">Поул</string>
+    <string name="not_concluded_text">Н/З</string>
     <string name="is_running">идет</string>
     <string name="last_update_text">Обновлено:</string>
 
@@ -1104,4 +1106,11 @@
     <string name="public_stats_share">%1$d%% решённых</string>
 
     <string name="team_results_races_caption">Гонок: %1$d</string>
+    <string name="team_results_legend_title">Обозначения</string>
+
+    <string name="team_results_from_pole">C поула</string>
+    <string name="team_results_retirements">Сходы</string>
+
+    <string name="team_results_points">Очки</string>
+    <string name="team_results_standing">Место в зачёте</string>
 </resources>

@@ -3,6 +3,7 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -18,10 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Results table for any number of drivers (replaces teamDriversResultsAdapter and
- * teamTripleDriversResultsAdapter). Every cell gets its own background, so colours never leak between cells.
- */
 public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.Holder> {
 
     private final Context context;
@@ -61,6 +58,14 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
         teamRaceRow row = rows.get(position);
 
         holder.raceName.setText(localizedRaceName(row.raceName));
+
+        if (row.round > 0) {
+            holder.roundText.setText(context.getString(R.string.round) + " " + row.round);
+            holder.roundText.setVisibility(View.VISIBLE);
+        } else {
+            holder.roundText.setVisibility(View.GONE);
+        }
+
         holder.bottomLine.setVisibility(position == rows.size() - 1 ? View.GONE : View.VISIBLE);
 
         for (int i = 0; i < driverCount; i++) {
@@ -84,33 +89,35 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
         String code = rawCode == null ? "null" : rawCode.trim();
 
         int fill = color(R.color.light_grey);
-        int stroke = color(R.color.grey);
         int textColor = color(R.color.dark_grey);
         String text = "-";
         boolean pole = false;
+        boolean outlined = false;
+        boolean empty = false;
 
         switch (code) {
             case "CND":
                 fill = color(R.color.orange);
-                stroke = fill;
                 textColor = color(R.color.white);
                 text = context.getString(R.string.cnd_text);
                 break;
             case "NP":
                 fill = color(R.color.white);
+                outlined = true;
                 text = context.getString(R.string.dns_text);
                 break;
             case "N/C":
                 text = context.getString(R.string.n_c_text);
                 break;
             case "null":
-                stroke = fill;
+                // the driver did not race for this team: a quiet dash instead of a grey block
+                empty = true;
                 break;
             default:
                 String[] parts = code.split("-");
 
                 if (parts.length != 2) {
-                    stroke = fill;
+                    empty = true;
                     break;
                 }
 
@@ -143,8 +150,8 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
 
                             text = finish;
                             pole = "1".equals(start);
-                        } catch (NumberFormatException error) {
-                            stroke = fill;
+                        } catch (NumberFormatException ignored) {
+                            empty = true;
                         }
                         break;
                 }
@@ -152,14 +159,26 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
         }
 
         GradientDrawable background = new GradientDrawable();
-        background.setCornerRadius(dp(7));
-        background.setColor(fill);
-        background.setStroke(dp(1), stroke);
+        background.setCornerRadius(dp(9));
+
+        if (empty) {
+            background.setColor(Color.TRANSPARENT);
+            chip.setTextColor(color(R.color.grey));
+            chip.setText("\u2013");
+        } else {
+            background.setColor(fill);
+
+            if (pole) {
+                background.setStroke(dp(2), color(R.color.purple));
+            } else if (outlined) {
+                background.setStroke(dp(1), color(R.color.grey));
+            }
+
+            chip.setTextColor(textColor);
+            chip.setText(text);
+        }
 
         chip.setBackground(background);
-        chip.setText(text);
-        chip.setTextColor(pole ? color(R.color.purple) : textColor);
-        chip.getPaint().setFakeBoldText(pole);
     }
 
     private int color(int res) {
@@ -172,6 +191,7 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
     }
 
     static final class Holder extends RecyclerView.ViewHolder {
+        final TextView roundText;
         final TextView raceName;
         final LinearLayout cells;
         final View bottomLine;
@@ -179,6 +199,7 @@ public class teamResultsAdapter extends RecyclerView.Adapter<teamResultsAdapter.
 
         Holder(@NonNull View itemView) {
             super(itemView);
+            roundText = itemView.findViewById(R.id.round_text);
             raceName = itemView.findViewById(R.id.raceName);
             cells = itemView.findViewById(R.id.team_row_cells);
             bottomLine = itemView.findViewById(R.id.bottomLine);

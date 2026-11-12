@@ -10,9 +10,10 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="76dp">
+        android:layout_height="84dp">
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/shapeableStriped"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/background_striped_lines_white"
@@ -21,22 +22,24 @@
         <ImageView
             android:id="@+id/driver_photo"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/first_driver"
+            android:maxHeight="84dp"
             android:scaleType="fitCenter" />
     </FrameLayout>
 
     <TextView
         android:id="@+id/driver_family_name"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_height="22dp"
+        android:layout_marginTop="6dp"
         android:gravity="center"
         android:maxLines="1"
-        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
         android:textColor="@color/text_color_main"
-        android:textStyle="bold"
-        app:autoSizeMaxTextSize="16sp"
+        app:autoSizeMaxTextSize="15sp"
         app:autoSizeMinTextSize="9sp"
         app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform" />

@@ -28,6 +28,7 @@
     <string name="footer_account">Account</string>
     <string name="country">Country:</string>
     <string name="pole_position">Pole prediction</string>
+    <string name="pole">Pole</string>
     <string name="team">Team</string>
     <string name="save_race">Save Race</string>
     <string name="settings">Account Settings</string>
@@ -290,6 +291,7 @@
     <string name="lost_connection_info">Check your internet connection and try again</string>
     <string name="try_again_button">try again</string>
     <string name="not_concluded">GP not concluded (N/C)</string>
+    <string name="not_concluded_text">N/C</string>
     <string name="is_running">is running</string>
 
     <string name="change_text">Change</string>
@@ -1125,4 +1127,11 @@
     <string name="public_stats_share">%1$d%% of settled</string>
 
     <string name="team_results_races_caption">Races: %1$d</string>
+    <string name="team_results_legend_title">Legend</string>
+
+    <string name="team_results_from_pole">From pole</string>
+    <string name="team_results_retirements">Retirements</string>
+
+    <string name="team_results_points">Points</string>
+    <string name="team_results_standing">Standing</string>
 </resources>

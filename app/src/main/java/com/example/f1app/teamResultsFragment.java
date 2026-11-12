@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.checkLightTheme;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,7 +13,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,6 +23,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +32,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import android.graphics.drawable.GradientDrawable;
+import androidx.core.content.ContextCompat;
+import android.graphics.Color;
+import androidx.core.graphics.ColorUtils;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +44,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import java.util.Locale;
+
+
 public class teamResultsFragment extends Fragment {
+    private View accentLine;
+    private View summaryCard;
+    private LinearLayout summaryRow;
 
     private teamResultsAdapter resultsAdapter;
     private final List<teamRaceRow> rows = new ArrayList<>();
@@ -56,6 +76,11 @@ public class teamResultsFragment extends Fragment {
     private int selectedSeason = -1;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private Runnable hideShimmerRunnable;
+
+    private RequestQueue queue;
+    private LinearLayout summaryTop;
+    private TextView pointsValue;
+    private TextView positionValue;
 
     public teamResultsFragment() {
     }
@@ -84,6 +109,15 @@ public class teamResultsFragment extends Fragment {
         seasonButtonsLayout = view.findViewById(R.id.seasonButtonsLayout);
         recyclerView = view.findViewById(R.id.drivers_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        buildLegend(view);
+
+        accentLine = view.findViewById(R.id.line);
+        summaryCard = view.findViewById(R.id.summary_card);
+        summaryRow = view.findViewById(R.id.summary_row);
+        summaryTop = view.findViewById(R.id.summary_top);
+
+        buildSummary();
 
         if (getArguments() == null) {
             return;
@@ -116,6 +150,10 @@ public class teamResultsFragment extends Fragment {
                         Integer enterYear = snapshot
                                 .child("enterYear")
                                 .getValue(Integer.class);
+
+                        applyAccent(pastTeamPalette.resolve(
+                                teamId, snapshot.child("color").getValue(String.class)));
+
 
                         int earliestSeason = enterYear != null
                                 ? enterYear
@@ -235,21 +273,15 @@ public class teamResultsFragment extends Fragment {
         selectSeason(availableSeasons.get(0));
     }
 
-    private ToggleButton createSeasonButton(int season) {
-        ToggleButton seasonButton = (ToggleButton) LayoutInflater.from(requireContext())
-                .inflate(R.layout.item_season_toggle, seasonButtonsLayout, false);
+    private TextView createSeasonButton(int season) {
+        TextView button = (TextView) LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_public_profile_segment, seasonButtonsLayout, false);
 
-        String seasonText = String.valueOf(season);
+        button.setText(String.valueOf(season));
+        button.setTag(season);
+        button.setOnClickListener(view -> selectSeason((Integer) view.getTag()));
 
-        seasonButton.setTextOn(seasonText);
-        seasonButton.setTextOff(seasonText);
-        seasonButton.setChecked(false);
-        seasonButton.setText(seasonText);
-        seasonButton.setTag(season);
-
-        seasonButton.setOnClickListener(view -> selectSeason((Integer) view.getTag()));
-
-        return seasonButton;
+        return button;
     }
 
     private void selectSeason(int season) {
@@ -257,15 +289,20 @@ public class teamResultsFragment extends Fragment {
 
         selectedSeason = season;
 
+        int selectedColor = ContextCompat.getColor(requireContext(), R.color.text_color_main);
+        int idleColor = ContextCompat.getColor(requireContext(), R.color.grey);
+
         for (int index = 0; index < seasonButtonsLayout.getChildCount(); index++) {
             View child = seasonButtonsLayout.getChildAt(index);
 
-            if (!(child instanceof ToggleButton)) {
+            if (!(child instanceof TextView) || child.getTag() == null) {
                 continue;
             }
 
-            ToggleButton button = (ToggleButton) child;
-            button.setChecked((Integer) button.getTag() == season);
+            boolean selected = (Integer) child.getTag() == season;
+
+            child.setSelected(selected);
+            ((TextView) child).setTextColor(selected ? selectedColor : idleColor);
         }
 
         if (seasonChanged) {
@@ -273,8 +310,10 @@ public class teamResultsFragment extends Fragment {
         }
     }
 
+
     private void loadSeasonData(int season) {
         currentSeasonDrivers.clear();
+        summaryCard.setVisibility(View.GONE);
         raceCounts.clear();
         rows.clear();
         resultsAdapter = null;
@@ -339,6 +378,7 @@ public class teamResultsFragment extends Fragment {
                         });
 
                         showLoading();
+                        loadSeasonPoints(season);
 
                         ArrayList<String> seasonDrivers = new ArrayList<>(currentSeasonDrivers);
                         loadDriversInfo(seasonDrivers, season);
@@ -388,6 +428,16 @@ public class teamResultsFragment extends Fragment {
             TextView family = column.findViewById(R.id.driver_family_name);
             TextView caption = column.findViewById(R.id.driver_races_caption);
             ImageView photo = column.findViewById(R.id.driver_photo);
+
+            ShapeableImageView stripedImage = column.findViewById(R.id.shapeableStriped);
+
+            if (!checkLightTheme(getContext())){
+                stripedImage.setBackground(ContextCompat
+                        .getDrawable(getContext(), R.drawable.background_striped_lines_item_night));
+            }else{
+                stripedImage.setBackground(ContextCompat
+                        .getDrawable(getContext(), R.drawable.background_striped_lines_white));
+            }
 
             family.setText(driverFamilyName);
 
@@ -523,6 +573,8 @@ public class teamResultsFragment extends Fragment {
 
                                         buildRows(scheduleSnapshot, resultSnapshot, drivers);
 
+                                        updateSummary(rows);
+
                                         resultsAdapter = new teamResultsAdapter(
                                                 requireActivity(), rows, drivers.size());
 
@@ -558,7 +610,7 @@ public class teamResultsFragment extends Fragment {
                 });
     }
 
-    /** One row per race in schedule order; one code per driver in the header order. */
+
     private void buildRows(
             DataSnapshot scheduleSnapshot,
             DataSnapshot resultSnapshot,
@@ -571,15 +623,255 @@ public class teamResultsFragment extends Fragment {
                 continue;
             }
 
+            int round = 0;
+            Object roundValue = raceSnapshot.child("round").getValue();
+
+            if (roundValue != null) {
+                try {
+                    round = Integer.parseInt(String.valueOf(roundValue).trim());
+                } catch (NumberFormatException ignored) {
+                    // round stays 0 and the label is hidden
+                }
+            }
+
             ArrayList<String> codes = new ArrayList<>();
 
             for (String driver : drivers) {
                 codes.add(getDriverRaceResult(resultSnapshot, driver, raceName));
             }
 
-            rows.add(new teamRaceRow(raceName, codes));
+            rows.add(new teamRaceRow(raceName, round, codes));
         }
     }
+
+    private void buildLegend(View root) {
+        LinearLayout left = root.findViewById(R.id.legend_left);
+        LinearLayout right = root.findViewById(R.id.legend_right);
+
+        // 0 = без заливки ("не участвовал")
+        int[] fills = {
+                R.color.light_gold, R.color.light_silver, R.color.light_bronze,
+                R.color.light_green, R.color.light_purple, R.color.light_grey,
+                R.color.pink, R.color.white, R.color.black,
+                0, R.color.light_grey, R.color.orange
+        };
+
+        int[] labels = {
+                R.string._1st_place_header, R.string._2nd_place_header, R.string._3rd_place_header,
+                R.string.points_finish, R.string.out_of_points_finish, R.string.pole,
+                R.string.retired, R.string.dns, R.string.dsq,
+                R.string.wd, R.string.not_concluded, R.string.cnd
+        };
+
+        String[] samples = {
+                "1", "2", "3", "5", "15", "1",
+                "", "", "", "-", getString(R.string.n_c_text), ""
+        };
+
+        float density = getResources().getDisplayMetrics().density;
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        for (int i = 0; i < fills.length; i++) {
+            LinearLayout column = i < 6 ? left : right;
+            View entry = inflater.inflate(R.layout.item_results_legend_entry, column, false);
+
+            TextView swatch = entry.findViewById(R.id.legend_swatch);
+            TextView label = entry.findViewById(R.id.legend_label);
+
+            boolean pole = labels[i] == R.string.pole;
+            boolean empty = fills[i] == 0;
+
+            GradientDrawable background = new GradientDrawable();
+            background.setCornerRadius(6 * density);
+            background.setColor(empty
+                    ? Color.TRANSPARENT
+                    : ContextCompat.getColor(requireContext(), fills[i]));
+
+            if (pole) {
+                background.setStroke(Math.round(2 * density),
+                        ContextCompat.getColor(requireContext(), R.color.purple));
+            } else if (fills[i] == R.color.white) {
+                background.setStroke(Math.round(density),
+                        ContextCompat.getColor(requireContext(), R.color.grey));
+            }
+
+            swatch.setBackground(background);
+            swatch.setText(samples[i]);
+            swatch.setTextColor(ContextCompat.getColor(requireContext(),
+                    empty ? R.color.grey
+                            : (fills[i] == R.color.black || fills[i] == R.color.orange
+                            ? R.color.white : R.color.dark_grey)));
+
+            label.setText(labels[i]);
+
+            column.addView(entry);
+        }
+    }
+
+    private void applyAccent(String hex) {
+        try {
+            int color = Color.parseColor(hex);
+            accentLine.setBackgroundColor(ColorUtils.setAlphaComponent(color, 110));
+        } catch (IllegalArgumentException ignored) {
+            // keep the neutral separator
+        }
+    }
+
+    private void buildSummary() {
+        LayoutInflater inflater = LayoutInflater.from(requireContext());
+
+        View pointsTile = inflater.inflate(R.layout.item_team_results_summary, summaryTop, false);
+        ((TextView) pointsTile.findViewById(R.id.summary_label)).setText(R.string.team_results_points);
+        pointsValue = pointsTile.findViewById(R.id.summary_value);
+        summaryTop.addView(pointsTile, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        View positionTile = inflater.inflate(R.layout.item_team_results_summary, summaryTop, false);
+        ((TextView) positionTile.findViewById(R.id.summary_label)).setText(R.string.team_results_standing);
+        positionValue = positionTile.findViewById(R.id.summary_value);
+        summaryTop.addView(positionTile, new LinearLayout.LayoutParams(
+                0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        int[] labels = {
+                R.string.wins,
+                R.string.podiums,
+                R.string.poles,
+                R.string.team_results_retirements
+        };
+
+        for (int label : labels) {
+            View tile = inflater.inflate(R.layout.item_team_results_summary, summaryRow, false);
+
+            ((TextView) tile.findViewById(R.id.summary_label)).setText(label);
+
+            summaryRow.addView(tile, new LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        }
+    }
+
+
+
+    private void updateSummary(List<teamRaceRow> seasonRows) {
+        int wins = 0;
+        int podiums = 0;
+        int poles = 0;
+        int retirements = 0;
+
+        for (teamRaceRow row : seasonRows) {
+            for (String code : row.results) {
+                if (code == null) {
+                    continue;
+                }
+
+                String[] parts = code.split("-");
+
+                if (parts.length != 2) {
+                    continue;
+                }
+
+                if ("1".equals(parts[0])) {
+                    poles++;
+                }
+
+                switch (parts[1]) {
+                    case "R":
+                        retirements++;
+                        break;
+                    case "W":
+                    case "D":
+                        break;
+                    default:
+                        try {
+                            int position = Integer.parseInt(parts[1]);
+
+                            if (position == 1) wins++;
+                            if (position <= 3) podiums++;
+                        } catch (NumberFormatException ignored) {
+                            // not a finishing position
+                        }
+                        break;
+                }
+            }
+        }
+
+        int[] values = {wins, podiums, poles, retirements};
+
+        for (int i = 0; i < summaryRow.getChildCount() && i < values.length; i++) {
+            ((TextView) summaryRow.getChildAt(i).findViewById(R.id.summary_value))
+                    .setText(String.valueOf(values[i]));
+        }
+
+        summaryCard.setVisibility(seasonRows.isEmpty() ? View.GONE : View.VISIBLE);
+    }
+
+    private void loadSeasonPoints(int season) {
+        pointsValue.setText("\u2013");
+        positionValue.setText("\u2013");
+
+        if (queue == null) {
+            queue = Volley.newRequestQueue(requireContext().getApplicationContext());
+        }
+
+        String url = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
+
+        JsonObjectRequest request = new JsonObjectRequest(
+                Request.Method.GET,
+                url,
+                null,
+                response -> {
+                    if (!isAdded() || season != selectedSeason) {
+                        return;
+                    }
+
+                    try {
+                        JSONArray lists = response
+                                .getJSONObject("MRData")
+                                .getJSONObject("StandingsTable")
+                                .optJSONArray("StandingsLists");
+
+                        if (lists == null) {
+                            return;
+                        }
+
+                        String wanted = normalizeTeamId(teamId);
+
+                        for (int i = 0; i < lists.length(); i++) {
+                            JSONArray standings = lists.getJSONObject(i)
+                                    .optJSONArray("ConstructorStandings");
+
+                            if (standings == null) {
+                                continue;
+                            }
+
+                            for (int j = 0; j < standings.length(); j++) {
+                                JSONObject standing = standings.getJSONObject(j);
+                                JSONObject constructor = standing.optJSONObject("Constructor");
+
+                                if (constructor != null && wanted.equals(
+                                        normalizeTeamId(constructor.optString("constructorId")))) {
+
+                                    pointsValue.setText(standing.optString("points", "\u2013"));
+                                    positionValue.setText(standing.optString("positionText", "\u2013"));
+                                    return;
+                                }
+                            }
+                        }
+                    } catch (JSONException error) {
+                        Log.w("TeamResults", "Unexpected standings response", error);
+                    }
+                },
+                error -> Log.w("TeamResults", "Team points are not available", error)
+        );
+
+        request.setTag(this);
+        queue.add(request);
+    }
+
+    /** "red_bull" (API) and "redbull" (database) become the same id. */
+    private String normalizeTeamId(String id) {
+        return id == null ? "" : id.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9]", "");
+    }
+
 
     private String getDriverRaceResult(
             DataSnapshot resultSnapshot,
@@ -618,6 +910,10 @@ public class teamResultsFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        if (queue != null) {
+            queue.cancelAll(this);
+        }
 
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);

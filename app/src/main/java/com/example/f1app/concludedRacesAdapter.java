@@ -117,7 +117,6 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + mSeason;
         holder.raceName.setText(pastRaceName);
 
-
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();

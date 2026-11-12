@@ -7,15 +7,15 @@
     <TextView
         android:id="@+id/result_chip"
         android:layout_width="wrap_content"
-        android:layout_height="26dp"
+        android:layout_height="30dp"
         android:layout_gravity="center"
         android:gravity="center"
         android:includeFontPadding="false"
-        android:minWidth="38dp"
+        android:minWidth="40dp"
         android:paddingStart="6dp"
         android:paddingEnd="6dp"
         android:textAllCaps="true"
         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
         android:textColor="@color/dark_grey"
-        android:textSize="12sp" />
+        android:textSize="13sp" />
 </FrameLayout>
