@@ -67,124 +67,23 @@
                         android:textColor="@color/text_color_main"
                         android:id="@+id/raceName_header"
                         android:layout_width="0dp"
-                        android:layout_weight="2.7"
+                        android:layout_weight="1.6"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="4dp"
                         android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                         android:textSize="20sp"
                         android:textStyle="bold"
                         android:gravity="bottom"
-                        android:layout_marginEnd="2dp"
                         android:text="@string/race_name_header"/>
-                    <RelativeLayout
-                        android:id="@+id/firstDriver_layout"
-                        android:layout_weight="1.15"
+                    <LinearLayout
+                        android:id="@+id/header_drivers"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="1dp">
-                        <RelativeLayout
-                            android:id="@+id/striped_first"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            style="@style/StripedLinesWhite">
-                            <ImageView
-                                android:id="@+id/firstDriver_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="84dp"
-                                android:contentDescription="@string/first_driver"
-                                android:scaleType="fitCenter"/>
-                        </RelativeLayout>
-                        <TextView
-                            android:textColor="@color/text_color_main"
-                            android:layout_below="@id/striped_first"
-                            android:gravity="center"
-                            android:id='@+id/firstDriverFamilyName'
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/secondDriver_layout"
-                        android:layout_weight="1.15"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="1dp"
-                        android:layout_marginStart="1dp">
-                        <RelativeLayout
-                            android:id="@+id/striped_second"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp">
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="84dp"
-                                style="@style/StripedLinesWhite"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
-                            <ImageView
-                                android:id="@+id/secondDriver_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="84dp"
-                                android:contentDescription="@string/second_driver"
-                                android:scaleType="fitCenter" />
-                        </RelativeLayout>
-                        <TextView
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:textColor="@color/text_color_main"
-                            android:layout_below="@id/striped_second"
-                            android:gravity="center"
-                            android:id='@+id/secondDriverFamilyName'
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textSize="16sp"
-                            android:textStyle="bold"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:id="@+id/thirdDriver_layout"
-                        android:visibility="gone"
-                        android:layout_weight="1.15"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="1dp">
-                        <RelativeLayout
-                            android:id="@+id/striped_third"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp">
-                            <com.google.android.material.imageview.ShapeableImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="84dp"
-                                style="@style/StripedLinesWhite"
-                                app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle"/>
-                            <ImageView
-                                android:id="@+id/thirdDriver_image"
-                                android:layout_width="match_parent"
-                                android:layout_height="84dp"
-                                android:contentDescription="@string/first_driver"
-                                android:scaleType="fitCenter" />
-                        </RelativeLayout>
-                        <TextView
-                            android:paddingStart="2dp"
-                            android:paddingEnd="2dp"
-                            android:paddingTop="4dp"
-                            android:paddingBottom="4dp"
-                            android:layout_below="@id/striped_third"
-                            android:gravity="center"
-                            android:id='@+id/thirdDriverFamilyName'
-                            android:layout_width="match_parent"
-                            android:textColor="@color/text_color_main"
-                            android:layout_height="wrap_content"
-                            android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-                    </RelativeLayout>
+                        android:layout_weight="2"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal" />
                 </LinearLayout>
+
                 <View
                     android:id="@+id/line"
                     android:layout_width="match_parent"
@@ -226,33 +125,6 @@
                         <include layout="@layout/shimmer_team_result"/>
                         <include layout="@layout/shimmer_team_result"/>
                         <include layout="@layout/shimmer_team_result"/>
-                    </LinearLayout>
-                </com.facebook.shimmer.ShimmerFrameLayout>
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:visibility="gone"
-                    android:id="@+id/shimmerTriple_layout"
-                    android:layout_below="@id/line"
-                    android:paddingEnd="10dp"
-                    android:paddingStart="0dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:duration="1000">
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
-                        <include layout="@layout/shimmer_team_triple_result"/>
                     </LinearLayout>
                 </com.facebook.shimmer.ShimmerFrameLayout>
             </RelativeLayout>

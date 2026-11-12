@@ -5,14 +5,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -36,47 +33,29 @@ import com.google.firebase.storage.StorageReference;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class teamResultsFragment extends Fragment {
 
-    private teamDriversResultsAdapter adapter;
-    private teamTripleDriversResultsAdapter adapterTriple;
+    private teamResultsAdapter resultsAdapter;
+    private final List<teamRaceRow> rows = new ArrayList<>();
+    private final Map<String, Integer> raceCounts = new HashMap<>();
 
     private RecyclerView recyclerView;
-
-    private List<teamDriversResultsData> datum;
-    private List<teamTripleDriversResultsData> datumTriple;
-
-    private TextView firstDriverFamilyName;
-    private TextView secondDriverFamilyName;
-    private TextView thirdDriverFamilyName;
-    private TextView raceNameHeader;
-
-    private ImageView firstDriverImage;
-    private ImageView secondDriverImage;
-    private ImageView thirdDriverImage;
-
+    private LinearLayout headerDrivers;
     private ShimmerFrameLayout shimmerFrameLayout;
-    private ShimmerFrameLayout shimmerTripleFrameLayout;
-
     private LinearLayout seasonButtonsLayout;
-
-    private RelativeLayout firstDriverLayout;
-    private RelativeLayout secondDriverLayout;
-    private RelativeLayout thirdDriverLayout;
 
     private String teamId = "";
     private String teamName = "";
 
-    private ArrayList<String> currentSeasonDrivers = new ArrayList<>();
+    private final ArrayList<String> currentSeasonDrivers = new ArrayList<>();
 
     private int selectedSeason = -1;
     private final Handler handler = new Handler(Looper.getMainLooper());
-
     private Runnable hideShimmerRunnable;
-
-    private boolean isTripleDriver = false;
 
     public teamResultsFragment() {
     }
@@ -100,24 +79,11 @@ public class teamResultsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
-        firstDriverFamilyName = view.findViewById(R.id.firstDriverFamilyName);
-        secondDriverFamilyName = view.findViewById(R.id.secondDriverFamilyName);
-        thirdDriverFamilyName = view.findViewById(R.id.thirdDriverFamilyName);
-        firstDriverImage = view.findViewById(R.id.firstDriver_image);
-        secondDriverImage = view.findViewById(R.id.secondDriver_image);
-        thirdDriverImage = view.findViewById(R.id.thirdDriver_image);
+        headerDrivers = view.findViewById(R.id.header_drivers);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
-        shimmerTripleFrameLayout = view.findViewById(R.id.shimmerTriple_layout);
         seasonButtonsLayout = view.findViewById(R.id.seasonButtonsLayout);
-        firstDriverLayout = view.findViewById(R.id.firstDriver_layout);
-        secondDriverLayout = view.findViewById(R.id.secondDriver_layout);
-        thirdDriverLayout = view.findViewById(R.id.thirdDriver_layout);
-        raceNameHeader = view.findViewById(R.id.raceName_header);
         recyclerView = view.findViewById(R.id.drivers_results);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
-        datum = new ArrayList<>();
-        datumTriple = new ArrayList<>();
 
         if (getArguments() == null) {
             return;
@@ -130,7 +96,7 @@ public class teamResultsFragment extends Fragment {
             return;
         }
 
-        showLoading(false);
+        showLoading();
 
         loadAvailableSeasons();
     }
@@ -143,7 +109,6 @@ public class teamResultsFragment extends Fragment {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                         if (!isAdded()) {
                             return;
                         }
@@ -156,8 +121,7 @@ public class teamResultsFragment extends Fragment {
                                 ? enterYear
                                 : LocalDate.now().getYear();
 
-                        int latestSeason =
-                                LocalDate.now().getYear();
+                        int latestSeason = LocalDate.now().getYear();
 
                         if (earliestSeason > latestSeason) {
                             int temp = earliestSeason;
@@ -165,10 +129,7 @@ public class teamResultsFragment extends Fragment {
                             latestSeason = temp;
                         }
 
-                        checkSeasons(
-                                earliestSeason,
-                                latestSeason
-                        );
+                        checkSeasons(earliestSeason, latestSeason);
                     }
 
                     @Override
@@ -177,25 +138,15 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        Log.e(
-                                "TeamResults",
-                                "Failed to load constructor",
-                                error.toException()
-                        );
+                        Log.e("TeamResults", "Failed to load constructor", error.toException());
                     }
                 });
     }
 
-    private void checkSeasons(
-            int earliestSeason,
-            int latestSeason) {
-
+    private void checkSeasons(int earliestSeason, int latestSeason) {
         ArrayList<Integer> seasonCandidates = new ArrayList<>();
 
-        for (int season = latestSeason;
-             season >= earliestSeason;
-             season--) {
-
+        for (int season = latestSeason; season >= earliestSeason; season--) {
             seasonCandidates.add(season);
         }
 
@@ -204,11 +155,10 @@ public class teamResultsFragment extends Fragment {
         final int totalChecks = seasonCandidates.size();
         final int[] completedChecks = {0};
 
-        DatabaseReference resultsRef =
-                FirebaseDatabase.getInstance()
-                        .getReference()
-                        .child("results")
-                        .child("season");
+        DatabaseReference resultsRef = FirebaseDatabase.getInstance()
+                .getReference()
+                .child("results")
+                .child("season");
 
         for (Integer season : seasonCandidates) {
             resultsRef.child(String.valueOf(season))
@@ -226,9 +176,7 @@ public class teamResultsFragment extends Fragment {
                             completedChecks[0]++;
 
                             if (completedChecks[0] == totalChecks) {
-                                showAvailableSeasons(
-                                        availableSeasons
-                                );
+                                showAvailableSeasons(availableSeasons);
                             }
                         }
 
@@ -238,19 +186,13 @@ public class teamResultsFragment extends Fragment {
                                 return;
                             }
 
-                            Log.e(
-                                    "TeamResults",
-                                    "Failed to check season "
-                                            + season,
-                                    error.toException()
-                            );
+                            Log.e("TeamResults", "Failed to check season " + season,
+                                    error.toException());
 
                             completedChecks[0]++;
 
                             if (completedChecks[0] == totalChecks) {
-                                showAvailableSeasons(
-                                        availableSeasons
-                                );
+                                showAvailableSeasons(availableSeasons);
                             }
                         }
                     });
@@ -260,9 +202,7 @@ public class teamResultsFragment extends Fragment {
     private boolean teamHasResults(DataSnapshot seasonSnapshot) {
         for (DataSnapshot driverSnapshot : seasonSnapshot.getChildren()) {
             for (DataSnapshot raceSnapshot : driverSnapshot.getChildren()) {
-                String raceTeamId = raceSnapshot
-                        .child("TeamId")
-                        .getValue(String.class);
+                String raceTeamId = raceSnapshot.child("TeamId").getValue(String.class);
 
                 if (teamId.equals(raceTeamId)) {
                     return true;
@@ -289,22 +229,15 @@ public class teamResultsFragment extends Fragment {
         seasonButtonsLayout.removeAllViews();
 
         for (int season : availableSeasons) {
-            seasonButtonsLayout.addView(
-                    createSeasonButton(season)
-            );
+            seasonButtonsLayout.addView(createSeasonButton(season));
         }
 
         selectSeason(availableSeasons.get(0));
     }
 
     private ToggleButton createSeasonButton(int season) {
-        ToggleButton seasonButton =
-                (ToggleButton) LayoutInflater.from(requireContext())
-                        .inflate(
-                                R.layout.item_season_toggle,
-                                seasonButtonsLayout,
-                                false
-                        );
+        ToggleButton seasonButton = (ToggleButton) LayoutInflater.from(requireContext())
+                .inflate(R.layout.item_season_toggle, seasonButtonsLayout, false);
 
         String seasonText = String.valueOf(season);
 
@@ -314,11 +247,7 @@ public class teamResultsFragment extends Fragment {
         seasonButton.setText(seasonText);
         seasonButton.setTag(season);
 
-        seasonButton.setOnClickListener(view -> {
-            int clickedSeason = (Integer) view.getTag();
-
-            selectSeason(clickedSeason);
-        });
+        seasonButton.setOnClickListener(view -> selectSeason((Integer) view.getTag()));
 
         return seasonButton;
     }
@@ -328,10 +257,7 @@ public class teamResultsFragment extends Fragment {
 
         selectedSeason = season;
 
-        for (int index = 0;
-             index < seasonButtonsLayout.getChildCount();
-             index++) {
-
+        for (int index = 0; index < seasonButtonsLayout.getChildCount(); index++) {
             View child = seasonButtonsLayout.getChildAt(index);
 
             if (!(child instanceof ToggleButton)) {
@@ -339,9 +265,7 @@ public class teamResultsFragment extends Fragment {
             }
 
             ToggleButton button = (ToggleButton) child;
-            int buttonSeason = (Integer) button.getTag();
-
-            button.setChecked(buttonSeason == season);
+            button.setChecked((Integer) button.getTag() == season);
         }
 
         if (seasonChanged) {
@@ -351,18 +275,11 @@ public class teamResultsFragment extends Fragment {
 
     private void loadSeasonData(int season) {
         currentSeasonDrivers.clear();
+        raceCounts.clear();
+        rows.clear();
+        resultsAdapter = null;
 
-        datum.clear();
-        datumTriple.clear();
-
-        if (adapter != null) {
-            adapter.notifyDataSetChanged();
-        }
-
-        if (adapterTriple != null) {
-            adapterTriple.notifyDataSetChanged();
-        }
-
+        recyclerView.setAdapter(null);
         recyclerView.setVisibility(View.GONE);
 
         FirebaseDatabase.getInstance()
@@ -373,7 +290,6 @@ public class teamResultsFragment extends Fragment {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
-
                         if (!isAdded() || season != selectedSeason) {
                             return;
                         }
@@ -384,31 +300,27 @@ public class teamResultsFragment extends Fragment {
                         }
 
                         for (DataSnapshot driverSnapshot : snapshot.getChildren()) {
-
                             String driverName = driverSnapshot.getKey();
 
                             if (driverName == null) {
                                 continue;
                             }
 
-                            boolean droveForTeam = false;
+                            int races = 0;
 
                             for (DataSnapshot raceSnapshot : driverSnapshot.getChildren()) {
-
                                 String raceTeamId = raceSnapshot
                                         .child("TeamId")
                                         .getValue(String.class);
 
                                 if (teamId.equals(raceTeamId)) {
-                                    droveForTeam = true;
-                                    break;
+                                    races++;
                                 }
                             }
 
-                            if (droveForTeam) {
-                                currentSeasonDrivers.add(
-                                        driverName
-                                );
+                            if (races > 0) {
+                                currentSeasonDrivers.add(driverName);
+                                raceCounts.put(driverName, races);
                             }
                         }
 
@@ -417,7 +329,16 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        showLoading(isTripleDriver);
+                        // More races for the team means further left; ties go alphabetically.
+                        Collections.sort(currentSeasonDrivers, (a, b) -> {
+                            int byRaces = Integer.compare(
+                                    raceCounts.getOrDefault(b, 0),
+                                    raceCounts.getOrDefault(a, 0));
+
+                            return byRaces != 0 ? byRaces : a.compareTo(b);
+                        });
+
+                        showLoading();
 
                         ArrayList<String> seasonDrivers = new ArrayList<>(currentSeasonDrivers);
                         loadDriversInfo(seasonDrivers, season);
@@ -430,11 +351,7 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        Log.e(
-                                "TeamResults",
-                                "Failed to load season drivers",
-                                error.toException()
-                        );
+                        Log.e("TeamResults", "Failed to load season drivers", error.toException());
 
                         hideShimmer();
                     }
@@ -442,37 +359,51 @@ public class teamResultsFragment extends Fragment {
     }
 
     private void loadDriversInfo(ArrayList<String> drivers, int season) {
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
+        headerDrivers.removeAllViews();
 
-        for (int index = 0; index < drivers.size() && index < 3; index++) {
+        LinearLayout.LayoutParams headerParams =
+                (LinearLayout.LayoutParams) headerDrivers.getLayoutParams();
+        headerParams.weight = drivers.size();
+        headerDrivers.setLayoutParams(headerParams);
 
-            String driverFullName = drivers.get(index);
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
 
-            String[] nameParts = driverFullName.split(" ");
+        int maxRaces = 0;
 
-            String driverName;
-            String driverFamilyName;
+        for (String name : drivers) {
+            maxRaces = Math.max(maxRaces, raceCounts.getOrDefault(name, 0));
+        }
 
-            if (driverFullName.equals("Andrea Kimi Antonelli")) {
-                driverName = nameParts[0] + " " + nameParts[1];
-                driverFamilyName = nameParts[2];
-            } else if (nameParts.length >= 2) {
-                driverName = nameParts[0];
-                driverFamilyName = nameParts[1];
-            } else {
-                driverName = driverFullName;
-                driverFamilyName = "";
-            }
+        for (String driverFullName : drivers) {
+            String[] names = driverNameFormatter.split(driverFullName);
+            String driverName = names[0];
+            String driverFamilyName = names[1];
 
-            int finalIndex = index;
-            String finalDriverName = driverName;
-            String finalDriverFamilyName = driverFamilyName;
+            View column = LayoutInflater.from(requireContext())
+                    .inflate(R.layout.item_team_results_driver, headerDrivers, false);
+
+            headerDrivers.addView(column, new LinearLayout.LayoutParams(
+                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+            TextView family = column.findViewById(R.id.driver_family_name);
+            TextView caption = column.findViewById(R.id.driver_races_caption);
+            ImageView photo = column.findViewById(R.id.driver_photo);
+
+            family.setText(driverFamilyName);
+
+            int races = raceCounts.getOrDefault(driverFullName, 0);
+            caption.setText(races < maxRaces
+                    ? getString(R.string.team_results_races_caption, races)
+                    : "");
+
+            column.setOnClickListener(v ->
+                    navigateToDriverPage(driverFullName, driverName, driverFamilyName));
 
             FirebaseDatabase.getInstance()
                     .getReference()
                     .child("drivers")
                     .child(driverFullName)
+                    .child("driversCode")
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -480,103 +411,19 @@ public class teamResultsFragment extends Fragment {
                                 return;
                             }
 
-                            String driversCode = snapshot
-                                    .child("driversCode")
-                                    .getValue(String.class);
+                            String code = snapshot.getValue(String.class);
 
-                            if (driversCode == null) {
+                            if (code == null) {
                                 return;
                             }
 
-                            StorageReference driverImageRef =
-                                    storageRef.child(
-                                            "drivers/"
-                                                    + driversCode
-                                                    .toLowerCase()
-                                                    + "_"
-                                                    + season
-                                                    + ".png"
-                                    );
-
-                            if (finalIndex == 0) {
-                                firstDriverFamilyName.setText(
-                                        finalDriverFamilyName
-                                );
-
-                                GlideApp.with(requireContext())
-                                        .load(driverImageRef)
-                                        .transition(
-                                                DrawableTransitionOptions
-                                                        .withCrossFade()
-                                        )
-                                        .diskCacheStrategy(
-                                                DiskCacheStrategy.ALL
-                                        )
-                                        .error(
-                                                R.drawable.placeholder_driver
-                                        )
-                                        .into(firstDriverImage);
-
-                                firstDriverLayout.setOnClickListener(
-                                        v -> navigateToDriverPage(
-                                                driverFullName,
-                                                finalDriverName,
-                                                finalDriverFamilyName
-                                        )
-                                );
-                            } else if (finalIndex == 1) {
-                                secondDriverFamilyName.setText(
-                                        finalDriverFamilyName
-                                );
-
-                                GlideApp.with(requireContext())
-                                        .load(driverImageRef)
-                                        .transition(
-                                                DrawableTransitionOptions
-                                                        .withCrossFade()
-                                        )
-                                        .diskCacheStrategy(
-                                                DiskCacheStrategy.ALL
-                                        )
-                                        .error(
-                                                R.drawable.placeholder_driver
-                                        )
-                                        .into(secondDriverImage);
-
-                                secondDriverLayout.setOnClickListener(
-                                        v -> navigateToDriverPage(
-                                                driverFullName,
-                                                finalDriverName,
-                                                finalDriverFamilyName
-                                        )
-                                );
-                            } else if (finalIndex == 2) {
-                                thirdDriverFamilyName.setText(
-                                        finalDriverFamilyName
-                                );
-
-                                GlideApp.with(requireContext())
-                                        .load(driverImageRef)
-                                        .transition(
-                                                DrawableTransitionOptions
-                                                        .withCrossFade()
-                                        )
-                                        .diskCacheStrategy(
-                                                DiskCacheStrategy.ALL
-                                        )
-                                        .error(
-                                                R.drawable.placeholder_driver
-                                        )
-                                        .into(thirdDriverImage);
-
-                                thirdDriverLayout.setOnClickListener(
-                                        v -> navigateToDriverPage(
-                                                driverFullName,
-                                                finalDriverName,
-                                                finalDriverFamilyName
-                                        )
-                                );
-                            }
+                            GlideApp.with(requireContext())
+                                    .load(storageRef.child(
+                                            "drivers/" + code.toLowerCase() + "_" + season + ".png"))
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .error(R.drawable.placeholder_driver)
+                                    .into(photo);
                         }
 
                         @Override
@@ -585,11 +432,7 @@ public class teamResultsFragment extends Fragment {
                                 return;
                             }
 
-                            Log.e(
-                                    "TeamResults",
-                                    "Failed to load driver info",
-                                    error.toException()
-                            );
+                            Log.e("TeamResults", "Failed to load driver code", error.toException());
                         }
                     });
         }
@@ -611,41 +454,16 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        String driverCode = snapshot
-                                .child("driversCode")
-                                .getValue(String.class);
+                        String driverCode = snapshot.child("driversCode").getValue(String.class);
 
-                        Intent intent = new Intent(
-                                requireContext(),
-                                driverPageActivity.class
-                        );
+                        Intent intent = new Intent(requireContext(), driverPageActivity.class);
 
                         Bundle bundle = new Bundle();
-
-                        bundle.putString(
-                                "driverName",
-                                driverName
-                        );
-
-                        bundle.putString(
-                                "driverFamilyName",
-                                driverFamilyName
-                        );
-
-                        bundle.putString(
-                                "driverTeam",
-                                teamName
-                        );
-
-                        bundle.putString(
-                                "driverCode",
-                                driverCode
-                        );
-
-                        bundle.putString(
-                                "driverTeamId",
-                                teamId
-                        );
+                        bundle.putString("driverName", driverName);
+                        bundle.putString("driverFamilyName", driverFamilyName);
+                        bundle.putString("driverTeam", teamName);
+                        bundle.putString("driverCode", driverCode);
+                        bundle.putString("driverTeamId", teamId);
 
                         intent.putExtras(bundle);
 
@@ -658,33 +476,24 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        Log.e(
-                                "TeamResults",
-                                "Failed to open driver page",
-                                error.toException()
-                        );
+                        Log.e("TeamResults", "Failed to open driver page", error.toException());
                     }
                 });
     }
 
     private void getResults(int season, ArrayList<String> drivers) {
-        if (drivers.size() < 2) {
+        if (drivers.isEmpty()) {
             hideShimmer();
             return;
         }
 
-        datum.clear();
-        datumTriple.clear();
-
-        adapter = null;
-        adapterTriple = null;
-
+        rows.clear();
+        resultsAdapter = null;
         recyclerView.setAdapter(null);
 
-        isTripleDriver = drivers.size() > 2;
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        FirebaseDatabase.getInstance()
-                .getReference()
+        database.getReference()
                 .child("schedule")
                 .child("season")
                 .child(String.valueOf(season))
@@ -696,17 +505,12 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        int totalRaces =
-                                (int) scheduleSnapshot
-                                        .getChildrenCount();
-
-                        if (totalRaces == 0) {
+                        if (scheduleSnapshot.getChildrenCount() == 0) {
                             hideShimmer();
                             return;
                         }
 
-                        FirebaseDatabase.getInstance()
-                                .getReference()
+                        database.getReference()
                                 .child("results")
                                 .child("season")
                                 .child(String.valueOf(season))
@@ -717,29 +521,14 @@ public class teamResultsFragment extends Fragment {
                                             return;
                                         }
 
-                                        final int[] loadedRaces = {0};
+                                        buildRows(scheduleSnapshot, resultSnapshot, drivers);
 
-                                        for (DataSnapshot raceSnapshot :
-                                                scheduleSnapshot
-                                                        .getChildren()) {
+                                        resultsAdapter = new teamResultsAdapter(
+                                                requireActivity(), rows, drivers.size());
 
-                                            String raceName =
-                                                    raceSnapshot.getKey();
+                                        recyclerView.setAdapter(resultsAdapter);
 
-                                            if (raceName == null) {
-                                                loadedRaces[0]++;
-                                                continue;
-                                            }
-
-                                            processRaceResult(
-                                                    raceName,
-                                                    resultSnapshot,
-                                                    drivers,
-                                                    season,
-                                                    totalRaces,
-                                                    loadedRaces
-                                            );
-                                        }
+                                        hideShimmer();
                                     }
 
                                     @Override
@@ -748,11 +537,8 @@ public class teamResultsFragment extends Fragment {
                                             return;
                                         }
 
-                                        Log.e(
-                                                "TeamResults",
-                                                "Failed to load results",
-                                                error.toException()
-                                        );
+                                        Log.e("TeamResults", "Failed to load results",
+                                                error.toException());
 
                                         hideShimmer();
                                     }
@@ -765,118 +551,41 @@ public class teamResultsFragment extends Fragment {
                             return;
                         }
 
-                        Log.e(
-                                "TeamResults",
-                                "Failed to load schedule",
-                                error.toException()
-                        );
+                        Log.e("TeamResults", "Failed to load schedule", error.toException());
 
                         hideShimmer();
                     }
                 });
     }
 
-    private void processRaceResult(
-            String raceName,
+    /** One row per race in schedule order; one code per driver in the header order. */
+    private void buildRows(
+            DataSnapshot scheduleSnapshot,
             DataSnapshot resultSnapshot,
-            ArrayList<String> drivers,
-            int season,
-            int totalRaces,
-            int[] loadedRaces) {
+            ArrayList<String> drivers) {
 
-        if (!isAdded() || season != selectedSeason) {
-            return;
-        }
+        for (DataSnapshot raceSnapshot : scheduleSnapshot.getChildren()) {
+            String raceName = raceSnapshot.getKey();
 
-        if (drivers == null || drivers.size() < 2) {
-            Log.w(
-                    "TeamResults",
-                    "Недостаточно пилотов для обработки гонки: "
-                            + raceName
-                            + ", season=" + season
-                            + ", drivers=" + drivers
-            );
-            hideShimmer();
-            return;
-        }
-
-        String firstDriverName = drivers.get(0);
-        String secondDriverName = drivers.get(1);
-
-        String firstResult = getDriverRaceResult(
-                resultSnapshot,
-                firstDriverName,
-                raceName
-        );
-
-        String secondResult = getDriverRaceResult(
-                resultSnapshot,
-                secondDriverName,
-                raceName
-        );
-
-        if (isTripleDriver && drivers.size() > 2) {
-            String thirdDriverName = drivers.get(2);
-
-            String thirdResult = getDriverRaceResult(
-                    resultSnapshot,
-                    thirdDriverName,
-                    raceName
-            );
-
-            datumTriple.add(new teamTripleDriversResultsData(
-                    raceName,
-                    firstResult,
-                    firstDriverName,
-                    secondResult,
-                    secondDriverName,
-                    thirdResult,
-                    thirdDriverName,
-                    season
-            ));
-
-            if (adapterTriple == null) {
-                adapterTriple =
-                        new teamTripleDriversResultsAdapter(
-                                requireActivity(),
-                                datumTriple
-                        );
-
-                recyclerView.setAdapter(adapterTriple);
-            } else {
-                adapterTriple.notifyDataSetChanged();
+            if (raceName == null) {
+                continue;
             }
-        } else {
-            datum.add(new teamDriversResultsData(
-                    raceName,
-                    firstResult,
-                    firstDriverName,
-                    secondResult,
-                    secondDriverName,
-                    season
-            ));
 
-            if (adapter == null) {
-                adapter = new teamDriversResultsAdapter(
-                        requireActivity(),
-                        datum
-                );
+            ArrayList<String> codes = new ArrayList<>();
 
-                recyclerView.setAdapter(adapter);
-            } else {
-                adapter.notifyDataSetChanged();
+            for (String driver : drivers) {
+                codes.add(getDriverRaceResult(resultSnapshot, driver, raceName));
             }
-        }
 
-        loadedRaces[0]++;
-
-        if (loadedRaces[0] >= totalRaces) {
-            updateLayoutParams();
-            hideShimmer();
+            rows.add(new teamRaceRow(raceName, codes));
         }
     }
 
-    private String getDriverRaceResult(DataSnapshot resultSnapshot, String driverFullName, String raceName) {
+    private String getDriverRaceResult(
+            DataSnapshot resultSnapshot,
+            String driverFullName,
+            String raceName) {
+
         DataSnapshot raceResult = resultSnapshot.child(driverFullName).child(raceName);
         String result = raceResult.child("Result").getValue(String.class);
         String resultTeamId = raceResult.child("TeamId").getValue(String.class);
@@ -885,30 +594,6 @@ public class teamResultsFragment extends Fragment {
         if (result != null && teamId.equals(resultTeamId)) return result;
 
         return "null";
-    }
-
-    private void updateLayoutParams() {
-        int marginEnd = (int) TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                10,
-                requireContext().getResources().getDisplayMetrics()
-        );
-
-        thirdDriverLayout.setVisibility(
-                isTripleDriver ? View.VISIBLE : View.GONE
-        );
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        isTripleDriver ? 1.55f : 2.7f
-                );
-
-        params.gravity = Gravity.BOTTOM;
-        params.setMargins(0, 0, marginEnd, 0);
-
-        raceNameHeader.setLayoutParams(params);
     }
 
     private void hideShimmer() {
@@ -925,9 +610,6 @@ public class teamResultsFragment extends Fragment {
 
             shimmerFrameLayout.stopShimmer();
             shimmerFrameLayout.setVisibility(View.GONE);
-
-            shimmerTripleFrameLayout.stopShimmer();
-            shimmerTripleFrameLayout.setVisibility(View.GONE);
         };
 
         handler.postDelayed(hideShimmerRunnable, 500);
@@ -942,7 +624,7 @@ public class teamResultsFragment extends Fragment {
         }
     }
 
-    private void showLoading(boolean tripleDrivers) {
+    private void showLoading() {
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
             hideShimmerRunnable = null;
@@ -950,17 +632,7 @@ public class teamResultsFragment extends Fragment {
 
         recyclerView.setVisibility(View.GONE);
 
-        shimmerFrameLayout.stopShimmer();
-        shimmerFrameLayout.setVisibility(View.GONE);
-
-        shimmerTripleFrameLayout.stopShimmer();
-        shimmerTripleFrameLayout.setVisibility(View.GONE);
-
-        ShimmerFrameLayout activeShimmer = tripleDrivers
-                ? shimmerTripleFrameLayout
-                : shimmerFrameLayout;
-
-        activeShimmer.setVisibility(View.VISIBLE);
-        activeShimmer.startShimmer();
+        shimmerFrameLayout.setVisibility(View.VISIBLE);
+        shimmerFrameLayout.startShimmer();
     }
 }

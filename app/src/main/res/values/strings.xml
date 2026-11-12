@@ -1123,4 +1123,6 @@
     <string name="public_stats_points_avg">%1$s per pick</string>
     <string name="public_stats_pending_short">%1$s pending</string>
     <string name="public_stats_share">%1$d%% of settled</string>
+
+    <string name="team_results_races_caption">Races: %1$d</string>
 </resources>

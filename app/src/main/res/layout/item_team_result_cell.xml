@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/result_chip"
+        android:layout_width="wrap_content"
+        android:layout_height="26dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:minWidth="38dp"
+        android:paddingStart="6dp"
+        android:paddingEnd="6dp"
+        android:textAllCaps="true"
+        android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+        android:textColor="@color/dark_grey"
+        android:textSize="12sp" />
+</FrameLayout>
