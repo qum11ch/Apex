@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <!-- the stripes are tinted with the team colour from the code -->
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/lineup_striped"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/background_striper_lines_transparent"
+            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide" />
+
+        <ImageView
+            android:id="@+id/lineup_photo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:adjustViewBounds="true"
+            android:contentDescription="@string/first_driver"
+            android:maxHeight="150dp"
+            android:scaleType="fitCenter" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/lineup_given_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:includeFontPadding="false"
+        android:maxLines="1"
+        android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+        android:textColor="@color/grey"
+        android:textSize="13sp" />
+
+    <TextView
+        android:id="@+id/lineup_family_name"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:layout_marginTop="2dp"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+        android:textColor="@color/text_color_main"
+        app:autoSizeMaxTextSize="17sp"
+        app:autoSizeMinTextSize="10sp"
+        app:autoSizeStepGranularity="1sp"
+        app:autoSizeTextType="uniform" />
+</LinearLayout>
