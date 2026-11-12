@@ -238,11 +238,13 @@ public class driverPageActivity extends AppCompatActivity {
                             return;
                         }
 
-                        if (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber")) {
+                        int latestSeason = extractYear(lastEntry);
+
+                        if (latestSeason >= 2026
+                                && (driverTeam.equals("Sauber") || driverTeam.equals("Kick Sauber"))) {
                             driverTeam = "Audi";
                         }
 
-                        int latestSeason = extractYear(lastEntry);
 
                         if (latestSeason == -1) {
                             Log.e(
@@ -486,14 +488,15 @@ public class driverPageActivity extends AppCompatActivity {
 
                         String driverTeamId = null;
 
-                        for (DataSnapshot teamSnapshot :
-                                snapshot.getChildren()) {
-
-                            driverTeamId =
-                                    teamSnapshot.getKey();
-
+                        for (DataSnapshot teamSnapshot : snapshot.getChildren()) {
+                            driverTeamId = teamSnapshot.getKey();
                             break;
                         }
+
+                        if (driverTeamId == null) {
+                            driverTeamId = pastTeamPalette.idForName(driverTeam);
+                        }
+
 
                         init(
                                 createDriverPageBundle(

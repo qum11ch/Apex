@@ -1,14 +1,11 @@
 package com.example.f1app;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-/**
- * Dark team colours for teams that are not in the constructors node (they left the grid before 2024).
- * The values are approximations of the livery colours: adjust them freely.
- * The constructors node stays untouched, because the current standings list every team in it.
- */
+
 final class pastTeamPalette {
 
     private static final String FALLBACK = "#303030";
@@ -28,7 +25,6 @@ final class pastTeamPalette {
     private pastTeamPalette() {
     }
 
-    /** The colour from the database when it is valid, else the palette, else a neutral grey. Always "#RRGGBB". */
     static String resolve(String constructorId, String databaseColor) {
         if (databaseColor != null && HEX.matcher(databaseColor.trim()).matches()) {
             return normalize(databaseColor.trim());
@@ -43,6 +39,24 @@ final class pastTeamPalette {
         }
 
         return FALLBACK;
+    }
+
+    static String idForName(String teamName) {
+        if (teamName == null) {
+            return null;
+        }
+
+        String name = teamName.toLowerCase(Locale.ROOT).trim();
+
+        if (name.contains("alfa")) return "alfa";
+        if (name.contains("alphatauri") || name.contains("alpha tauri")) return "alphatauri";
+        if (name.contains("toro rosso")) return "toro_rosso";
+        if (name.contains("sauber")) return "sauber";
+        if (name.contains("force india")) return "force_india";
+        if (name.contains("racing point")) return "racing_point";
+        if (name.contains("renault")) return "renault";
+
+        return null;
     }
 
     private static String normalize(String hex) {

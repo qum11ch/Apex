@@ -322,17 +322,21 @@ public class driverStatsFragment extends Fragment {
                 .child(teamId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
-                    public void onDataChange(
-                            @NonNull DataSnapshot snapshot) {
-
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
                         if (!isAdded()) {
                             return;
                         }
 
                         if (!snapshot.exists()) {
-                            applyDefaultTeamCard();
+                            // Историческая команда без записи в constructors: цвет из палитры, болид по id и году.
+                            applyTeamColor(pastTeamPalette.resolve(teamId, null));
+                            loadTeamCar(teamId, lastSeason);
+                            driversTeam_layout.setOnClickListener(null);
+                            driversTeam_layout.setClickable(false);
+                            arrow.setVisibility(View.GONE);
                             return;
                         }
+
 
                         String actualTeamId = snapshot
                                 .child("constructorId")
@@ -349,10 +353,21 @@ public class driverStatsFragment extends Fragment {
 
                         applyTeamColor(teamColor);
 
-                        loadTeamCar(
-                                actualTeamId,
-                                lastSeason
-                        );
+                        int carSeason = lastSeason;
+
+                        try {
+                            Object enter = snapshot.child("enterYear").getValue();
+                            int enterYear = Integer.parseInt(String.valueOf(enter).trim());
+                            int current = Integer.parseInt(currentSeason);
+
+                            if (enterYear > lastSeason) {
+                                carSeason = current;
+                            }
+                        } catch (RuntimeException ignored) {
+                            // нет enterYear или currentSeason - остаётся lastSeason
+                        }
+
+                        loadTeamCar(actualTeamId, carSeason);
                     }
 
                     @Override

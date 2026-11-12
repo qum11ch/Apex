@@ -127,7 +127,7 @@
                     android:layout_width="0dp"
                     android:layout_gravity="center"
                     android:scaleType="centerCrop"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay_card_custom_corners"/>
             </LinearLayout>
         </LinearLayout>
