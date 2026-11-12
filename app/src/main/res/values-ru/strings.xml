@@ -1115,4 +1115,13 @@
     <string name="team_results_standing">Место в зачёте</string>
 
     <string name="driver_results_grid_header">Старт</string>
+
+    <string name="team_cars_title">Болиды</string>
+    <string name="team_cars_missing">Нет фото</string>
+    <string name="team_stats_season_points">Очки в %1$s</string>
+
+    <string name="team_cars_position">Место</string>
+    <string name="team_stats_total_points">Очки за всё время</string>
+    <string name="team_cars_newer">Более новый сезон</string>
+    <string name="team_cars_older">Более ранний сезон</string>
 </resources>

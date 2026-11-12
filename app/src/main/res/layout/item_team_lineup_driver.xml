@@ -1,22 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lineup_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:clickable="true"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:padding="8dp">
 
     <FrameLayout
+        android:id="@+id/lineup_photo_block"
+        style="@style/ItemStylePreds"
         android:layout_width="match_parent"
         android:layout_height="150dp">
-
-        <!-- the stripes are tinted with the team colour from the code -->
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/lineup_striped"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/background_striper_lines_transparent"
-            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide" />
 
         <ImageView
             android:id="@+id/lineup_photo"
@@ -33,26 +30,29 @@
         android:id="@+id/lineup_given_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="10dp"
         android:ellipsize="end"
         android:gravity="center"
         android:includeFontPadding="false"
         android:maxLines="1"
         android:textAppearance="@style/TextStyle.GoodTiming.Regular"
-        android:textColor="@color/grey"
-        android:textSize="13sp" />
+        android:textColor="@color/text_color_main"
+        android:textSize="14sp" />
 
     <TextView
         android:id="@+id/lineup_family_name"
         android:layout_width="match_parent"
-        android:layout_height="24dp"
+        android:layout_height="26dp"
         android:layout_marginTop="2dp"
+        android:layout_marginBottom="4dp"
         android:gravity="center"
         android:maxLines="1"
         android:textAppearance="@style/TextStyle.GoodTiming.Bold"
         android:textColor="@color/text_color_main"
-        app:autoSizeMaxTextSize="17sp"
+        android:textSize="18sp"
+        app:autoSizeMaxTextSize="18sp"
         app:autoSizeMinTextSize="10sp"
         app:autoSizeStepGranularity="1sp"
-        app:autoSizeTextType="uniform" />
+        app:autoSizeTextType="uniform"
+        xmlns:app="http://schemas.android.com/apk/res-auto" />
 </LinearLayout>

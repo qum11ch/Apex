@@ -1136,4 +1136,13 @@
     <string name="team_results_standing">Standing</string>
 
     <string name="driver_results_grid_header">Grid</string>
+
+    <string name="team_cars_title">Cars</string>
+    <string name="team_cars_missing">No photo</string>
+    <string name="team_stats_season_points">Points in %1$s</string>
+
+    <string name="team_cars_position">Place</string>
+    <string name="team_stats_total_points">All-time points</string>
+    <string name="team_cars_newer">Newer season</string>
+    <string name="team_cars_older">Earlier season</string>
 </resources>

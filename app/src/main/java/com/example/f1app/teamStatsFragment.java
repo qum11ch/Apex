@@ -5,6 +5,7 @@ import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +17,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.Fragment;
 
@@ -35,14 +38,17 @@ import java.util.Locale;
 
 public class teamStatsFragment extends Fragment {
 
-    private TextView fullTeamName, teamBase, teamChief, techChief, chassis, powerUnit;
-    private TextView enterYearValue, championshipsValue, winsValue, podiumsValue, polesValue;
+    private TextView fullTeamName, enterYear, teamBase, teamChief, techChief, chassis, powerUnit;
+    private TextView championshipsValue, pointsValue, winsValue, podiumsValue, polesValue;
     private ImageView flag;
     private LinearLayout statsTop, statsRow, lineupRow;
-    private View lineupHeader, lineupCard;
+    private View lineupHeader;
 
-    private final ArrayList<View> stripedViews = new ArrayList<>();
+    /** Driver cards of the line-up: [0] the card, [1] the photo block. */
+    private final ArrayList<View[]> lineupItems = new ArrayList<>();
     private Integer teamColor;
+
+    private teamCarsSection carsSection;
 
     private String teamId;
     private String teamName;
@@ -69,11 +75,21 @@ public class teamStatsFragment extends Fragment {
     }
 
     @Override
+    public void onDestroy() {
+        if (carsSection != null) {
+            carsSection.stop();
+        }
+
+        super.onDestroy();
+    }
+
+    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
         fullTeamName = view.findViewById(R.id.fullTeamName);
+        enterYear = view.findViewById(R.id.enterYear);
         teamBase = view.findViewById(R.id.teamBase);
         teamChief = view.findViewById(R.id.teamChief);
         techChief = view.findViewById(R.id.techChief);
@@ -85,7 +101,6 @@ public class teamStatsFragment extends Fragment {
         statsRow = view.findViewById(R.id.stats_row);
         lineupRow = view.findViewById(R.id.lineup_row);
         lineupHeader = view.findViewById(R.id.lineup_header);
-        lineupCard = view.findViewById(R.id.lineup_card);
 
         buildStatsTiles();
 
@@ -110,6 +125,10 @@ public class teamStatsFragment extends Fragment {
 
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
+        // created before the team data arrives: the colour is passed to it later
+        carsSection = new teamCarsSection(this, view, teamId, teamName, currentSeason);
+        carsSection.start();
+
         loadTeam(rootRef);
         loadLineup(rootRef);
     }
@@ -119,8 +138,8 @@ public class teamStatsFragment extends Fragment {
     private void buildStatsTiles() {
         LayoutInflater inflater = LayoutInflater.from(requireContext());
 
-        enterYearValue = addTile(inflater, statsTop, R.string.enter_year);
         championshipsValue = addTile(inflater, statsTop, R.string.constructors_championships);
+        pointsValue = addTile(inflater, statsTop, R.string.team_stats_total_points);
 
         winsValue = addTile(inflater, statsRow, R.string.wins);
         podiumsValue = addTile(inflater, statsRow, R.string.podiums);
@@ -152,13 +171,15 @@ public class teamStatsFragment extends Fragment {
                             return;
                         }
 
-                        enterYearValue.setText(text(snapshot.child("enterYear")));
+                        fullTeamName.setText(text(snapshot.child("fullTeamName")));
+                        enterYear.setText(text(snapshot.child("enterYear")));
+
+                        championshipsValue.setText(text(snapshot.child("totalChampionships")));
+                        pointsValue.setText(text(snapshot.child("totalPoints")));
                         winsValue.setText(text(snapshot.child("totalWins")));
                         podiumsValue.setText(text(snapshot.child("totalPodiums")));
                         polesValue.setText(text(snapshot.child("totalPoles")));
-                        championshipsValue.setText(text(snapshot.child("totalChampionships")));
 
-                        fullTeamName.setText(text(snapshot.child("fullTeamName")));
                         teamChief.setText(text(snapshot.child("teamChief")));
                         techChief.setText(text(snapshot.child("thechnicalChief")));
                         chassis.setText(text(snapshot.child("chassis")));
@@ -172,8 +193,12 @@ public class teamStatsFragment extends Fragment {
                         try {
                             teamColor = Color.parseColor(color);
                             applyTeamColor();
+
+                            if (carsSection != null) {
+                                carsSection.setTeamColor(teamColor);
+                            }
                         } catch (IllegalArgumentException ignored) {
-                            // the stripes keep their default colour
+                            // the cards keep the neutral outline
                         }
                     }
 
@@ -224,13 +249,35 @@ public class teamStatsFragment extends Fragment {
         return result.isEmpty() ? "\u2013" : result;
     }
 
+    // ---------- driver cards (the look of the account page) ----------
+
+    private GradientDrawable cardBackground(int strokeColor) {
+        float density = getResources().getDisplayMetrics().density;
+
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
+        background.setCornerRadius(16 * density);
+        background.setStroke(Math.round(2 * density), strokeColor);
+
+        return background;
+    }
+
+    private void styleItem(View[] item, int color) {
+        item[0].setBackground(cardBackground(color));
+
+        int soft = ColorUtils.compositeColors(
+                ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
+
+        ViewCompat.setBackgroundTintList(item[1], ColorStateList.valueOf(soft));
+    }
+
     private void applyTeamColor() {
         if (teamColor == null) {
             return;
         }
 
-        for (View striped : stripedViews) {
-            ViewCompat.setBackgroundTintList(striped, ColorStateList.valueOf(teamColor));
+        for (View[] item : lineupItems) {
+            styleItem(item, teamColor);
         }
     }
 
@@ -259,7 +306,7 @@ public class teamStatsFragment extends Fragment {
 
                         if (drivers.isEmpty()) {
                             lineupHeader.setVisibility(View.GONE);
-                            lineupCard.setVisibility(View.GONE);
+                            lineupRow.setVisibility(View.GONE);
                             return;
                         }
 
@@ -275,33 +322,36 @@ public class teamStatsFragment extends Fragment {
 
     private void showLineup(DatabaseReference rootRef, ArrayList<String> drivers) {
         lineupRow.removeAllViews();
-        stripedViews.clear();
+        lineupItems.clear();
 
         LayoutInflater inflater = LayoutInflater.from(requireContext());
-        int gap = Math.round(6 * getResources().getDisplayMetrics().density);
+        int gap = Math.round(4 * getResources().getDisplayMetrics().density);
+        int neutral = ContextCompat.getColor(requireContext(), R.color.grey);
 
         for (int index = 0; index < drivers.size(); index++) {
             String driverFullName = drivers.get(index);
             String[] names = driverNameFormatter.split(driverFullName);
 
-            View column = inflater.inflate(R.layout.item_team_lineup_driver, lineupRow, false);
+            View item = inflater.inflate(R.layout.item_team_lineup_driver, lineupRow, false);
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
             params.setMarginStart(index == 0 ? 0 : gap);
             params.setMarginEnd(index == drivers.size() - 1 ? 0 : gap);
 
-            lineupRow.addView(column, params);
+            lineupRow.addView(item, params);
 
-            View striped = column.findViewById(R.id.lineup_striped);
-            ImageView photo = column.findViewById(R.id.lineup_photo);
+            View photoBlock = item.findViewById(R.id.lineup_photo_block);
+            ImageView photo = item.findViewById(R.id.lineup_photo);
 
-            ((TextView) column.findViewById(R.id.lineup_given_name)).setText(names[0]);
-            ((TextView) column.findViewById(R.id.lineup_family_name)).setText(names[1]);
+            ((TextView) item.findViewById(R.id.lineup_given_name)).setText(names[0]);
+            ((TextView) item.findViewById(R.id.lineup_family_name)).setText(names[1]);
 
-            stripedViews.add(striped);
+            View[] views = {item, photoBlock};
+            lineupItems.add(views);
+            styleItem(views, teamColor != null ? teamColor : neutral);
 
-            column.setOnClickListener(v ->
+            item.setOnClickListener(v ->
                     openDriver(rootRef, driverFullName, names[0], names[1]));
 
             rootRef.child("drivers").child(driverFullName).child("driversCode")
@@ -330,8 +380,6 @@ public class teamStatsFragment extends Fragment {
                         }
                     });
         }
-
-        applyTeamColor();
     }
 
     private void openDriver(DatabaseReference rootRef, String driverFullName,
