@@ -10,7 +10,7 @@
     <LinearLayout
         android:id="@+id/tile_card"
         style="@style/ItemStylePreds"
-        android:backgroundTint="@color/colorPrimary"
+        android:backgroundTint="@color/items_color"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -57,6 +57,7 @@
             android:includeFontPadding="false"
             android:lineSpacingExtra="3dp"
             android:maxLines="2"
+            android:minLines="2"
             android:textSize="15sp"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
 

@@ -22,6 +22,7 @@
             android:baselineAligned="false"
             android:elevation="10dp"
             style="@style/ItemStyle"
+            android:backgroundTint="@color/items_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

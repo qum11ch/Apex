@@ -11,9 +11,16 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/shimmer_layout">
+            <include layout="@layout/shimmer_race_circuit_fragment"/>
+        </com.facebook.shimmer.ShimmerFrameLayout>
         <RelativeLayout
             android:id="@+id/content_layout"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="20dp">
@@ -27,18 +34,21 @@
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/flagLayout"
-                    android:layout_width="100dp"
-                    android:layout_height="75dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     app:cardBackgroundColor="@color/colorPrimary"
                     app:cardElevation="0dp"
                     app:cardPreventCornerOverlap="true">
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/flag"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:scaleType="fitCenter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:maxWidth="100dp"
+                        android:maxHeight="75dp"
                         android:padding="0.5dp"
+                        android:scaleType="fitCenter"
                         app:shapeAppearanceOverlay="@style/customRoundedImageView"
                         app:strokeColor="@color/grey"
                         app:strokeWidth="0.5dp" />
@@ -47,7 +57,7 @@
 
                 <TextView
                     android:id="@+id/raceName"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/flagLayout"
                     android:layout_marginStart="10dp"
@@ -58,7 +68,7 @@
 
                 <TextView
                     android:id="@+id/circuitName"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_toEndOf="@id/flagLayout"
                     android:layout_below="@id/raceName"
@@ -78,7 +88,6 @@
                 android:layout_marginEnd="10dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
-                app:cardBackgroundColor="@color/account_settings_input_color"
                 app:cardCornerRadius="15dp"
                 app:cardElevation="0dp"
                 app:cardPreventCornerOverlap="true">
@@ -282,12 +291,5 @@
                 android:textAppearance="@style/TextStyle.Gram.Bold"
                 android:visibility="gone" />
         </RelativeLayout>
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:visibility="visible"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/shimmer_layout">
-            <include layout="@layout/shimmer_race_circuit_fragment"/>
-        </com.facebook.shimmer.ShimmerFrameLayout>
     </RelativeLayout>
 </ScrollView>

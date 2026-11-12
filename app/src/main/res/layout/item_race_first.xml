@@ -19,6 +19,7 @@
         <LinearLayout
             android:layout_marginBottom="10dp"
             style="@style/ItemStyle"
+            android:backgroundTint="@color/items_color"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:baselineAligned="false"
@@ -251,7 +252,7 @@
                         android:layout_weight="1"
                         android:orientation="horizontal">
                         <TextView
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_color_secondary"
                             android:layout_width="15dp"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -283,7 +284,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_color_secondary"
                             android:layout_width="15dp"
                             android:layout_height="match_parent"
                             android:gravity="center"
@@ -315,7 +316,7 @@
                         android:orientation="horizontal">
 
                         <TextView
-                            android:textColor="@color/white"
+                            android:textColor="@color/text_color_secondary"
                             android:layout_width="15dp"
                             android:layout_height="match_parent"
                             android:gravity="center"

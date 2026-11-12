@@ -97,4 +97,6 @@
     <color name="race_state_canceled_bg">#30FFB77A</color>
     <color name="race_state_sprint">#D9A6F5</color>
     <color name="race_state_sprint_bg">#30D9A6F5</color>
+
+    <color name="items_color">#FF222222</color>
 </resources>
