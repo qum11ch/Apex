@@ -63,20 +63,21 @@ public class raceCircuitFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         EdgeInsets.applyBottom(view.findViewById(R.id.scrollView));
 
-        TextView raceName = view.findViewById(R.id.raceName);
-        circuitName = view.findViewById(R.id.circuitName);
-        length = view.findViewById(R.id.length);
-        lapsNum = view.findViewById(R.id.lapsNum);
-        firstGP = view.findViewById(R.id.firstGP);
-        raceDist = view.findViewById(R.id.raceDist);
-        lapRecord_time = view.findViewById(R.id.lapRecord_time);
-        lapRecord_driver = view.findViewById(R.id.lapRecord_driver);
-        ImageView circuitImage = view.findViewById(R.id.circuitImage);
-        circuitInfoLayout = view.findViewById(R.id.circuitInfo_layout);
-        ImageView flag = view.findViewById(R.id.flag);
-        Button raceResults = view.findViewById(R.id.raceResults_history);
         contentLayout = view.findViewById(R.id.content_layout);
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
+
+        TextView raceName = contentLayout.findViewById(R.id.raceName);
+        circuitName = contentLayout.findViewById(R.id.circuitName);
+        length = contentLayout.findViewById(R.id.length);
+        lapsNum = contentLayout.findViewById(R.id.lapsNum);
+        firstGP = contentLayout.findViewById(R.id.firstGP);
+        raceDist = contentLayout.findViewById(R.id.raceDist);
+        lapRecord_time = contentLayout.findViewById(R.id.lapRecord_time);
+        lapRecord_driver = contentLayout.findViewById(R.id.lapRecord_driver);
+        ImageView circuitImage = contentLayout.findViewById(R.id.circuitImage);
+        circuitInfoLayout = contentLayout.findViewById(R.id.circuitInfo_layout);
+        ImageView flag = contentLayout.findViewById(R.id.flag);
+        Button raceResults = contentLayout.findViewById(R.id.raceResults_history);
 
         shimmerFrameLayout.startShimmer();
 
