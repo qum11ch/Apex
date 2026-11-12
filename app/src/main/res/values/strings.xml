@@ -1134,4 +1134,6 @@
 
     <string name="team_results_points">Points</string>
     <string name="team_results_standing">Standing</string>
+
+    <string name="driver_results_grid_header">Grid</string>
 </resources>

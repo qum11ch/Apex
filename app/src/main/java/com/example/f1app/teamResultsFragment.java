@@ -645,6 +645,13 @@ public class teamResultsFragment extends Fragment {
     }
 
     private void buildLegend(View root) {
+        resultsLegend.build(
+                requireContext(),
+                root.findViewById(R.id.legend_left),
+                root.findViewById(R.id.legend_right));
+    }
+
+    private void oldBuildLegend(View root) {
         LinearLayout left = root.findViewById(R.id.legend_left);
         LinearLayout right = root.findViewById(R.id.legend_right);
 

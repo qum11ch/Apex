@@ -1,362 +1,240 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:background="@color/colorPrimary"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:background="@color/colorPrimary">
+
     <androidx.core.widget.NestedScrollView
-        android:fillViewport="true"
-        android:clipToPadding="false"
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:fillViewport="true"
         android:overScrollMode="never"
         android:scrollbars="none">
-        <RelativeLayout
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
             android:paddingTop="20dp"
+            android:paddingEnd="12dp"
             android:paddingBottom="24dp">
+
             <TextView
-                android:layout_marginStart="10dp"
                 android:id="@+id/resHeader"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
                 android:text="@string/driver_results"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/text_color_main"
                 android:textSize="28sp"
                 android:textStyle="bold" />
+
             <HorizontalScrollView
-                android:layout_marginTop="10dp"
-                android:layout_marginBottom="10dp"
-                android:layout_below="@id/resHeader"
                 android:id="@+id/seasonButtonsScroll"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:overScrollMode="never"
                 android:scrollbars="none">
 
                 <LinearLayout
                     android:id="@+id/seasonButtonsLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:background="@drawable/bg_public_segment_track"
                     android:orientation="horizontal"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp" />
-
+                    android:padding="4dp" />
             </HorizontalScrollView>
+
             <TextView
-                android:layout_below="@id/seasonButtonsScroll"
                 android:id="@+id/noResultsText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_marginTop="24dp"
                 android:gravity="center"
                 android:padding="24dp"
                 android:text="@string/no_results_text"
                 android:textColor="@color/text_color_main"
                 android:textSize="16sp"
-                android:visibility="gone"
-                android:layout_marginTop="24dp"/>
-            <RelativeLayout
-                android:visibility="visible"
-                android:id="@+id/results_layout"
-                android:paddingStart="10dp"
-                android:paddingEnd="0dp"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/summary_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/StatisticLayout"
-                android:paddingTop = "10dp"
-                android:layout_below="@id/seasonButtonsScroll">
+                android:layout_marginTop="14dp"
+                android:background="@drawable/bg_results_card"
+                android:divider="@drawable/divider_results"
+                android:orientation="vertical"
+                android:showDividers="middle"
+                android:visibility="gone">
+
                 <LinearLayout
-                    android:gravity="bottom"
-                    android:baselineAligned="false"
-                    android:id="@+id/results_header"
-                    android:orientation="horizontal"
+                    android:id="@+id/summary_top"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="2">
+                    android:baselineAligned="false"
+                    android:divider="@drawable/divider_results"
+                    android:orientation="horizontal"
+                    android:showDividers="middle" />
+
+                <LinearLayout
+                    android:id="@+id/summary_row"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:divider="@drawable/divider_results"
+                    android:orientation="horizontal"
+                    android:showDividers="middle" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/results_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_results_card"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/results_header"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:baselineAligned="false"
+                    android:gravity="bottom"
+                    android:orientation="horizontal"
+                    android:paddingStart="12dp"
+                    android:paddingTop="14dp"
+                    android:paddingEnd="12dp"
+                    android:paddingBottom="10dp">
+
                     <TextView
-                        android:layout_marginEnd="10dp"
-                        android:paddingEnd="5dp"
-                        android:paddingStart="0dp"
+                        android:id="@+id/raceName_header"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
                         android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/text_color_main"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
-                        android:gravity="bottom|end"
-                        android:text="@string/race_name_header"/>
-                    <TextView
-                        android:layout_marginEnd="5dp"
-                        android:layout_width="0dp"
+                        android:layout_marginEnd="4dp"
                         android:layout_weight="1"
-                        android:layout_height="wrap_content"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                        android:textColor="@color/text_color_main"
-                        android:textSize="20sp"
-                        android:textStyle="bold"
                         android:gravity="bottom"
-                        android:text="@string/result_header"/>
+                        android:text="@string/race_name_header"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                        android:textColor="@color/text_color_main"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/grid_header"
+                        android:layout_width="56dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/driver_results_grid_header"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/result_header"
+                        android:layout_width="72dp"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:text="@string/result_header"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="13sp" />
                 </LinearLayout>
+
                 <View
                     android:id="@+id/line"
                     android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/account_settings_input_color"
-                    android:layout_below="@id/results_header"
-                    android:layout_marginEnd="10dp"/>
-                <androidx.recyclerview.widget.RecyclerView
-                    android:nestedScrollingEnabled="false"
-                    android:visibility="gone"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="0dp"
-                    android:layout_below="@id/line"
-                    android:overScrollMode="never"
+                    android:layout_height="1dp"
+                    android:background="@color/colorPrimary" />
+
+                <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/driver_results"/>
-                <com.facebook.shimmer.ShimmerFrameLayout
-                    android:id="@+id/shimmer_layout"
-                    android:layout_below="@id/line"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="0dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    app:duration="1000">
-                    <LinearLayout
+                    android:layout_height="wrap_content">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/driver_results"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                        <include layout="@layout/shimmer_driver_result"/>
-                    </LinearLayout>
+                        android:nestedScrollingEnabled="false"
+                        android:overScrollMode="never"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        android:visibility="gone" />
 
-                </com.facebook.shimmer.ShimmerFrameLayout>
-            </RelativeLayout>
-            <RelativeLayout
-                android:visibility="gone"
-                android:id="@+id/keyMapLayout"
-                style="@style/PtsStyle"
-                android:backgroundTint="@color/dark_grey"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginBottom="20dp"
-                android:layout_below="@id/results_layout"
+                    <com.facebook.shimmer.ShimmerFrameLayout
+                        android:id="@+id/shimmer_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:paddingStart="12dp"
+                        android:paddingEnd="12dp"
+                        app:duration="1000">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                            <include layout="@layout/shimmer_driver_result" />
+                        </LinearLayout>
+                    </com.facebook.shimmer.ShimmerFrameLayout>
+                </FrameLayout>
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/legend_title"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:layout_marginTop="1dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    style="@style/TopKeyMapStyle"
-                    android:id="@+id/gold_layout"
-                    android:gravity="center"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="1dp"
+                android:layout_marginTop="24dp"
+                android:text="@string/team_results_legend_title"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                android:textColor="@color/text_color_main"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:id="@+id/keyMapLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_results_card"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:paddingStart="14dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="14dp"
+                android:paddingBottom="10dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/legend_left"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@string/_1st_place_header"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+
+                <LinearLayout
+                    android:id="@+id/legend_right"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/gold_layout"
-                    android:id="@+id/silver_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:text="@string/_2nd_place_header"
-                    android:background="@color/light_silver"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/silver_layout"
-                    android:id="@+id/bronze_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/_3rd_place_header"
-                    android:background="@color/light_bronze"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:gravity="center"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/green_layout"
-                    android:layout_below="@id/bronze_layout"
-                    android:hyphenationFrequency="none"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:text="@string/points_finish"
-                    android:background="@color/light_green"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/green_layout"
-                    android:id="@+id/purple_layout"
-                    android:hyphenationFrequency="none"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/out_of_points_finish"
-                    android:background="@color/light_purple"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:id="@+id/pink_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/purple_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/retired"
-                    android:background="@color/pink"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/white_layout"
-                    android:layout_below="@id/pink_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    style="@style/TopKeyMapStyle"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/dns"
-                    android:background="@color/white"/>
-                <TextView
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:hyphenationFrequency="none"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/black_layout"
-                    android:layout_below="@id/white_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    style="@style/TopKeyMapStyle"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/dsq"
-                    android:background="@color/black"/>
-                <TextView
-                    android:layout_marginTop="0.5dp"
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/black_layout"
-                    android:id="@+id/blank_layout"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/wd"
-                    android:background="@color/light_grey"/>
-                <TextView
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/blank_layout"
-                    android:id="@+id/nc_layout"
-                    android:layout_marginTop="0.5dp"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/dark_grey"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/not_concluded"
-                    android:background="@color/light_grey"/>
-                <TextView
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/nc_layout"
-                    android:id="@+id/cnd_layout"
-                    android:layout_marginTop="0.5dp"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textColor="@color/white"
-                    android:textSize="20sp"
-                    android:gravity="center"
-                    android:text="@string/cnd"
-                    android:background="@color/orange"/>
-                <TextView
-                    android:paddingTop="3dp"
-                    android:paddingBottom="3dp"
-                    style="@style/BottomKeyMapStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/cnd_layout"
-                    android:textColor="@color/purple"
-                    android:textStyle="bold"
-                    android:hyphenationFrequency="none"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                    android:textSize="20sp"
-                    android:layout_marginTop="0.5dp"
-                    android:layout_marginStart="1dp"
-                    android:layout_marginEnd="1dp"
-                    android:layout_marginBottom="1dp"
-                    android:gravity="center"
-                    android:text="@string/pole_position" />
-            </RelativeLayout>
-        </RelativeLayout>
+                    android:layout_weight="1"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

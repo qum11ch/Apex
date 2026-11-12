@@ -1113,4 +1113,6 @@
 
     <string name="team_results_points">Очки</string>
     <string name="team_results_standing">Место в зачёте</string>
+
+    <string name="driver_results_grid_header">Старт</string>
 </resources>
