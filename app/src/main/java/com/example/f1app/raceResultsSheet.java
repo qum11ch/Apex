@@ -1,38 +1,33 @@
 package com.example.f1app;
 
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.FragmentManager;
-
-import com.google.android.material.bottomsheet.BottomSheetBehavior;
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/** Bottom sheet with the earlier runnings of a Grand Prix; a tap opens the results of that year. */
-public class raceResultsSheet extends BottomSheetDialogFragment {
+/**
+ * Bottom sheet with the earlier runnings of a Grand Prix; a tap opens the results of that year.
+ * The dialog, the edge-to-edge theme and the expanded state come from neuroBaseSheet,
+ * the same base the race picker sheet uses.
+ */
+public class raceResultsSheet extends neuroBaseSheet {
 
     private static final String ARG_RACE = "raceName";
     private static final String ARG_CIRCUIT = "circuitId";
     private static final String ARG_ROWS = "rows";
-    private static final String NAV_STRIP_TAG = "raceResultsSheetNavStrip";
 
     static void show(FragmentManager manager, String raceName, String circuitId, List<raceHistory.Entry> entries) {
         ArrayList<String> rows = new ArrayList<>();
@@ -58,66 +53,10 @@ public class raceResultsSheet extends BottomSheetDialogFragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-
-        if (getDialog() == null) {
-            return;
-        }
-
-        // The rounded background comes from the layout; the sheet container itself stays transparent.
-        View sheet = getDialog().findViewById(com.google.android.material.R.id.design_bottom_sheet);
-
-        if (sheet != null) {
-            sheet.setBackgroundColor(Color.TRANSPARENT);
-
-            // Show every row at once instead of a half-open sheet.
-            BottomSheetBehavior<View> behavior = BottomSheetBehavior.from(sheet);
-            behavior.setSkipCollapsed(true);
-            behavior.setState(BottomSheetBehavior.STATE_EXPANDED);
-        }
-
-        Window window = getDialog().getWindow();
-
-        if (window != null) {
-            View decor = window.getDecorView();
-
-            // Dark gesture line on a light sheet, light one on a dark sheet.
-            WindowCompat.getInsetsController(window, decor)
-                    .setAppearanceLightNavigationBars(MainActivity.checkLightTheme(requireContext()));
-
-            decor.post(() -> fillNavigationBar(decor));
-        }
-    }
-
-    /**
-     * The dialog stops above the navigation bar, and since Android 15 the bar's own colour is ignored
-     * with gesture navigation, so the dimmed page shows through under the sheet. A strip in the sheet
-     * colour over that area makes the two read as one surface.
-     */
-    private void fillNavigationBar(View decor) {
-        if (!isAdded() || !(decor instanceof ViewGroup) || decor.findViewWithTag(NAV_STRIP_TAG) != null) {
-            return;
-        }
-
-        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(decor);
-        int height = insets == null ? 0 : insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
-
-        if (height <= 0) {
-            return;
-        }
-
-        View strip = new View(requireContext());
-        strip.setTag(NAV_STRIP_TAG);
-        strip.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
-
-        ((ViewGroup) decor).addView(strip, new FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, height, Gravity.BOTTOM));
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        applySystemInsets(view);
 
         Bundle arguments = getArguments();
 
@@ -173,5 +112,22 @@ public class raceResultsSheet extends BottomSheetDialogFragment {
 
             list.addView(row);
         }
+    }
+
+    /** The sheet is drawn under the navigation bar (see ThemeOverlay.Apex.NeuroSheet), so the content is lifted by its height. */
+    private void applySystemInsets(View root) {
+        final int left = root.getPaddingLeft();
+        final int top = root.getPaddingTop();
+        final int right = root.getPaddingRight();
+        final int bottom = root.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (v, insets) -> {
+            Insets safe = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
+            v.setPadding(left + safe.left, top, right + safe.right, bottom + safe.bottom);
+            return insets;
+        });
+
+        root.post(() -> ViewCompat.requestApplyInsets(root));
     }
 }

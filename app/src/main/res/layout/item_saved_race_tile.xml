@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -29,8 +30,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="10dp">
+        android:padding="12dp">
 
+        <!-- Round on the left, dates on the right: one row instead of two -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -54,7 +56,7 @@
                     android:textAllCaps="true"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                     android:textColor="@color/round_color"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
                 <TextView
                     android:id="@+id/round"
                     android:layout_width="wrap_content"
@@ -64,7 +66,7 @@
                     android:lineSpacingExtra="0dp"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                     android:textColor="@color/round_color"
-                    android:textSize="14sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <Space
@@ -73,59 +75,44 @@
                 android:layout_weight="1" />
 
             <TextView
-                android:id="@+id/cnd_layout"
+                android:id="@+id/race_dates"
                 style="@style/PtsStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="@color/orange"
-                android:paddingStart="5dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="5dp"
-                android:paddingBottom="2dp"
-                android:text="@string/canceled_text"
-                android:textAlignment="center"
+                android:backgroundTint="@color/colorPrimary"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:paddingStart="8dp"
+                android:paddingTop="3dp"
+                android:paddingEnd="8dp"
+                android:paddingBottom="3dp"
+                android:textAllCaps="true"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                android:textColor="@color/white"
-                android:visibility="gone" />
+                android:textColor="@color/footer_icon"
+                android:textSize="11sp" />
 
         </LinearLayout>
 
         <TextView
-            android:id="@+id/race_dates"
-            style="@style/PtsStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:backgroundTint="@color/colorPrimary"
-            android:paddingStart="8dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="2dp"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-            android:textColor="@color/footer_icon" />
-
-        <TextView
             android:id="@+id/raceName"
-            android:lineSpacingExtra="2dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="3dp"
             android:maxLines="2"
             android:minLines="2"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
             android:textColor="@color/text_color_main"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/race_locale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
@@ -143,14 +130,21 @@
             android:lineSpacingExtra="0dp"
             android:maxLines="1"
             android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
-            android:textSize="13sp" />
+            android:textSize="12sp" />
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="10dp"
+            android:background="@color/separator_header" />
+
+        <!-- One slot for podium, status and the cancelled badge: they never show together -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
-            android:minHeight="34dp">
+            android:layout_marginTop="5dp"
+            android:minHeight="36dp">
+
             <LinearLayout
                 android:id="@+id/podium_group"
                 android:layout_width="match_parent"
@@ -160,77 +154,86 @@
                 android:orientation="horizontal"
                 android:visibility="gone"
                 android:weightSum="3">
-
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:includeFontPadding="false"
-                        android:text="@string/one"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                        android:textSize="12sp" />
+                    android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/firstPlace_code"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
                         android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
                         android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/one"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:includeFontPadding="false"
-                        android:text="@string/two"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                        android:textSize="12sp" />
+                    android:orientation="vertical">
+
                     <TextView
                         android:id="@+id/secondPlace_code"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
                         android:includeFontPadding="false"
+                        android:textAlignment="center"
+                        android:maxLines="1"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
                         android:textSize="15sp" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/two"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp" />
                 </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:includeFontPadding="false"
-                        android:text="@string/three"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                        android:textSize="12sp" />
+                    android:orientation="vertical">
                     <TextView
                         android:id="@+id/thirdPlace_code"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
                         android:includeFontPadding="false"
+                        android:maxLines="1"
+                        android:textAlignment="center"
                         android:textAllCaps="true"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
                         android:textSize="15sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:includeFontPadding="false"
+                        android:text="@string/three"
+                        android:textAlignment="center"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="10sp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -254,24 +257,44 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:ellipsize="end"
                     android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
+                    android:lineSpacingExtra="2dp"
+                    android:maxLines="2"
                     android:textAppearance="@style/TextStyle.Gram.Regular"
-                    android:textStyle="bold"
                     android:textColor="@color/text_color_main"
-                    android:textSize="13sp" />
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/cnd_layout"
+                style="@style/PtsStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|start"
+                android:backgroundTint="@color/orange"
+                android:paddingStart="5dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="5dp"
+                android:paddingBottom="2dp"
+                android:text="@string/canceled_text"
+                android:textAlignment="center"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                android:textColor="@color/white"
+                android:visibility="gone"
+                tools:ignore="RtlCompat" />
         </FrameLayout>
 
         <TextView
             android:id="@+id/info_line"
-            android:maxLines="2"
-            android:minLines="2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:lineSpacingExtra="0dp"
+            android:maxLines="2"
+            android:minLines="1"
             android:textAppearance="@style/TextStyle.Gram.Regular"
             android:textColor="@color/text_color_secondary"
             android:textSize="13sp"
@@ -281,8 +304,9 @@
             android:id="@+id/save_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:textAppearance="@style/TextStyle.Gram.Regular"
             android:textColor="@color/text_color_secondary"

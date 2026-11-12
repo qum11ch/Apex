@@ -1,8 +1,12 @@
 package com.example.f1app;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,9 @@ import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.android.material.imageview.ShapeableImageView;
+import com.google.android.material.shape.CornerFamily;
+import com.google.android.material.shape.Shapeable;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
@@ -102,6 +109,19 @@ public class allDriversAdapter extends ListAdapter<driversList, allDriversAdapte
         holder.familyName.setText(datum.getDriverFamilyName());
         holder.image.setContentDescription(key(datum));
 
+        float dip = 8f;
+        Resources r = holder.itemView.getResources();
+        float px = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                dip,
+                r.getDisplayMetrics()
+        );
+
+        holder.image.setShapeAppearanceModel(holder.image.getShapeAppearanceModel()
+                .toBuilder()
+                .setAllCorners(CornerFamily.ROUNDED, px)
+                .build());
+
         if (holder.team != null) {
             String team = datum.getDriverTeam();
             boolean hasTeam = team != null && !team.trim().isEmpty();
@@ -183,8 +203,8 @@ public class allDriversAdapter extends ListAdapter<driversList, allDriversAdapte
 
     static class DataHolder extends RecyclerView.ViewHolder {
         final TextView name, familyName;
-        final TextView team; // only present in the list layout
-        final ImageView image;
+        final TextView team;
+        final ShapeableImageView image;
         final CardView card;
         final TextView status;
 

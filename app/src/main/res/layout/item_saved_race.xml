@@ -26,7 +26,6 @@
         android:id="@+id/cardView"
         android:outlineProvider="none"
         android:stateListAnimator="@null"
-
         android:background="@drawable/bg_saved_race_card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,7 +33,7 @@
         android:paddingStart="15dp"
         android:paddingTop="12dp"
         android:paddingEnd="15dp"
-        android:paddingBottom="10dp">
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -101,60 +100,70 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:backgroundTint="@color/colorPrimary"
+                android:includeFontPadding="false"
                 android:paddingStart="8dp"
-                android:paddingTop="2dp"
+                android:paddingTop="3dp"
                 android:paddingEnd="8dp"
-                android:paddingBottom="2dp"
+                android:paddingBottom="3dp"
                 android:textAllCaps="true"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                android:textColor="@color/footer_icon" />
+                android:textColor="@color/footer_icon"
+                android:textSize="12sp" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/raceName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="6dp"
+            android:layout_marginTop="10dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:lineSpacingExtra="3dp"
             android:maxLines="2"
             android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
             android:textColor="@color/text_color_main"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="18sp" />
 
         <TextView
             android:id="@+id/race_locale"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:maxLines="1"
-            android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextStyle.Gram.Regular"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="14sp" />
 
         <TextView
             android:id="@+id/circuitName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:lineSpacingExtra="0dp"
             android:maxLines="1"
-            android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
-            android:textSize="16sp" />
+            android:textAppearance="@style/TextStyle.Gram.Regular"
+            android:textColor="@color/text_color_secondary"
+            android:textSize="13sp"
+            android:textStyle="normal" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/separator_header" />
 
         <LinearLayout
             android:id="@+id/podium_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="12dp"
             android:orientation="vertical"
-            android:visibility="gone"
-            android:layout_marginBottom="10dp">
+            android:visibility="gone">
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -168,18 +177,18 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="5dp">
                     <com.google.android.material.imageview.ShapeableImageView
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                         android:id="@+id/stripedImg_first"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/background_striped_lines_white"/>
+                        android:background="@drawable/background_striped_lines_white"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide" />
                     <ImageView
                         android:id="@+id/firstPlace_image"
                         android:layout_width="match_parent"
                         android:layout_height="84dp"
+                        android:layout_alignParentBottom="true"
                         android:contentDescription="@string/driverimage"
-                        android:scaleType="fitCenter"
-                        android:layout_alignParentBottom="true"/>
+                        android:scaleType="fitCenter" />
                 </RelativeLayout>
                 <RelativeLayout
                     android:layout_width="0dp"
@@ -188,18 +197,18 @@
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp">
                     <com.google.android.material.imageview.ShapeableImageView
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                         android:id="@+id/stripedImg_second"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/background_striped_lines_white"/>
+                        android:background="@drawable/background_striped_lines_white"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide" />
                     <ImageView
                         android:id="@+id/secondPlace_image"
                         android:layout_width="match_parent"
                         android:layout_height="84dp"
+                        android:layout_alignParentBottom="true"
                         android:contentDescription="@string/driverimage"
-                        android:scaleType="fitCenter"
-                        android:layout_alignParentBottom="true"/>
+                        android:scaleType="fitCenter" />
                 </RelativeLayout>
                 <RelativeLayout
                     android:layout_width="0dp"
@@ -207,104 +216,106 @@
                     android:layout_weight="1"
                     android:layout_marginStart="5dp">
                     <com.google.android.material.imageview.ShapeableImageView
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
                         android:id="@+id/stripedImg_third"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@drawable/background_striped_lines_white"/>
+                        android:background="@drawable/background_striped_lines_white"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide" />
                     <ImageView
                         android:id="@+id/thirdPlace_image"
                         android:layout_width="match_parent"
                         android:layout_height="84dp"
+                        android:layout_alignParentBottom="true"
                         android:contentDescription="@string/driverimage"
-                        android:scaleType="fitCenter"
-                        android:layout_alignParentBottom="true"/>
+                        android:scaleType="fitCenter" />
                 </RelativeLayout>
             </LinearLayout>
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
+                android:layout_marginTop="8dp"
                 android:baselineAligned="false"
-                android:gravity="bottom"
                 android:orientation="horizontal"
                 android:weightSum="3">
-                <RelativeLayout
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal"
                     android:layout_marginEnd="5dp">
                     <TextView
-                        android:layout_width="15dp"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
                         android:text="@string/one"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="13sp" />
                     <TextView
                         android:id="@+id/firstPlace_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:textAlignment="center"
+                        android:maxLines="1"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                </RelativeLayout>
-                <RelativeLayout
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="17sp" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal"
                     android:layout_marginStart="5dp"
                     android:layout_marginEnd="5dp">
                     <TextView
-                        android:layout_width="15dp"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
                         android:text="@string/two"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="13sp" />
                     <TextView
                         android:id="@+id/secondPlace_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:textAlignment="center"
+                        android:maxLines="1"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                </RelativeLayout>
-                <RelativeLayout
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="17sp" />
+                </LinearLayout>
+                <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal"
                     android:layout_marginStart="5dp">
                     <TextView
-                        android:layout_width="15dp"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
                         android:text="@string/three"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
+                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"
+                        android:textColor="@color/round_color"
+                        android:textSize="13sp" />
                     <TextView
                         android:id="@+id/thirdPlace_code"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
                         android:includeFontPadding="false"
-                        android:lineSpacingExtra="0dp"
-                        android:textAlignment="center"
+                        android:maxLines="1"
                         android:textAllCaps="true"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes" />
-                </RelativeLayout>
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
+                        android:textSize="17sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -312,7 +323,9 @@
             android:id="@+id/status_row"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
+            android:minHeight="34dp"
             android:orientation="horizontal"
             android:visibility="gone">
             <View
@@ -328,35 +341,36 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:includeFontPadding="false"
-                android:lineSpacingExtra="0dp"
+                android:lineSpacingExtra="2dp"
                 android:textAppearance="@style/TextStyle.Gram.Regular"
-                android:textStyle="bold"
                 android:textColor="@color/text_color_main"
-                android:textSize="14sp" />
+                android:textSize="14sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:id="@+id/info_line"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:lineSpacingExtra="0dp"
             android:maxLines="2"
             android:textAppearance="@style/TextStyle.Gram.Regular"
             android:textColor="@color/text_color_secondary"
-            android:textSize="14sp"
+            android:textSize="13sp"
             android:visibility="gone" />
 
         <TextView
             android:id="@+id/save_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
+            android:layout_marginTop="6dp"
             android:ellipsize="end"
+            android:includeFontPadding="false"
             android:maxLines="1"
             android:textAppearance="@style/TextStyle.Gram.Regular"
             android:textColor="@color/text_color_secondary"
-            android:textSize="14sp" />
+            android:textSize="12sp" />
     </LinearLayout>
 </FrameLayout>

@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="130dp"
             android:backgroundTint="@color/colorPrimary">
-            <ImageView
+            <com.google.android.material.imageview.ShapeableImageView
                 android:id="@+id/driver_image"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
