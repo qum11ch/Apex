@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -56,14 +57,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class teamsStandingsActivity extends AppCompatActivity {
     ImageButton showDrivers, showSchedule, showHomePage, showAccount;
-    private View teamStndLine;
     private List<teamsList> datum;
     private RecyclerView recyclerView;
-    private Button teamsStandings_2024, teamsStandings_2025;
     private teamsStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
     private String mCurrentSeason;
+    private int loadToken = 0;
     private FirebaseStorage storage;
     private StorageReference storageRef;
     private DatabaseReference rootRef;
@@ -90,39 +90,24 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         currentSeason = mCurrentSeason;
 
+        // season_year_title
+        android.widget.TextView seasonYearTitle = findViewById(R.id.seasonYear);
+        if (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()) {
+            seasonYearTitle.setText(mCurrentSeason.trim());
+        }
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
-        teamStndLine = findViewById(R.id.teamStndLine);
-
-        teamsStandings_2024 = findViewById(R.id.teamsStandings_2024);
-        teamsStandings_2025 = findViewById(R.id.teamsStandings_2025);
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
         rootRef = FirebaseDatabase.getInstance().getReference();
 
-        String buttonText_2024, buttonText_2025;
-        if (Locale.getDefault().getLanguage().equals("ru")){
-            buttonText_2024 = getText(R.string.past_season_teams) + " 2024";
-            buttonText_2025 = getText(R.string.past_season_teams) + " 2025";
-        }else{
-            buttonText_2024 = "2024 " + getText(R.string.past_season_teams);
-            buttonText_2025 = "2025 " + getText(R.string.past_season_teams);
-        }
-        teamsStandings_2024.setVisibility(View.GONE);
-        teamsStandings_2024.setOnClickListener(v -> {
-            Intent intent = new Intent(teamsStandingsActivity.this,
-                    pastSeasonTeamsStandingsActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("season", "2024");
-            bundle.putString("currentSeason", mCurrentSeason);
-            intent.putExtras(bundle);
-            teamsStandingsActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
-        });
+        RelativeLayout prevTeamsStandings = findViewById(R.id.prevTeamsStandings);
+        Button prevTeamsStandingsButton = findViewById(R.id.prevTeamsStandingsButton);
 
-        teamsStandings_2025.setText(R.string.ps_past_seasons_button);
-        teamsStandings_2025.setOnClickListener(v -> {
+        prevTeamsStandingsButton.setText(R.string.ps_past_seasons_button);
+        prevTeamsStandings.setOnClickListener(v -> {
             Intent intent = new Intent(teamsStandingsActivity.this,
                     pastSeasonTeamsStandingsActivity.class);
             Bundle bundle = new Bundle();
@@ -147,12 +132,9 @@ public class teamsStandingsActivity extends AppCompatActivity {
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             recyclerView.setVisibility(View.GONE);
-            teamsStandings_2024.setVisibility(View.GONE);
-            teamsStandings_2025.setVisibility(View.GONE);
-            teamStndLine.setVisibility(View.GONE);
             shimmerFrameLayout.setVisibility(View.VISIBLE);
             shimmerFrameLayout.startShimmer();
-            datum = new ArrayList<>();
+            datum.clear();
             getTeamStanding(Integer.toString(currentDate.getYear()));
             swipeLayout.setRefreshing(false);
             adapter.notifyDataSetChanged();
@@ -367,6 +349,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
     }
 
     private void getTeamStanding(String currentYear){
+        final int token = ++loadToken;
         RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
@@ -398,7 +381,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
                                     StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
 
-                                    rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                    rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                         @Override
                                         public void onDataChange(@NonNull DataSnapshot snapshot) {
                                             ArrayList<String> teamDrivers = new ArrayList<>();
@@ -416,20 +399,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     smth.setSeason(mCurrentSeason);
                                                     smth.setImageUrl(mTeamCar);
                                                     smth.setTeamColor(mTeamColor);
+                                                    if (token != loadToken) return;
                                                     datum.add(smth);
 
                                                     hideShimmer(recyclerView, shimmerFrameLayout);
 
-
-                                                    teamStndLine.animate()
-                                                            .setDuration(500)
-                                                            .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
-
-                                                    teamsStandings_2025.animate()
-                                                            .setDuration(500)
-                                                            .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
-
-                                                    adapter.notifyItemInserted(datum.size() - 1);
+                                                    sortStandings();
+                                                    adapter.notifyDataSetChanged();
                                                 }
 
                                                 @Override
@@ -450,7 +426,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                         }
                         else{
                             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                            rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
+                            rootRef.child("constructors").orderByChild("lastSeasonPos").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     ArrayList<String> firstTeam = new ArrayList<>();
@@ -458,7 +434,8 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                     firstTeam.add("");
                                     teamsList first = new teamsList("","","","", true);
                                     first.setDrivers(firstTeam);
-                                    datum.add(first);
+                                    if (token != loadToken) return;
+                                                    datum.add(first);
 
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
@@ -468,7 +445,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                         StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
 
                                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        rootRef.child("driverLineUp/season/" + currentYear + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 ArrayList<String> teamDrivers = new ArrayList<>();
@@ -481,19 +458,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 smth.setDrivers(teamDrivers);
                                                 smth.setImageUrl(mTeamCar);
                                                 smth.setTeamColor(teamColor);
-                                                datum.add(smth);
+                                                if (token != loadToken) return;
+                                                    datum.add(smth);
 
                                                 hideShimmer(recyclerView, shimmerFrameLayout);
 
-                                                teamStndLine.animate()
-                                                        .setDuration(500)
-                                                        .withEndAction(() -> teamStndLine.setVisibility(View.VISIBLE)).start();
-
-                                                teamsStandings_2025.animate()
-                                                        .setDuration(500)
-                                                        .withEndAction(() -> teamsStandings_2025.setVisibility(View.VISIBLE)).start();
-
-                                                adapter.notifyItemInserted(datum.size() - 1);
+                                                sortStandings();
+                                                    adapter.notifyDataSetChanged();
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
@@ -516,6 +487,19 @@ public class teamsStandingsActivity extends AppCompatActivity {
                     }
                 }, error -> Toast.makeText(teamsStandingsActivity.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
         queue.add(jsonObjectRequest2);
+    }
+
+    // standings come back from Firebase in arbitrary order: keep the list sorted by position
+    private void sortStandings() {
+        java.util.Collections.sort(datum, (a, b) -> Integer.compare(positionOf(a), positionOf(b)));
+    }
+
+    private static int positionOf(teamsList team) {
+        try {
+            return Integer.parseInt(team.getPosition().trim());
+        } catch (RuntimeException error) {
+            return Integer.MAX_VALUE;
+        }
     }
 
     public static String getLocalizedCity(String cityName) {

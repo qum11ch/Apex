@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -53,13 +54,11 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class driversStandingsActivity extends AppCompatActivity {
     ImageButton showTeams, showSchedule, showHomePage, showAccount;
-    private View driverStndLine;
     private List<driversList> datum;
     private RecyclerView recyclerView;
     private driversStandingsAdapter adapter;
     private ShimmerFrameLayout shimmerFrameLayout;
     private SwipeRefreshLayout swipeLayout;
-    private Button driversStandings_2024, driversStandings_2025;
     private String mCurrentSeason;
     private StorageReference storageRef;
     private DatabaseReference rootRef;
@@ -85,6 +84,12 @@ public class driversStandingsActivity extends AppCompatActivity {
 
         currentSeason = mCurrentSeason;
 
+        // season_year_title
+        android.widget.TextView seasonYearTitle = findViewById(R.id.seasonYear);
+        if (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()) {
+            seasonYearTitle.setText(mCurrentSeason.trim());
+        }
+
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
 
@@ -92,8 +97,6 @@ public class driversStandingsActivity extends AppCompatActivity {
         // recyclerView.setHasFixedSize(true);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         recyclerView.setNestedScrollingEnabled(false);
-
-        driverStndLine = findViewById(R.id.driverStndLine);
 
         datum = new ArrayList<>();
 
@@ -105,18 +108,15 @@ public class driversStandingsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         LocalDate currentDate = LocalDate.now();
-        driversStandings_2024 = findViewById(R.id.driversStandings_2024);
-        driversStandings_2025 = findViewById(R.id.driversStandings_2025);
+        RelativeLayout prevDriversStandings = findViewById(R.id.prevDriversStandings);
+        Button prevDriversStandingsButton = findViewById(R.id.prevDriversStandingsButton);
 
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             recyclerView.setVisibility(View.GONE);
-            driversStandings_2024.setVisibility(View.GONE);
-            driversStandings_2025.setVisibility(View.GONE);
-            driverStndLine.setVisibility(View.GONE);
             shimmerFrameLayout.setVisibility(View.VISIBLE);
             shimmerFrameLayout.startShimmer();
-            datum = new ArrayList<>();
+            datum.clear(); // main_refresh_fix: keep the list the adapter holds
             getStanding(Integer.toString(currentDate.getYear()));
 
             swipeLayout.setRefreshing(false);
@@ -125,28 +125,8 @@ public class driversStandingsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        String buttonText_2024, buttonText_2025;
-        if (Locale.getDefault().getLanguage().equals("ru")){
-            buttonText_2024 = getText(R.string.past_season_drivers) + " 2024";
-            buttonText_2025 = getText(R.string.past_season_drivers) + " 2025";
-        }else{
-            buttonText_2024 = "2024 " + getText(R.string.past_season_drivers);
-            buttonText_2025 = "2025 " + getText(R.string.past_season_drivers);
-        }
-        driversStandings_2024.setVisibility(View.GONE);
-        driversStandings_2024.setOnClickListener(v -> {
-            Intent intent = new Intent(driversStandingsActivity.this,
-                    pastSeasonDriversStandingsActivity.class);
-            Bundle bundle = new Bundle();
-            bundle.putString("season", "2024");
-            bundle.putString("currentSeason", mCurrentSeason);
-            intent.putExtras(bundle);
-            driversStandingsActivity.this.startActivity(intent);
-            overridePendingTransition(0, 0);
-        });
-
-        driversStandings_2025.setText(R.string.ps_past_seasons_button);
-        driversStandings_2025.setOnClickListener(v -> {
+        prevDriversStandingsButton.setText(R.string.ps_past_seasons_button);
+        prevDriversStandings.setOnClickListener(v -> {
             Intent intent = new Intent(driversStandingsActivity.this,
                     pastSeasonDriversStandingsActivity.class);
             Bundle bundle = new Bundle();
@@ -433,20 +413,10 @@ public class driversStandingsActivity extends AppCompatActivity {
                             }
                             hideShimmer(recyclerView, shimmerFrameLayout);
 
-                            driverStndLine.animate()
-                                    .setDuration(500)
-                                    .withEndAction(() -> driverStndLine.setVisibility(View.VISIBLE))
-                                    .start();
-
-                            driversStandings_2025.animate()
-                                    .setDuration(500)
-                                    .withEndAction(() -> driversStandings_2025.setVisibility(View.VISIBLE))
-                                    .start();
-
-                            adapter.notifyItemInserted(datum.size() - 1);
+                            adapter.notifyDataSetChanged();
                         }else{
                             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                            rootRef.child("constructors").orderByChild("lastSeasonPos").addValueEventListener(new ValueEventListener() {
+                            rootRef.child("constructors").orderByChild("lastSeasonPos").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
                                     datum.add(new driversList("","","","","","","",
@@ -456,7 +426,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         String constructorsName = child.child("name").getValue(String.class);
                                         String teamColor = "#" + child.child("darkColor").getValue(String.class);
 
-                                        rootRef.child("driverLineUp/season/" + currentSeason + "/" + constructorId).addValueEventListener(new ValueEventListener() {
+                                        rootRef.child("driverLineUp/season/" + currentSeason + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot snapshot) {
                                                 for (DataSnapshot driverDataSnapshot : snapshot.child("drivers").getChildren()) {
@@ -488,17 +458,7 @@ public class driversStandingsActivity extends AppCompatActivity {
 
                                                             hideShimmer(recyclerView, shimmerFrameLayout);
 
-                                                            driverStndLine.animate()
-                                                                    .setDuration(500)
-                                                                    .withEndAction(() -> driverStndLine.setVisibility(View.VISIBLE))
-                                                                    .start();
-
-                                                            driversStandings_2025.animate()
-                                                                    .setDuration(500)
-                                                                    .withEndAction(() -> driversStandings_2025.setVisibility(View.VISIBLE))
-                                                                    .start();
-
-                                                            adapter.notifyItemInserted(datum.size() - 1);
+                                                            adapter.notifyDataSetChanged();
                                                         }
 
                                                         @Override

@@ -1,4 +1,5 @@
 /build
+/app/release
 
 # Firebase
 /app/google-services.json

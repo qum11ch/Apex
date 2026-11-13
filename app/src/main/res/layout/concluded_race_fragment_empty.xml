@@ -73,6 +73,7 @@
 
                 <Button
                     android:id="@+id/seasonResults_2025"
+                    android:visibility="gone"
                     style="@style/FlatButtonStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

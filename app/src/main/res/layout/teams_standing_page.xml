@@ -52,6 +52,65 @@
 
         </LinearLayout>
 
+                <!-- past seasons: season title + link -->
+        <LinearLayout
+            android:background="@color/color_gradient"
+            android:id="@+id/past_seasons_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingTop="6dp"
+            android:paddingEnd="10dp"
+            android:gravity="center_vertical"
+            android:minHeight="44dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/seasonYear"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPlacement"
+                android:textColor="@color/text_color_main" />
+
+            <RelativeLayout
+                android:id="@+id/prevTeamsStandings"
+                android:layout_gravity="end"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="44dp">
+
+                <Button
+                    android:id="@+id/prevTeamsStandingsButton"
+                    android:layout_toStartOf="@id/chevron"
+                    style="@style/ItemStylePreds"
+                    android:clickable="false"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:textAlignment="textEnd"
+                    android:includeFontPadding="false"
+                    android:layout_centerVertical="true"
+                    android:minWidth="0dp"
+                    android:minHeight="0dp"
+                    android:textAllCaps="false"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.Big"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="20sp" />
+
+                <ImageView
+                    android:id="@+id/chevron"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="end|center_vertical"
+                    android:importantForAccessibility="no"
+                    android:src="@drawable/ic_chevron_right_small"
+                    app:tint="@color/text_color_main" />
+            </RelativeLayout>
+        </LinearLayout>
+
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipe_layout"
             style="@style/BackgroundGradient"
@@ -113,45 +172,6 @@
                         </LinearLayout>
 
                     </com.facebook.shimmer.ShimmerFrameLayout>
-
-                    <Button
-                        android:id="@+id/teamsStandings_2025"
-                        style="@style/PrevResultsStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="60dp"
-                        android:layout_below="@id/recyclerview_currentTeams"
-                        android:visibility="gone"
-                        android:textColor="@color/text_color_main"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
-                        android:textSize="18sp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="5dp"
-                        android:textAlignment="textStart" />
-
-                    <View
-                        android:id="@+id/teamStndLine"
-                        android:layout_width="match_parent"
-                        android:layout_height="2dp"
-                        android:layout_below="@id/teamsStandings_2025"
-                        android:visibility="gone"
-                        android:background="@color/text_color_main" />
-
-                    <Button
-                        android:id="@+id/teamsStandings_2024"
-                        style="@style/PrevResultsStyleButtom"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:minHeight="60dp"
-                        android:layout_below="@id/teamStndLine"
-                        android:visibility="gone"
-                        android:textColor="@color/text_color_main"
-                        android:textAppearance="@style/TextStyle.Gram.Bold"
-                        android:textSize="18sp"
-                        android:paddingStart="20dp"
-                        android:paddingEnd="5dp"
-                        android:textAlignment="textStart" />
-
                 </RelativeLayout>
 
             </androidx.core.widget.NestedScrollView>

@@ -70,6 +70,7 @@
     <color name="account_settings_button_color">#8c8c8c</color>
     <color name="header_color">#a1000b</color>
     <color name="header_color_gradient">#a1000b</color>
+    <color name="color_gradient">#FFFFFFFF</color>
     <color name="separator_header">#a1000b</color>
     <color name="round_color">#a1000b</color>
     <color name="month_color">#DFDFDF</color>

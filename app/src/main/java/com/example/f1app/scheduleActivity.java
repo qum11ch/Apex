@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -95,6 +96,12 @@ public class scheduleActivity extends AppCompatActivity {
 
         currentSeason = mCurrentSeason;
 
+        // season_year_title
+        android.widget.TextView seasonYearTitle = findViewById(R.id.seasonYear);
+        if (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()) {
+            seasonYearTitle.setText(mCurrentSeason.trim());
+        }
+
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
             cardView.setVisibility(View.GONE);
@@ -119,6 +126,17 @@ public class scheduleActivity extends AppCompatActivity {
 
         showAccount = findViewById(R.id.showAccount);
         showAccount.setOnClickListener(v -> openAccountOrLogin());
+
+        View pastSeasonsButton = findViewById(R.id.pastSeasonsButton);
+        ((android.widget.TextView) pastSeasonsButton).setText(R.string.ps_past_seasons_button);
+
+        RelativeLayout pastSeasons = findViewById(R.id.pastSeasons);
+        pastSeasons.setOnClickListener(v -> {
+            Intent intent = new Intent(scheduleActivity.this, pastSeasonScheduleActivity.class);
+            intent.putExtra("currentSeason", currentSeason);
+            startActivity(intent);
+            overridePendingTransition(0, 0);
+        });
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
