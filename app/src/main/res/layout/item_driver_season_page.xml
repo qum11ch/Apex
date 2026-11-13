@@ -1,83 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- One season of the driver: the portrait of that year, the year with the team of that year, the season results. -->
-<LinearLayout
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/season_card"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="8dp">
-
-    <FrameLayout
-        android:id="@+id/season_photo_block"
-        style="@style/ItemStylePreds"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+    <LinearLayout
+        android:id="@+id/season_card"
         android:layout_width="match_parent"
-        android:layout_height="190dp">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp"
+        tools:ignore="UselessParent">
 
-        <!-- the portrait sits at the bottom of the block whatever its proportions -->
-        <ImageView
-            android:id="@+id/season_photo"
+        <FrameLayout
+            android:id="@+id/season_photo_block"
+            style="@style/ItemStylePreds"
+            android:layout_width="match_parent"
+            android:layout_height="190dp">
+
+            <ImageView
+                android:id="@+id/season_photo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/driverimage"
+                android:maxHeight="190dp"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/season_missing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/team_cars_missing"
+                android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                android:textColor="@color/grey"
+                android:textSize="14sp"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/driverimage"
-            android:maxHeight="190dp"
-            android:scaleType="fitCenter" />
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp">
 
-        <TextView
-            android:id="@+id/season_missing"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/season_year"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                android:textColor="@color/text_color_main"
+                android:textSize="22sp" />
+
+            <TextView
+                android:id="@+id/season_team"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:gravity="end"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:textAppearance="@style/TextStyle.GoodTiming.Regular"
+                android:textColor="@color/text_color_main"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/season_results"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="@string/team_cars_missing"
-            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-            android:textColor="@color/grey"
-            android:textSize="14sp"
-            android:visibility="gone" />
-    </FrameLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp">
-
-        <TextView
-            android:id="@+id/season_year"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:includeFontPadding="false"
-            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-            android:textColor="@color/text_color_main"
-            android:textSize="22sp" />
-
-        <TextView
-            android:id="@+id/season_team"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:textAppearance="@style/TextStyle.GoodTiming.Regular"
-            android:textColor="@color/text_color_main"
-            android:textSize="16sp" />
+            android:layout_marginTop="10dp"
+            android:background="@drawable/bg_results_card"
+            android:baselineAligned="false"
+            android:divider="@drawable/divider_results"
+            android:orientation="horizontal"
+            android:showDividers="middle" />
     </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/season_results"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/bg_results_card"
-        android:baselineAligned="false"
-        android:divider="@drawable/divider_results"
-        android:orientation="horizontal"
-        android:showDividers="middle" />
-</LinearLayout>
+</FrameLayout>

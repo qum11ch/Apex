@@ -422,11 +422,7 @@ final class teamCarsSection {
             background.setCornerRadius(16 * density);
             background.setStroke(Math.round(2 * density), color);
 
-            int sideInset = Math.round(8 * density);
-            holder.card.setBackground(new InsetDrawable(
-                    background,
-                    sideInset, 0, sideInset, 0
-            ));
+            holder.card.setBackground(background);
 
             int soft = ColorUtils.compositeColors(
                     ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
@@ -437,19 +433,6 @@ final class teamCarsSection {
         void setPageWidth(int width) {
             if (width > 0 && pageWidth != width) {
                 pageWidth = width;
-                notifyDataSetChanged();
-            }
-        }
-
-        void setPageSize(int viewportWidth) {
-            if (viewportWidth <= 0) return;
-
-            int gap = Math.round(8 * host.requireContext().getResources().getDisplayMetrics().density);
-            int newPageWidth = Math.max(1, viewportWidth - gap);
-
-            if (pageWidth != newPageWidth || pageGap != gap) {
-                pageWidth = newPageWidth;
-                pageGap = gap;
                 notifyDataSetChanged();
             }
         }

@@ -486,12 +486,7 @@ final class driverSeasonsSection {
             background.setCornerRadius(16 * density);
             background.setStroke(Math.round(2 * density), color);
 
-            int sideInset = Math.round(8 * density);
-            holder.card.setBackground(new InsetDrawable(
-                    background,
-                    sideInset, 0, sideInset, 0
-            ));
-
+            holder.card.setBackground(background);
 
             int soft = ColorUtils.compositeColors(
                     ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
