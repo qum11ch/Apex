@@ -344,7 +344,8 @@
                             android:paddingStart="14dp"
                             android:paddingTop="10dp"
                             android:paddingEnd="14dp"
-                            android:paddingBottom="10dp">
+                            android:paddingBottom="10dp"
+                            android:id="@+id/submittedAtRow">
 
                             <TextView
                                 android:id="@+id/submittedAtInfo"
@@ -386,6 +387,7 @@
                             android:textSize="15sp" />
 
                         <LinearLayout
+                            android:id="@+id/pointsEarnedRow"
                             android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"

@@ -197,6 +197,7 @@ public class predictionFormActivity extends AppCompatActivity {
         statusLayout = findViewById(R.id.statusLayout);
         pointsEarned = findViewById(R.id.pointsEarned);
         pointsEarnedInfo = findViewById(R.id.pointsEarnedInfo);
+
         submittedAtInfo = findViewById(R.id.submittedAtInfo);
         selectedOptionCard = findViewById(R.id.selectedOptionCard);
         selectedOptionImage = findViewById(R.id.selectedOptionImage);
@@ -1307,9 +1308,9 @@ public class predictionFormActivity extends AppCompatActivity {
                     ));
 
             submittedAt.setText(submittedText);
-        }else{
-            submittedAtInfo.setVisibility(View.GONE);
-            submittedAt.setVisibility(View.GONE);
+            findViewById(R.id.submittedAtRow).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.submittedAtRow).setVisibility(View.GONE);
         }
 
         String result = answer.getResult();
@@ -1328,11 +1329,10 @@ public class predictionFormActivity extends AppCompatActivity {
         answerResult.setText(answerResultText);
 
         if (answer.getPoints() != null) {
-            String pointsText = formatPoints(answer.getPoints());
-            pointsEarned.setText(pointsText);
-        }else{
-            pointsEarned.setVisibility(View.GONE);
-            pointsEarnedInfo.setVisibility(View.GONE);
+            pointsEarned.setText(formatPoints(answer.getPoints()));
+            findViewById(R.id.pointsEarnedRow).setVisibility(View.VISIBLE);
+        } else {
+            findViewById(R.id.pointsEarnedRow).setVisibility(View.GONE);
         }
 
     }

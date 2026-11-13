@@ -504,4 +504,47 @@
         <item name="android:minHeight">48dp</item>
         <item name="android:stateListAnimator">@null</item>
     </style>
+
+
+    <style name="Widget.Apex.Pred.Big" parent="TextStyle.Audiowide.ForPTS">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Number" parent="TextStyle.Audiowide.ForPTS">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:includeFontPadding">false</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Title" parent="TextStyle.GoodTiming.Bold">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Section" parent="TextStyle.GoodTiming.Bold">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Code" parent="TextStyle.GoodTiming.Bold">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Body" parent="TextStyle.GoodTiming.Regular">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Secondary" parent="TextStyle.Gram.Regular.Simple">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">13sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Caption" parent="TextStyle.Gram.Regular.Simple">
+        <item name="android:textColor">@color/grey</item>
+        <item name="android:textSize">12sp</item>
+    </style>
 </resources>
