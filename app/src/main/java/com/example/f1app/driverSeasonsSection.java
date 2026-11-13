@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import android.graphics.drawable.InsetDrawable;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -485,7 +486,12 @@ final class driverSeasonsSection {
             background.setCornerRadius(16 * density);
             background.setStroke(Math.round(2 * density), color);
 
-            holder.card.setBackground(background);
+            int sideInset = Math.round(8 * density);
+            holder.card.setBackground(new InsetDrawable(
+                    background,
+                    sideInset, 0, sideInset, 0
+            ));
+
 
             int soft = ColorUtils.compositeColors(
                     ColorUtils.setAlphaComponent(color, 31), Color.WHITE);

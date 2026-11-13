@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.graphics.Color;
+import android.graphics.drawable.InsetDrawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -41,12 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * "Cars" block of the team statistics: a swipeable list of seasons (newest first), each page has the
- * car photo, the year, the name of the team that year and the season results (place, points, wins).
- * Photos and results of every season are loaded once; a year without a photo says so and is written
- * to the log (tag TeamCars, lines "NO PHOTO ...").
- */
 final class teamCarsSection {
 
     private static final String TAG = "TeamCars";
@@ -75,6 +70,7 @@ final class teamCarsSection {
     private CarAdapter adapter;
 
     private int pageWidth;
+    private int pageGap;
 
     teamCarsSection(Fragment host, View root, String teamId, String teamName, String currentSeason) {
         this.host = host;
@@ -426,7 +422,11 @@ final class teamCarsSection {
             background.setCornerRadius(16 * density);
             background.setStroke(Math.round(2 * density), color);
 
-            holder.card.setBackground(background);
+            int sideInset = Math.round(8 * density);
+            holder.card.setBackground(new InsetDrawable(
+                    background,
+                    sideInset, 0, sideInset, 0
+            ));
 
             int soft = ColorUtils.compositeColors(
                     ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
@@ -440,6 +440,20 @@ final class teamCarsSection {
                 notifyDataSetChanged();
             }
         }
+
+        void setPageSize(int viewportWidth) {
+            if (viewportWidth <= 0) return;
+
+            int gap = Math.round(8 * host.requireContext().getResources().getDisplayMetrics().density);
+            int newPageWidth = Math.max(1, viewportWidth - gap);
+
+            if (pageWidth != newPageWidth || pageGap != gap) {
+                pageWidth = newPageWidth;
+                pageGap = gap;
+                notifyDataSetChanged();
+            }
+        }
+
 
         final class Holder extends RecyclerView.ViewHolder {
             final View card;
