@@ -476,4 +476,32 @@
         <item name="android:textAppearance">@style/TextStyle.Gram.Regular.ForTab</item>
         <item name="android:textColor">@color/white</item>
     </style>
+
+
+    <!-- ===== Home screen (main_redesign_v2) ===== -->
+    <style name="Widget.Apex.SectionHeader" parent="TextStyle.GoodTiming.Bold">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Widget.Apex.MainButton" parent="ButtonStyle">
+        <item name="android:textAppearance">@style/TextStyle.GoodTiming.Bold.ForHeader</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:gravity">center</item>
+        <item name="android:elevation">0dp</item>
+        <item name="android:enabled">true</item>
+    </style>
+
+    <!-- quiet button: dark card, no red -->
+    <style name="Widget.Apex.SecondaryButton" parent="Widget.Apex.MainButton">
+        <item name="android:background">@drawable/item_style_preds</item>
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
 </resources>

@@ -151,6 +151,19 @@ public class MainActivity extends AppCompatActivity {
 
         ViewCompat.requestApplyInsets(root);
 
+        // main_footer_padding: the list ends above the footer, whatever its height
+        final View scrollContent = findViewById(R.id.nestedScrollView);
+        footerContainer.addOnLayoutChangeListener((v, l, t, r, b, oldL, oldT, oldR, oldB) -> {
+            ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            final int need = (b - t) + lp.bottomMargin
+                    + Math.round(8 * getResources().getDisplayMetrics().density);
+            if (scrollContent.getPaddingBottom() != need) {
+                scrollContent.post(() -> scrollContent.setPadding(
+                        scrollContent.getPaddingLeft(), scrollContent.getPaddingTop(),
+                        scrollContent.getPaddingRight(), need));
+            }
+        });
+
         if (authSessionGate.redirectIfRequired(this, null)) {
             return;
         }
