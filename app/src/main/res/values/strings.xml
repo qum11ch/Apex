@@ -846,7 +846,7 @@
     <string name="bh3_counts">Not detected: %1$d\nUncertain: %2$d\nSessions examined: %3$d · request errors: %4$d</string>
     <string name="bh3_rain_caption">races with rain detected in the checked interval</string>
     <string name="bh3_sc_caption">races with SC detected</string>
-    <string name="bh3_vsc_counts">VSC — detected: %1$d · not detected: %2$d · insufficient data: %3$d</string>
+    <string name="bh3_vsc_counts">VSC — detected: %1$d\VSC not detected: %2$d\nInsufficient data: %3$d</string>
     <string name="bh3_coverage_gap">No rain was detected in the available readings, but they do not provide sufficient coverage of the full race interval.</string>
     <string name="bh3_window_unknown">Insufficient data to determine the start or end of the checked race interval.</string>
     <string name="bh3_network_error">Could not load data. The result is undetermined.</string>

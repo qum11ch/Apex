@@ -71,8 +71,7 @@ public final class predictionDriverPointsRenderer {
         if (header) {
             for (int id : new int[]{R.id.dpRowLabel, R.id.dpRowA, R.id.dpRowB}) {
                 TextView text = view.findViewById(id);
-                text.setTextSize(12);
-                text.setAlpha(0.65f);
+                androidx.core.widget.TextViewCompat.setTextAppearance(text, R.style.Widget_Apex_Pred_Caption);
             }
         }
         parent.addView(view);

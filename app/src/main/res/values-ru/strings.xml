@@ -821,7 +821,7 @@
     <string name="bh3_counts">Не обнаружено: %1$d\nНе установлено: %2$d\nРассмотрено сессий: %3$d · ошибок запросов: %4$d</string>
     <string name="bh3_rain_caption">гонок с обнаруженным дождём в проверяемом интервале</string>
     <string name="bh3_sc_caption">гонок с обнаруженным SC</string>
-    <string name="bh3_vsc_counts">VSC — обнаружено: %1$d · не обнаружено: %2$d · недостаточно данных: %3$d</string>
+    <string name="bh3_vsc_counts">VSC — обнаружено: %1$d\nБез обнаруженного VSC: %2$d\nНедостаточно данных: %3$d</string>
     <string name="bh3_coverage_gap">Дождь не обнаружен в доступных измерениях, но их недостаточно, чтобы проверить весь интервал гонки.</string>
     <string name="bh3_window_unknown">Недостаточно данных для определения начала или конца проверяемого интервала гонки.</string>
     <string name="bh3_network_error">Не удалось загрузить данные. Результат не установлен.</string>

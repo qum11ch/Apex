@@ -1,21 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="48dp"
     android:orientation="vertical"
+    android:paddingStart="14dp"
     android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    android:minHeight="48dp">
-    <TextView
-        android:id="@+id/bhRaceDate"
+    android:paddingEnd="14dp"
+    android:paddingBottom="10dp">
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        style="@style/Widget.Apex.Pred.Section" />
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/bhCircuitName"
+            style="@style/Widget.Apex.Pred.Section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/bhRaceDate"
+            android:layout_alignParentStart="true"/>
+        <TextView
+            android:id="@+id/bhRaceDate"
+            style="@style/Widget.Apex.Pred.Section"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"/>
+    </RelativeLayout>
+
     <TextView
         android:id="@+id/bhOutcome"
+        style="@style/Widget.Apex.Pred.Gram"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        style="@style/Widget.Apex.Pred.Section" />
+        android:layout_marginTop="2dp" />
 </LinearLayout>

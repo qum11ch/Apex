@@ -548,6 +548,16 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="Widget.Apex.Pred.Gram" parent="TextStyle.Gram.Regular.Simple">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
+    <style name="Widget.Apex.Pred.Gram.Bold" parent="TextStyle.Gram.Bold">
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">15sp</item>
+    </style>
+
     <!-- ===== Prediction screens, stage 3 ===== -->
     <style name="Widget.Apex.Pred.Vs" parent="TextStyle.GoodTiming.Bold">
         <item name="android:textColor">@color/red</item>

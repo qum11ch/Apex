@@ -83,7 +83,8 @@ public final class predictionBooleanHistoryRenderer {
         for (predictionBooleanHistoryLoader.Row item : data.rows) {
             View row = LayoutInflater.from(context).inflate(R.layout.item_prediction_boolean_history, rows, false);
 
-            set(row, R.id.bhRaceDate, item.circuit + " · " + item.date);
+            set(row, R.id.bhRaceDate, item.date);
+            set(row, R.id.bhCircuitName, item.circuit);
             set(row, R.id.bhOutcome, outcome(context, isRain, item));
 
             rows.addView(row);

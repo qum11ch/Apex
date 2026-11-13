@@ -1,24 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="48dp"
     android:gravity="center_vertical"
+    android:minHeight="48dp"
     android:orientation="horizontal"
+    android:paddingStart="14dp"
     android:paddingTop="8dp"
+    android:paddingEnd="14dp"
     android:paddingBottom="8dp">
+
     <TextView
         android:id="@+id/singleRaceName"
+        style="@style/Widget.Apex.Pred.Gram"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:layout_marginEnd="12dp"
-        style="@style/Widget.Apex.Pred.Body" />
+        android:layout_weight="1" />
+
     <TextView
         android:id="@+id/singleRaceValue"
+        style="@style/Widget.Apex.Pred.Section"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:gravity="end"
-        style="@style/Widget.Apex.Pred.Section" />
+        android:gravity="end" />
 </LinearLayout>

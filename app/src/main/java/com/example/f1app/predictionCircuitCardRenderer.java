@@ -38,10 +38,6 @@ public final class predictionCircuitCardRenderer {
                 data.season
         );
 
-        if (data.raceDate != null) {
-            race += " · " + data.raceDate;
-        }
-
         set(view, R.id.circuitRace, race);
         set(view, R.id.circuitName, circuitName(context, data.circuitId, data.circuitName));
         set(view, R.id.circuitPlace, place(context, data.location, data.country));
@@ -58,7 +54,7 @@ public final class predictionCircuitCardRenderer {
         String who = data.recordDriver == null ? "—" : data.recordDriver;
 
         if (data.recordYear != null) {
-            who += " · " + data.recordYear;
+            who += " (" + data.recordYear + ")";
         }
 
         set(view, R.id.circuitRecordWho, who);

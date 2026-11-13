@@ -187,7 +187,6 @@
                         android:layout_marginEnd="12dp"
                         android:background="@drawable/bg_results_card"
                         android:orientation="vertical"
-                        android:padding="14dp"
                         android:visibility="gone">
 
                         <TextView
@@ -199,7 +198,11 @@
                             android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
                             android:textColor="@color/text_color_main"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                        android:paddingStart="14dp"
+                        android:paddingTop="14dp"
+                        android:paddingEnd="14dp"
+                        android:paddingBottom="12dp" />
 
                         <TextView
                             android:id="@+id/predictionStatsBody"
@@ -208,13 +211,15 @@
                             android:layout_marginTop="8dp"
                             android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
                             android:textColor="@color/grey"
-                            android:textSize="14sp" />
+                            android:textSize="14sp"
+                        android:layout_marginStart="14dp"
+                        android:layout_marginEnd="14dp"
+                        android:layout_marginBottom="14dp" />
 
                         <FrameLayout
                             android:id="@+id/predictionStatsCustomContent"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
                             android:visibility="gone" />
 
                         <ProgressBar
@@ -226,7 +231,8 @@
                             android:indeterminate="true"
                             android:indeterminateTint="@color/progressBarColor"
                             android:indeterminateTintMode="src_atop"
-                            android:visibility="gone" />
+                            android:visibility="gone"
+                        android:layout_marginBottom="14dp" />
                     </LinearLayout>
 
                     <!-- race weekend card -->
@@ -237,9 +243,7 @@
                         android:layout_marginStart="12dp"
                         android:layout_marginTop="14dp"
                         android:layout_marginEnd="12dp"
-                        android:background="@drawable/bg_results_card"
                         android:orientation="vertical"
-                        android:padding="14dp"
                         android:visibility="gone">
 
                         <FrameLayout
@@ -272,17 +276,22 @@
 
                         <Button
                             android:id="@+id/predictionWeekendOpenButton"
-                            style="@style/ButtonStyle"
+                            style="@style/FlatButtonStyle"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:backgroundTint="@color/grey"
-                            android:minHeight="48dp"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_results_card"
+                            android:drawableEnd="@drawable/ic_chevron_right_small"
+                            android:drawableTint="@color/text_color_main"
+                            android:gravity="center_vertical|start"
+                            android:minHeight="60dp"
+                            android:paddingStart="16dp"
+                            android:paddingEnd="14dp"
                             android:text="@string/prediction_stats_open_weekend"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Regular"
-                            android:textColor="@color/stroke_option_color"
-                            android:textSize="12sp"
+                            android:textAllCaps="false"
+                            android:textAppearance="@style/TextStyle.Gram.Bold"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="16sp"
                             android:visibility="gone" />
                     </LinearLayout>
 
@@ -382,7 +391,7 @@
                             android:paddingTop="10dp"
                             android:paddingEnd="14dp"
                             android:paddingBottom="10dp"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                            android:textAppearance="@style/TextStyle.Gram.Bold"
                             android:textColor="@color/text_color_main"
                             android:textSize="15sp" />
 

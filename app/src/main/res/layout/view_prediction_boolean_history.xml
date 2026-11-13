@@ -1,17 +1,127 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-    <TextView android:id="@+id/bhHeading" style="@style/Widget.Apex.Pred.Title" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/bh_title" />
-    <TextView android:id="@+id/bhMessage" style="@style/Widget.Apex.Pred.Body" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
-    <LinearLayout android:id="@+id/bhStats" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-        <TextView android:id="@+id/bhRatio" style="@style/Widget.Apex.Pred.Big" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <TextView android:id="@+id/bhCaption" style="@style/Widget.Apex.Pred.Caption" android:layout_width="match_parent" android:layout_height="wrap_content" />
-        <TextView android:id="@+id/bhUnknown" style="@style/Widget.Apex.Pred.Caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
-        <TextView android:id="@+id/bhVirtual" style="@style/Widget.Apex.Pred.Body" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" />
-        <View android:layout_width="match_parent" android:layout_height="1dp" android:layout_marginTop="16dp" android:layout_marginBottom="12dp" android:alpha="0.12" android:background="@color/text_color_main" />
-        <TextView style="@style/Widget.Apex.Pred.Section" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/bh_recent" />
-        <LinearLayout android:id="@+id/bhRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:divider="@drawable/divider_results" android:orientation="vertical" android:showDividers="middle" />
-        <TextView android:id="@+id/bhEmpty" style="@style/Widget.Apex.Pred.Body" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/bh_empty" android:visibility="gone" />
-        <TextView android:id="@+id/bhRule" style="@style/Widget.Apex.Pred.Caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:visibility="gone" />
-        <TextView style="@style/Widget.Apex.Pred.Caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:text="@string/bh_source" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:divider="@drawable/divider_results"
+    android:showDividers="middle">
+
+    <TextView
+        android:id="@+id/bhHeading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp"
+        android:text="@string/bh_title"
+        style="@style/Widget.Apex.Pred.Title" />
+
+    <TextView
+        android:id="@+id/bhMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingStart="14dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="14dp"
+        android:paddingBottom="12dp"
+        style="@style/Widget.Apex.Pred.Body" />
+
+    <LinearLayout
+        android:id="@+id/bhStats"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:divider="@drawable/divider_results"
+        android:showDividers="middle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp">
+
+            <TextView
+                android:id="@+id/bhRatio"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/Widget.Apex.Pred.Big" />
+
+            <TextView
+                android:id="@+id/bhCaption"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                style="@style/Widget.Apex.Pred.Caption" />
+
+            <TextView
+                android:id="@+id/bhUnknown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/Widget.Apex.Pred.Caption" />
+
+            <TextView
+                android:id="@+id/bhVirtual"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                style="@style/Widget.Apex.Pred.Gram.Bold" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp"
+            android:text="@string/bh_recent"
+            style="@style/Widget.Apex.Pred.Gram.Bold" />
+
+        <LinearLayout
+            android:id="@+id/bhRows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/divider_results"
+            android:showDividers="middle" />
+
+        <TextView
+            android:id="@+id/bhEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp"
+            android:visibility="gone"
+            android:text="@string/bh_empty"
+            style="@style/Widget.Apex.Pred.Body" />
+
+        <TextView
+            android:id="@+id/bhRule"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp"
+            android:visibility="gone"
+            style="@style/Widget.Apex.Pred.Caption" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="14dp"
+            android:paddingTop="12dp"
+            android:paddingEnd="14dp"
+            android:paddingBottom="12dp"
+            android:text="@string/bh_source"
+            style="@style/Widget.Apex.Pred.Caption" />
     </LinearLayout>
 </LinearLayout>
