@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="44dp"
+    android:minHeight="48dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:paddingTop="8dp"
@@ -14,22 +14,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginEnd="8dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"/>
+        style="@style/Widget.Apex.Pred.Body" />
     <TextView
         android:id="@+id/trFinishesA"
         android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"
-        android:textStyle="bold"/>
+        style="@style/Widget.Apex.Pred.Section" />
     <TextView
         android:id="@+id/trFinishesB"
         android:layout_width="84dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"
-        android:textStyle="bold"/>
+        style="@style/Widget.Apex.Pred.Section" />
 </LinearLayout>

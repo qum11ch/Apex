@@ -199,13 +199,9 @@ public final class predictionTeamDuelRenderer {
         b.setText(valueB);
 
         if (header) {
-            labelView.setTextSize(12);
-            a.setTextSize(12);
-            b.setTextSize(12);
-
-            labelView.setAlpha(0.65f);
-            a.setAlpha(0.65f);
-            b.setAlpha(0.65f);
+            androidx.core.widget.TextViewCompat.setTextAppearance(labelView, R.style.Widget_Apex_Pred_Caption);
+            androidx.core.widget.TextViewCompat.setTextAppearance(a, R.style.Widget_Apex_Pred_Caption);
+            androidx.core.widget.TextViewCompat.setTextAppearance(b, R.style.Widget_Apex_Pred_Caption);
         }
 
         parent.addView(row);

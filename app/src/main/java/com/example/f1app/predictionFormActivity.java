@@ -1801,16 +1801,8 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private TextView createVerticalVsView(Context context) {
-        TextView vs = new TextView(context);
-
-        vs.setText("VS");
-        vs.setTextSize(16);
-        vs.setTypeface(null, Typeface.BOLD);
-        vs.setGravity(Gravity.CENTER);
-        vs.setTextColor(ContextCompat.getColor(context, R.color.red));
-        vs.setPadding(0, dpToPx(2), 0, dpToPx(2));
-
-        return vs;
+        return (TextView) android.view.LayoutInflater.from(context).inflate(
+                R.layout.view_prediction_vs_vertical, twoOptionsContainer, false);
     }
 
     private void selectHeadToHeadOption(int index) {
@@ -1826,23 +1818,8 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private TextView createVsView(Context context) {
-        TextView vs = new TextView(context);
-
-        vs.setText("VS");
-        vs.setTextSize(16);
-        vs.setTypeface(null, Typeface.BOLD);
-        vs.setTextColor(ContextCompat.getColor(context, R.color.red));
-        vs.setGravity(Gravity.CENTER);
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        dpToPx(25),
-                        LinearLayout.LayoutParams.MATCH_PARENT
-                );
-
-        vs.setLayoutParams(params);
-
-        return vs;
+        return (TextView) android.view.LayoutInflater.from(context).inflate(
+                R.layout.view_prediction_vs_horizontal, twoOptionsContainer, false);
     }
 
     private String getMetaText(Context context, DataSnapshot snapshot) {
@@ -1959,120 +1936,19 @@ public class predictionFormActivity extends AppCompatActivity {
 
     private View createHeadToHeadCard(Context context, predictionOption option, int index) {
         boolean isConstructor = "constructor".equals(optionType);
-        LinearLayout card = new LinearLayout(context);
-        card.setOrientation(LinearLayout.VERTICAL);
 
-        card.setGravity(Gravity.CENTER);
-        card.setMinimumHeight(dpToPx(190));
-        card.setPadding(
-                dpToPx(8),
-                dpToPx(8),
-                dpToPx(8),
-                dpToPx(8)
-        );
-
-        LinearLayout.LayoutParams cardParams;
-
-        if (isConstructor) {
-            cardParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-            );
-
-            cardParams.setMargins(
-                    dpToPx(8),
-                    dpToPx(8),
-                    dpToPx(8),
-                    dpToPx(8)
-            );
-        } else {
-            cardParams = new LinearLayout.LayoutParams(
-                    0,
-                    LinearLayout.LayoutParams.WRAP_CONTENT,
-                    1f
-            );
-
-            cardParams.setMargins(
-                    dpToPx(6),
-                    dpToPx(6),
-                    dpToPx(6),
-                    dpToPx(6)
-            );
-        }
-
-        card.setLayoutParams(cardParams);
-        card.setMinimumHeight(
+        View card = android.view.LayoutInflater.from(context).inflate(
                 isConstructor
-                        ? dpToPx(100)
-                        : dpToPx(190)
+                        ? R.layout.item_prediction_h2h_team
+                        : R.layout.item_prediction_h2h_driver,
+                twoOptionsContainer,
+                false
         );
 
-        GradientDrawable background = new GradientDrawable();
-
-        background.setColor(getColor(R.color.colorPrimary));
-        background.setCornerRadius(dpToPx(16));
-        card.setBackground(background);
-
-        ImageView imageView =
-                new ImageView(context);
-
-        LinearLayout.LayoutParams imageParams;
-
-        if ("constructor".equals(optionType)) {
-            imageParams = new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    dpToPx(120)
-            );
-
-            imageParams.setMargins(
-                    dpToPx(8),
-                    dpToPx(4),
-                    dpToPx(8),
-                    dpToPx(8)
-            );
-
-            imageView.setScaleType(
-                    ImageView.ScaleType.FIT_CENTER
-            );
-
-            imageView.setAdjustViewBounds(true);
-        } else {
-            imageParams = new LinearLayout.LayoutParams(
-                    dpToPx(110),
-                    dpToPx(110)
-            );
-
-            imageView.setScaleType(
-                    ImageView.ScaleType.CENTER_CROP
-            );
-        }
-
-        imageView.setLayoutParams(imageParams);
-        card.addView(imageView);
-
-        TextView titleView = new TextView(context);
+        ImageView imageView = card.findViewById(R.id.h2hImage);
+        TextView titleView = card.findViewById(R.id.h2hTitle);
 
         titleView.setText(option.getTitle());
-        titleView.setGravity(Gravity.CENTER);
-        titleView.setTextSize(
-                "constructor".equals(optionType)
-                        ? 18
-                        : 14
-        );
-
-        titleView.setTypeface(
-                null,
-                Typeface.BOLD
-        );
-
-        titleView.setTextColor(
-                ContextCompat.getColor(
-                        context,
-                        R.color.text_color_main
-                )
-        );
-
-        card.addView(titleView);
 
         loadHeadToHeadImage(imageView, option);
         card.setOnClickListener(v -> selectHeadToHeadOption(index));
@@ -2109,26 +1985,9 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void selectHeadToHeadCard(int selectedIndex) {
+        // the look of the selected card is the state_selected branch of bg_prediction_h2h_card
         for (int i = 0; i < headToHeadCardViews.size(); i++) {
-            View card = headToHeadCardViews.get(i);
-            GradientDrawable background = new GradientDrawable();
-
-            background.setCornerRadius(dpToPx(16));
-
-            if (i == selectedIndex) {
-                background.setColor(ContextCompat.getColor(this,
-                        R.color.colorPredicts));
-
-                background.setStroke(dpToPx(2), ContextCompat.getColor(
-                        this, R.color.grey));
-            } else {
-                background.setColor(getColor(R.color.colorPrimary));
-
-                background.setStroke(dpToPx(2), ContextCompat.getColor(
-                        this, R.color.stroke_option_color));
-            }
-
-            card.setBackground(background);
+            headToHeadCardViews.get(i).setSelected(i == selectedIndex);
         }
     }
 

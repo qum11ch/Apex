@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:minHeight="40dp"
+    android:minHeight="48dp"
     android:paddingTop="6dp"
     android:paddingBottom="6dp">
     <TextView
@@ -14,22 +14,17 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginEnd="8dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"/>
+        style="@style/Widget.Apex.Pred.Body" />
     <TextView
         android:id="@+id/dpRowA"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/text_color_main"
-        android:textSize="15sp"
-        android:textStyle="bold"/>
+        style="@style/Widget.Apex.Pred.Section" />
     <TextView
         android:id="@+id/dpRowB"
         android:layout_width="64dp"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textColor="@color/text_color_main"
-        android:textSize="15sp"
-        android:textStyle="bold"/>
+        style="@style/Widget.Apex.Pred.Section" />
 </LinearLayout>

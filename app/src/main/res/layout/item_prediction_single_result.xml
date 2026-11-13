@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="44dp"
+    android:minHeight="48dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingTop="8dp"
@@ -14,14 +14,11 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:layout_marginEnd="12dp"
-        android:textColor="@color/text_color_main"
-        android:textSize="14sp"/>
+        style="@style/Widget.Apex.Pred.Body" />
     <TextView
         android:id="@+id/singleRaceValue"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
         android:gravity="end"
-        android:textColor="@color/text_color_main"
-        android:textSize="16sp"
-        android:textStyle="bold"/>
+        style="@style/Widget.Apex.Pred.Section" />
 </LinearLayout>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A driver option of the head-to-head duel. The selected state is drawn by the background selector. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/h2hCard"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:layout_weight="1"
+    android:background="@drawable/bg_prediction_h2h_card"
+    android:clickable="true"
+    android:focusable="true"
+    android:gravity="center"
+    android:minHeight="190dp"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/h2hImage"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop" />
+
+    <TextView
+        android:id="@+id/h2hTitle"
+        style="@style/Widget.Apex.Pred.Section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center" />
+</LinearLayout>

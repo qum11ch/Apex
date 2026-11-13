@@ -1,28 +1,146 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-            <TextView android:text="@string/tr_side_a" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
-            <TextView android:id="@+id/trNameA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Section" />
-            <TextView android:id="@+id/trAverageA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Big" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:text="@string/tr_side_a"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/Widget.Apex.Pred.Caption" />
+            <TextView
+                android:id="@+id/trNameA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/Widget.Apex.Pred.Section" />
+            <TextView
+                android:id="@+id/trAverageA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                style="@style/Widget.Apex.Pred.Big" />
         </LinearLayout>
-        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
-            <TextView android:text="@string/tr_side_b" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
-            <TextView android:id="@+id/trNameB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Section" />
-            <TextView android:id="@+id/trAverageB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Big" />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="4dp">
+            <TextView
+                android:text="@string/tr_side_b"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/Widget.Apex.Pred.Caption" />
+            <TextView
+                android:id="@+id/trNameB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/Widget.Apex.Pred.Section" />
+            <TextView
+                android:id="@+id/trAverageB"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                style="@style/Widget.Apex.Pred.Big" />
         </LinearLayout>
     </LinearLayout>
-    <TextView android:text="@string/tr_average" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
-    <TextView android:id="@+id/trSamples" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="4dp" style="@style/Widget.Apex.Pred.Caption" />
-    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="12dp">
-        <TextView android:id="@+id/trRetirementsA" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Body" />
-        <TextView android:text="@string/tr_retirements" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Body" />
-        <TextView android:id="@+id/trRetirementsB" android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Body" />
+    <TextView
+        android:text="@string/tr_average"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        style="@style/Widget.Apex.Pred.Caption" />
+    <TextView
+        android:id="@+id/trSamples"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="4dp"
+        style="@style/Widget.Apex.Pred.Caption" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="12dp">
+        <TextView
+            android:id="@+id/trRetirementsA"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/Widget.Apex.Pred.Body" />
+        <TextView
+            android:text="@string/tr_retirements"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/Widget.Apex.Pred.Body" />
+        <TextView
+            android:id="@+id/trRetirementsB"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            style="@style/Widget.Apex.Pred.Body" />
     </LinearLayout>
-    <TextView android:id="@+id/trCount" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="8dp" style="@style/Widget.Apex.Pred.Body" />
-    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="16dp" android:layout_marginBottom="16dp" />
-    <TextView android:text="@string/tr_recent" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Widget.Apex.Pred.Section" />
-    <TextView android:text="@string/tr_columns" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.Apex.Pred.Caption" />
-    <LinearLayout android:id="@+id/trRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" />
-    <TextView android:id="@+id/trEmpty" android:text="@string/tr_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" android:layout_marginTop="8dp" style="@style/Widget.Apex.Pred.Body" />
+    <TextView
+        android:id="@+id/trCount"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Apex.Pred.Body" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/text_color_main"
+        android:alpha="0.12"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="16dp" />
+    <TextView
+        android:text="@string/tr_recent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.Apex.Pred.Section" />
+    <TextView
+        android:text="@string/tr_columns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Apex.Pred.Caption" />
+    <LinearLayout
+        android:id="@+id/trRows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:divider="@drawable/divider_results"
+        android:showDividers="middle" />
+    <TextView
+        android:id="@+id/trEmpty"
+        android:text="@string/tr_empty"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="8dp"
+        style="@style/Widget.Apex.Pred.Body" />
 </LinearLayout>

@@ -1,7 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:id="@+id/selectedOptionCard" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="84dp" android:orientation="horizontal" android:gravity="center_vertical" android:padding="14dp" android:clickable="true" android:focusable="true" android:visibility="gone" android:background="@drawable/bg_results_card" android:foreground="?attr/selectableItemBackground">
-    <ImageView android:id="@+id/selectedOptionImage" android:layout_width="100dp" android:layout_height="52dp" android:layout_marginEnd="12dp" android:scaleType="fitCenter" android:importantForAccessibility="no" android:src="@drawable/placeholder_rounded" />
-    <TextView android:id="@+id/selectedOptionName" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" style="@style/Widget.Apex.Pred.Title" />
-    <TextView android:id="@+id/selectedOptionAction" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="12dp" android:text="@string/pp_change" style="@style/Widget.Apex.Pred.Secondary" />
-    <ImageView android:layout_width="24dp" android:layout_height="24dp" android:scaleType="fitCenter" android:layout_gravity="center_vertical" android:layout_marginStart="5dp" android:layout_marginEnd="8dp" android:src="@drawable/arrow" android:scaleX="-1" android:contentDescription="@string/front_arrow" android:cropToPadding="true" />
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/selectedOptionCard"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="84dp"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="14dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:visibility="gone"
+    android:background="@drawable/bg_results_card"
+    android:foreground="?attr/selectableItemBackground">
+    <ImageView
+        android:id="@+id/selectedOptionImage"
+        android:layout_width="100dp"
+        android:layout_height="52dp"
+        android:layout_marginEnd="12dp"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no"
+        android:src="@drawable/placeholder_rounded" />
+    <TextView
+        android:id="@+id/selectedOptionName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        style="@style/Widget.Apex.Pred.Title" />
+    <TextView
+        android:id="@+id/selectedOptionAction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:text="@string/pp_change"
+        style="@style/Widget.Apex.Pred.Secondary" />
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/arrow"
+        android:scaleX="-1"
+        android:contentDescription="@string/front_arrow"
+        android:cropToPadding="true" />
 </LinearLayout>

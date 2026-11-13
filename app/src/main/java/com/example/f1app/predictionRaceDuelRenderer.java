@@ -225,8 +225,7 @@ public final class predictionRaceDuelRenderer {
             for (int id : headerIds) {
                 TextView textView = view.findViewById(id);
 
-                textView.setTextSize(12);
-                textView.setAlpha(0.65f);
+                androidx.core.widget.TextViewCompat.setTextAppearance(textView, R.style.Widget_Apex_Pred_Caption);
             }
         }
 

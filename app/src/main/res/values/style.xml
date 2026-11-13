@@ -547,4 +547,10 @@
         <item name="android:textColor">@color/grey</item>
         <item name="android:textSize">12sp</item>
     </style>
+
+    <!-- ===== Prediction screens, stage 3 ===== -->
+    <style name="Widget.Apex.Pred.Vs" parent="TextStyle.GoodTiming.Bold">
+        <item name="android:textColor">@color/red</item>
+        <item name="android:textSize">16sp</item>
+    </style>
 </resources>
