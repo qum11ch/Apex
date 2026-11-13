@@ -1602,7 +1602,7 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void openLoadedWeekendRace() {
-        predictionCircuitCardLoader.Data data = loadedWeekendData;
+        final predictionCircuitCardLoader.Data data = loadedWeekendData;
 
         if (data == null
                 || data.firstPracticeDate == null
@@ -1628,6 +1628,45 @@ public class predictionFormActivity extends AppCompatActivity {
             return;
         }
 
+        // the same rule as the schedule screen: concluded weekends have their own page
+        FirebaseDatabase.getInstance().getReference()
+                .child("schedule/season/" + data.season)
+                .orderByChild("round")
+                .equalTo(Integer.parseInt(String.valueOf(data.round)))
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    DataSnapshot weekend = null;
+
+                    if (task.isSuccessful()) {
+                        for (DataSnapshot child : task.getResult().getChildren()) {
+                            weekend = child;
+                            break;
+                        }
+                    }
+
+                    if (weekend == null) {
+                        openFutureWeekend(data, start, end);
+                        return;
+                    }
+
+                    raceWeekendStatus.State state =
+                            raceWeekendStatus.resolve(weekend, System.currentTimeMillis());
+
+                    if (state == raceWeekendStatus.State.CONCLUDED
+                            || state == raceWeekendStatus.State.CANCELED) {
+                        openConcludedWeekend(data, start, end, weekend);
+                    } else {
+                        openFutureWeekend(data, start, end);
+                    }
+                });
+    }
+
+    private void openFutureWeekend(predictionCircuitCardLoader.Data data,
+                                   LocalDate start, LocalDate end) {
         Intent intent = new Intent(
                 predictionFormActivity.this,
                 futureRaceActivity.class
@@ -1635,40 +1674,70 @@ public class predictionFormActivity extends AppCompatActivity {
 
         intent.putExtra("circuitId", data.circuitId);
         intent.putExtra("raceName", data.raceName);
-
-        intent.putExtra(
-                "futureRaceStartDay",
-                String.valueOf(start.getDayOfMonth())
-        );
-
-        intent.putExtra(
-                "futureRaceEndDay",
-                String.valueOf(end.getDayOfMonth())
-        );
-
-        intent.putExtra(
-                "futureRaceStartMonth",
-                String.valueOf(start.getMonthValue())
-        );
-
-        intent.putExtra(
-                "futureRaceEndMonth",
-                String.valueOf(end.getMonthValue())
-        );
-
+        intent.putExtra("futureRaceStartDay", String.valueOf(start.getDayOfMonth()));
+        intent.putExtra("futureRaceEndDay", String.valueOf(end.getDayOfMonth()));
+        intent.putExtra("futureRaceStartMonth", String.valueOf(start.getMonthValue()));
+        intent.putExtra("futureRaceEndMonth", String.valueOf(end.getMonthValue()));
         intent.putExtra("roundCount", String.valueOf(data.round));
-
-        intent.putExtra(
-                "raceCountry",
-                data.country == null ? "" : data.country
-        );
-
+        intent.putExtra("raceCountry", data.country == null ? "" : data.country);
         intent.putExtra("dateStart", data.firstPracticeDate);
         intent.putExtra("dateEnd", data.raceDate);
-
         intent.putExtra("isCanceled", false);
 
         startActivity(intent);
+    }
+
+    private void openConcludedWeekend(predictionCircuitCardLoader.Data data,
+                                      LocalDate start, LocalDate end, DataSnapshot weekend) {
+        final String first = weekend.child("RaceResults/raceWinnerCode").getValue(String.class);
+        final String second = weekend.child("RaceResults/raceSecondCode").getValue(String.class);
+        final String third = weekend.child("RaceResults/raceThirdCode").getValue(String.class);
+        final boolean canceled = weekend.child("Canceled").getValue(Boolean.class) != null;
+
+        // concludedRaceActivity finds the circuit by its name
+        FirebaseDatabase.getInstance().getReference()
+                .child("circuits").child(data.circuitId).child("circuitName")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (isFinishing() || isDestroyed()) {
+                        return;
+                    }
+
+                    String circuitName = task.isSuccessful()
+                            ? task.getResult().getValue(String.class)
+                            : null;
+
+                    if (circuitName == null) {
+                        circuitName = data.circuitName;
+                    }
+
+                    java.time.format.DateTimeFormatter day =
+                            java.time.format.DateTimeFormatter.ofPattern("dd");
+                    java.time.format.DateTimeFormatter month =
+                            java.time.format.DateTimeFormatter.ofPattern("MMM");
+
+                    Intent intent = new Intent(
+                            predictionFormActivity.this,
+                            concludedRaceActivity.class
+                    );
+
+                    intent.putExtra("raceName", data.raceName);
+                    intent.putExtra("raceStartDay", start.format(day));
+                    intent.putExtra("raceEndDay", end.format(day));
+                    intent.putExtra("raceStartMonth", start.format(month));
+                    intent.putExtra("raceEndMonth", end.format(month));
+                    intent.putExtra("circuitName", circuitName);
+                    intent.putExtra("roundCount", String.valueOf(data.round));
+                    intent.putExtra("raceCountry", data.country == null ? "" : data.country);
+                    intent.putExtra("dateStart", data.firstPracticeDate);
+                    intent.putExtra("dateEnd", data.raceDate);
+                    intent.putExtra("firstPlaceCode", first == null ? "" : first);
+                    intent.putExtra("secondPlaceCode", second == null ? "" : second);
+                    intent.putExtra("thirdPlaceCode", third == null ? "" : third);
+                    intent.putExtra("isCanceled", canceled);
+
+                    startActivity(intent);
+                });
     }
 
     private void loadStandingsPointsCard() {

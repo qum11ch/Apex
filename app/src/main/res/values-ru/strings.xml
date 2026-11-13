@@ -778,7 +778,7 @@
     <string name="bh_sc_caption">сессий с зафиксированным SC</string>
     <string name="bh_unknown">Недостаточно данных: %1$d · выбрано сессий: %2$d</string>
     <string name="bh_vsc_count">VSC отдельно: %1$d из %2$d сессий с данными</string>
-    <string name="bh_sc_vsc_row">SC: %1$s · VSC: %2$s</string>
+    <string name="bh_sc_vsc_row">SC: %1$s\nVSC: %2$s</string>
     <string name="bh_yes">Зафиксировано</string>
     <string name="bh_no">Не обнаружено</string>
     <string name="bh_no_data">Нет данных</string>
@@ -1136,4 +1136,7 @@
     <string name="prediction_meta_weekend">Этап %1$s, %2$s</string>
     <string name="pred_rules_stats_method_title">Как считается статистика</string>
     <string name="pred_rules_stats_method_body">Средние очки за уикенд: очки гонки и спринта, делённые на число полностью загруженных уикендов периода. Каждый уикенд считается один раз.\n\nЕсли сумма по сессиям не совпадает с зачётом, показывается значение зачёта: возможны пропущенные уикенды или корректировки очков.\n\nИстория трассы (дождь, Safety Car) берётся за последние 5 гонок на этой трассе до выбранного этапа, начиная с 2023 года. Это частота в прошлом, а не вероятность того, что это повторится.\n\nИсточники: Jolpica (зачёт и результаты), OpenF1 (история трасс).</string>
+    <string name="bh_vsc_caption">гонок с обнаруженным VSC</string>
+    <string name="bh_tile_detail">Не обнаружено: %1$d\nНет данных: %2$d</string>
+    <string name="bh_coverage">Гонок проверено: %1$d\nОшибок загрузки истории: %2$d</string>
 </resources>

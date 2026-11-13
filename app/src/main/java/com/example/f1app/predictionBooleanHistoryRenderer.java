@@ -57,11 +57,16 @@ public final class predictionBooleanHistoryRenderer {
 
         set(root, R.id.bhRatio, String.valueOf(yes));
         set(root, R.id.bhCaption, context.getString(isRain ? R.string.bh3_rain_caption : R.string.bh3_sc_caption));
+        set(root, R.id.bhUnknown, context.getString(R.string.bh_tile_detail, no, unknown));
+
+        // VSC is shown exactly like SC (rain has no VSC)
+        root.findViewById(R.id.bhVscTile).setVisibility(isRain ? View.GONE : View.VISIBLE);
+        set(root, R.id.bhVscRatio, String.valueOf(virtualYes));
+        set(root, R.id.bhVscCaption, context.getString(R.string.bh_vsc_caption));
+        set(root, R.id.bhVscUnknown, context.getString(R.string.bh_tile_detail, virtualNo, virtualUnknown));
 
         String coverage = context.getString(
-                isRain ? R.string.bh_counts_rain : R.string.bh_counts_sc,
-                no,
-                unknown,
+                R.string.bh_coverage,
                 data.rows.size(),
                 data.failedRequests
         );
@@ -72,10 +77,7 @@ public final class predictionBooleanHistoryRenderer {
             coverage += "\n" + context.getString(R.string.bh4_unavailable_years, unavailableYears);
         }
 
-        set(root, R.id.bhUnknown, coverage);
-
-        root.findViewById(R.id.bhVirtual).setVisibility(isRain ? View.GONE : View.VISIBLE);
-        set(root, R.id.bhVirtual, context.getString(R.string.bh3_vsc_counts, virtualYes, virtualNo, virtualUnknown));
+        set(root, R.id.bhCoverage, coverage);
         set(root, R.id.bhRule, context.getString(isRain ? R.string.bh3_rain_rule : R.string.bh2_sc_rule));
 
         LinearLayout rows = root.findViewById(R.id.bhRows);

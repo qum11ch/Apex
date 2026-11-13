@@ -804,7 +804,7 @@
     <string name="bh_sc_caption">sessions with recorded SC evidence</string>
     <string name="bh_unknown">Insufficient data: %1$d · sessions selected: %2$d</string>
     <string name="bh_vsc_count">VSC separately: %1$d of %2$d known sessions</string>
-    <string name="bh_sc_vsc_row">SC: %1$s · VSC: %2$s</string>
+    <string name="bh_sc_vsc_row">SC: %1$s\nVSC: %2$s</string>
     <string name="bh_yes">Recorded</string>
     <string name="bh_no">Not detected</string>
     <string name="bh_no_data">Insufficient data</string>
@@ -1157,4 +1157,7 @@
     <string name="prediction_meta_weekend">Round %1$s, %2$s</string>
     <string name="pred_rules_stats_method_title">How the statistics are calculated</string>
     <string name="pred_rules_stats_method_body">Average points per weekend: the points of the race and the sprint divided by the number of fully loaded weekends of the period. Every weekend is counted once.\n\nIf the sum of the sessions does not match the standings, the standings value is shown: some weekends may be missing or points may have been adjusted.\n\nCircuit history (rain, Safety Car) covers up to the last 5 races at that circuit before the selected round, from 2023 on. It is how often it happened before, not the probability of it happening again.\n\nSources: Jolpica (standings and results), OpenF1 (circuit history).</string>
+    <string name="bh_vsc_caption">races with detected VSC</string>
+    <string name="bh_tile_detail">Not detected: %1$d\nNo data: %2$d</string>
+    <string name="bh_coverage">Races checked: %1$d\nHistory load errors: %2$d</string>
 </resources>
