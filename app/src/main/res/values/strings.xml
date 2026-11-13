@@ -814,12 +814,12 @@
     <string name="bh_loading">Loading OpenF1 history…</string>
     <string name="bh_waiting_track">Waiting for circuit information…</string>
     <string name="bh_error">Could not load history for this circuit. Historical statistics are unavailable.</string>
-    <string name="bh_source">Source: OpenF1. Available history from 2023, up to 5 races at this circuit before the selected weekend. Historical frequency is not the probability of a future event.</string>
+    <string name="bh_source">Source: OpenF1</string>
     <string name="bh_generic">This Yes/No question has no configured historical metric. Use the description supplied by its author.</string>
     <string name="bh_season">This history card requires a specific circuit and weekend. A season-wide metric has not been configured.</string>
 
     <string name="pf_period">Season %1$s · points after round %2$d</string><string name="pf_before">Before the selected round</string>
-    <string name="pf_championship_points">Standings points · source: Jolpica</string>
+    <string name="pf_championship_points">Standings points</string>
     <string name="pf_loading">Loading points by weekend…</string>
     <string name="pf_history_error">Standings points are loaded. Weekend points history is unavailable.</string>
     <string name="pf_average">Average points per weekend: %1$s · weekends: %2$d</string>
@@ -1154,4 +1154,7 @@
     <string name="user_predictions_tile_count">Predictions</string>
     <string name="user_predictions_tile_correct">Correct</string>
     <string name="user_predictions_tile_points">Points</string>
+    <string name="prediction_meta_weekend">Round %1$s, %2$s</string>
+    <string name="pred_rules_stats_method_title">How the statistics are calculated</string>
+    <string name="pred_rules_stats_method_body">Average points per weekend: the points of the race and the sprint divided by the number of fully loaded weekends of the period. Every weekend is counted once.\n\nIf the sum of the sessions does not match the standings, the standings value is shown: some weekends may be missing or points may have been adjusted.\n\nCircuit history (rain, Safety Car) covers up to the last 5 races at that circuit before the selected round, from 2023 on. It is how often it happened before, not the probability of it happening again.\n\nSources: Jolpica (standings and results), OpenF1 (circuit history).</string>
 </resources>

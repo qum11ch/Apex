@@ -553,4 +553,18 @@
         <item name="android:textColor">@color/red</item>
         <item name="android:textSize">16sp</item>
     </style>
+
+    <!-- ===== Prediction screens, stage 5 ===== -->
+    <style name="Widget.Apex.Pred.Option" parent="TextStyle.GoodTiming.Regular">
+        <item name="android:background">@drawable/bg_prediction_option</item>
+        <item name="android:textColor">@color/prediction_option_text</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:clickable">true</item>
+        <item name="android:focusable">true</item>
+    </style>
 </resources>

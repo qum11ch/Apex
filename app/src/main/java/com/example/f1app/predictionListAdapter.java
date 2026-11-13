@@ -92,38 +92,15 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
     }
 
     private String getMetaText(Context context, ViewHolder holder, predictionListItem item) {
-        StringBuilder text = new StringBuilder();
-
-        text.append(getCategoryTitle(holder.itemView.getContext(), item.getCategory()));
-
-        if (item.isWeekend() && item.getSeason() != null && item.getRaceRound() != null) {
-            String weekendRoundText = " • " + context.getText(R.string.round) + " ";
-
-            text.append(" • ")
-                    .append(item.getSeason())
-                    .append(weekendRoundText)
-                    .append(item.getRaceRound());
-        } else if (item.getSeason() != null) {
-            text.append(" • ")
-                    .append(item.getSeason());
-        }
-
-        String typeTitle = getPredictionTypeTitle(
+        return predictionMeta.build(
                 context,
-                item.getPredictionType()
+                getCategoryTitle(context, item.getCategory()),
+                item.isWeekend(),
+                item.getSeason(),
+                item.getRaceRound(),
+                getPredictionTypeTitle(context, item.getPredictionType()),
+                getOptionTypeTitle(context, item.getOptionType())
         );
-
-        if (!typeTitle.isEmpty()) {
-            text.append(" • ").append(typeTitle);
-        }
-
-        String optionTypeTitle = getOptionTypeTitle(context, item.getOptionType());
-
-        if (!optionTypeTitle.isEmpty()) {
-            text.append(" • ").append(optionTypeTitle);
-        }
-
-        return text.toString();
     }
 
     private String getOptionTypeTitle(Context context, String optionType) {

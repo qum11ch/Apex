@@ -1,207 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <TextView
-        android:id="@+id/spwContext"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp"
-        style="@style/Widget.Apex.Pred.Caption" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:baselineAligned="false">
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="4dp">
-            <TextView
-                android:id="@+id/spwCodeA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                style="@style/Widget.Apex.Pred.Code" />
-            <TextView
-                android:id="@+id/spwNameA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="4dp"
-                style="@style/Widget.Apex.Pred.Caption" />
-            <TextView
-                android:id="@+id/spwPointsA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="12dp"
-                style="@style/Widget.Apex.Pred.Big" />
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+    <TextView android:id="@+id/spwContext" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="12dp" style="@style/Widget.Apex.Pred.Caption" />
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false">
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/spwCodeA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Code" />
+            <TextView android:id="@+id/spwNameA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="4dp" style="@style/Widget.Apex.Pred.Caption" />
+            <TextView android:id="@+id/spwPointsA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Big" />
         </LinearLayout>
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:padding="4dp">
-            <TextView
-                android:id="@+id/spwCodeB"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                style="@style/Widget.Apex.Pred.Code" />
-            <TextView
-                android:id="@+id/spwNameB"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="4dp"
-                style="@style/Widget.Apex.Pred.Caption" />
-            <TextView
-                android:id="@+id/spwPointsB"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginTop="12dp"
-                style="@style/Widget.Apex.Pred.Big" />
+        <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical" android:padding="4dp">
+            <TextView android:id="@+id/spwCodeB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Code" />
+            <TextView android:id="@+id/spwNameB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="4dp" style="@style/Widget.Apex.Pred.Caption" />
+            <TextView android:id="@+id/spwPointsB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Big" />
         </LinearLayout>
     </LinearLayout>
-    <TextView
-        android:text="@string/spw_total"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        style="@style/Widget.Apex.Pred.Caption" />
-    <TextView
-        android:id="@+id/spwSource"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        style="@style/Widget.Apex.Pred.Caption" />
-    <TextView
-        android:id="@+id/spwHistoryState"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        style="@style/Widget.Apex.Pred.Body" />
-    <LinearLayout
-        android:id="@+id/spwHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/text_color_main"
-            android:alpha="0.12"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="12dp" />
-        <TextView
-            android:text="@string/spw_average"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="@style/Widget.Apex.Pred.Section" />
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:baselineAligned="false"
-            android:layout_marginTop="8dp">
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/spwSideA"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    style="@style/Widget.Apex.Pred.Caption" />
-                <TextView
-                    android:id="@+id/spwAverageA"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    style="@style/Widget.Apex.Pred.Number" />
+    <TextView android:text="@string/spw_total" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
+    <TextView android:id="@+id/spwSource" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Caption" />
+    <TextView android:id="@+id/spwHistoryState" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" style="@style/Widget.Apex.Pred.Body" />
+    <LinearLayout android:id="@+id/spwHistory" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/text_color_main" android:alpha="0.12" android:layout_marginTop="16dp" android:layout_marginBottom="12dp" />
+        <TextView android:text="@string/spw_average" android:layout_width="match_parent" android:layout_height="wrap_content" style="@style/Widget.Apex.Pred.Section" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="8dp">
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/spwSideA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
+                <TextView android:id="@+id/spwAverageA" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Number" />
             </LinearLayout>
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-                <TextView
-                    android:id="@+id/spwSideB"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    style="@style/Widget.Apex.Pred.Caption" />
-                <TextView
-                    android:id="@+id/spwAverageB"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    style="@style/Widget.Apex.Pred.Number" />
+            <LinearLayout android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:orientation="vertical">
+                <TextView android:id="@+id/spwSideB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Caption" />
+                <TextView android:id="@+id/spwAverageB" android:layout_width="match_parent" android:layout_height="wrap_content" android:gravity="center" style="@style/Widget.Apex.Pred.Number" />
             </LinearLayout>
         </LinearLayout>
-        <TextView
-            android:id="@+id/spwCount"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            style="@style/Widget.Apex.Pred.Caption" />
-        <TextView
-            android:id="@+id/spwSkipped"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            style="@style/Widget.Apex.Pred.Caption" />
-        <TextView
-            android:text="@string/spw_recent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            style="@style/Widget.Apex.Pred.Section" />
-        <TextView
-            android:text="@string/spw_parts_caption"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            style="@style/Widget.Apex.Pred.Caption" />
-        <LinearLayout
-            android:id="@+id/spwRows"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginTop="8dp"
-            android:divider="@drawable/divider_results"
-            android:showDividers="middle" />
-        <TextView
-            android:id="@+id/spwEmpty"
-            android:text="@string/spw_empty"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="8dp"
-            style="@style/Widget.Apex.Pred.Body" />
-        <TextView
-            android:id="@+id/spwMismatch"
-            android:text="@string/spw_mismatch"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            android:layout_marginTop="12dp"
-            style="@style/Widget.Apex.Pred.Caption" />
-        <TextView
-            android:text="@string/spw_mean_note"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            style="@style/Widget.Apex.Pred.Caption" />
+        <TextView android:id="@+id/spwCount" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="8dp" style="@style/Widget.Apex.Pred.Caption" />
+        <TextView android:id="@+id/spwSkipped" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" style="@style/Widget.Apex.Pred.Caption" />
+        <TextView android:text="@string/spw_recent" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="16dp" style="@style/Widget.Apex.Pred.Section" />
+        <TextView android:text="@string/spw_parts_caption" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" style="@style/Widget.Apex.Pred.Caption" />
+        <LinearLayout android:id="@+id/spwRows" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:layout_marginTop="8dp" android:divider="@drawable/divider_results" android:showDividers="middle" />
+        <TextView android:id="@+id/spwEmpty" android:text="@string/spw_empty" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" android:layout_marginTop="8dp" style="@style/Widget.Apex.Pred.Body" />
+        <TextView android:id="@+id/spwMismatch" android:text="@string/spw_mismatch" android:layout_width="match_parent" android:layout_height="wrap_content" android:visibility="gone" android:layout_marginTop="12dp" style="@style/Widget.Apex.Pred.Caption" />
     </LinearLayout>
 </LinearLayout>

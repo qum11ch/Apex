@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- the chosen driver / team above the answer card -->
+    <dimen name="pred_selected_image_width_team">100dp</dimen>
+    <dimen name="pred_selected_image_width_driver">52dp</dimen>
+    <dimen name="pred_selected_image_height">52dp</dimen>
+</resources>

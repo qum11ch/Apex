@@ -788,13 +788,13 @@
     <string name="bh_loading">Загрузка истории OpenF1…</string>
     <string name="bh_waiting_track">Ожидание информации о трассе…</string>
     <string name="bh_error">Не удалось загрузить историю для этой трассы. Историческая статистика недоступна.</string>
-    <string name="bh_source">Источник: OpenF1. Доступная история с 2023 года, до 5 гонок на этой трассе до выбранного уикенда. Историческая частота не является вероятностью будущего события.</string>
+    <string name="bh_source">Источник: OpenF1</string>
     <string name="bh_generic">Для этого вопроса «Да / Нет» не настроен исторический показатель. Ориентируйтесь на описание автора.</string>
     <string name="bh_season">Для этой исторической карточки нужны конкретная трасса и уик-энд. Показатель для всего сезона пока не настроен.</string>
 
     <string name="pf_period">Сезон %1$s · очки после раунда %2$d</string>
     <string name="pf_before">До выбранного этапа</string>
-    <string name="pf_championship_points">Очки в зачёте · источник: Jolpica</string>
+    <string name="pf_championship_points">Очки в зачёте</string>
     <string name="pf_loading">Загрузка очков по уикендам…</string>
     <string name="pf_history_error">Очки в зачёте загружены. История очков по уикендам недоступна.</string>
     <string name="pf_average">Средние очки за уикенд: %1$s · уикендов: %2$d</string>
@@ -1133,4 +1133,7 @@
     <string name="user_predictions_tile_count">Прогнозов</string>
     <string name="user_predictions_tile_correct">Угадано</string>
     <string name="user_predictions_tile_points">Очков</string>
+    <string name="prediction_meta_weekend">Этап %1$s, %2$s</string>
+    <string name="pred_rules_stats_method_title">Как считается статистика</string>
+    <string name="pred_rules_stats_method_body">Средние очки за уикенд: очки гонки и спринта, делённые на число полностью загруженных уикендов периода. Каждый уикенд считается один раз.\n\nЕсли сумма по сессиям не совпадает с зачётом, показывается значение зачёта: возможны пропущенные уикенды или корректировки очков.\n\nИстория трассы (дождь, Safety Car) берётся за последние 5 гонок на этой трассе до выбранного этапа, начиная с 2023 года. Это частота в прошлом, а не вероятность того, что это повторится.\n\nИсточники: Jolpica (зачёт и результаты), OpenF1 (история трасс).</string>
 </resources>

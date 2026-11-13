@@ -1141,8 +1141,11 @@ public class predictionFormActivity extends AppCompatActivity {
         selectedOptionCard.setContentDescription(option.getTitle() + ". " + selectedOptionAction.getText());
 
         ViewGroup.LayoutParams imageParams = selectedOptionImage.getLayoutParams();
-        imageParams.width = dpToPx("constructor".equals(optionType) ? 100 : 52);
-        imageParams.height = dpToPx(52);
+        imageParams.width = getResources().getDimensionPixelSize(
+                "constructor".equals(optionType)
+                        ? R.dimen.pred_selected_image_width_team
+                        : R.dimen.pred_selected_image_width_driver);
+        imageParams.height = getResources().getDimensionPixelSize(R.dimen.pred_selected_image_height);
         selectedOptionImage.setLayoutParams(imageParams);
 
         selectedOptionImage.setScaleType("constructor".equals(optionType)
@@ -1823,46 +1826,21 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private String getMetaText(Context context, DataSnapshot snapshot) {
-        StringBuilder text = new StringBuilder();
-
         String category = snapshot.child("category").getValue(String.class);
-
-        text.append(getCategoryTitle(context, category));
-
         String season = snapshot.child("season").getValue(String.class);
         Integer raceRound = snapshot.child("raceRound").getValue(Integer.class);
         String predictionType = snapshot.child("predictionType").getValue(String.class);
         String optionType = snapshot.child("optionType").getValue(String.class);
 
-        boolean isWeekend = "weekend".equals(category);
-
-        if (isWeekend && season != null && raceRound != null) {
-            String weekendRoundText = " • " + context.getText(R.string.round) + " ";
-
-            text.append(" • ")
-                    .append(season)
-                    .append(weekendRoundText)
-                    .append(raceRound);
-        } else if (season != null) {
-            text.append(" • ").append(season);
-        }
-
-        String typeTitle = getPredictionTypeTitle(
+        return predictionMeta.build(
                 context,
-                predictionType
+                getCategoryTitle(context, category),
+                "weekend".equals(category),
+                season,
+                raceRound,
+                getPredictionTypeTitle(context, predictionType),
+                getOptionTypeTitle(context, optionType)
         );
-
-        if (!typeTitle.isEmpty()) {
-            text.append(" • ").append(typeTitle);
-        }
-
-        String optionTypeTitle = getOptionTypeTitle(context, optionType);
-
-        if (!optionTypeTitle.isEmpty()) {
-            text.append(" • ").append(optionTypeTitle);
-        }
-
-        return text.toString();
     }
 
     private String getOptionTypeTitle(Context context, String optionType) {
@@ -2023,33 +2001,10 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private Button createOptionButton(Context context, predictionOption option) {
-        Button button = new Button(context);
+        Button button = (Button) android.view.LayoutInflater.from(context).inflate(
+                R.layout.item_prediction_boolean_option, twoOptionsContainer, false);
 
         button.setText(option.getTitle());
-        button.setTextSize(16);
-        button.setAllCaps(false);
-
-        button.setGravity(Gravity.CENTER);
-
-        button.setBackgroundResource(
-                R.drawable.bg_prediction_option
-        );
-
-        LinearLayout.LayoutParams params =
-                new LinearLayout.LayoutParams(
-                        0,
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        1f
-                );
-
-        params.setMargins(
-                dpToPx(6),
-                dpToPx(6),
-                dpToPx(6),
-                dpToPx(6)
-        );
-
-        button.setLayoutParams(params);
 
         button.setOnClickListener(v -> {
             int selectedIndex = -1;
@@ -2086,16 +2041,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
             button.setSelected(selected);
 
-            if (selected) {
-                button.setTextColor(
-                        ContextCompat.getColor(
-                                this,
-                                R.color.text_color_main
-                        )
-                );
-            } else {
-                button.setTextColor(getColor(R.color.text_color_thirdly));
-            }
+            // the text colour follows the selected state (res/color/prediction_option_text.xml)
         }
     }
 

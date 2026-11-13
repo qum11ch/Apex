@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Yes / No (and any two-option) answer. Selected state: bg_prediction_option + prediction_option_text. -->
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Widget.Apex.Pred.Option"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:layout_weight="1" />
