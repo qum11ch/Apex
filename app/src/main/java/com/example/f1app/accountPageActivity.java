@@ -369,6 +369,7 @@ public class accountPageActivity extends AppCompatActivity {
         driver_layout.setBackground(cardBg(grey, true));
         team_layout.setBackground(cardBg(grey, true));
 
+        userInfoRestarts = 0;
         getUserInfo();
     }
 
@@ -388,8 +389,44 @@ public class accountPageActivity extends AppCompatActivity {
         return gd;
     }
 
+    private int userInfoGeneration = 0;
+    private int userInfoRestarts = 0;
+    private final android.os.Handler userInfoHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+
+    private void armUserInfoWatchdog(final int generation) {
+        userInfoHandler.removeCallbacksAndMessages(null);
+        userInfoHandler.postDelayed(() -> {
+            if (generation != userInfoGeneration || isFinishing() || isDestroyed()
+                    || loadingProgress.getVisibility() != View.VISIBLE) {
+                return; // answered, failed with its own message, replaced or closed
+            }
+
+            if (userInfoRestarts < 2) {
+                userInfoRestarts++;
+                Log.w("AccountPage", "profile read has no answer: restarting the database connection (" + userInfoRestarts + ")");
+                FirebaseDatabase.getInstance().goOffline();
+                FirebaseDatabase.getInstance().goOnline();
+                getUserInfo();
+            } else {
+                Log.e("AccountPage", "profile read has no answer after restarts");
+                Toast.makeText(this, getString(R.string.smth_wrong_text), Toast.LENGTH_LONG).show();
+                finish();
+            }
+        }, 8_000L);
+    }
+
+    @Override
+    protected void onDestroy() {
+        userInfoGeneration++;
+        userInfoHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
+    }
+
     private void getUserInfo() {
         FirebaseUser user = auth.getCurrentUser();
+        final int generation = ++userInfoGeneration;
+        armUserInfoWatchdog(generation);
+
 
         if (user == null) {
             startActivity_getSeason(logInPageActivity.class);
@@ -425,6 +462,12 @@ public class accountPageActivity extends AppCompatActivity {
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (generation != userInfoGeneration) {
+                            return; // an older request answered late
+                        }
+
+                        userInfoHandler.removeCallbacksAndMessages(null);
+
                         if (isFinishing() || isDestroyed()) {
                             return;
                         }

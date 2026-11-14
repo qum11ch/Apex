@@ -331,7 +331,16 @@ public class logInPageActivity extends AppCompatActivity {
             return;
         }
 
+        Log.d("LoginFlow", "LOGIN_START");
         setLoginLoading(true);
+        performLogin(login, password, currentSeason, 0);
+    }
+
+    /** One try of the server sign-in. attempt 0 is short; the repeat runs on a fresh connection. */
+    private void performLogin(String login, String password, String currentSeason, int attempt) {
+        if (attempt > 0) {
+            setLoginLoading(true); // re-arms the watchdog for the repeat
+        }
 
         Map<String, Object> data = new HashMap<>();
         data.put("login", login);
@@ -339,7 +348,7 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseFunctions.getInstance("us-central1")
                 .getHttpsCallable("loginWithLogin")
-                .withTimeout(25, java.util.concurrent.TimeUnit.SECONDS)
+                .withTimeout(attempt == 0 ? 10 : 25, java.util.concurrent.TimeUnit.SECONDS)
                 .call(data)
                 .addOnSuccessListener(result -> {
                     Log.d("LoginFlow", "LOGIN_CALLABLE_OK");
@@ -361,6 +370,7 @@ public class logInPageActivity extends AppCompatActivity {
                         return;
                     }
 
+                    Log.d("LoginFlow", "SIGN_IN_CUSTOM_TOKEN_START");
                     auth.signInWithCustomToken((String) tokenValue)
                             .addOnCompleteListener(this, task -> {
                                 if (isFinishing() || isDestroyed()) return;
@@ -396,6 +406,12 @@ public class logInPageActivity extends AppCompatActivity {
                     if (isFinishing() || isDestroyed()) return;
 
                     Log.e("Login", "Server login failed", error);
+
+                    if (attempt < 1 && isTransientFailure(error) && networkNotice.isOnline(this)) {
+                        Log.w("LoginFlow", "LOGIN_RETRY after " + error.getClass().getSimpleName());
+                        performLogin(login, password, currentSeason, attempt + 1);
+                        return;
+                    }
 
                     String message = error.getLocalizedMessage();
 
@@ -856,8 +872,33 @@ public class logInPageActivity extends AppCompatActivity {
         return error instanceof java.io.IOException;
     }
 
+    private static final long LOGIN_WATCHDOG_MS = 30_000L;
+    private final android.os.Handler loginHandler = new android.os.Handler(android.os.Looper.getMainLooper());
+    private final Runnable loginWatchdog = () -> {
+        if (isFinishing() || isDestroyed() || !loginInProgress) return;
+
+        // the user is typing a nickname: nothing is hanging
+        if (usernameDialog != null && usernameDialog.isShowing()) return;
+
+        Log.w("LoginFlow", "WATCHDOG: no answer from the server for " + LOGIN_WATCHDOG_MS + " ms");
+        setLoginLoading(false);
+        Toast.makeText(this, getString(R.string.smth_wrong_text), Toast.LENGTH_LONG).show();
+    };
+
+    @Override
+    protected void onDestroy() {
+        loginHandler.removeCallbacks(loginWatchdog);
+        super.onDestroy();
+    }
+
     private void setLoginLoading(boolean loading) {
         loginInProgress = loading;
+        loginHandler.removeCallbacks(loginWatchdog);
+
+        if (loading) {
+            loginHandler.postDelayed(loginWatchdog, LOGIN_WATCHDOG_MS);
+        }
+
         loginProgress.setVisibility(
                 loading ? View.VISIBLE : View.GONE
         );

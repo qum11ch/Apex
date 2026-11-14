@@ -468,6 +468,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void refreshMainScreen() {
+        if (!networkNotice.ensureOnline(this)) {
+            // offline: keep what is on screen, just stop the spinner
+            swipeLayout.setRefreshing(false);
+            return;
+        }
+
         String currentYear = Integer.toString(LocalDate.now().getYear());
 
         cachedList.reset(datumDrivers);
@@ -490,6 +496,9 @@ public class MainActivity extends AppCompatActivity {
         futureLayout.setVisibility(View.GONE);
         pastLayout.setVisibility(View.GONE);
         pastRaceHeader.setVisibility(View.GONE);
+
+        // if the network goes away during the refresh the answer may never come: do not spin forever
+        swipeLayout.postDelayed(() -> swipeLayout.setRefreshing(false), 15_000L);
 
         if (currentSeason == null || currentSeason.trim().isEmpty()) {
             rootRef.child("status")
