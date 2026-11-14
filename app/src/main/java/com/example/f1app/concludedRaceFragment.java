@@ -30,8 +30,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import android.view.View;
-import android.view.ViewGroup;
 
 public class concludedRaceFragment extends Fragment {
     private List<concludedRacesData> datum;

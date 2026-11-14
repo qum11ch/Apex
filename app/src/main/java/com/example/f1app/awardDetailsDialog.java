@@ -4,21 +4,19 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 final class awardDetailsDialog extends Dialog {

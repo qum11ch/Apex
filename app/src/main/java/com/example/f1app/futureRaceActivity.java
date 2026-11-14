@@ -12,7 +12,10 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -22,13 +25,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-
-import android.view.View;
-
-import androidx.activity.EdgeToEdge;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 public class futureRaceActivity extends AppCompatActivity {
 
@@ -43,11 +39,7 @@ public class futureRaceActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(futureRaceActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(futureRaceActivity.this));
-        }
+        networkNotice.showIfOffline(futureRaceActivity.this);
 
         TextView futureRaceTitle = findViewById(R.id.raceTitile);
 

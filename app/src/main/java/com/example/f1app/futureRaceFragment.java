@@ -29,9 +29,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.view.View;
-import android.view.ViewGroup;
-
 public class futureRaceFragment extends Fragment {
     List<futureRaceData> datum;
     private futureRaceAdapter adapter;

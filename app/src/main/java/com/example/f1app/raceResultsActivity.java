@@ -13,14 +13,13 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
-
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -51,11 +50,7 @@ public class raceResultsActivity extends AppCompatActivity {
 
         TextView raceTitle = findViewById(R.id.raceTitle);
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(raceResultsActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(raceResultsActivity.this));
-        }
+        networkNotice.showIfOffline(raceResultsActivity.this);
 
         if(!getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
@@ -88,7 +83,7 @@ public class raceResultsActivity extends AppCompatActivity {
             if (year < 2024){
                 RequestQueue queue = Volley.newRequestQueue(raceResultsActivity.this);
                 String url2 = "https://api.jolpi.ca/ergast/f1/" + mSeason + "/circuits/" + mCircuitId + "/sprint/?format=json";
-                JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+                JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                         Request.Method.GET,
                         url2,
                         null,

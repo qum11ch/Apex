@@ -5,10 +5,8 @@ import static com.example.f1app.MainActivity.checkConnection;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -89,11 +87,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         setupStandingsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.recyclerview_currentDrivers));
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonDriversStandingsActivity.this));
-        } else {
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonDriversStandingsActivity.this));
-        }
+        networkNotice.showIfOffline(pastSeasonDriversStandingsActivity.this);
 
         Bundle extras = getIntent().getExtras();
         mCurrentSeason = extras != null ? extras.getString("currentSeason") : null;
@@ -334,7 +328,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
     private void requestStandings(int season, int token) {
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

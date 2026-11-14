@@ -3,6 +3,8 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -16,10 +18,16 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.facebook.shimmer.ShimmerFrameLayout;
@@ -32,26 +40,17 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import android.graphics.drawable.GradientDrawable;
-import androidx.core.content.ContextCompat;
-import android.graphics.Color;
-import androidx.core.graphics.ColorUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 import java.util.Locale;
+import java.util.Map;
 
 
 public class teamResultsFragment extends Fragment {
@@ -821,7 +820,7 @@ public class teamResultsFragment extends Fragment {
 
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

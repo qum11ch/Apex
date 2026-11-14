@@ -1,20 +1,19 @@
 package com.example.f1app;
 
-import android.content.Context;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
-import android.graphics.drawable.shapes.Shape;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,13 +21,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.CornerFamily;
-import com.google.android.material.shape.Shapeable;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.Objects;
-
-import android.content.res.ColorStateList;
-import androidx.core.content.ContextCompat;
 
 public class allDriversAdapter extends ListAdapter<driversList, allDriversAdapter.DataHolder> {
 

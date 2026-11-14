@@ -15,14 +15,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -46,10 +48,6 @@ import com.google.firebase.storage.StorageReference;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 public class teamPageActivity extends AppCompatActivity {
     private TextView teamName;
     private ProgressBar progressBar;
@@ -63,11 +61,7 @@ public class teamPageActivity extends AppCompatActivity {
         setContentView(R.layout.team_page);
         setupTeamInsets();
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamPageActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamPageActivity.this));
-        }
+        networkNotice.showIfOffline(teamPageActivity.this);
 
         contentLayout = findViewById(R.id.content_layout);
         progressBar = findViewById(R.id.progressBar);

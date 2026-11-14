@@ -16,17 +16,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
+import androidx.core.widget.NestedScrollView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -38,30 +39,25 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import com.google.firebase.functions.FirebaseFunctions;
 import com.google.firebase.functions.HttpsCallableReference;
-
-import java.time.LocalDate;
-import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-
-import androidx.core.widget.NestedScrollView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import java.util.Locale;
+import java.util.Map;
 
 
 public class neuroPredictionResultActivity extends AppCompatActivity {
@@ -502,7 +498,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         }
 
         Log.i("FatalError", " " + url);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,
@@ -638,7 +634,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         RequestQueue queue = Volley.newRequestQueue(neuroPredictionResultActivity.this);
 
         JsonObjectRequest request =
-                new JsonObjectRequest(
+                new cachedJsonRequest(
                         Request.Method.GET,
                         url,
                         null,

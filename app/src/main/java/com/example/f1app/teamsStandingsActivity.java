@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -17,7 +18,10 @@ import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,12 +53,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import android.view.ViewGroup;
-
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 public class teamsStandingsActivity extends AppCompatActivity {
     ImageButton showDrivers, showSchedule, showHomePage, showAccount;
     private List<teamsList> datum;
@@ -79,11 +77,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         setContentView(R.layout.teams_standing_page);
         setupTeamsInsets();
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(teamsStandingsActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(teamsStandingsActivity.this));
-        }
+        networkNotice.showIfOffline(teamsStandingsActivity.this);
 
         Bundle intentBundle = getIntent().getExtras();
         mCurrentSeason = intentBundle.getString("currentSeason");
@@ -128,16 +122,32 @@ public class teamsStandingsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
 
         LocalDate currentDate = LocalDate.now();
+        final String season = Integer.toString(currentDate.getYear());
 
         swipeLayout = findViewById(R.id.swipe_layout);
-        swipeLayout.setOnRefreshListener(() -> {
-            recyclerView.setVisibility(View.GONE);
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-            datum.clear();
-            getTeamStanding(Integer.toString(currentDate.getYear()));
-            swipeLayout.setRefreshing(false);
+
+        // a screen seen before: show the list at once, no shimmer
+        final List<teamsList> cached = listCache.get("teams_standings_" + season);
+
+        if (cached != null) {
+            datum.addAll(cached);
             adapter.notifyDataSetChanged();
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+
+        swipeLayout.setOnRefreshListener(() -> {
+            boolean hasData = !datum.isEmpty();
+
+            if (!hasData) {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+                swipeLayout.setRefreshing(false);
+            }
+
+            getTeamStanding(season, hasData);
         });
 
         showDrivers = findViewById(R.id.showDriver);
@@ -160,7 +170,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        getTeamStanding(Integer.toString(currentDate.getYear()));
+        getTeamStanding(season, cached != null);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -348,11 +358,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
-    private void getTeamStanding(String currentYear){
+    private void getTeamStanding(String currentYear, boolean silent){
         final int token = ++loadToken;
+        final List<teamsList> staging = new ArrayList<>();
+        final int[] expected = {Integer.MAX_VALUE};
         RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,
@@ -363,6 +375,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
                         if (!total.equals("0")){
                             JSONObject StandingsTable = MRData.getJSONObject("StandingsTable");
                             JSONArray StandingsLists = StandingsTable.getJSONArray("StandingsLists");
+
+                            int teamCount = 0;
+                            for (int k = 0; k < StandingsLists.length(); k++) {
+                                JSONArray part = StandingsLists.getJSONObject(k).optJSONArray("ConstructorStandings");
+                                if (part != null) teamCount += part.length();
+                            }
+                            expected[0] = teamCount;
                             for(int i = 0; i < StandingsLists.length(); i++){
                                 JSONArray ConstructorStandings = StandingsLists.getJSONObject(i)
                                         .getJSONArray("ConstructorStandings");
@@ -373,6 +392,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                     String points = ConstructorStandings.getJSONObject(j).getString("points");
                                     String constructorId = ConstructorStandings.getJSONObject(j)
                                             .getJSONObject("Constructor").getString("constructorId");
+
                                     //if(currentYear.equals("2024")){
                                     //    if (constructorName.equals("Sauber")){
                                     //        constructorName = "Kick Sauber";
@@ -393,19 +413,12 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                             rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
                                                     teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                                     smth.setDrivers(teamDrivers);
                                                     smth.setSeason(mCurrentSeason);
                                                     smth.setImageUrl(mTeamCar);
-                                                    smth.setTeamColor(mTeamColor);
-                                                    if (token != loadToken) return;
-                                                    datum.add(smth);
-
-                                                    hideShimmer(recyclerView, shimmerFrameLayout);
-
-                                                    sortStandings();
-                                                    adapter.notifyDataSetChanged();
+                                                    smth.setTeamColor(colorOrDefault(snapshot.child("darkColor").getValue(String.class)));
+                                                    deliverTeam(smth, staging, expected[0], silent, token, currentYear);
                                                 }
 
                                                 @Override
@@ -429,18 +442,18 @@ public class teamsStandingsActivity extends AppCompatActivity {
                             rootRef.child("constructors").orderByChild("lastSeasonPos").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    expected[0] = (int) snapshot.getChildrenCount() + 1;
                                     ArrayList<String> firstTeam = new ArrayList<>();
                                     firstTeam.add("");
                                     firstTeam.add("");
                                     teamsList first = new teamsList("","","","", true);
                                     first.setDrivers(firstTeam);
                                     if (token != loadToken) return;
-                                                    datum.add(first);
+                                    staging.add(first);
 
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
-                                        String teamColor = child.child("darkColor").getValue(String.class);
 
                                         StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
 
@@ -457,14 +470,8 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 smth.setSeason(mCurrentSeason);
                                                 smth.setDrivers(teamDrivers);
                                                 smth.setImageUrl(mTeamCar);
-                                                smth.setTeamColor(teamColor);
-                                                if (token != loadToken) return;
-                                                    datum.add(smth);
-
-                                                hideShimmer(recyclerView, shimmerFrameLayout);
-
-                                                sortStandings();
-                                                    adapter.notifyDataSetChanged();
+                                                smth.setTeamColor(colorOrDefault(snapshot.child("darkColor").getValue(String.class)));
+                                                deliverTeam(smth, staging, expected[0], silent, token, currentYear);
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
@@ -485,13 +492,53 @@ public class teamsStandingsActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }, error -> Toast.makeText(teamsStandingsActivity.this, " " + error.getMessage(), Toast.LENGTH_SHORT).show());
+                }, error -> {
+                    if (token != loadToken) return;
+                    swipeLayout.setRefreshing(false);
+                    Toast.makeText(teamsStandingsActivity.this,
+                            getString(R.string.smth_wrong_text), Toast.LENGTH_SHORT).show();
+                });
         queue.add(jsonObjectRequest2);
+    }
+
+    private void deliverTeam(teamsList item, List<teamsList> staging, int expected,
+                             boolean silent, int token, String season) {
+        if (token != loadToken) {
+            return;
+        }
+
+        staging.add(item);
+        java.util.Collections.sort(staging, (a, b) -> Integer.compare(positionOf(a), positionOf(b)));
+
+        boolean complete = staging.size() >= expected;
+
+        // first load: show every team as it arrives; later loads: swap the list once, when it is complete
+        if (!silent || complete) {
+            datum.clear();
+            datum.addAll(staging);
+            adapter.notifyDataSetChanged();
+        }
+
+        if (!silent) {
+            hideShimmer(recyclerView, shimmerFrameLayout);
+        }
+
+        if (complete) {
+            listCache.put("teams_standings_" + season, staging);
+            swipeLayout.setRefreshing(false);
+            recyclerView.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.setVisibility(View.GONE);
+        }
     }
 
     // standings come back from Firebase in arbitrary order: keep the list sorted by position
     private void sortStandings() {
         java.util.Collections.sort(datum, (a, b) -> Integer.compare(positionOf(a), positionOf(b)));
+    }
+
+    private static String colorOrDefault(String raw) {
+        if (raw == null || raw.trim().isEmpty()) return "#303030";
+        return raw.startsWith("#") ? raw : "#" + raw;
     }
 
     private static int positionOf(teamsList team) {

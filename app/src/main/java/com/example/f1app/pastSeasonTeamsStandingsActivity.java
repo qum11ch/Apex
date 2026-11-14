@@ -98,11 +98,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         setupTeamsStandingsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.recyclerview_currentTeams));
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonTeamsStandingsActivity.this));
-        } else {
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonTeamsStandingsActivity.this));
-        }
+        networkNotice.showIfOffline(pastSeasonTeamsStandingsActivity.this);
 
         Bundle extras = getIntent().getExtras();
         mCurrentSeason = extras != null ? extras.getString("currentSeason") : null;
@@ -322,7 +318,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private void requestTeamStandings(int season, int token) {
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,
@@ -400,7 +396,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private void requestDriversFromStandings(int season, int token, List<JSONObject> standings) {
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

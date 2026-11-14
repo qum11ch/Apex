@@ -7,6 +7,7 @@ import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -16,7 +17,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,11 +43,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.view.View;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 public class winnersWDCActivity extends AppCompatActivity {
     private static final int POINTS_FOR_SPRINT = 8 + 25;
     private static final int POINTS_FOR_CONVENTIONAL = 25;
@@ -61,18 +60,14 @@ public class winnersWDCActivity extends AppCompatActivity {
         setupWinnersInsets();
         EdgeInsets.applyBottom(findViewById(R.id.winnersScroll));
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(winnersWDCActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(winnersWDCActivity.this));
-        }
+        networkNotice.showIfOffline(winnersWDCActivity.this);
 
         recyclerView = findViewById(R.id.recyclerview_winnersWDC);
         // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>("winners_wdc|" + getIntent().getStringExtra("currentSeason"));
         adapter = new winnersWDCAdapter(winnersWDCActivity.this, datum);
         recyclerView.setAdapter(adapter);
 
@@ -84,6 +79,7 @@ public class winnersWDCActivity extends AppCompatActivity {
 
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
 
         RelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
         if (!checkLightTheme(winnersWDCActivity.this)){
@@ -215,7 +211,7 @@ public class winnersWDCActivity extends AppCompatActivity {
     private void getDriverStandings(String season, int maxPoints) {
         RequestQueue queue = Volley.newRequestQueue(winnersWDCActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,

@@ -2,7 +2,6 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.checkConnection;
 
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -106,11 +105,7 @@ public class allDriversActivity extends AppCompatActivity {
         setContentView(R.layout.all_drivers_page);
         setupDriversInsets();
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(allDriversActivity.this));
-        } else {
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(allDriversActivity.this));
-        }
+        networkNotice.showIfOffline(allDriversActivity.this);
 
         currentSeason = resolveSeason();
         restoreFilters(savedInstanceState);

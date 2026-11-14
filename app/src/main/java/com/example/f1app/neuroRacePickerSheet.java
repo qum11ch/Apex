@@ -3,7 +3,6 @@ package com.example.f1app;
 import static android.view.View.OVER_SCROLL_NEVER;
 
 import android.graphics.Typeface;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;

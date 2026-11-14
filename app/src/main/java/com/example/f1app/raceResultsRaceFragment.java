@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -70,7 +69,7 @@ public class raceResultsRaceFragment extends Fragment {
             fastestLapLayout.setBackground(ContextCompat.getDrawable(getContext(), R.drawable.background_striped_lines_item_night));
         }
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>(cachedList.key("race_results", getArguments(), "circuitId", "season"));
 
         adapter = new raceResultsRaceAdapter(getActivity(), datum);
         recyclerView.setAdapter(adapter);
@@ -80,9 +79,19 @@ public class raceResultsRaceFragment extends Fragment {
         shimmerDriverLayout = view.findViewById(R.id.shimmer_layout_driver);
         shimmerDriverLayout.startShimmer();
         shimmerFrameLayout.startShimmer();
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
 
         fastestLapDriverName = view.findViewById(R.id.fastestLapDriverName);
         fastestLapTime = view.findViewById(R.id.fastestLapTime);
+
+        String[] fastest = cachedList.getExtra(cachedList.key("race_fastest", getArguments(), "circuitId", "season"));
+        if (fastest != null && fastest.length == 2) {
+            fastestLapDriverName.setText(fastest[0]);
+            fastestLapTime.setText(fastest[1]);
+            shimmerDriverLayout.stopShimmer();
+            shimmerDriverLayout.setVisibility(View.GONE);
+            fastestLapDriverLayout.setVisibility(View.VISIBLE);
+        }
 
 
         if (!getArguments().isEmpty()){
@@ -99,7 +108,7 @@ public class raceResultsRaceFragment extends Fragment {
     public void getRaceData(String circuitId, String season){
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/circuits/" + circuitId + "/results/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,
@@ -136,6 +145,7 @@ public class raceResultsRaceFragment extends Fragment {
                                         String driver = driverName.charAt(0) + ". " + driverFamilyName;
                                         fastestLapTime.setText(mFastestLapTime);
                                         fastestLapDriverName.setText(driver);
+                                        cachedList.putExtra(cachedList.key("race_fastest", getArguments(), "circuitId", "season"), driver, mFastestLapTime);
 
                                         shimmerDriverLayout.animate()
                                                 .setDuration(500)

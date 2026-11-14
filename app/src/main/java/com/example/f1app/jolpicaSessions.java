@@ -1,6 +1,12 @@
 package com.example.f1app;
 
 import android.content.Context;
+import android.graphics.Typeface;
+import android.os.SystemClock;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -10,13 +16,6 @@ import com.android.volley.toolbox.Volley;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import android.graphics.Typeface;
-import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.text.style.ForegroundColorSpan;
-import android.text.style.StyleSpan;
-
-import android.os.SystemClock;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -92,7 +91,7 @@ public final class jolpicaSessions {
             CACHE.remove(url);
         }
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET, url, null,
                 response -> {
                     try {

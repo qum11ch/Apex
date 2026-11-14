@@ -7,10 +7,7 @@ import static com.example.f1app.driversStandingsActivity.startActivity_seasonDat
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;

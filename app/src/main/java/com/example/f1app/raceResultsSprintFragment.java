@@ -57,12 +57,13 @@ public class raceResultsSprintFragment extends Fragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>(cachedList.key("sprint_results", getArguments(), "circuitId", "season"));
         adapter = new raceResultsRaceAdapter(requireActivity(), datum);
         recyclerView.setAdapter(adapter);
 
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
 
 
         if (!getArguments().isEmpty()){
@@ -78,7 +79,7 @@ public class raceResultsSprintFragment extends Fragment {
     public void getSprintData(String circuitId, String season){
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/circuits/" + circuitId + "/sprint/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,

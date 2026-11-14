@@ -1,9 +1,5 @@
 package com.example.f1app;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -16,16 +12,10 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.Build;
 import android.os.Bundle;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -33,18 +23,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.lang.reflect.Field;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-import java.util.concurrent.atomic.AtomicInteger;
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -66,10 +55,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import android.view.ViewGroup;
+import java.lang.reflect.Field;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -169,11 +166,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        if (!checkConnection(this)){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(MainActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(MainActivity.this));
-        }
+        networkNotice.showIfOffline(MainActivity.this);
 
         storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -573,7 +566,7 @@ public class MainActivity extends AppCompatActivity {
     private void getDriversStanding(String season){
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,
@@ -731,7 +724,7 @@ public class MainActivity extends AppCompatActivity {
     private void getTeamStanding(String season){
         RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,

@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static androidx.core.util.TypedValueCompat.dpToPx;
-
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;

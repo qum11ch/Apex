@@ -20,7 +20,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
-import android.graphics.drawable.InsetDrawable;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -283,7 +282,7 @@ final class driverSeasonsSection {
 
         String url = "https://api.jolpi.ca/ergast/f1/" + year + "/driverstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

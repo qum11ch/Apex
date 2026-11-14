@@ -1,7 +1,8 @@
 package com.example.f1app;
 
+import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.drawable.InsetDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,8 +11,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.content.res.ColorStateList;
-import android.graphics.drawable.GradientDrawable;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -244,7 +243,7 @@ final class teamCarsSection {
 
         String url = "https://api.jolpi.ca/ergast/f1/" + year + "/constructorstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

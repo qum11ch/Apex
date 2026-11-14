@@ -3,8 +3,12 @@ package com.example.f1app;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import org.json.*;
-import java.util.concurrent.*;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class jolpicaPointsLoader {
     public interface Callback {

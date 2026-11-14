@@ -57,12 +57,13 @@ public class raceResultsQualiFragment extends Fragment {
         LinearLayoutManager mLayoutManager = new LinearLayoutManager(requireContext());
         recyclerView.setLayoutManager(mLayoutManager);
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>(cachedList.key("quali_results", getArguments(), "circuitId", "season"));
         adapter = new raceResultsQualiAdapter(getActivity(), datum);
         recyclerView.setAdapter(adapter);
 
         shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
         shimmerFrameLayout.startShimmer();
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
 
         if (!getArguments().isEmpty()){
             String mCircuitId = getArguments().getString("circuitId");
@@ -78,7 +79,7 @@ public class raceResultsQualiFragment extends Fragment {
     public void getQualiData(String circuitId, String season){
         RequestQueue queue = Volley.newRequestQueue(requireContext());
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/circuits/" + circuitId + "/qualifying/?format=json";
-        JsonObjectRequest jsonObjectRequest2 = new JsonObjectRequest(
+        JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
                 url2,
                 null,

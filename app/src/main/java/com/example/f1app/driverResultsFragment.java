@@ -545,7 +545,7 @@ public class driverResultsFragment extends Fragment {
 
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
 
-        JsonObjectRequest request = new JsonObjectRequest(
+        JsonObjectRequest request = new cachedJsonRequest(
                 Request.Method.GET,
                 url,
                 null,

@@ -3,8 +3,6 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;

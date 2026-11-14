@@ -57,11 +57,7 @@ public class pastSeasonScheduleActivity extends AppCompatActivity implements pas
         setContentView(R.layout.past_season_schedule_page);
         setupPagerScreenInsets();
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(pastSeasonScheduleActivity.this));
-        } else {
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(pastSeasonScheduleActivity.this));
-        }
+        networkNotice.showIfOffline(pastSeasonScheduleActivity.this);
 
         Bundle extras = getIntent().getExtras();
         mCurrentSeason = extras != null ? extras.getString("currentSeason") : null;
