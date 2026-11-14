@@ -74,23 +74,15 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
 
         StorageReference mDriverImage = datum.getImageUrl();
 
-        mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
-                .load(uri)
+        GlideApp.with(context)
+                .load(mDriverImage)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .error(R.drawable.placeholder_driver)
-                .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
-                        .load(R.drawable.placeholder_driver)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .skipMemoryCache(true)
-                        .into(holder.driverImage));
+                .into(holder.driverImage);
 
         //String mTeamId = datum.getConstructorId();
 
-        int colorRgb = Color.parseColor("#303030");
-
-        if (darkTeamColor != null){
-            colorRgb = Color.parseColor(darkTeamColor);
-        }
+        int colorRgb = teamColors.parse(darkTeamColor);
         int alpha = 0x66;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 

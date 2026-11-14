@@ -115,17 +115,18 @@ public class driversStandingsActivity extends AppCompatActivity {
         // a screen seen before: the remembered list is shown at once, no shimmer
         final boolean cached = cachedList.hasCache(datum);
         cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
-        cachedList.onCommit(datum, () -> swipeLayout.setRefreshing(false));
+        cachedList.onCommit(datum, () -> {
+            swipeLayout.setRefreshing(false);
+            hideShimmer(recyclerView, shimmerFrameLayout);
+        });
 
         swipeLayout.setOnRefreshListener(() -> {
             boolean hasData = !datum.isEmpty();
 
-            if (!hasData) {
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                swipeLayout.setRefreshing(false);
-            }
+            recyclerView.setVisibility(View.GONE); // pull-to-refresh: the shimmer comes back
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            swipeLayout.setRefreshing(false);
 
             getStanding(season, hasData);
         });
@@ -421,19 +422,15 @@ public class driversStandingsActivity extends AppCompatActivity {
 
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, currentSeason);
                                     smth.setImageUrl(mDriverImage);
-                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
-                                            smth.setTeamColor(mTeamColor);
-                                        }
+                                    final String teamKey = constructorId;
+                                    smth.setTeamColor(teamColors.get(teamKey)); // known colour: no grey flash
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            smth.setTeamColor("#ffffff");
-                                            Log.e(String.valueOf(driversStandingsActivity.this), "Team color information getting error:" + error.getMessage());
-                                        }
-                                    });
+                                    if (smth.getTeamColor() == null) {
+                                        teamColors.fetch(rootRef, teamKey, color -> {
+                                            smth.setTeamColor(color != null ? color : "#ffffff");
+                                            adapter.notifyDataSetChanged();
+                                        });
+                                    }
 
                                     if (token == loadToken) {
                                         datum.add(smth);
@@ -453,7 +450,7 @@ public class driversStandingsActivity extends AppCompatActivity {
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
-                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
+                                        String teamColor = teamColors.hex(child.child("darkColor").getValue(String.class));
 
                                         rootRef.child("driverLineUp/season/" + currentSeason + "/" + constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
@@ -517,6 +514,9 @@ public class driversStandingsActivity extends AppCompatActivity {
                 }, error -> {
                     if (token != loadToken) return;
                     swipeLayout.setRefreshing(false);
+                    if (!datum.isEmpty()) {
+                        hideShimmer(recyclerView, shimmerFrameLayout); // bring the old list back
+                    }
                     Toast.makeText(driversStandingsActivity.this,
                             getString(R.string.smth_wrong_text), Toast.LENGTH_SHORT).show();
                 });

@@ -133,7 +133,10 @@ public class savedRacesActivity extends AppCompatActivity {
                     && recyclerView.canScrollVertically(-1);
         });
 
-        swipeLayout.setOnRefreshListener(() -> refresh(true));
+        swipeLayout.setOnRefreshListener(() -> {
+            showSkeleton(); // pull-to-refresh: the shimmer comes back
+            refresh(true);
+        });
         stateRetry.setOnClickListener(v -> refresh(true));
 
         ShapeableImageView stripedImage = findViewById(R.id.stripedImage);
@@ -400,6 +403,7 @@ public class savedRacesActivity extends AppCompatActivity {
                         showRaces(result.races);
                     } else if (hasData) {
                         // Keep the complete data that is already on screen.
+                        restoreList(); // bring the old list back
                         showMessage(getString(R.string.saved_races_refresh_failed));
                     } else {
                         // Better a card without circuit facts than an empty screen; it is not cached.
@@ -416,6 +420,7 @@ public class savedRacesActivity extends AppCompatActivity {
                     Log.e(TAG, "Failed to load saved races", error);
 
                     if (hasData) {
+                        restoreList(); // bring the old list back
                         showMessage(getString(R.string.saved_races_refresh_failed));
                     } else {
                         showLoadError();
@@ -432,6 +437,12 @@ public class savedRacesActivity extends AppCompatActivity {
         stateContainer.setVisibility(View.GONE);
         shimmerFrameLayout.setVisibility(View.VISIBLE);
         shimmerFrameLayout.startShimmer();
+    }
+
+    private void restoreList() {
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        renderList(true);
     }
 
     private void showLoadError() {

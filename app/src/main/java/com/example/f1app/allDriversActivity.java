@@ -323,7 +323,10 @@ public class allDriversActivity extends AppCompatActivity {
         swipeLayout = findViewById(R.id.swipe_layout);
         AppBarLayout appBar = findViewById(R.id.app_bar);
 
-        swipeLayout.setOnRefreshListener(() -> refresh(true));
+        swipeLayout.setOnRefreshListener(() -> {
+            showSkeleton(); // pull-to-refresh: the shimmer comes back
+            refresh(true);
+        });
 
         // The only child is a FrameLayout, so ask the list whether it can still scroll up.
         swipeLayout.setOnChildScrollUpCallback((parent, child) ->
@@ -513,6 +516,9 @@ public class allDriversActivity extends AppCompatActivity {
                     Log.e(TAG, "Drivers loading failed", error);
 
                     if (hasData) {
+                        shimmerFrameLayout.stopShimmer();
+                        shimmerFrameLayout.setVisibility(View.GONE);
+                        applyFilters(false); // bring the old list back
                         Toast.makeText(
                                 this,
                                 R.string.all_drivers_refresh_failed,

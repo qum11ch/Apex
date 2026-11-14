@@ -77,16 +77,26 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         StorageReference mTeamCar = datum.getImageUrl();
 
 
-        GlideApp.with(context)
+        if (holder.carTarget != null) {
+            GlideApp.with(context).clear(holder.carTarget); // a late answer of the previous row is dropped
+        }
+
+        final Object carToken = new Object();
+        holder.carToken = carToken;
+
+        holder.carTarget = GlideApp.with(context)
                 .asBitmap()
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .skipMemoryCache(true)
                 .error(R.drawable.placeholder_car)
                 .load(mTeamCar)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource,
                                                 @Nullable Transition<? super Bitmap> transition) {
+                        if (holder.carToken != carToken) {
+                            return; // the row now shows another team
+                        }
+
 
                         int width = resource.getWidth();
                         int height = resource.getHeight();
@@ -122,11 +132,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
 
         //String mTeamId = datum.getTeamId();
 
-        int colorRgb = Color.parseColor("#303030");
-
-        if (darkTeamColor != null){
-            colorRgb = Color.parseColor(darkTeamColor);
-        }
+        int colorRgb = teamColors.parse(darkTeamColor);
         int alpha = 0x66;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 
@@ -239,6 +245,18 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
 
 
     @Override
+    public void onViewRecycled(@NonNull DataHolder holder) {
+        super.onViewRecycled(holder);
+
+        if (holder.carTarget != null) {
+            GlideApp.with(context).clear(holder.carTarget);
+            holder.carTarget = null;
+        }
+
+        holder.carToken = null;
+    }
+
+    @Override
     public int getItemCount() {
         return dataList.size();
     }
@@ -255,6 +273,8 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
     }
 
     public static class DataHolder extends RecyclerView.ViewHolder{
+        com.bumptech.glide.request.target.CustomTarget<android.graphics.Bitmap> carTarget;
+        Object carToken;
         TextView teamName, teamPoints, teamPosition,
                 teamDriverFirst, teamDriverSecond, teamPointsText;
         ShapeableImageView team_car;

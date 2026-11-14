@@ -129,17 +129,18 @@ public class teamsStandingsActivity extends AppCompatActivity {
         // a screen seen before: the remembered list is shown at once, no shimmer
         final boolean cached = cachedList.hasCache(datum);
         cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
-        cachedList.onCommit(datum, () -> swipeLayout.setRefreshing(false));
+        cachedList.onCommit(datum, () -> {
+            swipeLayout.setRefreshing(false);
+            hideShimmer(recyclerView, shimmerFrameLayout);
+        });
 
         swipeLayout.setOnRefreshListener(() -> {
             boolean hasData = !datum.isEmpty();
 
-            if (!hasData) {
-                recyclerView.setVisibility(View.GONE);
-                shimmerFrameLayout.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.startShimmer();
-                swipeLayout.setRefreshing(false);
-            }
+            recyclerView.setVisibility(View.GONE); // pull-to-refresh: the shimmer comes back
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+            swipeLayout.setRefreshing(false);
 
             getTeamStanding(season, hasData);
         });
@@ -492,6 +493,9 @@ public class teamsStandingsActivity extends AppCompatActivity {
                 }, error -> {
                     if (token != loadToken) return;
                     swipeLayout.setRefreshing(false);
+                    if (!datum.isEmpty()) {
+                        hideShimmer(recyclerView, shimmerFrameLayout); // bring the old list back
+                    }
                     Toast.makeText(teamsStandingsActivity.this,
                             getString(R.string.smth_wrong_text), Toast.LENGTH_SHORT).show();
                 });

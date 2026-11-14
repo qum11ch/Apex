@@ -119,6 +119,25 @@ public class cachedList<T> extends ArrayList<T> {
         }
     }
 
+    /** Drops the visible items and any collected ones: the next items start a clean load. */
+    public static void reset(List<?> list) {
+        if (!(list instanceof cachedList)) {
+            list.clear();
+            return;
+        }
+
+        cachedList<?> cached = (cachedList<?>) list;
+        MAIN.removeCallbacks(cached.commitRunnable);
+        cached.fromCache = false;
+        cached.staging = null;
+        cached.expected = 0;
+        cached.clearVisible();
+    }
+
+    private void clearVisible() {
+        super.clear();
+    }
+
     /** Pull-to-refresh: keep what is on screen, collect the fresh items on the side. */
     public static void beginReload(List<?> list) {
         if (!(list instanceof cachedList)) {

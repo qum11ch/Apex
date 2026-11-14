@@ -41,6 +41,7 @@ public class predictionsActivity extends AppCompatActivity {
     private TextView emptyText;
 
     private boolean isLoading = false;
+    private boolean refreshRequested = false;
 
     private final List<predictionListItem> predictions = new ArrayList<>();
 
@@ -89,6 +90,7 @@ public class predictionsActivity extends AppCompatActivity {
                 return;
             }
 
+            refreshRequested = true; // pull-to-refresh: the shimmer comes back
             loadPredictions(predictionsActivity.this);
         });
 
@@ -168,7 +170,8 @@ public class predictionsActivity extends AppCompatActivity {
         isLoading = true;
         DatabaseReference predictionsRef = FirebaseDatabase.getInstance().getReference("userPredictions");
 
-        if (cachedList.recall(CACHE_KEY) == null) {
+        if (refreshRequested || cachedList.recall(CACHE_KEY) == null) {
+            refreshRequested = false;
             showShimmer(recyclerView, shimmerLayout);
         }
 
@@ -213,6 +216,7 @@ public class predictionsActivity extends AppCompatActivity {
                         }
 
                         if (cachedList.recall(CACHE_KEY) != null) {
+                            hideShimmer(recyclerView, shimmerLayout);
                             return; // the remembered list stays on screen
                         }
 

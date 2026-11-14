@@ -65,6 +65,7 @@ public class userPredictionsActivity extends AppCompatActivity {
     private userPredictionAdapter adapter;
     private TextView emptyText;
     private boolean isLoading = false;
+    private boolean refreshRequested = false;
 
     private DatabaseReference rootRef;
     private FirebaseUser currentUser;
@@ -136,6 +137,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                 return;
             }
 
+            refreshRequested = true; // pull-to-refresh: the shimmer comes back
             loadUserAnswers(this);
 
             if (currentPredictionSeason != null) {
@@ -271,11 +273,15 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         isLoading = true;
 
-        if (userPredictions.isEmpty()) {
+        if (userPredictions.isEmpty() || refreshRequested) {
             showShimmer(recyclerView, shimmerLayout);
-        } else {
-            cachedList.beginReload(userPredictions); // keep what is on screen
         }
+
+        if (!userPredictions.isEmpty()) {
+            cachedList.beginReload(userPredictions); // the old answers wait under the shimmer
+        }
+
+        refreshRequested = false;
 
         userPredictions.clear();
         adapter.notifyDataSetChanged();
@@ -318,6 +324,7 @@ public class userPredictionsActivity extends AppCompatActivity {
                         }
 
                         if (!userPredictions.isEmpty()) {
+                            hideShimmer(recyclerView, shimmerLayout);
                             return; // the remembered list stays on screen
                         }
 

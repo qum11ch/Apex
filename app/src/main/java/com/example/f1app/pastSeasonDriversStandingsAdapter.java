@@ -88,16 +88,11 @@ public class pastSeasonDriversStandingsAdapter extends RecyclerView.Adapter<past
 
         StorageReference mDriverImage = datum.getImageUrl();
 
-        mDriverImage.getDownloadUrl().addOnSuccessListener(uri -> GlideApp.with(context)
-                .load(uri)
+        GlideApp.with(context)
+                .load(mDriverImage)
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .skipMemoryCache(true)
                 .error(R.drawable.placeholder_driver)
-                .into(holder.driverImage)).addOnFailureListener(e -> GlideApp.with(context)
-                        .load(R.drawable.placeholder_driver)
-                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .skipMemoryCache(true)
-                        .into(holder.driverImage));
+                .into(holder.driverImage);
 
         holder.driver_placement.setText(datum.getDriverPlacement());
 

@@ -462,10 +462,10 @@ public class MainActivity extends AppCompatActivity {
     private void refreshMainScreen() {
         String currentYear = Integer.toString(LocalDate.now().getYear());
 
-        datumDrivers.clear();
-        datumTeams.clear();
-        datumPast.clear();
-        datumFuture.clear();
+        cachedList.reset(datumDrivers);
+        cachedList.reset(datumTeams);
+        cachedList.reset(datumPast);
+        cachedList.reset(datumFuture);
 
         driversAdapter.notifyDataSetChanged();
         teamsAdapter.notifyDataSetChanged();
@@ -622,20 +622,15 @@ public class MainActivity extends AppCompatActivity {
                                     driversList smth = new driversList(driverName, driverFamilyName, constructorsName, constructorId, points, placement, driverCode, false, season);
                                     smth.setImageUrl(mDriverImage);
 
-                                    rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                            String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
-                                            smth.setTeamColor(mTeamColor);
-                                        }
+                                    final String teamKey = constructorId;
+                                    smth.setTeamColor(teamColors.get(teamKey)); // known colour: no grey flash
 
-                                        @Override
-                                        public void onCancelled(@NonNull DatabaseError error) {
-                                            smth.setTeamColor("#ffffff");
-                                            showError("Team color information getting error:" + error.getMessage());
-                                            Log.e(String.valueOf(MainActivity.this), "Team color information getting error:" + error.getMessage());
-                                        }
-                                    });
+                                    if (smth.getTeamColor() == null) {
+                                        teamColors.fetch(rootRef, teamKey, color -> {
+                                            smth.setTeamColor(color != null ? color : "#ffffff");
+                                            driversAdapter.notifyDataSetChanged();
+                                        });
+                                    }
 
                                     datumDrivers.add(smth);
                                 }
@@ -659,7 +654,7 @@ public class MainActivity extends AppCompatActivity {
 
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
-                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
+                                        String teamColor = teamColors.hex(child.child("darkColor").getValue(String.class));
 
                                         rootRef.child("driverLineUp/season/" + season + "/" + constructorId)
                                                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -786,7 +781,7 @@ public class MainActivity extends AppCompatActivity {
                                             rootRef.child("constructors").child(constructorId).addListenerForSingleValueEvent(new ValueEventListener() {
                                                 @Override
                                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                                    String mTeamColor = "#" + snapshot.child("darkColor").getValue(String.class);
+                                                    String mTeamColor = teamColors.hex(snapshot.child("darkColor").getValue(String.class));
 
                                                     teamsList smth = new teamsList(constructorName, position, points, constructorId, false);
                                                     smth.setDrivers(teamDrivers);
@@ -828,7 +823,7 @@ public class MainActivity extends AppCompatActivity {
                                         final int currentTeamPlace = teamIndex++;
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
-                                        String teamColor = "#" + child.child("darkColor").getValue(String.class);
+                                        String teamColor = teamColors.hex(child.child("darkColor").getValue(String.class));
 
                                         StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + season + ".png");
 
