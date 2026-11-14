@@ -45,6 +45,11 @@ public final class authSessionGate {
 
         boolean hadSession = auth.getCurrentUser() != null;
 
+        if (hadSession && !MainActivity.checkConnection(activity)) {
+            // offline: keep the session; the one-time check runs on the next start with a network
+            return false;
+        }
+
         SharedPreferences.Editor editor = preferences.edit()
                 .putInt(
                         KEY_AUTH_SCHEMA,

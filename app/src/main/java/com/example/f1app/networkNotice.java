@@ -7,9 +7,12 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.os.SystemClock;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
@@ -155,7 +158,9 @@ public final class networkNotice {
 
         try {
             if (root != null) {
-                Snackbar.make(root, message, Snackbar.LENGTH_LONG).show();
+                Snackbar snackbar = Snackbar.make(root, message, Snackbar.LENGTH_LONG);
+                raiseAboveSystemBars(snackbar, root);
+                snackbar.show();
                 return;
             }
         } catch (RuntimeException error) {
@@ -163,6 +168,26 @@ public final class networkNotice {
         }
 
         Toast.makeText(activity.getApplicationContext(), message, Toast.LENGTH_LONG).show();
+    }
+
+    /** The app draws edge to edge: lift the notice over the navigation bar and the rounded screen corners. */
+    private static void raiseAboveSystemBars(Snackbar snackbar, View root) {
+        int bottom = 0;
+        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(root);
+
+        if (insets != null) {
+            bottom = insets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    | WindowInsetsCompat.Type.displayCutout()).bottom;
+        }
+
+        final int gap = Math.round(12 * root.getResources().getDisplayMetrics().density);
+        View view = snackbar.getView();
+        ViewGroup.LayoutParams params = view.getLayoutParams();
+
+        if (params instanceof ViewGroup.MarginLayoutParams) {
+            ((ViewGroup.MarginLayoutParams) params).bottomMargin += bottom + gap;
+            view.setLayoutParams(params);
+        }
     }
 
     private static void notice(Context app, String message) {

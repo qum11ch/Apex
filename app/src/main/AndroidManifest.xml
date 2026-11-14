@@ -57,7 +57,6 @@
         <activity android:name=".pastSeasonDriversStandingsActivity"/>
         <activity android:name=".pastSeasonTeamsStandingsActivity"/>
         <activity android:name=".pastSeasonScheduleActivity"/>
-        <activity android:name=".connectionLostScreen"/>
         <activity
             android:name=".logInPageActivity"
             android:windowSoftInputMode="adjustResize" />

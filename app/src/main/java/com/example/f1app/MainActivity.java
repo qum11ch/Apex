@@ -38,7 +38,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.facebook.shimmer.ShimmerFrameLayout;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -100,6 +99,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean accountNavigationInProgress = false;
     private Button allDriversButton;
     private int progressDelayMs = 500;
+
+    private com.google.firebase.database.Query scheduleQuery;
+    private ValueEventListener scheduleListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -390,6 +392,12 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user == null) {
+            startActivity_getSeason(logInPageActivity.class);
+            return;
+        }
+
+        if (!networkNotice.isOnline(this)) {
+            // the profile cannot be checked without the network: the sign-in screen finishes the check later
             startActivity_getSeason(logInPageActivity.class);
             return;
         }
@@ -872,16 +880,37 @@ public class MainActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
+    private void removeScheduleListener() {
+        if (scheduleQuery != null && scheduleListener != null) {
+            scheduleQuery.removeEventListener(scheduleListener);
+        }
+
+        scheduleQuery = null;
+        scheduleListener = null;
+    }
+
+    @Override
+    protected void onDestroy() {
+        removeScheduleListener();
+        super.onDestroy();
+    }
+
     private void getSchedule(String year, LocalDate currentDate){
         ArrayList<String> concludedRoundNumber = new ArrayList<>();
         ArrayList<String> futureRaceRoundNumber = new ArrayList<>();
         ArrayList<String> raceNames = new ArrayList<>();
         ArrayList<String> circuitsId = new ArrayList<>();
         DatabaseReference rootRef = database.getReference();
-        rootRef.child("schedule/season/" + year).orderByChild("round").addValueEventListener(new ValueEventListener() {
+        removeScheduleListener();
+        scheduleQuery = rootRef.child("schedule/season/" + year).orderByChild("round");
+        scheduleListener = scheduleQuery.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 long totalRounds = snapshot.getChildrenCount();
+                concludedRoundNumber.clear();
+                futureRaceRoundNumber.clear();
+                raceNames.clear();
+                circuitsId.clear();
 
                 for (DataSnapshot ds : snapshot.getChildren()) {
                     Integer round = ds.child("round").getValue(Integer.class);
@@ -938,7 +967,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPastRace(String currentYear, String round){
         DatabaseReference rootRef = database.getReference();
-        rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.parseInt(round)).addValueEventListener(new ValueEventListener() {
+        rootRef.child("schedule/season/" + currentYear).orderByChild("round").equalTo(Integer.parseInt(round)).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 for(DataSnapshot ds : snapshot.getChildren()) {
@@ -967,6 +996,8 @@ public class MainActivity extends AppCompatActivity {
                                         dateEnd, raceName, round, circuitName, raceCountry, raceLocation, winnerCode, secondCode,
                                         thirdCode, currentYear);
                                 concludedRace.setCanceled(isCanceled);
+                                if (isDestroyed()) return;
+                                datumPast.clear(); // one block = one race: replace, never append
                                 datumPast.add(concludedRace);
 
                                 hideShimmer(rvPast, sfPast);
@@ -994,7 +1025,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseReference rootRef = database.getReference();
         String newRound = round.trim().split("\\s+")[0];
         rootRef.child("schedule/season/" + currentYear).orderByChild("round")
-                .equalTo(Integer.parseInt(newRound)).addValueEventListener(new ValueEventListener() {
+                .equalTo(Integer.parseInt(newRound)).addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         for(DataSnapshot ds : dataSnapshot.getChildren()) {
@@ -1024,6 +1055,8 @@ public class MainActivity extends AppCompatActivity {
                                     );
                                     futureRaceData.setSessions(raceWeekendStatus.sessions(ds));
 
+                                    if (isDestroyed()) return;
+                                    datumFuture.clear(); // one block = one race: replace, never append
                                     datumFuture.add(futureRaceData);
 
                                     hideShimmer(rvFuture, sfFuture);

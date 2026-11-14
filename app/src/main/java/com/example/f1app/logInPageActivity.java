@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import android.app.Dialog;
@@ -340,6 +339,7 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseFunctions.getInstance("us-central1")
                 .getHttpsCallable("loginWithLogin")
+                .withTimeout(25, java.util.concurrent.TimeUnit.SECONDS)
                 .call(data)
                 .addOnSuccessListener(result -> {
                     Log.d("LoginFlow", "LOGIN_CALLABLE_OK");
@@ -462,8 +462,15 @@ public class logInPageActivity extends AppCompatActivity {
         if (!networkNotice.isOnline(this)) {
             // offline: keep the account signed in and carry on when the network is back
             setLoginLoading(false);
-            networkNotice.runWhenOnline(this,
-                    () -> checkOrMigrateProfile(firebaseUser, legacyLogin, currentSeason));
+            networkNotice.runWhenOnline(this, () -> {
+                FirebaseUser signedIn = auth.getCurrentUser();
+
+                if (!loginInProgress
+                        && signedIn != null
+                        && signedIn.getUid().equals(firebaseUser.getUid())) {
+                    checkOrMigrateProfile(firebaseUser, legacyLogin, currentSeason);
+                }
+            });
             return;
         }
 
@@ -471,6 +478,7 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseFunctions.getInstance("us-central1")
                 .getHttpsCallable("prepareAccountProfile")
+                .withTimeout(25, java.util.concurrent.TimeUnit.SECONDS)
                 .call()
                 .addOnSuccessListener(result -> {
                     Log.d("LoginFlow", "PREPARE_PROFILE_OK");
@@ -522,6 +530,13 @@ public class logInPageActivity extends AppCompatActivity {
                     );
 
                     // Не оставляем доступ к аккаунту через неполный сценарий.
+                    if (isTransientFailure(error)) {
+                        // timeout or unreachable server: not a reason to sign the user out
+                        setLoginLoading(false);
+                        Toast.makeText(this, getString(R.string.smth_wrong_text), Toast.LENGTH_LONG).show();
+                        return;
+                    }
+
                     if (!networkNotice.isOnline(this)) {
                         // the network dropped during the call: not a reason to sign the user out
                         setLoginLoading(false);
@@ -775,6 +790,7 @@ public class logInPageActivity extends AppCompatActivity {
 
         FirebaseFunctions.getInstance("us-central1")
                 .getHttpsCallable("completeAccountMigration")
+                .withTimeout(25, java.util.concurrent.TimeUnit.SECONDS)
                 .call(data)
                 .addOnSuccessListener(result -> {
                     if (isFinishing() || isDestroyed()) return;
@@ -826,6 +842,18 @@ public class logInPageActivity extends AppCompatActivity {
                 getString(R.string.smth_wrong_text),
                 Toast.LENGTH_LONG
         ).show();
+    }
+
+    private boolean isTransientFailure(Exception error) {
+        if (error instanceof com.google.firebase.functions.FirebaseFunctionsException) {
+            com.google.firebase.functions.FirebaseFunctionsException.Code code =
+                    ((com.google.firebase.functions.FirebaseFunctionsException) error).getCode();
+
+            return code == com.google.firebase.functions.FirebaseFunctionsException.Code.DEADLINE_EXCEEDED
+                    || code == com.google.firebase.functions.FirebaseFunctionsException.Code.UNAVAILABLE;
+        }
+
+        return error instanceof java.io.IOException;
     }
 
     private void setLoginLoading(boolean loading) {

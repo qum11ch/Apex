@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
 
@@ -92,13 +91,7 @@ public class accountPageActivity extends AppCompatActivity {
 
         setupAccountInsets();
 
-        if (!checkConnection(this)) {
-            startActivity(connectionLostScreen
-                    .createShowSplashOnNetworkFailure(accountPageActivity.this));
-        } else {
-            startActivity(connectionLostScreen
-                    .createIntentHideSplashOnNetworkRecovery(accountPageActivity.this));
-        }
+        // offline: the screen stays open; server actions use networkNotice
 
         Bundle intentBundle = getIntent().getExtras();
 
@@ -159,6 +152,7 @@ public class accountPageActivity extends AppCompatActivity {
 
         editTeam.setOnClickListener(v -> pickTeam());
         editDriver.setOnClickListener(v -> pickDriver());
+        networkNotice.watch(this, editTeam, editDriver);
 
         auth = FirebaseAuth.getInstance();
 
@@ -1447,6 +1441,7 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void pickDriver() {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("drivers")
@@ -1664,6 +1659,7 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void pickTeam() {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseDatabase.getInstance()
                 .getReference()
                 .child("constructors")
@@ -1759,6 +1755,7 @@ public class accountPageActivity extends AppCompatActivity {
     }
 
     private void saveChoice(String field, String valueOrNull) {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {

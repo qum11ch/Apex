@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
 
@@ -163,11 +162,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
         setupPredictionFormInsets();
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(predictionFormActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(predictionFormActivity.this));
-        }
+        // offline: the screen stays open; server actions use networkNotice
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -207,6 +202,7 @@ public class predictionFormActivity extends AppCompatActivity {
 
         refreshButton = findViewById(R.id.refreshButton);
         refreshButton.setOnClickListener(v -> refreshPrediction());
+        networkNotice.watch(this, refreshButton, saveButton);
 
         rootRef = FirebaseDatabase.getInstance().getReference();
         functions = FirebaseFunctions.getInstance("us-central1");
@@ -256,6 +252,7 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void refreshPrediction() {
+        if (!networkNotice.ensureOnline(this)) return;
         if (savingPrediction) {
             return;
         }
@@ -1338,6 +1335,7 @@ public class predictionFormActivity extends AppCompatActivity {
     }
 
     private void savePrediction(Context context) {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user == null) {

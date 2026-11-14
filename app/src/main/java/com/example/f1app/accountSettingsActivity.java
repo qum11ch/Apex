@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -110,17 +109,7 @@ public class accountSettingsActivity extends AppCompatActivity {
 
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen
-                    .createShowSplashOnNetworkFailure(
-                            accountSettingsActivity.this
-                    ));
-        } else {
-            startActivity(connectionLostScreen
-                    .createIntentHideSplashOnNetworkRecovery(
-                            accountSettingsActivity.this
-                    ));
-        }
+        // offline: the screen stays open; server actions use networkNotice
 
         Bundle intentBundle = getIntent().getExtras();
 
@@ -306,6 +295,9 @@ public class accountSettingsActivity extends AppCompatActivity {
         );
 
         logoutButton.setOnClickListener(v -> logout());
+
+        networkNotice.watch(this, changeAvatarLayout, changeBackgroundLayout,
+                changeUsernameLayout, changeEmailButton, changePasswordButton, deleteButton);
     }
 
     private void setupAccountSettingsInsets() {
@@ -397,6 +389,7 @@ public class accountSettingsActivity extends AppCompatActivity {
     }
 
     private void showBackgroundColorDialog() {
+        if (!networkNotice.ensureOnline(this)) return;
         if (isFinishing() || isDestroyed()) {
             return;
         }
@@ -447,6 +440,10 @@ public class accountSettingsActivity extends AppCompatActivity {
             int color,
             backgroundColorPickerDialog dialog
     ) {
+        if (!networkNotice.ensureOnline(this)) {
+            dialog.setSaving(false);
+            return;
+        }
         FirebaseUser user =
                 FirebaseAuth.getInstance().getCurrentUser();
 
@@ -611,6 +608,11 @@ public class accountSettingsActivity extends AppCompatActivity {
             AlertDialog dialog,
             ProgressBar progress,
             Button saveButton) {
+        if (!networkNotice.ensureOnline(this)) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            return;
+        }
 
         FirebaseUser user = auth.getCurrentUser();
 
@@ -709,6 +711,11 @@ public class accountSettingsActivity extends AppCompatActivity {
             AlertDialog dialog,
             ProgressBar progress,
             Button saveButton) {
+        if (!networkNotice.ensureOnline(this)) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            return;
+        }
 
         FirebaseUser user = auth.getCurrentUser();
 
@@ -1235,6 +1242,7 @@ public class accountSettingsActivity extends AppCompatActivity {
     }
 
     private void deleteAccountAfterReauthentication() {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null || user.getEmail() == null) {
@@ -1385,6 +1393,7 @@ public class accountSettingsActivity extends AppCompatActivity {
     }
 
     private void uploadAvatar(Uri uri) {
+        if (!networkNotice.ensureOnline(this)) return;
         FirebaseUser user = auth.getCurrentUser();
 
         if (user == null) {
@@ -1653,6 +1662,12 @@ public class accountSettingsActivity extends AppCompatActivity {
             ProgressBar progress,
             Button saveButton,
             Button cancelButton) {
+        if (!networkNotice.ensureOnline(this)) {
+            progress.setVisibility(View.GONE);
+            saveButton.setEnabled(true);
+            cancelButton.setEnabled(true);
+            return;
+        }
 
         String uid = user.getUid();
 

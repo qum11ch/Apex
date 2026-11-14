@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.driversStandingsActivity.startActivity_seasonData;
 
 import android.content.res.ColorStateList;
