@@ -5,18 +5,18 @@
     android:layout_height="wrap_content"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingTop="4dp"
-    android:paddingBottom="4dp">
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp">
 
     <TextView
         android:id="@+id/legend_swatch"
-        android:layout_width="28dp"
-        android:layout_height="18dp"
+        android:layout_width="36dp"
+        android:layout_height="24dp"
         android:layout_marginEnd="10dp"
         android:gravity="center"
         android:includeFontPadding="false"
         android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-        android:textSize="11sp" />
+        android:textSize="13sp" />
 
     <TextView
         android:id="@+id/legend_label"
@@ -24,8 +24,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:includeFontPadding="false"
-        android:maxLines="2"
+        android:maxLines="3"
         android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
         android:textColor="@color/text_color_main"
-        android:textSize="13sp" />
+        android:textSize="15sp" />
 </LinearLayout>
