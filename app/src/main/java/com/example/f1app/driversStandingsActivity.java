@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 
 import android.app.Activity;
@@ -46,7 +45,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 public class driversStandingsActivity extends AppCompatActivity {
@@ -73,8 +71,7 @@ public class driversStandingsActivity extends AppCompatActivity {
 
         networkNotice.showIfOffline(driversStandingsActivity.this);
 
-        Bundle intentBundle = getIntent().getExtras();
-        mCurrentSeason = intentBundle.getString("currentSeason");
+        mCurrentSeason = getIntent().getStringExtra("currentSeason");
 
         currentSeason = mCurrentSeason;
 
@@ -384,7 +381,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         if (silent) {
             cachedList.beginReload(datum);
         }
-        RequestQueue queue = Volley.newRequestQueue(driversStandingsActivity.this);
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentSeason + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,

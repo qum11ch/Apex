@@ -29,7 +29,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class raceResultsRaceFragment extends Fragment {
@@ -106,7 +105,7 @@ public class raceResultsRaceFragment extends Fragment {
     }
 
     public void getRaceData(String circuitId, String season){
-        RequestQueue queue = Volley.newRequestQueue(requireContext());
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/circuits/" + circuitId + "/results/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,

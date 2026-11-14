@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.os.Bundle;
@@ -51,7 +50,7 @@ public class concludedRaceActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        if (!getIntent().getExtras().isEmpty()){
+        if (getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
             String mCircuitName = bundle.getString("circuitName");
             String mRaceName = bundle.getString("raceName");

@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -108,7 +106,7 @@ public class pastSeasonDriversStandingsActivity extends AppCompatActivity {
         stateMessage = findViewById(R.id.state_message);
         seasonScroll = findViewById(R.id.seasonScroll);
 
-        queue = Volley.newRequestQueue(this);
+        queue = apiQueue.get();
         storageRef = FirebaseStorage.getInstance().getReference();
         rootRef = FirebaseDatabase.getInstance().getReference();
 

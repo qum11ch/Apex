@@ -44,8 +44,7 @@ public class resetPageActivity extends AppCompatActivity {
             startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(resetPageActivity.this));
         }
 
-        Bundle intentBundle = getIntent().getExtras();
-        String mCurrentSeason = intentBundle.getString("currentSeason");
+        String mCurrentSeason = getIntent().getStringExtra("currentSeason");
 
         userEmail = findViewById(R.id.userEmail);
         resetButton = findViewById(R.id.resetPassword);

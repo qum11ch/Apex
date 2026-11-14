@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.app.Activity;
@@ -78,7 +77,7 @@ public class teamPageActivity extends AppCompatActivity {
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
 
-        if (!getIntent().getExtras().isEmpty()){
+        if (getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
             String mTeamId = bundle.getString("teamId");
             String mTeamName = bundle.getString("teamName");

@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.content.Intent;
@@ -44,7 +43,7 @@ public class futureRaceActivity extends AppCompatActivity {
         TextView futureRaceTitle = findViewById(R.id.raceTitile);
 
 
-        if (!getIntent().getExtras().isEmpty()){
+        if (getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
 
             String mCircuitId = bundle.getString("circuitId");

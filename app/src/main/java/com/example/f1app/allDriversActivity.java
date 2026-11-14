@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
-
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;

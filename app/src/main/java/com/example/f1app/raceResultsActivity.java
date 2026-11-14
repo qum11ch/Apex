@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.os.Bundle;
@@ -52,7 +51,7 @@ public class raceResultsActivity extends AppCompatActivity {
 
         networkNotice.showIfOffline(raceResultsActivity.this);
 
-        if(!getIntent().getExtras().isEmpty()){
+        if(getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()){
             Bundle bundle = getIntent().getExtras();
 
             String mCircuitId = bundle.getString("circuitId");
@@ -81,7 +80,7 @@ public class raceResultsActivity extends AppCompatActivity {
             int year = Integer.parseInt(mSeason);
 
             if (year < 2024){
-                RequestQueue queue = Volley.newRequestQueue(raceResultsActivity.this);
+                RequestQueue queue = apiQueue.get();
                 String url2 = "https://api.jolpi.ca/ergast/f1/" + mSeason + "/circuits/" + mCircuitId + "/sprint/?format=json";
                 JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                         Request.Method.GET,

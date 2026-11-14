@@ -892,7 +892,7 @@ public class teamResultsFragment extends Fragment {
         positionValue.setText("\u2013");
 
         if (queue == null) {
-            queue = Volley.newRequestQueue(requireContext().getApplicationContext());
+            queue = apiQueue.get();
         }
 
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";

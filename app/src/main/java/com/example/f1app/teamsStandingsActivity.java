@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 import static com.example.f1app.driverStatsFragment.getCountryCode;
 
@@ -79,8 +78,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         networkNotice.showIfOffline(teamsStandingsActivity.this);
 
-        Bundle intentBundle = getIntent().getExtras();
-        mCurrentSeason = intentBundle.getString("currentSeason");
+        mCurrentSeason = getIntent().getStringExtra("currentSeason");
 
         currentSeason = mCurrentSeason;
 
@@ -116,13 +114,13 @@ public class teamsStandingsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        datum = new cachedList<>("teams_standings|" + LocalDate.now().getYear());
+        datum = new cachedList<>("teams_standings|" + seasonToLoad());
 
         adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
         recyclerView.setAdapter(adapter);
 
         LocalDate currentDate = LocalDate.now();
-        final String season = Integer.toString(currentDate.getYear());
+        final String season = seasonToLoad();
 
         swipeLayout = findViewById(R.id.swipe_layout);
 
@@ -353,6 +351,15 @@ public class teamsStandingsActivity extends AppCompatActivity {
         overridePendingTransition(0, 0);
     }
 
+    /** The season of the title, the request and the remembered list: always the same one. */
+    private String seasonToLoad() {
+        if (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()) {
+            return mCurrentSeason.trim();
+        }
+
+        return Integer.toString(LocalDate.now().getYear());
+    }
+
     private void getTeamStanding(String currentYear, boolean silent){
         final int token = ++loadToken;
         final int[] expected = {Integer.MAX_VALUE};
@@ -360,7 +367,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         if (silent) {
             cachedList.beginReload(datum);
         }
-        RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,

@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
@@ -83,8 +82,7 @@ public class scheduleActivity extends AppCompatActivity {
         getSchedule(currentYear);
         myViewPager2 = findViewById(R.id.viewPager2);
 
-        Bundle intentBundle = getIntent().getExtras();
-        mCurrentSeason = intentBundle.getString("currentSeason");
+        mCurrentSeason = getIntent().getStringExtra("currentSeason");
 
         currentSeason = mCurrentSeason;
 

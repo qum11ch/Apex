@@ -88,8 +88,6 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
 
         StorageReference mTeamCar = datum.getImageUrl();
 
-        Log.e("pastSeasonError", "season: " + season);
-
         if (holder.carTarget != null) {
             GlideApp.with(context).clear(holder.carTarget); // a late answer of the previous row is dropped
         }
@@ -161,6 +159,9 @@ public class pastSeasonTeamsStandingsAdapter extends RecyclerView.Adapter<pastSe
 
                     @Override
                     public void onLoadFailed(@Nullable Drawable errorDrawable) {
+                        if (holder.carToken != carToken) {
+                            return;
+                        }
                         holder.team_car.setImageResource(R.drawable.placeholder_car);
                     }
 

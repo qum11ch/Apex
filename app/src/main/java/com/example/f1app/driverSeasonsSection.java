@@ -277,7 +277,7 @@ final class driverSeasonsSection {
 
     private void loadStanding(int year) {
         if (queue == null) {
-            queue = Volley.newRequestQueue(host.requireContext().getApplicationContext());
+            queue = apiQueue.get();
         }
 
         String url = "https://api.jolpi.ca/ergast/f1/" + year + "/driverstandings/?format=json";

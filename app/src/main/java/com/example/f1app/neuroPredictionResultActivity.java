@@ -155,7 +155,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 (parent, child) -> scrollView.canScrollVertically(-1)
         );
 
-        if(!getIntent().getExtras().isEmpty()) {
+        if(getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String gpName = bundle.getString("gp");
             String event = bundle.getString("event");
@@ -451,7 +451,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         targetTime = time.substring(0, targetTime.length() - 3);
         String targetDatetime = date + "T" + targetTime;
 
-        RequestQueue queue = Volley.newRequestQueue(neuroPredictionResultActivity.this);
+        RequestQueue queue = apiQueue.get();
 
         String url;
         ZonedDateTime oneYearEarlier;
@@ -631,7 +631,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
         Log.d("WeatherPredict", "Искомое время: " + targetTime);
 
-        RequestQueue queue = Volley.newRequestQueue(neuroPredictionResultActivity.this);
+        RequestQueue queue = apiQueue.get();
 
         JsonObjectRequest request =
                 new cachedJsonRequest(

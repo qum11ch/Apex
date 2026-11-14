@@ -596,7 +596,7 @@ public class driverResultsFragment extends Fragment {
         positionValue.setText(seenPoints != null ? seenPoints[1] : "\u2013");
 
         if (queue == null) {
-            queue = Volley.newRequestQueue(requireContext().getApplicationContext());
+            queue = apiQueue.get();
         }
 
         String url = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";

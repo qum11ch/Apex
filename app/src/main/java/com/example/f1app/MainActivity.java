@@ -589,7 +589,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getDriversStanding(String season){
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,
@@ -742,7 +742,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getTeamStanding(String season){
-        RequestQueue queue = Volley.newRequestQueue(MainActivity.this);
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,

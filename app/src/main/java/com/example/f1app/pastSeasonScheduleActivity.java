@@ -1,7 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
-
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;

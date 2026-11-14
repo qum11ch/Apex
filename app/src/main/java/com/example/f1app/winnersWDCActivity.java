@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.MainActivity.hideShimmer;
@@ -40,7 +39,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class winnersWDCActivity extends AppCompatActivity {
@@ -209,7 +207,7 @@ public class winnersWDCActivity extends AppCompatActivity {
     }
 
     private void getDriverStandings(String season, int maxPoints) {
-        RequestQueue queue = Volley.newRequestQueue(winnersWDCActivity.this);
+        RequestQueue queue = apiQueue.get();
         String url2 = "https://api.jolpi.ca/ergast/f1/" + season + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
                 Request.Method.GET,

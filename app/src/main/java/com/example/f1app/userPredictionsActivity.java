@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkConnection;
 import static com.example.f1app.MainActivity.hideShimmer;
 import static com.example.f1app.MainActivity.showShimmer;
 import static com.example.f1app.userPredictionAdapter.formatPoints;
