@@ -79,7 +79,21 @@ public class pastRacesFragment extends Fragment {
         recyclerView.setLayoutManager(listManager);
         recyclerView.setAdapter(adapter);
 
-        shimmer.startShimmer();
+        final String rememberedKey = rememberKey();
+        final List<pastRaceItem> remembered = cachedList.recall(rememberedKey);
+
+        if (remembered != null && !remembered.isEmpty()) {
+            // seen before: show it at once, refresh quietly
+            loaded = true;
+            adapter.setItems(remembered);
+            shimmer.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            applyFilters();
+            updateMessage();
+        } else {
+            shimmer.startShimmer();
+        }
+
         loadSeason();
     }
 
@@ -93,6 +107,11 @@ public class pastRacesFragment extends Fragment {
 
         recyclerView = null;
         super.onDestroyView();
+    }
+
+    private String rememberKey() {
+        String season = getArguments() != null ? getArguments().getString(ARG_SEASON) : null;
+        return season == null ? null : "past_races|" + season;
     }
 
     boolean canScrollUp() {
@@ -232,6 +251,7 @@ public class pastRacesFragment extends Fragment {
     // ---------- states ----------
 
     private void showRaces(List<pastRaceItem> items) {
+        cachedList.remember(rememberKey(), items);
         loaded = true;
         adapter.setItems(items);
 
@@ -256,6 +276,10 @@ public class pastRacesFragment extends Fragment {
     }
 
     private void showError() {
+        if (adapter != null && adapter.totalCount() > 0) {
+            return; // the remembered list stays on screen
+        }
+
         loaded = true;
         shimmer.stopShimmer();
         shimmer.setVisibility(View.GONE);

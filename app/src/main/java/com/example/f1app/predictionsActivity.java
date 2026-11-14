@@ -36,6 +36,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class predictionsActivity extends AppCompatActivity {
+    private static final String CACHE_KEY = "open_predictions";
     private RecyclerView recyclerView;
     private TextView emptyText;
 
@@ -95,6 +96,24 @@ public class predictionsActivity extends AppCompatActivity {
         adapter = new predictionListAdapter(predictions, this::openPrediction);
         recyclerView.setAdapter(adapter);
 
+        final List<predictionListItem> remembered = cachedList.recall(CACHE_KEY);
+
+        if (remembered != null) {
+            // seen before: show it at once, refresh quietly
+            predictions.addAll(remembered);
+            adapter.notifyDataSetChanged();
+            shimmerLayout.stopShimmer();
+            shimmerLayout.setVisibility(View.GONE);
+
+            if (predictions.isEmpty()) {
+                recyclerView.setVisibility(View.GONE);
+                showEmpty(getString(R.string.user_predictions_empty));
+            } else {
+                recyclerView.setVisibility(View.VISIBLE);
+                emptyText.setVisibility(View.GONE);
+            }
+        }
+
         loadPredictions(predictionsActivity.this);
     }
 
@@ -149,7 +168,9 @@ public class predictionsActivity extends AppCompatActivity {
         isLoading = true;
         DatabaseReference predictionsRef = FirebaseDatabase.getInstance().getReference("userPredictions");
 
-        showShimmer(recyclerView, shimmerLayout);
+        if (cachedList.recall(CACHE_KEY) == null) {
+            showShimmer(recyclerView, shimmerLayout);
+        }
 
         predictionsRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -191,6 +212,10 @@ public class predictionsActivity extends AppCompatActivity {
                             swipeRefreshLayout.setRefreshing(false);
                         }
 
+                        if (cachedList.recall(CACHE_KEY) != null) {
+                            return; // the remembered list stays on screen
+                        }
+
                         recyclerView.setVisibility(View.GONE);
 
                         shimmerLayout.stopShimmer();
@@ -211,6 +236,7 @@ public class predictionsActivity extends AppCompatActivity {
         );
 
         adapter.notifyDataSetChanged();
+        cachedList.remember(CACHE_KEY, predictions);
 
         isLoading = false;
 

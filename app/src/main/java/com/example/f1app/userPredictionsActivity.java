@@ -60,7 +60,7 @@ import java.util.List;
 import java.util.Map;
 
 public class userPredictionsActivity extends AppCompatActivity {
-    private final List<userPrediction> userPredictions = new ArrayList<>();
+    private List<userPrediction> userPredictions;
 
     private userPredictionAdapter adapter;
     private TextView emptyText;
@@ -115,6 +115,8 @@ public class userPredictionsActivity extends AppCompatActivity {
         shimmerLayout = findViewById(R.id.shimmer_layout);
         swipeRefreshLayout = findViewById(R.id.swipe_layout);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        userPredictions = new cachedList<>("user_predictions|"
+                + (currentUser != null ? currentUser.getUid() : "none"));
         adapter = new userPredictionAdapter(userPredictions, this::openPrediction);
         recyclerView.setAdapter(adapter);
         attachSwipeActions(userPredictionsActivity.this, recyclerView);
@@ -156,6 +158,9 @@ public class userPredictionsActivity extends AppCompatActivity {
 
 
         chartLegend = findViewById(R.id.chartLegend);
+
+        // seen before: the remembered answers are shown at once, no shimmer
+        cachedList.restore(userPredictions, adapter, recyclerView, shimmerLayout);
 
         if (currentUser == null) {
             showEmpty(userPredictionsActivity.this.getString(R.string.user_predictions_account_error));
@@ -266,7 +271,11 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         isLoading = true;
 
-        showShimmer(recyclerView, shimmerLayout);
+        if (userPredictions.isEmpty()) {
+            showShimmer(recyclerView, shimmerLayout);
+        } else {
+            cachedList.beginReload(userPredictions); // keep what is on screen
+        }
 
         userPredictions.clear();
         adapter.notifyDataSetChanged();
@@ -306,6 +315,10 @@ public class userPredictionsActivity extends AppCompatActivity {
 
                         if (swipeRefreshLayout != null) {
                             swipeRefreshLayout.setRefreshing(false);
+                        }
+
+                        if (!userPredictions.isEmpty()) {
+                            return; // the remembered list stays on screen
                         }
 
                         showEmpty(context.getString(R.string.prediction_load_error));
@@ -924,6 +937,8 @@ public class userPredictionsActivity extends AppCompatActivity {
     }
 
     private void finishLoading() {
+        cachedList.finish(userPredictions); // swaps a remembered list for the fresh one
+
         userPredictions.sort(Comparator
                 .comparing(userPrediction::getDeadline, Comparator.nullsLast(Long::compareTo))
         );

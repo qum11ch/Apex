@@ -67,6 +67,13 @@ final class savedRacesRepository {
 
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
+    /** The last result of every account in this process: a repeat visit shows it without waiting for the disk. */
+    private static final Map<String, Result> MEMORY = new java.util.concurrent.ConcurrentHashMap<>();
+
+    static Result memoryResult(String uid) {
+        return uid == null ? null : MEMORY.get(uid);
+    }
+
     private savedRacesRepository() {
     }
 
@@ -102,11 +109,15 @@ final class savedRacesRepository {
 
         IO.execute(() -> {
             Result result = readCacheNow(app, uid);
+            if (result != null) {
+                MEMORY.putIfAbsent(uid, result);
+            }
             MAIN.post(() -> callback.onResult(result));
         });
     }
 
     static void writeCache(Context context, String uid, Result result) {
+        MEMORY.put(uid, result);
         final Context app = context.getApplicationContext();
         IO.execute(() -> writeCacheNow(app, uid, result));
     }

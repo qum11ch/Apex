@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeLayout;
     private boolean accountNavigationInProgress = false;
     private Button allDriversButton;
+    private int progressDelayMs = 500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -194,10 +195,10 @@ public class MainActivity extends AppCompatActivity {
         sfTeams = findViewById(R.id.shimmerTeams_layout);
         sfProgressBar = findViewById(R.id.shimmerProgress_layout);
 
-        datumDrivers = new ArrayList<>();
-        datumTeams = new ArrayList<>();
-        datumPast = new ArrayList<>();
-        datumFuture = new ArrayList<>();
+        datumDrivers = new cachedList<>("main_drivers");
+        datumTeams = new cachedList<>("main_teams");
+        datumPast = new cachedList<>("main_past");
+        datumFuture = new cachedList<>("main_future");
 
         driversAdapter = new mainDriversStandingsAdapter(this, datumDrivers);
         rvDrivers.setAdapter(driversAdapter);
@@ -218,6 +219,29 @@ public class MainActivity extends AppCompatActivity {
         sfPast.startShimmer();
         sfDrivers.startShimmer();
         sfTeams.startShimmer();
+
+        // seen before: the remembered blocks are shown at once, no shimmer
+        cachedList.restore(datumDrivers, driversAdapter, rvDrivers, sfDrivers);
+        cachedList.restore(datumTeams, teamsAdapter, rvTeams, sfTeams);
+        cachedList.restore(datumPast, pastRaceAdapter, rvPast, sfPast);
+        cachedList.restore(datumFuture, futureRaceAdapter, rvFuture, sfFuture);
+
+        if (cachedList.hasCache(datumFuture) && !datumFuture.isEmpty()) {
+            futureLayout.setVisibility(View.VISIBLE);
+        }
+
+        if (cachedList.hasCache(datumPast) && !datumPast.isEmpty()) {
+            pastLayout.setVisibility(View.VISIBLE);
+            pastRaceHeader.setVisibility(View.VISIBLE);
+        }
+
+        final String[] seenProgress = cachedList.getExtra("main_progress");
+
+        if (seenProgress != null) {
+            progressDelayMs = 0;
+            postProgress(Integer.parseInt(seenProgress[0]), Long.parseLong(seenProgress[1]));
+            progressDelayMs = 500;
+        }
 
         allDriversButton = findViewById(R.id.allDriversButton);
         allDriversButton.setOnClickListener(v -> {
@@ -542,6 +566,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void postProgress(int progress, long totalRounds) {
+        cachedList.putExtra("main_progress", String.valueOf(progress), String.valueOf(totalRounds));
         String strProgress = progress + "/" + totalRounds;
         if (progress>10 && progress<=13){
             raceProgressText.setTextColor(getColor(R.color.dark_grey));
@@ -556,7 +581,7 @@ public class MainActivity extends AppCompatActivity {
             sfProgressBar.stopShimmer();
             raceProgress.setProgress(progress);
             raceProgressText.setText(strProgress);
-        },500);
+        }, progressDelayMs);
     }
 
     public void showError(String message) {
@@ -616,7 +641,7 @@ public class MainActivity extends AppCompatActivity {
                                 }
                             }
                             hideShimmer(rvDrivers, sfDrivers);
-                            driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
+                            driversAdapter.notifyDataSetChanged();
 
                         }else{
                             AtomicInteger driverCount = new AtomicInteger(0);
@@ -680,7 +705,7 @@ public class MainActivity extends AppCompatActivity {
                                                                     smth.setTeamColor(teamColor);
                                                                     datumDrivers.add(smth);
                                                                     driverCount.incrementAndGet();
-                                                                    driversAdapter.notifyItemInserted(datumDrivers.size() - 1);
+                                                                    driversAdapter.notifyDataSetChanged();
 
                                                                     if (driverCount.get() >= MAX_DRIVERS) {
                                                                         hideShimmer(rvDrivers, sfDrivers);
@@ -770,7 +795,7 @@ public class MainActivity extends AppCompatActivity {
                                                     smth.setTeamColor(mTeamColor);
                                                     datumTeams.add(smth);
                                                     hideShimmer(rvTeams, sfTeams);
-                                                    teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
+                                                    teamsAdapter.notifyDataSetChanged();
 
                                                 }
 
@@ -824,7 +849,7 @@ public class MainActivity extends AppCompatActivity {
 
                                                 hideShimmer(rvTeams, sfTeams);
                                                 datumTeams.add(smth);
-                                                teamsAdapter.notifyItemInserted(datumTeams.size() - 1);
+                                                teamsAdapter.notifyDataSetChanged();
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
@@ -950,7 +975,7 @@ public class MainActivity extends AppCompatActivity {
                                 datumPast.add(concludedRace);
 
                                 hideShimmer(rvPast, sfPast);
-                                pastRaceAdapter.notifyItemInserted(datumPast.size() - 1);
+                                pastRaceAdapter.notifyDataSetChanged();
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {
@@ -1007,7 +1032,7 @@ public class MainActivity extends AppCompatActivity {
                                     datumFuture.add(futureRaceData);
 
                                     hideShimmer(rvFuture, sfFuture);
-                                    futureRaceAdapter.notifyItemInserted(datumFuture.size() - 1);
+                                    futureRaceAdapter.notifyDataSetChanged();
                                 }
                                 @Override
                                 public void onCancelled(@NonNull DatabaseError error) {

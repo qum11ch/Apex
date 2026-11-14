@@ -92,7 +92,8 @@ public class driversStandingsActivity extends AppCompatActivity {
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         recyclerView.setNestedScrollingEnabled(false);
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>("drivers_standings|" + (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()
+                ? mCurrentSeason.trim() : Integer.toString(LocalDate.now().getYear())));
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
         storageRef = storage.getReference();
@@ -111,16 +112,10 @@ public class driversStandingsActivity extends AppCompatActivity {
                 ? mCurrentSeason.trim()
                 : Integer.toString(currentDate.getYear());
 
-        // a screen seen before: show the list at once, no shimmer
-        final List<driversList> cached = listCache.get("drivers_standings_" + season);
-
-        if (cached != null) {
-            datum.addAll(cached);
-            adapter.notifyDataSetChanged();
-            shimmerFrameLayout.stopShimmer();
-            shimmerFrameLayout.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
+        // a screen seen before: the remembered list is shown at once, no shimmer
+        final boolean cached = cachedList.hasCache(datum);
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
+        cachedList.onCommit(datum, () -> swipeLayout.setRefreshing(false));
 
         swipeLayout.setOnRefreshListener(() -> {
             boolean hasData = !datum.isEmpty();
@@ -169,7 +164,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
 
 
-        getStanding(season, cached != null);
+        getStanding(season, cached);
 
 
         WindowInsetsControllerCompat windowInsetsController =
@@ -367,35 +362,27 @@ public class driversStandingsActivity extends AppCompatActivity {
     }
 
 
-    private void deliverDrivers(List<driversList> staging, boolean silent, int token,
-                                String season, boolean complete) {
+    private void deliverDrivers(boolean silent, int token, boolean complete) {
         if (token != loadToken) {
             return;
         }
 
-        // first load: show the list as it arrives; later loads: swap it once, when it is complete
-        if (!silent || complete) {
-            datum.clear();
-            datum.addAll(staging);
-            adapter.notifyDataSetChanged();
+        if (complete) {
+            cachedList.finish(datum); // swaps a remembered list for the fresh one
         }
+
+        adapter.notifyDataSetChanged();
 
         if (!silent) {
             hideShimmer(recyclerView, shimmerFrameLayout);
-        }
-
-        if (complete) {
-            listCache.put("drivers_standings_" + season, staging);
-            swipeLayout.setRefreshing(false);
-            recyclerView.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.setVisibility(View.GONE);
         }
     }
 
     public void getStanding(String currentSeason, boolean silent){
         final int token = ++loadToken;
-        final List<driversList> staging = new ArrayList<>();
-        final int previous = datum.size();
+        if (silent) {
+            cachedList.beginReload(datum);
+        }
         RequestQueue queue = Volley.newRequestQueue(driversStandingsActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentSeason + "/driverstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
@@ -448,17 +435,21 @@ public class driversStandingsActivity extends AppCompatActivity {
                                         }
                                     });
 
-                                    staging.add(smth);
+                                    if (token == loadToken) {
+                                        datum.add(smth);
+                                    }
                                 }
                             }
-                            deliverDrivers(staging, silent, token, currentSeason, true);
+                            deliverDrivers(silent, token, true);
                         }else{
                             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
                             rootRef.child("constructors").orderByChild("lastSeasonPos").addListenerForSingleValueEvent(new ValueEventListener() {
                                 @Override
                                 public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                    staging.add(new driversList("","","","","","","",
+                                    if (token == loadToken) {
+                                        datum.add(new driversList("","","","","","","",
                                         true, currentSeason));
+                                    }
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
@@ -492,8 +483,10 @@ public class driversStandingsActivity extends AppCompatActivity {
                                                                     true, currentSeason);
                                                             smth.setImageUrl(mDriverImage);
                                                             smth.setTeamColor(teamColor);
-                                                            staging.add(smth);
-                                                            deliverDrivers(staging, silent, token, currentSeason, staging.size() > previous);
+                                                            if (token == loadToken) {
+                                                                datum.add(smth);
+                                                            }
+                                                            deliverDrivers(silent, token, false);
                                                         }
 
                                                         @Override

@@ -77,7 +77,8 @@ public class concludedRaceFragment extends Fragment {
             shimmerFrameLayout = view.findViewById(R.id.shimmer_layout);
             shimmerFrameLayout.startShimmer();
 
-            datum = new ArrayList<>();
+            datum = new cachedList<>("concluded_races|" + getArguments().getString("parent") + "|"
+                    + getArguments().getString("season") + "|" + getArguments().getStringArrayList("raceRound"));
             recyclerView = view.findViewById(R.id.recyclerview_concludedRaces);
 
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
@@ -127,6 +128,7 @@ public class concludedRaceFragment extends Fragment {
                 pastSeasonAdapter = new pastSeasonsRacesAdapter(getActivity(), datum);
                 recyclerView.setAdapter(pastSeasonAdapter);
             }
+            cachedList.restore(datum, recyclerView.getAdapter(), recyclerView, shimmerFrameLayout);
             totalItemsToLoad = concludedRaceRoundNumber.size();
             loadedItemsCount = 0;
 
@@ -168,9 +170,9 @@ public class concludedRaceFragment extends Fragment {
 
                                                         datum.add(concludedRace);
                                                         if (adapterType.equals("schedule")) {
-                                                            concludedAdapter.notifyItemInserted(datum.size() - 1);
+                                                            concludedAdapter.notifyDataSetChanged();
                                                         } else {
-                                                            pastSeasonAdapter.notifyItemInserted(datum.size() - 1);
+                                                            pastSeasonAdapter.notifyDataSetChanged();
                                                         }
                                                         loadedItemsCount++;
                                                         if (loadedItemsCount >= totalItemsToLoad) {
@@ -303,6 +305,8 @@ public class concludedRaceFragment extends Fragment {
     }
 
     private void hideShimmer() {
+        cachedList.finish(datum); // every round has answered
+
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
         }

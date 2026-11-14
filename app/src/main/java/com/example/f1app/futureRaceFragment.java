@@ -70,9 +70,11 @@ public class futureRaceFragment extends Fragment {
             LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            datum = new ArrayList<>();
+            datum = new cachedList<>("future_races|" + LocalDate.now().getYear() + "|"
+                    + getArguments().getStringArrayList("raceRound"));
             adapter = new futureRaceAdapter(getActivity(), datum);
             recyclerView.setAdapter(adapter);
+            cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
 
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
@@ -117,7 +119,7 @@ public class futureRaceFragment extends Fragment {
 
                                                     datum.add(futureRaceDataObj);
 
-                                                    adapter.notifyItemInserted(datum.size() - 1);
+                                                    adapter.notifyDataSetChanged();
 
                                                     loadedItemsCount++;
 
@@ -219,6 +221,8 @@ public class futureRaceFragment extends Fragment {
     }
 
     private void hideShimmer() {
+        cachedList.finish(datum); // every item has arrived
+
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
         }

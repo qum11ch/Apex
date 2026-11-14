@@ -81,6 +81,22 @@ public class teamResultsFragment extends Fragment {
     private TextView pointsValue;
     private TextView positionValue;
 
+    private List<Integer> seasonsShown;
+    private boolean showingRemembered = false;
+
+    /** Everything one season of the team page shows, kept so a repeat visit needs no shimmer. */
+    private static final class SeasonSnapshot {
+        final ArrayList<String> drivers;
+        final Map<String, Integer> counts;
+        final List<teamRaceRow> rows;
+
+        SeasonSnapshot(ArrayList<String> drivers, Map<String, Integer> counts, List<teamRaceRow> rows) {
+            this.drivers = new ArrayList<>(drivers);
+            this.counts = new HashMap<>(counts);
+            this.rows = new ArrayList<>(rows);
+        }
+    }
+
     public teamResultsFragment() {
     }
 
@@ -129,7 +145,13 @@ public class teamResultsFragment extends Fragment {
             return;
         }
 
-        showLoading();
+        final List<Integer> rememberedSeasons = cachedList.recall("team_seasons|" + teamId);
+
+        if (rememberedSeasons != null && !rememberedSeasons.isEmpty()) {
+            showAvailableSeasons(new ArrayList<>(rememberedSeasons)); // seen before: no shimmer
+        } else {
+            showLoading();
+        }
 
         loadAvailableSeasons();
     }
@@ -263,13 +285,23 @@ public class teamResultsFragment extends Fragment {
         Collections.sort(availableSeasons);
         Collections.reverse(availableSeasons);
 
+        cachedList.remember("team_seasons|" + teamId, availableSeasons);
+
+        if (availableSeasons.equals(seasonsShown)) {
+            return; // same buttons as before
+        }
+
+        seasonsShown = new ArrayList<>(availableSeasons);
+
         seasonButtonsLayout.removeAllViews();
 
         for (int season : availableSeasons) {
             seasonButtonsLayout.addView(createSeasonButton(season));
         }
 
-        selectSeason(availableSeasons.get(0));
+        selectSeason(availableSeasons.contains(selectedSeason)
+                ? selectedSeason
+                : availableSeasons.get(0));
     }
 
     private TextView createSeasonButton(int season) {
@@ -311,14 +343,21 @@ public class teamResultsFragment extends Fragment {
 
 
     private void loadSeasonData(int season) {
-        currentSeasonDrivers.clear();
-        summaryCard.setVisibility(View.GONE);
-        raceCounts.clear();
-        rows.clear();
-        resultsAdapter = null;
+        final List<SeasonSnapshot> remembered = cachedList.recall(snapshotKey(season));
+        showingRemembered = remembered != null && !remembered.isEmpty();
 
-        recyclerView.setAdapter(null);
-        recyclerView.setVisibility(View.GONE);
+        if (showingRemembered) {
+            showRememberedSeason(remembered.get(0), season); // seen before: no shimmer, refresh quietly
+        } else {
+            currentSeasonDrivers.clear();
+            summaryCard.setVisibility(View.GONE);
+            raceCounts.clear();
+            rows.clear();
+            resultsAdapter = null;
+
+            recyclerView.setAdapter(null);
+            recyclerView.setVisibility(View.GONE);
+        }
 
         FirebaseDatabase.getInstance()
                 .getReference()
@@ -336,6 +375,9 @@ public class teamResultsFragment extends Fragment {
                             hideShimmer();
                             return;
                         }
+
+                        currentSeasonDrivers.clear();
+                        raceCounts.clear();
 
                         for (DataSnapshot driverSnapshot : snapshot.getChildren()) {
                             String driverName = driverSnapshot.getKey();
@@ -376,7 +418,10 @@ public class teamResultsFragment extends Fragment {
                             return byRaces != 0 ? byRaces : a.compareTo(b);
                         });
 
-                        showLoading();
+                        if (!showingRemembered) {
+                            showLoading();
+                        }
+
                         loadSeasonPoints(season);
 
                         ArrayList<String> seasonDrivers = new ArrayList<>(currentSeasonDrivers);
@@ -395,6 +440,30 @@ public class teamResultsFragment extends Fragment {
                         hideShimmer();
                     }
                 });
+    }
+
+    private String snapshotKey(int season) {
+        return "team_results|" + teamId + "|" + season;
+    }
+
+    private void showRememberedSeason(SeasonSnapshot snapshot, int season) {
+        currentSeasonDrivers.clear();
+        currentSeasonDrivers.addAll(snapshot.drivers);
+        raceCounts.clear();
+        raceCounts.putAll(snapshot.counts);
+        rows.clear();
+        rows.addAll(snapshot.rows);
+
+        loadDriversInfo(new ArrayList<>(snapshot.drivers), season);
+        loadSeasonPoints(season);
+        updateSummary(rows);
+
+        resultsAdapter = new teamResultsAdapter(requireActivity(), rows, snapshot.drivers.size());
+        recyclerView.setAdapter(resultsAdapter);
+        recyclerView.setVisibility(View.VISIBLE);
+
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
     }
 
     private void loadDriversInfo(ArrayList<String> drivers, int season) {
@@ -536,9 +605,11 @@ public class teamResultsFragment extends Fragment {
             return;
         }
 
-        rows.clear();
-        resultsAdapter = null;
-        recyclerView.setAdapter(null);
+        if (!showingRemembered) {
+            rows.clear();
+            resultsAdapter = null;
+            recyclerView.setAdapter(null);
+        }
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
@@ -570,6 +641,7 @@ public class teamResultsFragment extends Fragment {
                                             return;
                                         }
 
+                                        rows.clear();
                                         buildRows(scheduleSnapshot, resultSnapshot, drivers);
 
                                         updateSummary(rows);
@@ -578,6 +650,11 @@ public class teamResultsFragment extends Fragment {
                                                 requireActivity(), rows, drivers.size());
 
                                         recyclerView.setAdapter(resultsAdapter);
+
+                                        cachedList.remember(snapshotKey(season),
+                                                java.util.Collections.singletonList(
+                                                        new SeasonSnapshot(drivers, raceCounts, rows)));
+                                        showingRemembered = false;
 
                                         hideShimmer();
                                     }

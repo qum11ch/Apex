@@ -88,6 +88,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     private int requestToken = 0;
     private boolean referenceLoaded = false;
     private boolean teamsKnown = false;
+    private boolean showingRemembered = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -261,6 +262,23 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         stateContainer.setVisibility(View.VISIBLE);
     }
 
+    private void showRemembered(List<teamsList> remembered) {
+        showingRemembered = true;
+        datum.clear();
+        datum.addAll(remembered);
+        adapter.setLinkableTeams(teamsKnown ? knownTeams : null);
+        adapter.notifyDataSetChanged();
+        showList();
+    }
+
+    private void showLoadError() {
+        if (showingRemembered) {
+            return; // the remembered list stays on screen
+        }
+
+        showMessage(getString(R.string.ps_load_error), true);
+    }
+
     private boolean isUnavailable() {
         return isFinishing() || isDestroyed();
     }
@@ -271,7 +289,15 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
         queue.cancelAll(this);
         updateHeader();
-        showLoading();
+
+        final List<teamsList> remembered = cachedList.recall("past_teams|" + season);
+
+        if (remembered != null && !remembered.isEmpty()) {
+            showRemembered(remembered); // seen before: no shimmer, refresh quietly
+        } else {
+            showingRemembered = false;
+            showLoading();
+        }
 
         loadReferenceData(() -> {
             if (isUnavailable() || token != requestToken) {
@@ -337,7 +363,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                         }
                     } catch (JSONException error) {
                         Log.e(TAG, "Unexpected standings response", error);
-                        showMessage(getString(R.string.ps_load_error), true);
+                        showLoadError();
                     }
                 },
                 error -> {
@@ -346,7 +372,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
                     }
 
                     Log.e(TAG, "Standings request failed", error);
-                    showMessage(getString(R.string.ps_load_error), true);
+                    showLoadError();
                 }
         );
 
@@ -538,6 +564,10 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     }
 
     private void showTeams(List<teamsList> loaded) {
+        cachedList.remember("past_teams|" + selectedSeason, loaded);
+        final boolean keepPosition = showingRemembered;
+        showingRemembered = false;
+
         datum.clear();
         datum.addAll(loaded);
 
@@ -549,7 +579,9 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
             showMessage(getString(R.string.ps_no_data), false);
         } else {
             showList();
-            recyclerView.scrollToPosition(0);
+            if (!keepPosition) {
+                recyclerView.scrollToPosition(0);
+            }
         }
     }
 }

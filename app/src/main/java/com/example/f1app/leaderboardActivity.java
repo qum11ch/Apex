@@ -53,13 +53,7 @@ public class leaderboardActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_leaderboard);
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen
-                    .createShowSplashOnNetworkFailure(leaderboardActivity.this));
-        } else {
-            startActivity(connectionLostScreen
-                    .createIntentHideSplashOnNetworkRecovery(leaderboardActivity.this));
-        }
+        networkNotice.showIfOffline(leaderboardActivity.this);
 
         WindowInsetsControllerCompat controller =
                 WindowCompat.getInsetsController(

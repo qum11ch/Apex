@@ -103,6 +103,13 @@ final class allDriversRepository {
 
     private static final Handler MAIN = new Handler(Looper.getMainLooper());
 
+    /** The last snapshot of this process: a repeat visit shows it without waiting for the disk. */
+    private static volatile Snapshot memory;
+
+    static Snapshot memorySnapshot() {
+        return memory;
+    }
+
     private allDriversRepository() {
     }
 
@@ -118,12 +125,16 @@ final class allDriversRepository {
 
         IO.execute(() -> {
             Snapshot result = readCacheNow(app);
+            if (result != null) {
+                memory = result;
+            }
             MAIN.post(() -> callback.onResult(result));
         });
     }
 
     static void writeCache(Context context, Snapshot snapshot) {
         final Context app = context.getApplicationContext();
+        memory = snapshot;
         IO.execute(() -> writeCacheNow(app, snapshot));
     }
 

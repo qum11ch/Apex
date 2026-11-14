@@ -67,6 +67,8 @@ public class driverResultsFragment extends Fragment {
     private int earliestSeason;
 
     private Integer selectedSeason;
+    private List<Integer> seasonsShown;
+    private boolean showingRemembered = false;
     private RequestQueue queue;
 
     public driverResultsFragment() {
@@ -132,6 +134,12 @@ public class driverResultsFragment extends Fragment {
         }
 
         driverFullName = driverName + " " + driverFamilyName;
+
+        final List<Integer> rememberedSeasons = cachedList.recall("driver_seasons|" + driverFullName);
+
+        if (rememberedSeasons != null && !rememberedSeasons.isEmpty()) {
+            showAvailableSeasons(new ArrayList<>(rememberedSeasons)); // seen before: no shimmer
+        }
 
         loadAvailableSeasons();
     }
@@ -230,13 +238,20 @@ public class driverResultsFragment extends Fragment {
         }
 
         if (availableSeasons.isEmpty()) {
-            hideShimmer(recyclerView, shimmerFrameLayout);
-            showNoResults();
+            showResultsError();
             return;
         }
 
         Collections.sort(availableSeasons);
         Collections.reverse(availableSeasons);
+
+        cachedList.remember("driver_seasons|" + driverFullName, availableSeasons);
+
+        if (availableSeasons.equals(seasonsShown)) {
+            return; // same buttons as before
+        }
+
+        seasonsShown = new ArrayList<>(availableSeasons);
 
         seasonButtonsLayout.removeAllViews();
 
@@ -244,7 +259,9 @@ public class driverResultsFragment extends Fragment {
             seasonButtonsLayout.addView(createSeasonButton(season));
         }
 
-        selectSeason(availableSeasons.get(0));
+        selectSeason(selectedSeason != null && availableSeasons.contains(selectedSeason)
+                ? selectedSeason
+                : availableSeasons.get(0));
     }
 
     private TextView createSeasonButton(int season) {
@@ -285,18 +302,25 @@ public class driverResultsFragment extends Fragment {
     }
 
     private void loadSeasonData(int season) {
-        datum.clear();
-        adapter.notifyDataSetChanged();
+        final List<driverResultsData> remembered = cachedList.recall(resultsKey(season));
+        showingRemembered = remembered != null && !remembered.isEmpty();
 
-        recyclerView.setVisibility(View.GONE);
+        if (showingRemembered) {
+            showRememberedResults(remembered); // seen before: no shimmer, refresh quietly
+        } else {
+            datum.clear();
+            adapter.notifyDataSetChanged();
 
-        shimmerFrameLayout.setVisibility(View.VISIBLE);
-        shimmerFrameLayout.startShimmer();
+            recyclerView.setVisibility(View.GONE);
 
-        noResultsText.setVisibility(View.GONE);
-        resultsLayout.setVisibility(View.VISIBLE);
-        summaryCard.setVisibility(View.GONE);
-        setLegendVisible(false);
+            shimmerFrameLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.startShimmer();
+
+            noResultsText.setVisibility(View.GONE);
+            resultsLayout.setVisibility(View.VISIBLE);
+            summaryCard.setVisibility(View.GONE);
+            setLegendVisible(false);
+        }
 
         loadSeasonPoints(season);
 
@@ -314,8 +338,7 @@ public class driverResultsFragment extends Fragment {
                         }
 
                         if (!scheduleSnapshot.exists()) {
-                            hideShimmer(recyclerView, shimmerFrameLayout);
-                            showNoResults();
+                            showResultsError();
                             return;
                         }
 
@@ -370,8 +393,7 @@ public class driverResultsFragment extends Fragment {
                                         Log.e("DriverResults", "Failed to load results",
                                                 error.toException());
 
-                                        hideShimmer(recyclerView, shimmerFrameLayout);
-                                        showNoResults();
+                                        showResultsError();
                                     }
                                 });
                     }
@@ -384,10 +406,37 @@ public class driverResultsFragment extends Fragment {
 
                         Log.e("DriverResults", "Failed to load schedule", error.toException());
 
-                        hideShimmer(recyclerView, shimmerFrameLayout);
-                        showNoResults();
+                        showResultsError();
                     }
                 });
+    }
+
+    private String resultsKey(int season) {
+        return "driver_results|" + driverFullName + "|" + season;
+    }
+
+    private void showRememberedResults(List<driverResultsData> remembered) {
+        datum.clear();
+        datum.addAll(remembered);
+        adapter.notifyDataSetChanged();
+
+        noResultsText.setVisibility(View.GONE);
+        resultsLayout.setVisibility(View.VISIBLE);
+        setLegendVisible(true);
+        updateSummary(datum);
+
+        shimmerFrameLayout.stopShimmer();
+        shimmerFrameLayout.setVisibility(View.GONE);
+        recyclerView.setVisibility(View.VISIBLE);
+    }
+
+    private void showResultsError() {
+        if (showingRemembered) {
+            return; // the remembered table stays on screen
+        }
+
+        hideShimmer(recyclerView, shimmerFrameLayout);
+        showNoResults();
     }
 
     private int readRound(DataSnapshot race) {
@@ -408,6 +457,12 @@ public class driverResultsFragment extends Fragment {
         if (!isAdded()) {
             return;
         }
+
+        if (selectedSeason != null) {
+            cachedList.remember(resultsKey(selectedSeason), loaded);
+        }
+
+        showingRemembered = false;
 
         datum.clear();
         datum.addAll(loaded);
@@ -536,8 +591,9 @@ public class driverResultsFragment extends Fragment {
 
     /** Season points and the place in the drivers' standings (Jolpica, same source as the tables). */
     private void loadSeasonPoints(int season) {
-        pointsValue.setText("\u2013");
-        positionValue.setText("\u2013");
+        String[] seenPoints = cachedList.getExtra("driver_points|" + driverFullName + "|" + season);
+        pointsValue.setText(seenPoints != null ? seenPoints[0] : "\u2013");
+        positionValue.setText(seenPoints != null ? seenPoints[1] : "\u2013");
 
         if (queue == null) {
             queue = Volley.newRequestQueue(requireContext().getApplicationContext());
@@ -580,6 +636,8 @@ public class driverResultsFragment extends Fragment {
                                     pointsValue.setText(standing.optString("points", "\u2013"));
                                     positionValue.setText(
                                             standing.optString("positionText", "\u2013"));
+                                    cachedList.putExtra("driver_points|" + driverFullName + "|" + season,
+                                            pointsValue.getText().toString(), positionValue.getText().toString());
                                     return;
                                 }
                             }

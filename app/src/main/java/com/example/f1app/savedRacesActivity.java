@@ -82,13 +82,7 @@ public class savedRacesActivity extends AppCompatActivity {
         setContentView(R.layout.saved_races);
         setupSavedRacesInsets();
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(connectionLostScreen
-                    .createShowSplashOnNetworkFailure(savedRacesActivity.this));
-        } else {
-            startActivity(connectionLostScreen
-                    .createIntentHideSplashOnNetworkRecovery(savedRacesActivity.this));
-        }
+        networkNotice.showIfOffline(savedRacesActivity.this);
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -338,7 +332,14 @@ public class savedRacesActivity extends AppCompatActivity {
     }
 
     private void loadScreen() {
-        showSkeleton();
+        final savedRacesRepository.Result remembered = savedRacesRepository.memoryResult(uid);
+
+        if (remembered != null) {
+            lastCacheSavedAt = remembered.savedAt;
+            showRaces(remembered.races); // seen before: no skeleton, refresh quietly below
+        } else {
+            showSkeleton();
+        }
 
         final int token = ++cacheToken;
 

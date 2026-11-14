@@ -116,7 +116,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
-        datum = new ArrayList<>();
+        datum = new cachedList<>("teams_standings|" + LocalDate.now().getYear());
 
         adapter = new teamsStandingsAdapter(teamsStandingsActivity.this, datum);
         recyclerView.setAdapter(adapter);
@@ -126,16 +126,10 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
         swipeLayout = findViewById(R.id.swipe_layout);
 
-        // a screen seen before: show the list at once, no shimmer
-        final List<teamsList> cached = listCache.get("teams_standings_" + season);
-
-        if (cached != null) {
-            datum.addAll(cached);
-            adapter.notifyDataSetChanged();
-            shimmerFrameLayout.stopShimmer();
-            shimmerFrameLayout.setVisibility(View.GONE);
-            recyclerView.setVisibility(View.VISIBLE);
-        }
+        // a screen seen before: the remembered list is shown at once, no shimmer
+        final boolean cached = cachedList.hasCache(datum);
+        cachedList.restore(datum, adapter, recyclerView, shimmerFrameLayout);
+        cachedList.onCommit(datum, () -> swipeLayout.setRefreshing(false));
 
         swipeLayout.setOnRefreshListener(() -> {
             boolean hasData = !datum.isEmpty();
@@ -170,7 +164,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        getTeamStanding(season, cached != null);
+        getTeamStanding(season, cached);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -360,8 +354,11 @@ public class teamsStandingsActivity extends AppCompatActivity {
 
     private void getTeamStanding(String currentYear, boolean silent){
         final int token = ++loadToken;
-        final List<teamsList> staging = new ArrayList<>();
         final int[] expected = {Integer.MAX_VALUE};
+
+        if (silent) {
+            cachedList.beginReload(datum);
+        }
         RequestQueue queue = Volley.newRequestQueue(teamsStandingsActivity.this);
         String url2 = "https://api.jolpi.ca/ergast/f1/" + currentYear + "/constructorstandings/?format=json";
         JsonObjectRequest jsonObjectRequest2 = new cachedJsonRequest(
@@ -418,7 +415,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     smth.setSeason(mCurrentSeason);
                                                     smth.setImageUrl(mTeamCar);
                                                     smth.setTeamColor(colorOrDefault(snapshot.child("darkColor").getValue(String.class)));
-                                                    deliverTeam(smth, staging, expected[0], silent, token, currentYear);
+                                                    deliverTeam(smth, expected[0], silent, token);
                                                 }
 
                                                 @Override
@@ -449,7 +446,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                     teamsList first = new teamsList("","","","", true);
                                     first.setDrivers(firstTeam);
                                     if (token != loadToken) return;
-                                    staging.add(first);
+                                    datum.add(first);
 
                                     for (DataSnapshot child: snapshot.getChildren()) {
                                         String constructorId = child.child("constructorId").getValue(String.class);
@@ -471,7 +468,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                 smth.setDrivers(teamDrivers);
                                                 smth.setImageUrl(mTeamCar);
                                                 smth.setTeamColor(colorOrDefault(snapshot.child("darkColor").getValue(String.class)));
-                                                deliverTeam(smth, staging, expected[0], silent, token, currentYear);
+                                                deliverTeam(smth, expected[0], silent, token);
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError error) {
@@ -501,33 +498,19 @@ public class teamsStandingsActivity extends AppCompatActivity {
         queue.add(jsonObjectRequest2);
     }
 
-    private void deliverTeam(teamsList item, List<teamsList> staging, int expected,
-                             boolean silent, int token, String season) {
+    private void deliverTeam(teamsList item, int expected, boolean silent, int token) {
         if (token != loadToken) {
             return;
         }
 
-        staging.add(item);
-        java.util.Collections.sort(staging, (a, b) -> Integer.compare(positionOf(a), positionOf(b)));
-
-        boolean complete = staging.size() >= expected;
-
-        // first load: show every team as it arrives; later loads: swap the list once, when it is complete
-        if (!silent || complete) {
-            datum.clear();
-            datum.addAll(staging);
-            adapter.notifyDataSetChanged();
-        }
+        // while a remembered list is on screen the new items are collected on the side
+        cachedList.expect(datum, expected);
+        datum.add(item);
+        sortStandings();
+        adapter.notifyDataSetChanged();
 
         if (!silent) {
             hideShimmer(recyclerView, shimmerFrameLayout);
-        }
-
-        if (complete) {
-            listCache.put("teams_standings_" + season, staging);
-            swipeLayout.setRefreshing(false);
-            recyclerView.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.setVisibility(View.GONE);
         }
     }
 

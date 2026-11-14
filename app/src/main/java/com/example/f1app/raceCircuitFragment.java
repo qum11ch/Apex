@@ -118,6 +118,12 @@ public class raceCircuitFragment extends Fragment {
             flag.setImageResource(World.getFlagOf(getCountryCode(mCountry.toLowerCase())));
         }
 
+        final java.util.List<DataSnapshot> seen = cachedList.recall("circuit|" + mCircuitId);
+
+        if (seen != null && !seen.isEmpty()) {
+            showCircuit(seen.get(0), mCircuitId, true); // seen before: no shimmer, refresh quietly
+        }
+
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
         rootRef.child("circuits").child(mCircuitId)
@@ -128,7 +134,7 @@ public class raceCircuitFragment extends Fragment {
                             return;
                         }
 
-                        showCircuit(snapshot, mCircuitId);
+                        showCircuit(snapshot, mCircuitId, false);
                     }
 
                     @Override
@@ -181,7 +187,9 @@ public class raceCircuitFragment extends Fragment {
         return value.equals(DASH) ? value : value + " " + getString(R.string.kilometres);
     }
 
-    private void showCircuit(DataSnapshot snapshot, String circuitId) {
+    private void showCircuit(DataSnapshot snapshot, String circuitId, boolean instant) {
+        cachedList.remember("circuit|" + circuitId, java.util.Collections.singletonList(snapshot));
+
         int nameId = getStringByName(circuitId + "_text");
         String fallbackName = snapshot.child("circuitName").getValue(String.class);
 
@@ -209,6 +217,13 @@ public class raceCircuitFragment extends Fragment {
             lapRecord_driver.setText(hasYear
                     ? recordDriver + " (" + String.valueOf(recordYear).trim() + ")"
                     : recordDriver);
+        }
+
+        if (instant || contentLayout.getVisibility() == View.VISIBLE) {
+            contentLayout.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.setVisibility(View.GONE);
+            shimmerFrameLayout.stopShimmer();
+            return;
         }
 
         shimmerFrameLayout.animate()

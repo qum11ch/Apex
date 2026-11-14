@@ -449,7 +449,13 @@ public class allDriversActivity extends AppCompatActivity {
     }
 
     private void loadScreen() {
-        showSkeleton();
+        final allDriversRepository.Snapshot remembered = allDriversRepository.memorySnapshot();
+
+        if (remembered != null) {
+            showDrivers(remembered); // seen before: no skeleton, refresh quietly below
+        } else {
+            showSkeleton();
+        }
 
         final int token = ++cacheToken;
 
