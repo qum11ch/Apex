@@ -66,12 +66,6 @@ public class neuroPredictionActivity extends AppCompatActivity {
         setupNeuroPredictInsets();
         EdgeInsets.applyBottom(findViewById(R.id.scrollView));
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(neuroPredictionActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionActivity.this));
-        }
-
         predictButton = findViewById(R.id.predict_button);
         radioGroup = findViewById(R.id.radioGroup);
         predictButton = findViewById(R.id.predict_button);
@@ -103,6 +97,8 @@ public class neuroPredictionActivity extends AppCompatActivity {
 
         racePickerField.setEnabled(false);
         predictButton.setEnabled(false);
+
+        networkNotice.watch(neuroPredictionActivity.this, predictButton);
 
         getSupportFragmentManager().setFragmentResultListener(
                 neuroRacePickerSheet.RESULT_KEY,
@@ -149,6 +145,10 @@ public class neuroPredictionActivity extends AppCompatActivity {
 
         predictButton.setOnClickListener(v -> {
             if (checkingResultAccess) return;
+
+            if (!networkNotice.ensureOnline(this)) {
+                return;
+            }
 
             if (selectedRaceIndex < 0
                     || selectedRaceIndex >= raceNames.size()) {

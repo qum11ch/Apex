@@ -107,11 +107,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(neuroPredictionResultActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(neuroPredictionResultActivity.this));
-        }
+        networkNotice.showIfOffline(neuroPredictionResultActivity.this);
 
         StripedRelativeLayout fastestLapLayout = findViewById(R.id.poleLap_layout);
         if (!checkLightTheme(neuroPredictionResultActivity.this)){

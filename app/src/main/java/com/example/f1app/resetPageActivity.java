@@ -38,12 +38,6 @@ public class resetPageActivity extends AppCompatActivity {
         setContentView(R.layout.password_reset_page);
         setupResetPasswordInsets();
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(resetPageActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(resetPageActivity.this));
-        }
-
         String mCurrentSeason = getIntent().getStringExtra("currentSeason");
 
         userEmail = findViewById(R.id.userEmail);
@@ -52,6 +46,7 @@ public class resetPageActivity extends AppCompatActivity {
         resetProgress = findViewById(R.id.resetProgress);
 
         resetButton.setOnClickListener(v -> loginUserAccount(mCurrentSeason));
+        networkNotice.watch(resetPageActivity.this, resetButton);
 
         userEmail.addTextChangedListener(textWatcher);
 
@@ -127,6 +122,10 @@ public class resetPageActivity extends AppCompatActivity {
             return;
         }
 
+        if (!networkNotice.ensureOnline(this)) {
+            return;
+        }
+
         resetButton.setVisibility(View.INVISIBLE);
         resetProgress.setVisibility(View.VISIBLE);
 
@@ -147,6 +146,14 @@ public class resetPageActivity extends AppCompatActivity {
                     finish();
                 })
                 .addOnFailureListener(e -> {
+                    if (!networkNotice.isOnline(resetPageActivity.this)) {
+                        // not a wrong e-mail: the network went away
+                        networkNotice.ensureOnline(resetPageActivity.this);
+                        resetButton.setVisibility(View.VISIBLE);
+                        resetProgress.setVisibility(View.INVISIBLE);
+                        return;
+                    }
+
                     Toast.makeText(
                             resetPageActivity.this,
                             getString(R.string.wrong_email),

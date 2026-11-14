@@ -47,7 +47,7 @@ public final class jolpicaSessions {
 
     private static synchronized RequestQueue queue(Context context) {
         if (queue == null) {
-            queue = Volley.newRequestQueue(context.getApplicationContext());
+            queue = apiQueue.get();
         }
         return queue;
     }

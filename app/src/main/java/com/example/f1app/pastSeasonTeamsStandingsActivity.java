@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -131,7 +133,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
         swipeLayout.setOnRefreshListener(() -> {
             swipeLayout.setRefreshing(false); // the screen has its own loading skeleton
-            loadStandings();
+            loadStandings(true); // pull-to-refresh: the shimmer comes back
         });
 
         findViewById(R.id.state_retry).setOnClickListener(v -> loadStandings());
@@ -238,6 +240,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     }
 
     private void showLoading() {
+        shimmerFrameLayout.animate().cancel(); // a fade that is still running must not undo the shimmer
         stateContainer.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
         shimmerFrameLayout.setVisibility(View.VISIBLE);
@@ -245,6 +248,18 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     }
 
     private void showList() {
+        stateContainer.setVisibility(View.GONE);
+
+        if (shimmerFrameLayout.getVisibility() == View.VISIBLE) {
+            hideShimmer(recyclerView, shimmerFrameLayout); // the same half-second fade as on the other screens
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    /** A remembered table: no fade, no waiting. */
+    private void showListNow() {
+        shimmerFrameLayout.animate().cancel();
         shimmerFrameLayout.stopShimmer();
         shimmerFrameLayout.setVisibility(View.GONE);
         stateContainer.setVisibility(View.GONE);
@@ -252,6 +267,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     }
 
     private void showMessage(String message, boolean canRetry) {
+        shimmerFrameLayout.animate().cancel();
         shimmerFrameLayout.stopShimmer();
         shimmerFrameLayout.setVisibility(View.GONE);
         recyclerView.setVisibility(View.GONE);
@@ -266,12 +282,19 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         datum.addAll(remembered);
         adapter.setLinkableTeams(teamsKnown ? knownTeams : null);
         adapter.notifyDataSetChanged();
-        showList();
+        showListNow();
     }
 
     private void showLoadError() {
         if (showingRemembered) {
             return; // the remembered list stays on screen
+        }
+
+        final List<teamsList> saved = cachedList.recall("past_teams|" + selectedSeason);
+
+        if (saved != null && !saved.isEmpty()) {
+            showRemembered(saved); // the refresh failed: bring the old table back
+            return;
         }
 
         showMessage(getString(R.string.ps_load_error), true);
@@ -282,6 +305,11 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
     }
 
     private void loadStandings() {
+        loadStandings(false);
+    }
+
+    /** userRefresh = the user pulled to refresh: the shimmer comes back even when the table is remembered. */
+    private void loadStandings(boolean userRefresh) {
         final int token = ++requestToken;
         final int season = selectedSeason;
 
@@ -290,7 +318,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
 
         final List<teamsList> remembered = cachedList.recall("past_teams|" + season);
 
-        if (remembered != null && !remembered.isEmpty()) {
+        if (remembered != null && !remembered.isEmpty() && !userRefresh) {
             showRemembered(remembered); // seen before: no shimmer, refresh quietly
         } else {
             showingRemembered = false;

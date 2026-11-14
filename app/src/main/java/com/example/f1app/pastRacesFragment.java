@@ -1,5 +1,7 @@
 package com.example.f1app;
 
+import static com.example.f1app.MainActivity.hideShimmer;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +39,7 @@ public class pastRacesFragment extends Fragment {
 
     private static final String TAG = "pastRaces";
     private static final String ARG_SEASON = "season";
+    private static final String ARG_FRESH = "fresh";
 
     private RecyclerView recyclerView;
     private ShimmerFrameLayout shimmer;
@@ -49,9 +52,15 @@ public class pastRacesFragment extends Fragment {
     private boolean loaded = false;
 
     static pastRacesFragment newInstance(String season) {
+        return newInstance(season, false);
+    }
+
+    /** fresh = the user pulled to refresh: the shimmer comes back and the list is loaded again. */
+    static pastRacesFragment newInstance(String season, boolean fresh) {
         pastRacesFragment fragment = new pastRacesFragment();
         Bundle arguments = new Bundle();
         arguments.putString(ARG_SEASON, season);
+        arguments.putBoolean(ARG_FRESH, fresh);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -81,8 +90,9 @@ public class pastRacesFragment extends Fragment {
 
         final String rememberedKey = rememberKey();
         final List<pastRaceItem> remembered = cachedList.recall(rememberedKey);
+        final boolean fresh = getArguments() != null && getArguments().getBoolean(ARG_FRESH, false);
 
-        if (remembered != null && !remembered.isEmpty()) {
+        if (!fresh && remembered != null && !remembered.isEmpty()) {
             // seen before: show it at once, refresh quietly
             loaded = true;
             adapter.setItems(remembered);
@@ -255,9 +265,11 @@ public class pastRacesFragment extends Fragment {
         loaded = true;
         adapter.setItems(items);
 
-        shimmer.stopShimmer();
-        shimmer.setVisibility(View.GONE);
-        recyclerView.setVisibility(View.VISIBLE);
+        if (shimmer.getVisibility() == View.VISIBLE) {
+            hideShimmer(recyclerView, shimmer); // the same half-second fade as on the other screens
+        } else {
+            recyclerView.setVisibility(View.VISIBLE);
+        }
 
         applyFilters();
         updateMessage();
@@ -278,6 +290,20 @@ public class pastRacesFragment extends Fragment {
     private void showError() {
         if (adapter != null && adapter.totalCount() > 0) {
             return; // the remembered list stays on screen
+        }
+
+        final List<pastRaceItem> saved = cachedList.recall(rememberKey());
+
+        if (saved != null && !saved.isEmpty() && recyclerView != null) {
+            // the refresh failed: bring the old list back
+            loaded = true;
+            adapter.setItems(saved);
+            shimmer.stopShimmer();
+            shimmer.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.VISIBLE);
+            applyFilters();
+            updateMessage();
+            return;
         }
 
         loaded = true;

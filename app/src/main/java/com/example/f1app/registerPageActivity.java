@@ -107,16 +107,6 @@ public class registerPageActivity extends AppCompatActivity {
         setContentView(R.layout.register_page);
         setupRegisterInsets();
 
-        if (!checkConnection(getApplicationContext())) {
-            startActivity(
-                    connectionLostScreen.createShowSplashOnNetworkFailure(this)
-            );
-        } else {
-            startActivity(
-                    connectionLostScreen.createIntentHideSplashOnNetworkRecovery(this)
-            );
-        }
-
         Bundle extras = getIntent().getExtras();
         mCurrentSeason = extras == null
                 ? null
@@ -199,7 +189,15 @@ public class registerPageActivity extends AppCompatActivity {
         editTextEmail.addTextChangedListener(watcher);
         editTextPassword.addTextChangedListener(watcher);
 
-        registerButton.setOnClickListener(v -> registerNewUser());
+        registerButton.setOnClickListener(v -> {
+            if (!networkNotice.ensureOnline(this)) {
+                return;
+            }
+
+            registerNewUser();
+        });
+
+        networkNotice.watch(registerPageActivity.this, registerButton);
 
         changeAvatarButton.setOnClickListener(v -> {
             PickVisualMediaRequest request =

@@ -69,12 +69,6 @@ public class logInPageActivity extends AppCompatActivity {
                         : View.GONE
         );
 
-        if (!checkConnection(getApplicationContext())){
-            startActivity(connectionLostScreen.createShowSplashOnNetworkFailure(logInPageActivity.this));
-        }else{
-            startActivity(connectionLostScreen.createIntentHideSplashOnNetworkRecovery(logInPageActivity.this));
-        }
-
         Bundle intentBundle = getIntent().getExtras();
 
         String mCurrentSeason = intentBundle != null
@@ -98,6 +92,7 @@ public class logInPageActivity extends AppCompatActivity {
         resetPassword.setOnClickListener(view -> startActivity_seasonData(logInPageActivity.this, resetPageActivity.class, mCurrentSeason));
 
         loginButton.setOnClickListener(v -> loginUserAccount(mCurrentSeason));
+        networkNotice.watch(logInPageActivity.this, loginButton);
 
         showDrivers = findViewById(R.id.showDriver);
         showDrivers.setOnClickListener(v -> startActivity_seasonData(logInPageActivity.this, driversStandingsActivity.class, mCurrentSeason));
@@ -333,6 +328,10 @@ public class logInPageActivity extends AppCompatActivity {
             return;
         }
 
+        if (!networkNotice.ensureOnline(this)) {
+            return;
+        }
+
         setLoginLoading(true);
 
         Map<String, Object> data = new HashMap<>();
@@ -460,6 +459,14 @@ public class logInPageActivity extends AppCompatActivity {
             String legacyLogin,
             String currentSeason) {
 
+        if (!networkNotice.isOnline(this)) {
+            // offline: keep the account signed in and carry on when the network is back
+            setLoginLoading(false);
+            networkNotice.runWhenOnline(this,
+                    () -> checkOrMigrateProfile(firebaseUser, legacyLogin, currentSeason));
+            return;
+        }
+
         setLoginLoading(true);
 
         FirebaseFunctions.getInstance("us-central1")
@@ -515,6 +522,13 @@ public class logInPageActivity extends AppCompatActivity {
                     );
 
                     // Не оставляем доступ к аккаунту через неполный сценарий.
+                    if (!networkNotice.isOnline(this)) {
+                        // the network dropped during the call: not a reason to sign the user out
+                        setLoginLoading(false);
+                        networkNotice.ensureOnline(this);
+                        return;
+                    }
+
                     auth.signOut();
                     finishLoginWithError();
                 });

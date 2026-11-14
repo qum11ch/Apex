@@ -120,7 +120,7 @@ public class pastSeasonScheduleActivity extends AppCompatActivity implements pas
 
         swipeLayout.setOnRefreshListener(() -> {
             swipeLayout.setRefreshing(false); // the list has its own loading skeleton
-            showSeason();
+            showSeason(true); // pull-to-refresh: the shimmer comes back
         });
 
         ImageButton backButton = findViewById(R.id.backButton);
@@ -173,11 +173,15 @@ public class pastSeasonScheduleActivity extends AppCompatActivity implements pas
     // ---------- screen ----------
 
     private void showSeason() {
+        showSeason(false);
+    }
+
+    private void showSeason(boolean fresh) {
         updateHeader();
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.races_container, pastRacesFragment.newInstance(String.valueOf(selectedSeason)))
+                .replace(R.id.races_container, pastRacesFragment.newInstance(String.valueOf(selectedSeason), fresh))
                 .commitAllowingStateLoss();
     }
 
