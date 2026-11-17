@@ -50,16 +50,21 @@ public final class predictionStandingsPointsRenderer {
         String labelA = teams ? context.getString(R.string.spw_a) : codeA;
         String labelB = teams ? context.getString(R.string.spw_b) : codeB;
 
+        String titleA = teams ? pick(nameA, labelA) : codeA;
+        String titleB = teams ? pick(nameB, labelB) : codeB;
+        String captionA = teams ? labelA : nameA;
+        String captionB = teams ? labelB : nameB;
+
         set(root, R.id.spwContext, context.getString(R.string.spw_period, season, total.round));
-        set(root, R.id.spwCodeA, labelA);
-        set(root, R.id.spwCodeB, labelB);
-        set(root, R.id.spwNameA, nameA);
-        set(root, R.id.spwNameB, nameB);
+        set(root, R.id.spwCodeA, titleA);
+        set(root, R.id.spwCodeB, titleB);
+        set(root, R.id.spwNameA, captionA);
+        set(root, R.id.spwNameB, captionB);
         set(root, R.id.spwPointsA, number(total.pointsA));
         set(root, R.id.spwPointsB, number(total.pointsB));
         set(root, R.id.spwSource, context.getString(teams ? R.string.spw_teams_source : R.string.spw_drivers_source));
-        set(root, R.id.spwSideA, labelA);
-        set(root, R.id.spwSideB, labelB);
+        set(root, R.id.spwSideA, teams ? pick(nameA, labelA) : labelA);
+        set(root, R.id.spwSideB, teams ? pick(nameB, labelB) : labelB);
 
         if (history == null) {
             root.findViewById(R.id.spwHistory).setVisibility(View.GONE);
@@ -82,6 +87,10 @@ public final class predictionStandingsPointsRenderer {
         renderCoverage(context, root, history);
         renderMismatchWarning(root, history, total);
         renderRows(context, root, history, historySize);
+    }
+
+    private static String pick(String value, String fallback) {
+        return value == null || value.trim().isEmpty() ? fallback : value.trim();
     }
 
     private static void renderCoverage(Context context, View root, predictionWeekendPointsLoader.Data history) {

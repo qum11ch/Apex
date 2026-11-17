@@ -89,7 +89,7 @@
             android:name=".userPredictionsActivity"
             android:exported="false" />
         <activity
-            android:name=".predictionsActivity"
+            android:name=".predictionActivity"
             android:exported="false" />
 
         <activity

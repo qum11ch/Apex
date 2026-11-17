@@ -37,6 +37,7 @@
 
             <TextView
                 android:id="@+id/spwCodeA"
+                android:ellipsize="end"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
@@ -71,6 +72,7 @@
 
             <TextView
                 android:id="@+id/spwCodeB"
+                android:ellipsize="end"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:maxLines="1"

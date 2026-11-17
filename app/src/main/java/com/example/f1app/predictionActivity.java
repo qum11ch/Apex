@@ -34,7 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class predictionsActivity extends AppCompatActivity {
+public class predictionActivity extends AppCompatActivity {
     private static final String CACHE_KEY = "open_predictions";
     private RecyclerView recyclerView;
     private TextView emptyText;
@@ -49,6 +49,10 @@ public class predictionsActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeRefreshLayout;
     private ShimmerFrameLayout shimmerLayout;
 
+    private String filterSeason;
+    private int filterRound = -1;
+    private String cacheKey = CACHE_KEY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,7 +62,7 @@ public class predictionsActivity extends AppCompatActivity {
         setupPredictionsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.predictionsRecyclerView));
 
-        networkNotice.showIfOffline(predictionsActivity.this);
+        networkNotice.showIfOffline(predictionActivity.this);
 
         WindowInsetsControllerCompat windowInsetsController =
                 WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
@@ -90,14 +94,21 @@ public class predictionsActivity extends AppCompatActivity {
             }
 
             refreshRequested = true; // pull-to-refresh: the shimmer comes back
-            loadPredictions(predictionsActivity.this);
+            loadPredictions(predictionActivity.this);
         });
+
+        filterSeason = getIntent().getStringExtra("season");
+        filterRound = getIntent().getIntExtra("raceRound", -1);
+
+        if (filterSeason != null && filterRound > 0) {
+            cacheKey = CACHE_KEY + "_" + filterSeason + "_" + filterRound;
+        }
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new predictionListAdapter(predictions, this::openPrediction);
         recyclerView.setAdapter(adapter);
 
-        final List<predictionListItem> remembered = cachedList.recall(CACHE_KEY);
+        final List<predictionListItem> remembered = cachedList.recall(cacheKey);
 
         if (remembered != null) {
             // seen before: show it at once, refresh quietly
@@ -115,7 +126,7 @@ public class predictionsActivity extends AppCompatActivity {
             }
         }
 
-        loadPredictions(predictionsActivity.this);
+        loadPredictions(predictionActivity.this);
     }
 
     @Override
@@ -169,7 +180,7 @@ public class predictionsActivity extends AppCompatActivity {
         isLoading = true;
         DatabaseReference predictionsRef = FirebaseDatabase.getInstance().getReference("userPredictions");
 
-        if (refreshRequested || cachedList.recall(CACHE_KEY) == null) {
+        if (refreshRequested || cachedList.recall(cacheKey) == null) {
             refreshRequested = false;
             showShimmer(recyclerView, shimmerLayout);
         }
@@ -200,6 +211,15 @@ public class predictionsActivity extends AppCompatActivity {
                                 continue;
                             }
 
+                            if (filterRound > 0) {
+                                if (!item.isWeekend()
+                                        || item.getRaceRound() == null
+                                        || item.getRaceRound() != filterRound
+                                        || !filterSeason.equals(item.getSeason())) {
+                                    continue;
+                                }
+                            }
+
                             predictions.add(item);
                         }
 
@@ -214,7 +234,7 @@ public class predictionsActivity extends AppCompatActivity {
                             swipeRefreshLayout.setRefreshing(false);
                         }
 
-                        if (cachedList.recall(CACHE_KEY) != null) {
+                        if (cachedList.recall(cacheKey) != null) {
                             hideShimmer(recyclerView, shimmerLayout);
                             return; // the remembered list stays on screen
                         }
@@ -239,7 +259,7 @@ public class predictionsActivity extends AppCompatActivity {
         );
 
         adapter.notifyDataSetChanged();
-        cachedList.remember(CACHE_KEY, predictions);
+        cachedList.remember(cacheKey, predictions);
 
         isLoading = false;
 
@@ -248,7 +268,7 @@ public class predictionsActivity extends AppCompatActivity {
         }
 
         if (predictions.isEmpty()) {
-            showEmpty(getString(R.string.user_predictions_empty));
+            showEmpty(getString(R.string.prediction_list_empty));
 
             recyclerView.setVisibility(View.GONE);
 

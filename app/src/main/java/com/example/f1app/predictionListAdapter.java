@@ -29,9 +29,16 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
     private final List<predictionListItem> predictions;
     private final OnPredictionClickListener listener;
 
+    private final boolean compact;
+
     public predictionListAdapter(List<predictionListItem> predictions, OnPredictionClickListener listener) {
+        this(predictions, listener, false);
+    }
+
+    public predictionListAdapter(List<predictionListItem> predictions, OnPredictionClickListener listener, boolean compact) {
         this.predictions = predictions;
         this.listener = listener;
+        this.compact = compact;
     }
 
     @NonNull
@@ -63,7 +70,7 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
             holder.description.setVisibility(View.GONE);
         }
 
-        holder.category.setText(getMetaText(context, holder, item));
+        holder.category.setText(compact ? getTypeLine(context, item) : getMetaText(context, holder, item));
 
         String deadlineText = context.getString(R.string.deadline_text)
                 + " " + formatDate(context, item.getDeadline());
@@ -83,6 +90,14 @@ public class predictionListAdapter extends RecyclerView.Adapter<predictionListAd
         drawable.setStroke(dpToPx(1, context), strokeColor);
         holder.points.setBackground(drawable);
 
+    }
+
+    private String getTypeLine(Context context, predictionListItem item) {
+        String type = getPredictionTypeTitle(context, item.getPredictionType());
+        String option = getOptionTypeTitle(context, item.getOptionType());
+        if (type.isEmpty()) return option;
+        if (option.isEmpty()) return type;
+        return type + ", " + option;
     }
 
     @Override

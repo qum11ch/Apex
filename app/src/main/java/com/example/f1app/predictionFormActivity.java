@@ -76,8 +76,6 @@ public class predictionFormActivity extends AppCompatActivity {
     private TextView submittedAt;
     private TextView eventDeadline;
     private TextView answerResult;
-    private TextView submittedAtInfo;
-    private TextView pointsEarnedInfo;
     private TextView pointsEarned;
     private LinearLayout statusLayout;
     private LinearLayout selectedOptionCard;
@@ -113,7 +111,7 @@ public class predictionFormActivity extends AppCompatActivity {
     private final predictionSingleCardLoader singleCardLoader = new predictionSingleCardLoader();
     private int singleCardRequest = 0;
 
-
+    private TextView predictionDescriptionView;
 
     private LinearLayout predictionWeekendCard;
     private FrameLayout predictionWeekendContent;
@@ -188,9 +186,11 @@ public class predictionFormActivity extends AppCompatActivity {
         answerResult = findViewById(R.id.answerResult);
         statusLayout = findViewById(R.id.statusLayout);
         pointsEarned = findViewById(R.id.pointsEarned);
-        pointsEarnedInfo = findViewById(R.id.pointsEarnedInfo);
+        // TextView pointsEarnedInfo = findViewById(R.id.pointsEarnedInfo);
 
-        submittedAtInfo = findViewById(R.id.submittedAtInfo);
+        predictionDescriptionView = findViewById(R.id.prediction_description);
+
+        // TextView submittedAtInfo = findViewById(R.id.submittedAtInfo);
         selectedOptionCard = findViewById(R.id.selectedOptionCard);
         selectedOptionImage = findViewById(R.id.selectedOptionImage);
         selectedOptionName = findViewById(R.id.selectedOptionName);
@@ -405,6 +405,8 @@ public class predictionFormActivity extends AppCompatActivity {
                         predictionDescription = getLocalizedText(
                                 snapshot.child("description").getValue(LocalizedText.class));
 
+                        renderPredictionDescription();
+
                         setupWeekendCard();
 
                         if (isHeadToHead(predictionType)) {
@@ -490,6 +492,13 @@ public class predictionFormActivity extends AppCompatActivity {
         predictionStatsCustomContent.setVisibility(View.GONE);
         predictionStatsCustomContent.removeAllViews();
         predictionStatsBody.setVisibility(View.VISIBLE);
+    }
+
+    private void renderPredictionDescription() {
+        boolean has = predictionDescription != null
+                && !predictionDescription.trim().isEmpty();
+        predictionDescriptionView.setText(has ? predictionDescription.trim() : "");
+        predictionDescriptionView.setVisibility(has ? View.VISIBLE : View.GONE);
     }
 
     private void setupHeadToHeadStats() {

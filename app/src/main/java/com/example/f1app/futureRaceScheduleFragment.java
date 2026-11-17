@@ -53,7 +53,7 @@ public class futureRaceScheduleFragment extends Fragment {
     private TextView mns_countdown;
     private TextView countdown_header;
     private scheduleAdapter adapter;
-    private long diffStart, diffEnd;
+    private long diffEnd;
     private ToggleButton saveRaceButton;
     private LocalDate currentDate;
     private String fullRaceName_key;
@@ -92,6 +92,8 @@ public class futureRaceScheduleFragment extends Fragment {
         TextView raceStatus = view.findViewById(R.id.raceStatus);
         saveRaceButton = view.findViewById(R.id.saveRace);
 
+        Button weekendPredictionsButton = view.findViewById(R.id.weekend_predictions_button);
+
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
@@ -105,9 +107,7 @@ public class futureRaceScheduleFragment extends Fragment {
 
             String mFutureRaceStartDay = getArguments().getString("futureRaceStartDay");
             String mFutureRaceEndDay = getArguments().getString("futureRaceEndDay");
-            String mFutureRaceStartMonth = getArguments().getString("futureRaceStartMonth");
-            String mFutureRaceEndMonth = getArguments().getString("futureRaceEndMonth");
-            //String mRound = getArguments().getString("roundCount");
+            String mRound = getArguments().getString("roundCount");
             //String mCountry = getArguments().getString("raceCountry");
             String mRaceStartDate = getArguments().getString("dateStart");
             String mRaceEndDate = getArguments().getString("dateEnd");
@@ -145,6 +145,11 @@ public class futureRaceScheduleFragment extends Fragment {
                 i.putExtra("gp", mRaceName);
                 startActivity(i);
             });
+
+            setupWeekendPredictions(
+                    weekendPredictionsButton,
+                    mYear,
+                    mRound);
 
             TextView day_start = view.findViewById(R.id.day_start);
             TextView day_end = view.findViewById(R.id.day_end);
@@ -216,6 +221,57 @@ public class futureRaceScheduleFragment extends Fragment {
             currentTimer = null;
         }
         isFragmentActive = false;
+    }
+
+    private void setupWeekendPredictions(Button button, String season, String roundText) {
+        button.setVisibility(View.GONE);
+
+        final int round;
+        try {
+            round = Integer.parseInt(roundText);
+        } catch (Exception e) {
+            return;
+        }
+        if (season == null) return;
+
+        button.setOnClickListener(v -> {
+            if (!isAdded()) return;
+            weekendPredictionsSheet.newInstance(season, round)
+                    .show(getParentFragmentManager(), "weekend_predictions");
+        });
+
+        FirebaseDatabase.getInstance().getReference("userPredictions")
+                .orderByChild("raceRound").equalTo(round)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!isAdded()) return;
+
+                        long now = System.currentTimeMillis();
+                        boolean found = false;
+
+                        for (DataSnapshot child : snapshot.getChildren()) {
+                            if (!"weekend".equals(child.child("category").getValue(String.class))) continue;
+                            if (!season.equals(String.valueOf(child.child("season").getValue()))) continue;
+
+                            String status = child.child("status").getValue(String.class);
+                            if (status != null && !"open".equals(status)) continue;
+
+                            Long deadline = child.child("deadline").getValue(Long.class);
+                            if (deadline == null || deadline <= now) continue;
+
+                            found = true;
+                            break;
+                        }
+
+                        button.setVisibility(found ? View.VISIBLE : View.GONE);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        button.setVisibility(View.GONE);
+                    }
+                });
     }
 
     private void getRaceSchedule(String raceName, String currentYear){
@@ -343,7 +399,7 @@ public class futureRaceScheduleFragment extends Fragment {
             dateFormat.setTimeZone(TimeZone.getDefault());
             String endTimeEvent4 = dateFormat.format(endTime_race);
 
-            diffStart = milliseconds - startTime;
+            long diffStart = milliseconds - startTime;
 
             switch (key) {
                 case "race_event":

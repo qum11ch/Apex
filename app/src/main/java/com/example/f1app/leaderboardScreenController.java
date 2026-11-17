@@ -943,7 +943,8 @@ public final class leaderboardScreenController {
             parent.removeView(name);
 
             GradientDrawable initialBackground = new GradientDrawable();
-            initialBackground.setShape(GradientDrawable.OVAL);
+            initialBackground.setShape(GradientDrawable.RECTANGLE);
+            initialBackground.setCornerRadius(dp(5));
             initialBackground.setColor(
                     color(R.color.account_settings_input_color)
             );

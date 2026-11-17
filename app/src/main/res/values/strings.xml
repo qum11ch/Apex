@@ -1160,4 +1160,6 @@
     <string name="bh_vsc_caption">races with detected VSC</string>
     <string name="bh_tile_detail">Not detected: %1$d\nNo data: %2$d</string>
     <string name="bh_coverage">Races checked: %1$d\nHistory load errors: %2$d</string>
+
+    <string name="weekend_predictions_button">Predictions for this Grand-Prix</string>
 </resources>

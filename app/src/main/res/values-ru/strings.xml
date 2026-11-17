@@ -1139,4 +1139,6 @@
     <string name="bh_vsc_caption">гонок с обнаруженным VSC</string>
     <string name="bh_tile_detail">Не обнаружено: %1$d\nНет данных: %2$d</string>
     <string name="bh_coverage">Гонок проверено: %1$d\nОшибок загрузки истории: %2$d</string>
+
+    <string name="weekend_predictions_button">Прогнозы на этот Гран-при</string>
 </resources>

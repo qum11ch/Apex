@@ -272,7 +272,7 @@ public class MainActivity extends AppCompatActivity {
         Button openPredictionsButton = findViewById(R.id.predictionsPageButton);
 
         openPredictionsButton.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, predictionsActivity.class);
+            Intent intent = new Intent(MainActivity.this, predictionActivity.class);
             startActivity(intent);
         });
 
