@@ -150,8 +150,5 @@
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        android:indeterminate="true"
-        android:indeterminateTint="@color/progressBarColor"
-        android:indeterminateTintMode="src_atop"
         android:visibility="gone" />
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

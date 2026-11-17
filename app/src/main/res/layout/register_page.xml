@@ -589,10 +589,7 @@
                     android:layout_height="50dp"
                     android:layout_gravity="center_horizontal"
                     android:visibility="invisible"
-                    android:id="@+id/registerProgress"
-                    android:indeterminate="true"
-                    android:indeterminateTintMode="src_atop"
-                    android:indeterminateTint="@color/red"/>
+                    android:id="@+id/registerProgress"/>
                 <Button
                     android:enabled="false"
                     android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"

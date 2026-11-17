@@ -241,11 +241,8 @@
                             android:layout_height="32dp"
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
-                            android:indeterminate="true"
-                            android:indeterminateTint="@color/progressBarColor"
-                            android:indeterminateTintMode="src_atop"
                             android:visibility="gone"
-                        android:layout_marginBottom="14dp" />
+                            android:layout_marginBottom="14dp" />
                     </LinearLayout>
 
                     <!-- race weekend card -->
@@ -272,9 +269,6 @@
                             android:layout_gravity="center_horizontal"
                             android:layout_marginTop="12dp"
                             android:layout_marginBottom="12dp"
-                            android:indeterminate="true"
-                            android:indeterminateTint="@color/progressBarColor"
-                            android:indeterminateTintMode="src_atop"
                             android:visibility="gone" />
 
                         <TextView
@@ -514,9 +508,6 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="center"
-                android:indeterminate="true"
-                android:indeterminateTint="@color/progressBarColor"
-                android:indeterminateTintMode="src_atop"
                 android:visibility="invisible" />
         </FrameLayout>
     </FrameLayout>

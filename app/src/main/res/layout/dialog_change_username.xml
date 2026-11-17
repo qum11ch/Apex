@@ -109,8 +109,7 @@
                 android:layout_height="36dp"
                 android:visibility="gone"
                 android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="8dp"
-                android:indeterminateTint="@color/red"/>
+                android:layout_marginBottom="8dp"/>
 
             <LinearLayout
                 android:id="@+id/emailButtons"

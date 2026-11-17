@@ -96,6 +96,12 @@
         <item name="android:background">@drawable/item_style</item>
     </style>
 
+    <style name="Widget.Apex.ProgressBar" parent="android:Widget.Material.ProgressBar">
+        <item name="android:indeterminate">true</item>
+        <item name="android:indeterminateTint">@color/progressBarColor</item>
+        <item name="android:indeterminateTintMode">src_atop</item>
+    </style>
+
     <style name="ItemStylePreds" parent="android:Widget.TextView">
         <item name="android:background">@drawable/item_style_preds</item>
     </style>
