@@ -149,11 +149,17 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 (parent, child) -> scrollView.canScrollVertically(-1)
         );
 
-        if(getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()) {
+        if (getIntent().getExtras() != null && !getIntent().getExtras().isEmpty()) {
             Bundle bundle = getIntent().getExtras();
             String gpName = bundle.getString("gp");
             String event = bundle.getString("event");
             String currentSeason = bundle.getString("currentSeason");
+
+            if (gpName == null || event == null || currentSeason == null) {
+                Toast.makeText(this, R.string.neuro_prediction_status_error, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
 
             setProgressStage(0, getString(R.string.neuro_prediction_progress_start));
 
@@ -306,6 +312,15 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 .addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                        if (!snapshot.exists() ||
+                                                snapshot.child("Qualifying")
+                                                        .child("raceQualiDate")
+                                                        .getValue(String.class) == null) {
+                                            showProgressError(getString(R.string.neuro_prediction_progress_data_error));
+                                            return;
+                                        }
+
+
                                         String circuitId = snapshot.child("Circuit").child("circuitId")
                                                 .getValue(String.class);
 

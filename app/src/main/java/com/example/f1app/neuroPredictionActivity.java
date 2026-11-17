@@ -142,7 +142,7 @@ public class neuroPredictionActivity extends AppCompatActivity {
             );
         });
 
-        predictButton.setOnClickListener(v -> {
+        predictButton.setOnClickListener(d -> {
             if (checkingResultAccess) return;
 
             if (!networkNotice.ensureOnline(this)) {
@@ -169,7 +169,13 @@ public class neuroPredictionActivity extends AppCompatActivity {
             String event = String.valueOf(radioButton.getTag());
             String gpName = raceNames.get(selectedRaceIndex);
 
-            checkVersionAndOpenResult(event, gpName, currentSeason);
+            checkingResultAccess = true;
+            predictButton.setEnabled(false);
+
+            neuroAccess.open(this, event, gpName, currentSeason, () -> {
+                checkingResultAccess = false;
+                predictButton.setEnabled(true);
+            });
         });
 
         if (currentSeason == null || currentSeason.trim().isEmpty()) {
@@ -300,177 +306,5 @@ public class neuroPredictionActivity extends AppCompatActivity {
         });
 
         ViewCompat.requestApplyInsets(root);
-    }
-
-    private void checkVersionAndOpenResult(
-            String event,
-            String gpName,
-            String currentSeason) {
-
-        if (checkingResultAccess) return;
-
-        checkingResultAccess = true;
-        predictButton.setEnabled(false);
-
-        FirebaseDatabase.getInstance()
-                .getReference("appConfig/android/neuroPredictionMinVersionCode")
-                .get()
-                .addOnCompleteListener(task -> {
-                    checkingResultAccess = false;
-
-                    if (isFinishing() || isDestroyed()) return;
-
-                    predictButton.setEnabled(true);
-
-                    if (!task.isSuccessful()) {
-                        Log.e(
-                                "NeuroVersion",
-                                "Не удалось проверить минимальную версию",
-                                task.getException()
-                        );
-
-                        Toast.makeText(
-                                this,
-                                getString(R.string.update_reqired_version_task_error),
-                                Toast.LENGTH_LONG
-                        ).show();
-                        return;
-                    }
-
-                    Object rawValue = task.getResult().getValue();
-
-                    if (!(rawValue instanceof Number)) {
-                        Toast.makeText(
-                                this,
-                                getString(R.string.neuro_prediction_access_blocked),
-                                Toast.LENGTH_LONG
-                        ).show();
-                        return;
-                    }
-
-                    long minVersionCode = ((Number) rawValue).longValue();
-
-                    if (minVersionCode < 1) {
-                        Toast.makeText(
-                                this,
-                                getString(R.string.neuro_prediction_access_blocked),
-                                Toast.LENGTH_LONG
-                        ).show();
-                        return;
-                    }
-
-                    try {
-                        PackageInfo packageInfo =
-                                getPackageManager().getPackageInfo(
-                                        getPackageName(),
-                                        0
-                                );
-
-                        long installedVersionCode =
-                                PackageInfoCompat.getLongVersionCode(packageInfo);
-
-                        if (installedVersionCode < minVersionCode) {
-                            showUpdateRequiredDialog();
-                            return;
-                        }
-
-                        openPredictionResult(event, gpName, currentSeason);
-
-                    } catch (PackageManager.NameNotFoundException e) {
-                        Log.e(
-                                "NeuroVersion",
-                                "Не удалось прочитать версию",
-                                e
-                        );
-
-                        Toast.makeText(
-                                this,
-                                getString(R.string.update_required_version_error),
-                                Toast.LENGTH_LONG
-                        ).show();
-                    }
-                });
-    }
-
-    private void showUpdateRequiredDialog() {
-        if (isFinishing() || isDestroyed()) return;
-
-        View dialogView = getLayoutInflater().inflate(
-                R.layout.dialog_update_required,
-                null
-        );
-
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setView(dialogView)
-                .create();
-
-        Button updateButton = dialogView.findViewById(R.id.updateButton);
-        Button stayButton = dialogView.findViewById(R.id.stayButton);
-
-        updateButton.setOnClickListener(v -> {
-            Intent intent = new Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(
-                            "https://www.rustore.ru/catalog/app/" + getPackageName()
-                    )
-            );
-
-            try {
-                startActivity(intent);
-                dialog.dismiss();
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(
-                        this,
-                        getString(R.string.update_required_url_error),
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        });
-
-        stayButton.setOnClickListener(v -> dialog.dismiss());
-
-        // Закрытие диалога оставляет пользователя на текущем экране.
-        dialog.setCancelable(true);
-        dialog.setCanceledOnTouchOutside(false);
-
-        dialog.show();
-
-        Window window = dialog.getWindow();
-
-        if (window != null) {
-            window.setBackgroundDrawable(
-                    new ColorDrawable(Color.TRANSPARENT)
-            );
-
-            int horizontalMargin = Math.round(
-                    24 * getResources().getDisplayMetrics().density
-            );
-
-            int screenWidth = getResources()
-                    .getDisplayMetrics()
-                    .widthPixels;
-
-            window.setLayout(
-                    screenWidth - horizontalMargin * 2,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            );
-        }
-    }
-
-    private void openPredictionResult(
-            String event,
-            String gpName,
-            String currentSeason) {
-
-        Intent intent = new Intent(
-                neuroPredictionActivity.this,
-                neuroPredictionResultActivity.class
-        );
-
-        intent.putExtra("event", event);
-        intent.putExtra("gp", gpName);
-        intent.putExtra("currentSeason", currentSeason);
-
-        startActivity(intent);
     }
 }

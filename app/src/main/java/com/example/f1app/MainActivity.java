@@ -342,7 +342,10 @@ public class MainActivity extends AppCompatActivity {
                                     return;
                                 }
 
-                                predict.setVisibility(View.VISIBLE);
+                                Boolean enabled  = snapshot.child("enablePredicts")
+                                        .getValue(Boolean.class);
+
+                                predict.setVisibility(Boolean.TRUE.equals(enabled) ? View.VISIBLE : View.GONE);
 
                                 getTeamStanding(currentSeason);
                                 getDriversStanding(currentSeason);

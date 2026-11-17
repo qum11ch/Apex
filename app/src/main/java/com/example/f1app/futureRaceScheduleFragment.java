@@ -125,12 +125,13 @@ public class futureRaceScheduleFragment extends Fragment {
             rootRef.child("status").addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (!isAdded()) return;
+
                     Boolean enablePredicts = snapshot.child("enablePredicts").getValue(Boolean.class);
-                    if (enablePredicts){
-                        predictButton.setVisibility(View.VISIBLE);
-                    }else{
-                        predictButton.setVisibility(View.GONE);
-                    }
+                    boolean allowed = Boolean.TRUE.equals(enablePredicts)
+                            && !"Australian Grand Prix".equals(mRaceName);
+
+                    predictButton.setVisibility(allowed ? View.VISIBLE : View.GONE);
                 }
 
                 @Override
@@ -140,10 +141,8 @@ public class futureRaceScheduleFragment extends Fragment {
             });
 
             predictButton.setOnClickListener(v -> {
-                Intent i = new Intent(requireContext(), neuroPredictionResultActivity.class);
-                i.putExtra("event", "Q");
-                i.putExtra("gp", mRaceName);
-                startActivity(i);
+                if (!isAdded()) return;
+                neuroAccess.open(requireActivity(), "Q", mRaceName, mYear);
             });
 
             setupWeekendPredictions(
