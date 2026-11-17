@@ -1143,4 +1143,8 @@
     <string name="weekend_predictions_button">Прогнозы на этот Гран-при</string>
 
     <string name="driver_team_seasons_title">Команда по сезонам</string>
+
+    <string name="year_picker_title">Сезон</string>
+    <string name="year_search_hint">Введите год</string>
+    <string name="year_search_empty">Такого сезона нет</string>
 </resources>

@@ -21,21 +21,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -75,6 +72,8 @@ final class driverSeasonsSection {
     private final String givenName;
     private final int firstSeason;
 
+    private static final String PICKER_KEY = "driver_seasons_year";
+
     driverSeasonsSection(Fragment host, View root, String driverFullName, String driverCode,
                          String driverId, String givenName, String familyName,
                          int firstSeason, int latestSeason) {
@@ -109,44 +108,36 @@ final class driverSeasonsSection {
             return;
         }
 
-        pendingYears = latest - first + 1;
-
         for (int year = latest; year >= first; year--) {
             loadStanding(year);
         }
 
-        FirebaseDatabase.getInstance().getReference().child("constructors").get()
-                .addOnCompleteListener(task -> {
-                    if (!host.isAdded() || !task.isSuccessful()) {
-                        return;
-                    }
+        FirebaseDatabase.getInstance().getReference().child("constructors")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!host.isAdded()) {
+                            return;
+                        }
 
-                    for (DataSnapshot team : task.getResult().getChildren()) {
-                        String color = team.child("color").getValue(String.class);
+                        for (DataSnapshot team : snapshot.getChildren()) {
+                            String color = team.child("color").getValue(String.class);
 
-                        if (team.getKey() != null && color != null) {
-                            teamColors.put(teamCarCatalog.normalize(team.getKey()), color);
+                            if (team.getKey() != null && color != null) {
+                                teamColors.put(teamCarCatalog.normalize(team.getKey()), color);
+                            }
+                        }
+
+                        if (adapter != null) {
+                            adapter.notifyDataSetChanged();
                         }
                     }
 
-                    if (adapter != null) {
-                        adapter.notifyDataSetChanged();
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w(TAG, "Team colours are not available", error.toException());
                     }
                 });
-    }
-
-    /** Called once for every requested year, whatever the outcome. */
-    private void yearDone() {
-        pendingYears--;
-
-        if (pendingYears > 0 || !host.isAdded()) {
-            return;
-        }
-
-        years.addAll(standings.keySet());
-        Collections.sort(years, Collections.reverseOrder());
-
-        show();
     }
 
     private void show() {
@@ -178,6 +169,11 @@ final class driverSeasonsSection {
         adapter = new SeasonAdapter();
         pager.setAdapter(adapter);
 
+        host.getChildFragmentManager().setFragmentResultListener(
+                PICKER_KEY,
+                host.getViewLifecycleOwner(),
+                (key, result) -> scrollToYear(result.getInt(yearPickerSheet.YEAR)));
+
         pager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -198,6 +194,24 @@ final class driverSeasonsSection {
 
         for (int year : years) {
             probePhoto(year, 0, new ArrayList<>());
+        }
+    }
+
+    private void openYearPicker(int selectedYear) {
+        if (!host.isAdded()) {
+            return;
+        }
+
+        yearPickerSheet.show(host.getChildFragmentManager(),
+                new ArrayList<>(years), selectedYear, PICKER_KEY);
+    }
+
+    private void scrollToYear(int year) {
+        int position = years.indexOf(year);
+
+        if (pager != null && position >= 0) {
+            pager.scrollToPosition(position);
+            updateArrows();
         }
     }
 
@@ -288,81 +302,87 @@ final class driverSeasonsSection {
 
     private void loadStanding(int year) {
         jolpicaSeasons.driverStandings(year, response -> {
-            if (host.isAdded() && response != null) {
-                try {
-                    readStanding(year, response);
-                } catch (JSONException error) {
-                    Log.w(TAG, "Unexpected standings response for " + year, error);
-                }
+            if (!host.isAdded() || response == null) {
+                return;
             }
 
-            yearDone();
+            JSONObject entry = jolpicaSeasons.driverEntry(response, driverCode, givenName, familyName);
+
+            if (entry == null) {
+                return;
+            }
+
+            JSONArray constructors = entry.optJSONArray("Constructors");
+
+            if (constructors == null || constructors.length() <= 1) {
+                store(year, entry, constructors == null || constructors.length() == 0
+                        ? null
+                        : constructors.optJSONObject(0));
+                return;
+            }
+
+            JSONObject driver = entry.optJSONObject("Driver");
+            String driverId = driver == null ? "" : driver.optString("driverId", "");
+
+            jolpicaSeasons.driverResults(year, driverId, results -> {
+                if (host.isAdded()) {
+                    store(year, entry, jolpicaSeasons.mainConstructor(constructors, results));
+                }
+            });
         });
     }
 
-    private void readStanding(int year, JSONObject response) throws JSONException {
-        JSONArray lists = response
-                .getJSONObject("MRData")
-                .getJSONObject("StandingsTable")
-                .optJSONArray("StandingsLists");
+    private void store(int year, JSONObject entry, JSONObject team) {
+        standings.put(year, new String[]{
+                entry.optString("positionText", DASH),
+                entry.optString("points", DASH),
+                entry.optString("wins", DASH),
+                team != null ? team.optString("name", DASH) : DASH,
+                team != null ? team.optString("constructorId", "") : ""
+        });
 
-        if (lists == null) {
+        addYear(year);
+    }
+
+    private void addYear(int year) {
+        if (years.contains(year)) {
             return;
         }
 
-        for (int i = 0; i < lists.length(); i++) {
-            JSONArray entries = lists.getJSONObject(i).optJSONArray("DriverStandings");
+        int index = 0;
 
-            if (entries == null) {
-                continue;
-            }
-
-            for (int j = 0; j < entries.length(); j++) {
-                JSONObject entry = entries.getJSONObject(j);
-                JSONObject driver = entry.optJSONObject("Driver");
-
-                if (driver == null || !isThisDriver(driver)) {
-                    continue;
-                }
-
-                String teamName = DASH;
-                String teamId = "";
-                JSONArray constructors = entry.optJSONArray("Constructors");
-
-                if (constructors != null && constructors.length() > 0) {
-                    JSONObject last = constructors.getJSONObject(constructors.length() - 1);
-
-                    teamName = last.optString("name", DASH);
-                    teamId = last.optString("constructorId", "");
-                }
-
-                standings.put(year, new String[]{
-                        entry.optString("positionText", DASH),
-                        entry.optString("points", DASH),
-                        entry.optString("wins", DASH),
-                        teamName,
-                        teamId
-                });
-
-                return;
-            }
+        while (index < years.size() && years.get(index) > year) {
+            index++;
         }
-    }
 
-    private boolean isThisDriver(JSONObject driver) {
-        return jolpicaSeasons.isDriver(driver, driverCode, givenName, familyName);
+        years.add(index, year);
+
+        if (adapter == null) {
+            show();
+        } else {
+            adapter.notifyItemInserted(index);
+            updateArrows();
+        }
+
+        probePhoto(year, 0, new ArrayList<>());
     }
 
     private void refresh(int year) {
-        if (adapter == null) {
+        if (pager == null) {
             return;
         }
 
-        int position = years.indexOf(year);
+        pager.post(() -> {
+            if (!host.isAdded() || adapter == null) {
+                return;
+            }
 
-        if (position >= 0) {
-            adapter.notifyItemChanged(position);
-        }
+            int position = years.indexOf(year);
+
+            if (position >= 0) {
+                adapter.notifyItemChanged(position);
+            }
+        });
     }
 
     /** Colour of the team of that season: the database first, then the palette of past teams. */
@@ -429,6 +449,7 @@ final class driverSeasonsSection {
             int year = years.get(position);
 
             holder.year.setText(String.valueOf(year));
+            holder.year.setOnClickListener(v -> openYearPicker(year));
 
             String[] data = standings.get(year);
             holder.team.setText(data != null ? data[3] : "");

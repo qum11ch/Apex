@@ -10,6 +10,8 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -71,6 +73,11 @@ final class jolpicaSeasons {
 
     static void constructorStandings(int year, Callback callback) {
         get(url(year, "constructorstandings"), 0, callback);
+    }
+
+    static void constructorSeasons(String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/constructors/" + constructorId
+                + "/seasons/?format=json&limit=100", 0, callback);
     }
 
     private static String url(int year, String table) {
@@ -196,5 +203,106 @@ final class jolpicaSeasons {
         String b = driver.optString("givenName", "").toLowerCase(Locale.ROOT);
 
         return a.isEmpty() || b.isEmpty() || a.contains(b) || b.contains(a);
+    }
+
+    static void driverResults(int year, String driverId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/" + year + "/drivers/" + driverId
+                + "/results/?format=json&limit=100", 1, callback);
+    }
+
+    /** The line of the driver in the standings of one season, or null. */
+    static JSONObject driverEntry(JSONObject response, String code, String given, String family) {
+        try {
+            JSONArray lists = response
+                    .getJSONObject("MRData")
+                    .getJSONObject("StandingsTable")
+                    .optJSONArray("StandingsLists");
+
+            if (lists == null) {
+                return null;
+            }
+
+            for (int i = 0; i < lists.length(); i++) {
+                JSONArray entries = lists.getJSONObject(i).optJSONArray("DriverStandings");
+
+                if (entries == null) {
+                    continue;
+                }
+
+                for (int j = 0; j < entries.length(); j++) {
+                    JSONObject entry = entries.getJSONObject(j);
+                    JSONObject driver = entry.optJSONObject("Driver");
+
+                    if (driver != null && isDriver(driver, code, given, family)) {
+                        return entry;
+                    }
+                }
+            }
+        } catch (JSONException error) {
+            Log.w(TAG, "Unexpected standings response", error);
+        }
+
+        return null;
+    }
+
+    /** The team the driver raced for most that season; without the results, the last one of the list. */
+    static JSONObject mainConstructor(JSONArray constructors, JSONObject results) {
+        JSONObject best = constructors.optJSONObject(constructors.length() - 1);
+
+        if (results == null) {
+            return best;
+        }
+
+        Map<String, Integer> races = new HashMap<>();
+
+        try {
+            JSONArray list = results
+                    .getJSONObject("MRData")
+                    .getJSONObject("RaceTable")
+                    .optJSONArray("Races");
+
+            if (list != null) {
+                for (int i = 0; i < list.length(); i++) {
+                    JSONArray rows = list.getJSONObject(i).optJSONArray("Results");
+
+                    if (rows == null || rows.length() == 0) {
+                        continue;
+                    }
+
+                    JSONObject constructor = rows.getJSONObject(0).optJSONObject("Constructor");
+
+                    if (constructor == null) {
+                        continue;
+                    }
+
+                    String id = constructor.optString("constructorId");
+                    Integer known = races.get(id);
+
+                    races.put(id, known == null ? 1 : known + 1);
+                }
+            }
+        } catch (JSONException error) {
+            return best;
+        }
+
+        int top = -1;
+
+        for (int i = 0; i < constructors.length(); i++) {
+            JSONObject constructor = constructors.optJSONObject(i);
+
+            if (constructor == null) {
+                continue;
+            }
+
+            Integer count = races.get(constructor.optString("constructorId"));
+            int value = count == null ? 0 : count;
+
+            if (value >= top) {
+                top = value;
+                best = constructor;
+            }
+        }
+
+        return best;
     }
 }

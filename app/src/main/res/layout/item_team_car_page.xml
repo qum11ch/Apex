@@ -2,11 +2,13 @@
 <!-- One season: the photo, the year with the name of the team that year, and the season results. -->
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingStart="8dp"
     android:paddingEnd="8dp">
+
     <LinearLayout
         android:id="@+id/car_card"
         android:layout_width="match_parent"
@@ -58,7 +60,12 @@
                 android:includeFontPadding="false"
                 android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                 android:textColor="@color/text_color_main"
-                android:textSize="22sp" />
+                android:textSize="22sp"
+                android:drawablePadding="6dp"
+                android:gravity="center_vertical"
+                android:minHeight="40dp"
+                android:background="?attr/selectableItemBackground"
+                app:drawableEndCompat="@drawable/ic_expand_small" />
 
             <TextView
                 android:id="@+id/car_caption"

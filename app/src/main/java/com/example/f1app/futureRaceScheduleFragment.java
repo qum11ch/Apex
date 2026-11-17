@@ -7,7 +7,6 @@ import static com.example.f1app.concludedRaceScheduleFragment.isSavedRace;
 import static com.example.f1app.concludedRaceScheduleFragment.saveRace;
 
 import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;

@@ -21,9 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -37,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -78,7 +75,7 @@ final class driverTeamSeasonsSection {
     private View next;
     private TeamAdapter adapter;
 
-    private int pendingYears;
+    private static final String PICKER_KEY = "driver_team_year";
     private final String currentSeason;
 
     driverTeamSeasonsSection(Fragment host, View root, String driverCode, String givenName,
@@ -227,16 +224,46 @@ final class driverTeamSeasonsSection {
                 return;
             }
 
-            try {
-                readDriverStanding(year, response);
-            } catch (JSONException error) {
-                Log.w(TAG, "Unexpected standings response for " + year, error);
+            JSONObject entry = jolpicaSeasons.driverEntry(response, driverCode, givenName, familyName);
+
+            if (entry == null) {
+                return;
             }
 
-            if (teams.containsKey(year)) {
-                addYear(year);
+            JSONArray constructors = entry.optJSONArray("Constructors");
+
+            if (constructors == null || constructors.length() == 0) {
+                return;
             }
+
+            if (constructors.length() == 1) {
+                setTeam(year, constructors.optJSONObject(0));
+                return;
+            }
+
+            // several teams in one season: the one with more races
+            JSONObject driver = entry.optJSONObject("Driver");
+            String driverId = driver == null ? "" : driver.optString("driverId", "");
+
+            jolpicaSeasons.driverResults(year, driverId, results -> {
+                if (host.isAdded()) {
+                    setTeam(year, jolpicaSeasons.mainConstructor(constructors, results));
+                }
+            });
         });
+    }
+
+    private void setTeam(int year, JSONObject team) {
+        if (team == null) {
+            return;
+        }
+
+        teams.put(year, new String[]{
+                team.optString("name", DASH),
+                team.optString("constructorId", "")
+        });
+
+        addYear(year);
     }
 
     /** A season is added the moment its team is known: newer ones first, older ones to the right. */
@@ -264,58 +291,7 @@ final class driverTeamSeasonsSection {
             loadConstructorYear(year);
         }
 
-        if (year >= teamCarCatalog.FIRST_PHOTO_YEAR) {
-            probePhoto(year, 0, new ArrayList<>());
-        } else {
-            photoChecked.add(year);
-        }
-    }
-
-    private void readDriverStanding(int year, JSONObject response) throws JSONException {
-        JSONArray lists = response
-                .getJSONObject("MRData")
-                .getJSONObject("StandingsTable")
-                .optJSONArray("StandingsLists");
-
-        if (lists == null) {
-            return;
-        }
-
-        for (int i = 0; i < lists.length(); i++) {
-            JSONArray entries = lists.getJSONObject(i).optJSONArray("DriverStandings");
-
-            if (entries == null) {
-                continue;
-            }
-
-            for (int j = 0; j < entries.length(); j++) {
-                JSONObject entry = entries.getJSONObject(j);
-                JSONObject driver = entry.optJSONObject("Driver");
-
-                if (driver == null || !isThisDriver(driver)) {
-                    continue;
-                }
-
-                JSONArray constructors = entry.optJSONArray("Constructors");
-
-                if (constructors == null || constructors.length() == 0) {
-                    return;
-                }
-
-                JSONObject last = constructors.getJSONObject(constructors.length() - 1);
-
-                teams.put(year, new String[]{
-                        last.optString("name", DASH),
-                        last.optString("constructorId", "")
-                });
-
-                return;
-            }
-        }
-    }
-
-    private boolean isThisDriver(JSONObject driver) {
-        return jolpicaSeasons.isDriver(driver, driverCode, givenName, familyName);
+        probePhoto(year, 0, new ArrayList<>());
     }
 
     // ---------- the results of the team (constructors' standings of one season) ----------
@@ -419,15 +395,21 @@ final class driverTeamSeasonsSection {
     }
 
     private void refresh(int year) {
-        if (adapter == null) {
+        if (pager == null) {
             return;
         }
 
-        int position = years.indexOf(year);
+        pager.post(() -> {
+            if (!host.isAdded() || adapter == null) {
+                return;
+            }
 
-        if (position >= 0) {
-            adapter.notifyItemChanged(position);
-        }
+            int position = years.indexOf(year);
+
+            if (position >= 0) {
+                adapter.notifyItemChanged(position);
+            }
+        });
     }
 
     // ---------- pager and arrows ----------
@@ -449,6 +431,11 @@ final class driverTeamSeasonsSection {
         adapter = new TeamAdapter();
         pager.setAdapter(adapter);
 
+        host.getChildFragmentManager().setFragmentResultListener(
+                PICKER_KEY,
+                host.getViewLifecycleOwner(),
+                (key, result) -> scrollToYear(result.getInt(yearPickerSheet.YEAR)));
+
         pager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
@@ -466,6 +453,24 @@ final class driverTeamSeasonsSection {
         next.setOnClickListener(v -> scrollBy(1));
 
         updateArrows();
+    }
+
+    private void openYearPicker(int selectedYear) {
+        if (!host.isAdded()) {
+            return;
+        }
+
+        yearPickerSheet.show(host.getChildFragmentManager(),
+                new ArrayList<>(years), selectedYear, PICKER_KEY);
+    }
+
+    private void scrollToYear(int year) {
+        int position = years.indexOf(year);
+
+        if (pager != null && position >= 0) {
+            pager.scrollToPosition(position);
+            updateArrows();
+        }
     }
 
     private int currentPosition() {
@@ -542,6 +547,8 @@ final class driverTeamSeasonsSection {
             String[] team = teams.get(year);
 
             holder.year.setText(String.valueOf(year));
+            holder.year.setOnClickListener(v -> openYearPicker(year));
+
             holder.caption.setText(team != null ? team[0] : "");
 
             paint(holder, colorFor(year, holder.itemView));

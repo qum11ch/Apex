@@ -21,9 +21,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.firebase.storage.FirebaseStorage;
@@ -34,16 +31,20 @@ import org.json.JSONObject;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+/** Every season of the team: the car, the name of the team that year and the constructors' results. */
 final class teamCarsSection {
 
     private static final String TAG = "TeamCars";
     private static final String DASH = "\u2013";
+    private static final int FIRST_CHAMPIONSHIP = 1958;
 
     private final Fragment host;
     private final View root;
@@ -52,14 +53,18 @@ final class teamCarsSection {
     private final int latest;
 
     private final List<Integer> years = new ArrayList<>();
-    private final Map<Integer, List<String>> candidates = new HashMap<>();
+    /** year -> Jolpica id of the team that raced that season (the team itself or a predecessor). */
+    private final Map<Integer, String> yearTeam = new HashMap<>();
 
     private final Map<Integer, Uri> uris = new HashMap<>();
+    private final Set<Integer> photoRequested = new HashSet<>();
     private final Set<Integer> photoChecked = new HashSet<>();
+    private final Set<Integer> standingsRequested = new HashSet<>();
     private final Map<Integer, String[]> standings = new HashMap<>();
 
+    private static final String PICKER_KEY = "team_cars_year";
+
     private Integer teamColor;
-    private RequestQueue queue;
 
     private RecyclerView pager;
     private LinearLayoutManager layoutManager;
@@ -68,7 +73,7 @@ final class teamCarsSection {
     private CarAdapter adapter;
 
     private int pageWidth;
-    private int pageGap;
+    private int pendingSeasons;
 
     teamCarsSection(Fragment host, View root, String teamId, String teamName, String currentSeason) {
         this.host = host;
@@ -96,24 +101,106 @@ final class teamCarsSection {
     }
 
     void stop() {
-        if (queue != null) {
-            queue.cancelAll(this);
-        }
+        // requests are shared and finish on their own
     }
 
     void start() {
-        int first = teamCarCatalog.firstYear(teamId);
+        root.findViewById(R.id.cars_header).setVisibility(View.GONE);
+        root.findViewById(R.id.car_pager_host).setVisibility(View.GONE);
 
-        if (latest < first) {
-            root.findViewById(R.id.cars_header).setVisibility(View.GONE);
-            root.findViewById(R.id.car_pager_host).setVisibility(View.GONE);
+        List<String> ids = teamCarCatalog.lineage(teamId);
+
+        if (ids.isEmpty()) {
             return;
         }
 
-        for (int year = latest; year >= first; year--) {
-            years.add(year);
-            candidates.put(year, teamCarCatalog.candidates(teamId, year));
+        pendingSeasons = ids.size();
+
+        for (String id : ids) {
+            jolpicaSeasons.constructorSeasons(id, response -> {
+                if (host.isAdded() && response != null) {
+                    try {
+                        readSeasons(id, response);
+                    } catch (JSONException error) {
+                        Log.w(TAG, "Unexpected seasons response for " + id, error);
+                    }
+                }
+
+                seasonsDone();
+            });
         }
+    }
+
+    // ---------- the seasons of the team ----------
+
+    private void readSeasons(String id, JSONObject response) throws JSONException {
+        JSONArray seasons = response
+                .getJSONObject("MRData")
+                .getJSONObject("SeasonTable")
+                .optJSONArray("Seasons");
+
+        if (seasons == null) {
+            return;
+        }
+
+        boolean own = teamCarCatalog.normalize(id).equals(teamCarCatalog.normalize(teamId));
+
+        for (int i = 0; i < seasons.length(); i++) {
+            int year;
+
+            try {
+                year = Integer.parseInt(seasons.getJSONObject(i).optString("season", ""));
+            } catch (NumberFormatException error) {
+                continue;
+            }
+
+            if (year > latest) {
+                continue;
+            }
+
+            if (own) {
+                yearTeam.put(year, id);
+            } else if (!yearTeam.containsKey(year)) {
+                yearTeam.put(year, id);
+            }
+        }
+    }
+
+    /** Called once for every requested team id, whatever the outcome. */
+    private void seasonsDone() {
+        pendingSeasons--;
+
+        if (pendingSeasons > 0 || !host.isAdded()) {
+            return;
+        }
+
+        String own = teamId.toLowerCase(Locale.ROOT);
+
+        // the season that has just begun may not be in the list yet
+        if (!yearTeam.containsKey(latest) && yearTeam.containsKey(latest - 1)) {
+            yearTeam.put(latest, own);
+        }
+
+        // the list is not available: the seasons with photos, as before
+        if (yearTeam.isEmpty()) {
+            for (int year = latest; year >= teamCarCatalog.firstYear(teamId); year--) {
+                yearTeam.put(year, own);
+            }
+        }
+
+        years.addAll(yearTeam.keySet());
+        Collections.sort(years, Collections.reverseOrder());
+
+        if (years.isEmpty()) {
+            return;
+        }
+
+        show();
+    }
+
+    private void show() {
+        root.findViewById(R.id.cars_header).setVisibility(View.VISIBLE);
+        root.findViewById(R.id.car_pager_host).setVisibility(View.VISIBLE);
 
         pager = root.findViewById(R.id.car_pager);
         prev = root.findViewById(R.id.car_prev);
@@ -128,18 +215,27 @@ final class teamCarsSection {
         adapter = new CarAdapter();
         pager.setAdapter(adapter);
 
+        host.getChildFragmentManager().setFragmentResultListener(
+                PICKER_KEY,
+                host.getViewLifecycleOwner(),
+                (key, result) -> scrollToYear(result.getInt(yearPickerSheet.YEAR)));
+
         pager.setClipToPadding(true);
         pager.setClipChildren(true);
         pager.setPadding(0, 0, 0, 0);
+
         ViewGroup hostView = root.findViewById(R.id.car_pager_host);
         hostView.setClipToPadding(true);
         hostView.setClipChildren(true);
+
         pager.post(() -> {
-            if (!host.isAdded() || pager == null || adapter == null) return;
+            if (!host.isAdded() || pager == null || adapter == null) {
+                return;
+            }
+
             int width = pager.getWidth() - pager.getPaddingLeft() - pager.getPaddingRight();
             adapter.setPageWidth(width);
         });
-
 
         pager.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -158,10 +254,23 @@ final class teamCarsSection {
         next.setOnClickListener(v -> scrollBy(1));
 
         updateArrows();
+    }
 
-        for (int year : years) {
-            probePhoto(year, 0, new ArrayList<>());
-            loadStanding(year);
+    private void openYearPicker(int selectedYear) {
+        if (!host.isAdded()) {
+            return;
+        }
+
+        yearPickerSheet.show(host.getChildFragmentManager(),
+                new ArrayList<>(years), selectedYear, PICKER_KEY);
+    }
+
+    private void scrollToYear(int year) {
+        int position = years.indexOf(year);
+
+        if (pager != null && position >= 0) {
+            pager.scrollToPosition(position);
+            updateArrows();
         }
     }
 
@@ -197,12 +306,37 @@ final class teamCarsSection {
         arrow.setAlpha(enabled ? 1f : 0.3f);
     }
 
-    // ---------- photos ----------
+    // ---------- photos and results are loaded for the pages that are about to be seen ----------
+
+    private void ensure(int year) {
+        if (photoRequested.add(year)) {
+            probePhoto(year, 0, new ArrayList<>());
+        }
+
+        if (year >= FIRST_CHAMPIONSHIP && standingsRequested.add(year)) {
+            loadStanding(year);
+        }
+    }
+
+    private List<String> photoIds(int year) {
+        String yearId = yearTeam.get(year);
+
+        List<String> ids = new ArrayList<>(
+                teamCarCatalog.candidates(yearId != null ? yearId : teamId, year));
+
+        for (String id : teamCarCatalog.candidates(teamId, year)) {
+            if (!ids.contains(id)) {
+                ids.add(id);
+            }
+        }
+
+        return ids;
+    }
 
     private void probePhoto(int year, int index, List<String> tried) {
-        List<String> ids = candidates.get(year);
+        List<String> ids = photoIds(year);
 
-        if (ids == null || index >= ids.size()) {
+        if (index >= ids.size()) {
             photoChecked.add(year);
             Log.w(TAG, "NO PHOTO " + teamId + " " + year + ", tried " + tried);
             refresh(year);
@@ -218,8 +352,6 @@ final class teamCarsSection {
                         return;
                     }
 
-                    Log.d(TAG, "found " + path);
-
                     uris.put(year, uri);
                     photoChecked.add(year);
                     refresh(year);
@@ -233,92 +365,88 @@ final class teamCarsSection {
                 });
     }
 
-    // ---------- season results (the same source as the standings tables) ----------
-
     private void loadStanding(int year) {
-        if (queue == null) {
-            queue = apiQueue.get();
-        }
+        jolpicaSeasons.constructorStandings(year, response -> {
+            if (!host.isAdded()) {
+                return;
+            }
 
-        String url = "https://api.jolpi.ca/ergast/f1/" + year + "/constructorstandings/?format=json";
+            if (response == null) {
+                standingsRequested.remove(year);
+                Log.w(TAG, "Constructor standings are not available for " + year);
+                return;
+            }
 
-        JsonObjectRequest request = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    if (!host.isAdded()) {
-                        return;
-                    }
+            try {
+                readStanding(year, response);
+            } catch (JSONException error) {
+                Log.w(TAG, "Unexpected standings response for " + year, error);
+            }
 
-                    try {
-                        JSONArray lists = response
-                                .getJSONObject("MRData")
-                                .getJSONObject("StandingsTable")
-                                .optJSONArray("StandingsLists");
-
-                        if (lists == null) {
-                            return;
-                        }
-
-                        List<String> wanted = new ArrayList<>();
-
-                        for (String id : candidates.get(year)) {
-                            wanted.add(teamCarCatalog.normalize(id));
-                        }
-
-                        for (int i = 0; i < lists.length(); i++) {
-                            JSONArray entries = lists.getJSONObject(i)
-                                    .optJSONArray("ConstructorStandings");
-
-                            if (entries == null) {
-                                continue;
-                            }
-
-                            for (int j = 0; j < entries.length(); j++) {
-                                JSONObject entry = entries.getJSONObject(j);
-                                JSONObject constructor = entry.optJSONObject("Constructor");
-
-                                if (constructor == null) {
-                                    continue;
-                                }
-
-                                String id = teamCarCatalog.normalize(
-                                        constructor.optString("constructorId"));
-
-                                if (wanted.contains(id)) {
-                                    standings.put(year, new String[]{
-                                            entry.optString("positionText", DASH),
-                                            entry.optString("points", DASH),
-                                            entry.optString("wins", DASH)
-                                    });
-
-                                    refresh(year);
-                                    return;
-                                }
-                            }
-                        }
-                    } catch (JSONException error) {
-                        Log.w(TAG, "Unexpected standings response for " + year, error);
-                    }
-                },
-                error -> Log.w(TAG, "Standings are not available for " + year, error)
-        );
-
-        request.setTag(this);
-        queue.add(request);
+            refresh(year);
+        });
     }
 
-    private void refresh(int year) {
-        if (adapter == null) {
+    private void readStanding(int year, JSONObject response) throws JSONException {
+        JSONArray lists = response
+                .getJSONObject("MRData")
+                .getJSONObject("StandingsTable")
+                .optJSONArray("StandingsLists");
+
+        if (lists == null) {
             return;
         }
 
-        int position = years.indexOf(year);
+        String yearId = yearTeam.get(year);
+        String wanted = teamCarCatalog.normalize(yearId != null ? yearId : teamId);
 
-        if (position >= 0) {
-            adapter.notifyItemChanged(position);
+        for (int i = 0; i < lists.length(); i++) {
+            JSONArray entries = lists.getJSONObject(i).optJSONArray("ConstructorStandings");
+
+            if (entries == null) {
+                continue;
+            }
+
+            for (int j = 0; j < entries.length(); j++) {
+                JSONObject entry = entries.getJSONObject(j);
+                JSONObject constructor = entry.optJSONObject("Constructor");
+
+                if (constructor == null) {
+                    continue;
+                }
+
+                if (wanted.equals(teamCarCatalog.normalize(constructor.optString("constructorId")))) {
+                    standings.put(year, new String[]{
+                            entry.optString("positionText", DASH),
+                            entry.optString("points", DASH),
+                            entry.optString("wins", DASH)
+                    });
+
+                    return;
+                }
+            }
         }
+
+        Log.w(TAG, "TEAM NOT IN STANDINGS " + year + " " + wanted);
+    }
+
+    private void refresh(int year) {
+        if (pager == null) {
+            return;
+        }
+
+        // never inside a layout pass: the answer may come at once from memory
+        pager.post(() -> {
+            if (!host.isAdded() || adapter == null) {
+                return;
+            }
+
+            int position = years.indexOf(year);
+
+            if (position >= 0) {
+                adapter.notifyItemChanged(position);
+            }
+        });
     }
 
     // ---------- pages ----------
@@ -336,7 +464,6 @@ final class teamCarsSection {
                 view.setLayoutParams(new RecyclerView.LayoutParams(
                         width, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
-
 
             Holder holder = new Holder(view);
 
@@ -360,6 +487,11 @@ final class teamCarsSection {
         public void onBindViewHolder(@NonNull Holder holder, int position) {
             int year = years.get(position);
 
+            // this page and the next two: the data is ready before the user gets there
+            for (int step = 0; step < 3 && position + step < years.size(); step++) {
+                ensure(years.get(position + step));
+            }
+
             if (pageWidth > 0) {
                 ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();
                 if (params.width != pageWidth) {
@@ -369,18 +501,22 @@ final class teamCarsSection {
             }
 
             holder.year.setText(String.valueOf(year));
+            holder.year.setOnClickListener(v -> openYearPicker(year));
 
-            List<String> ids = candidates.get(year);
-            String former = ids == null || ids.isEmpty() ? null : teamCarCatalog.formerName(ids.get(0));
+            String yearId = yearTeam.get(year);
+            boolean predecessor = yearId != null
+                    && !teamCarCatalog.normalize(yearId).equals(teamCarCatalog.normalize(teamId));
+            String former = predecessor ? teamCarCatalog.formerName(yearId) : null;
+
             holder.caption.setText(former != null ? former : (teamName != null ? teamName : ""));
 
             paint(holder);
 
             Uri uri = uris.get(year);
 
-            if (uri != null) {
-                holder.missing.setVisibility(View.GONE);
+            holder.missing.setVisibility(View.GONE);
 
+            if (uri != null) {
                 GlideApp.with(holder.photo)
                         .load(uri)
                         .transition(DrawableTransitionOptions.withCrossFade())
@@ -388,7 +524,6 @@ final class teamCarsSection {
                         .into(holder.photo);
             } else {
                 GlideApp.with(holder.photo).clear(holder.photo);
-                holder.missing.setVisibility(View.GONE);
 
                 if (photoChecked.contains(year)) {
                     holder.photo.setImageResource(R.drawable.placeholder_car);
@@ -436,7 +571,6 @@ final class teamCarsSection {
                 notifyDataSetChanged();
             }
         }
-
 
         final class Holder extends RecyclerView.ViewHolder {
             final View card;

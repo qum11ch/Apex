@@ -1164,4 +1164,8 @@
     <string name="weekend_predictions_button">Predictions for this Grand-Prix</string>
 
     <string name="driver_team_seasons_title">Team by season</string>
+
+    <string name="year_picker_title">Season</string>
+    <string name="year_search_hint">Enter a year</string>
+    <string name="year_search_empty">No such season</string>
 </resources>

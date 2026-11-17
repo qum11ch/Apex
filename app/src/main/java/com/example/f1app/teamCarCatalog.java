@@ -6,7 +6,7 @@ import java.util.Locale;
 
 /**
  * Where the car photos of a team live in Storage ("teams/{id}_{year}.png") when the team
- * raced under another name: Alfa Romeo and Sauber before Audi, AlphaTauri before RB.
+ * raced under another name, and which earlier names the team had.
  * The first id that exists wins; the rest are fallbacks.
  */
 final class teamCarCatalog {
@@ -23,6 +23,37 @@ final class teamCarCatalog {
     static int firstYear(String teamId) {
         // a team that joined later has no cars before its first season
         return "cadillac".equals(normalize(teamId)) ? 2026 : FIRST_PHOTO_YEAR;
+    }
+
+    /** The ids of the team itself and of the teams it grew out of (Jolpica constructor ids). */
+    static List<String> lineage(String teamId) {
+        List<String> ids = new ArrayList<>();
+
+        add(ids, teamId == null ? "" : teamId.toLowerCase(Locale.ROOT));
+
+        switch (normalize(teamId)) {
+            case "audi":
+                add(ids, "sauber");
+                add(ids, "alfa");
+                add(ids, "bmw_sauber");
+                break;
+            case "rb":
+                add(ids, "alphatauri");
+                add(ids, "toro_rosso");
+                break;
+            case "alpine":
+                add(ids, "renault");
+                add(ids, "lotus_f1");
+                break;
+            case "astonmartin":
+                add(ids, "racing_point");
+                add(ids, "force_india");
+                break;
+            default:
+                break;
+        }
+
+        return ids;
     }
 
     /** Storage ids to try for this team and season, best guess first. */
@@ -59,14 +90,26 @@ final class teamCarCatalog {
     }
 
     /** A name for the card caption when the team raced under another name that season, else null. */
-    static String formerName(String storageId) {
-        switch (storageId) {
+    static String formerName(String constructorId) {
+        switch (normalize(constructorId)) {
             case "alfa":
                 return "Alfa Romeo";
             case "sauber":
                 return "Sauber";
             case "alphatauri":
                 return "AlphaTauri";
+            case "torosso":
+                return "Toro Rosso";
+            case "bmwsauber":
+                return "BMW Sauber";
+            case "renault":
+                return "Renault";
+            case "lotusf1":
+                return "Lotus F1";
+            case "racingpoint":
+                return "Racing Point";
+            case "forceindia":
+                return "Force India";
             default:
                 return null;
         }
