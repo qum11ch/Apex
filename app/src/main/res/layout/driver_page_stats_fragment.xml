@@ -132,76 +132,62 @@
             </com.example.f1app.nestedScrollableHost>
 
             <TextView
-                android:id="@+id/lineup_header"
+                android:id="@+id/team_seasons_header"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="1dp"
                 android:layout_marginTop="28dp"
-                android:text="@string/team"
+                android:text="@string/driver_team_seasons_title"
                 android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
                 android:textColor="@color/text_color_main"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/driversTeam_layout"
+            <com.example.f1app.nestedScrollableHost
+                android:id="@+id/team_season_pager_host"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:orientation="vertical"
-                android:padding="8dp">
+                android:layout_marginTop="6dp"
+                android:visibility="gone"
+                android:clipChildren="true"
+                android:clipToPadding="true">
 
-                <FrameLayout
-                    android:id="@+id/team_photo_block"
-                    style="@style/ItemStylePreds"
-                    android:layout_width="match_parent"
-                    android:layout_height="150dp">
-
-                    <ImageView
-                        android:id="@+id/teamCar"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:contentDescription="@string/team_car"
-                        android:padding="12dp"
-                        android:scaleType="fitCenter" />
-                </FrameLayout>
-
-                <LinearLayout
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/team_season_pager"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:layout_marginBottom="4dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingStart="4dp"
-                    android:paddingEnd="4dp">
+                    android:overScrollMode="never"
+                    android:clipChildren="true"
+                    android:clipToPadding="true"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp" />
 
-                    <TextView
-                        android:id="@+id/teamName"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:ellipsize="end"
-                        android:includeFontPadding="false"
-                        android:textAlignment="center"
-                        android:maxLines="1"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold"
-                        android:textColor="@color/text_color_main"
-                        android:textSize="18sp" />
+                <ImageButton
+                    android:id="@+id/team_season_prev"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="22dp"
+                    android:layout_marginTop="85dp"
+                    android:background="@drawable/bg_car_arrow"
+                    android:contentDescription="@string/team_cars_newer"
+                    android:rotation="180"
+                    android:src="@drawable/ic_chevron_right_small"
+                    app:tint="@color/text_color_main" />
 
-                    <ImageView
-                        android:id="@+id/arrow"
-                        android:layout_width="22dp"
-                        android:layout_height="22dp"
-                        android:layout_marginStart="8dp"
-                        android:contentDescription="@string/front_arrow"
-                        android:scaleType="fitCenter"
-                        android:scaleX="-1"
-                        android:src="@drawable/back_arrow_black" />
-                </LinearLayout>
-            </LinearLayout>
+                <ImageButton
+                    android:id="@+id/team_season_next"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="end|top"
+                    android:layout_marginTop="85dp"
+                    android:layout_marginEnd="22dp"
+                    android:background="@drawable/bg_car_arrow"
+                    android:contentDescription="@string/team_cars_older"
+                    android:src="@drawable/ic_chevron_right_small"
+                    app:tint="@color/text_color_main" />
+            </com.example.f1app.nestedScrollableHost>
 
             <TextView
                 android:id="@+id/info_header"

@@ -1162,4 +1162,6 @@
     <string name="bh_coverage">Races checked: %1$d\nHistory load errors: %2$d</string>
 
     <string name="weekend_predictions_button">Predictions for this Grand-Prix</string>
+
+    <string name="driver_team_seasons_title">Team by season</string>
 </resources>

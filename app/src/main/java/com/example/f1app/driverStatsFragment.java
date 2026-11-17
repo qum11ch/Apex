@@ -43,12 +43,13 @@ import java.util.Locale;
 public class driverStatsFragment extends Fragment {
 
     private static final String DASH = "\u2013";
+    private driverTeamSeasonsSection teamSeasonsSection;
 
-    private TextView firstGP, lastEntry, teamName, driverCountry, birthdate, deathdate, lineupHeader;
+    private TextView firstGP, lastEntry, driverCountry, birthdate, deathdate;
     private TextView championshipsValue, pointsValue, winsValue, podiumsValue, polesValue,
             racesValue, fastestValue;
-    private ImageView teamCar_image, flag, arrow;
-    private View deathDateLayout, driversTeam_layout, teamPhotoBlock;
+    private ImageView flag;
+    private View deathDateLayout;
     private LinearLayout statsTop, statsMid, statsBottom;
     private NestedScrollView scrollView;
     private View rootView;
@@ -90,6 +91,10 @@ public class driverStatsFragment extends Fragment {
             seasonsSection.stop();
         }
 
+        if (teamSeasonsSection != null) {
+            teamSeasonsSection.stop();
+        }
+
         super.onDestroy();
     }
 
@@ -116,19 +121,11 @@ public class driverStatsFragment extends Fragment {
         deathDateLayout = view.findViewById(R.id.deathDateLayout);
         flag = view.findViewById(R.id.flag);
 
-        teamName = view.findViewById(R.id.teamName);
-        teamCar_image = view.findViewById(R.id.teamCar);
-        arrow = view.findViewById(R.id.arrow);
-        driversTeam_layout = view.findViewById(R.id.driversTeam_layout);
-        teamPhotoBlock = view.findViewById(R.id.team_photo_block);
-        lineupHeader = view.findViewById(R.id.lineup_header);
-
         statsTop = view.findViewById(R.id.stats_top);
         statsMid = view.findViewById(R.id.stats_mid);
         statsBottom = view.findViewById(R.id.stats_bottom);
 
         buildStatsTiles();
-        applyDefaultTeamCard();
 
         if (getArguments() == null) {
             Log.e("DriverStats", "Missing fragment arguments");
@@ -192,11 +189,6 @@ public class driverStatsFragment extends Fragment {
                         racesValue.setText(text(snapshot.child("gpEntered")));
                         fastestValue.setText(text(snapshot.child("fastestLapCount")));
 
-                        if (lastSeason != LocalDate.now().getYear()) {
-                            lineupHeader.setText(getString(R.string.last_text)
-                                    + " " + getString(R.string.team));
-                        }
-
                         String country = snapshot.child("driverCountry").getValue(String.class);
 
                         if (country != null) {
@@ -210,20 +202,6 @@ public class driverStatsFragment extends Fragment {
                                 snapshot.child("birthdayDate").getValue(String.class),
                                 snapshot.child("deathDate").getValue(String.class));
 
-                        teamName.setText(mDriverTeam);
-
-                        if (mTeamId != null && !mTeamId.trim().isEmpty()) {
-                            final int finalLastSeason = lastSeason;
-
-                            setupTeamCard(mTeamId, mDriverTeam, mCurrentSeason, finalLastSeason);
-
-                            driversTeam_layout.setOnClickListener(
-                                    v -> openTeamPage(mTeamId, mDriverTeam,
-                                            mCurrentSeason, finalLastSeason));
-                        } else {
-                            applyDefaultTeamCard();
-                        }
-
                         seasonsSection = new driverSeasonsSection(
                                 driverStatsFragment.this,
                                 rootView,
@@ -234,6 +212,20 @@ public class driverStatsFragment extends Fragment {
                                 lastSeason);
 
                         seasonsSection.start();
+
+                        Integer debutSeason = extractYear(mFirstGP);
+
+                        teamSeasonsSection = new driverTeamSeasonsSection(
+                                driverStatsFragment.this,
+                                rootView,
+                                mDriverCode,
+                                mDriverName,
+                                mDriverFamilyName,
+                                debutSeason != null ? debutSeason : lastSeason,
+                                lastSeason,
+                                mCurrentSeason);
+
+                        teamSeasonsSection.start();
                     }
 
                     @Override
@@ -295,208 +287,6 @@ public class driverStatsFragment extends Fragment {
         } catch (RuntimeException error) {
             return LocalDate.now().getYear();
         }
-    }
-
-    // ---------- team card (the look of the account page) ----------
-
-    private void setupTeamCard(
-            String teamId,
-            String driverTeam,
-            String currentSeason,
-            int lastSeason) {
-
-        FirebaseDatabase.getInstance()
-                .getReference()
-                .child("constructors")
-                .child(teamId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (!isAdded()) {
-                            return;
-                        }
-
-                        if (!snapshot.exists()) {
-                            // A past team without a record in constructors: palette colour, car by id and year.
-                            applyTeamColor(pastTeamPalette.resolve(teamId, null));
-                            loadTeamCar(teamId, lastSeason);
-                            driversTeam_layout.setOnClickListener(null);
-                            driversTeam_layout.setClickable(false);
-                            arrow.setVisibility(View.GONE);
-                            return;
-                        }
-
-                        String actualTeamId = snapshot.child("constructorId").getValue(String.class);
-                        String teamColor = snapshot.child("color").getValue(String.class);
-
-                        if (actualTeamId == null) {
-                            applyDefaultTeamCard();
-                            return;
-                        }
-
-                        applyTeamColor(teamColor);
-
-                        int carSeason = lastSeason;
-
-                        try {
-                            Object enter = snapshot.child("enterYear").getValue();
-                            int enterYear = Integer.parseInt(String.valueOf(enter).trim());
-                            int current = Integer.parseInt(currentSeason);
-
-                            if (enterYear > lastSeason) {
-                                carSeason = current;
-                            }
-                        } catch (RuntimeException ignored) {
-                            // no enterYear or currentSeason: lastSeason stays
-                        }
-
-                        loadTeamCar(actualTeamId, carSeason);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        if (!isAdded()) {
-                            return;
-                        }
-
-                        Log.e("DriverStats", "Failed to load team", error.toException());
-
-                        applyDefaultTeamCard();
-                    }
-                });
-    }
-
-    private void loadTeamCar(String teamId, int season) {
-        String imagePath = "teams/" + teamId.toLowerCase() + "_" + season + ".png";
-
-        StorageReference teamCarReference =
-                FirebaseStorage.getInstance().getReference().child(imagePath);
-
-        teamCarReference.getDownloadUrl()
-                .addOnSuccessListener(uri -> {
-                    if (!isAdded()) {
-                        return;
-                    }
-
-                    GlideApp.with(requireContext())
-                            .load(uri)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .error(R.drawable.placeholder_car)
-                            .into(teamCar_image);
-                })
-                .addOnFailureListener(error -> {
-                    if (!isAdded()) {
-                        return;
-                    }
-
-                    Log.w("DriverStats", "Team car not found: " + imagePath, error);
-
-                    teamCar_image.setImageResource(R.drawable.placeholder_car);
-                });
-    }
-
-    private void applyTeamColor(String colorValue) {
-        if (colorValue == null || colorValue.trim().isEmpty()) {
-            applyDefaultTeamCard();
-            return;
-        }
-
-        String preparedColor = colorValue.trim();
-
-        if (!preparedColor.startsWith("#")) {
-            preparedColor = "#" + preparedColor;
-        }
-
-        try {
-            paintTeamCard(Color.parseColor(preparedColor));
-        } catch (IllegalArgumentException error) {
-            Log.w("DriverStats", "Invalid team color: " + colorValue, error);
-
-            applyDefaultTeamCard();
-        }
-    }
-
-    /** Outline in the team colour and a softly tinted photo block, as on the account page. */
-    private void paintTeamCard(int color) {
-        float density = getResources().getDisplayMetrics().density;
-
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(ContextCompat.getColor(requireContext(), R.color.colorPrimary));
-        background.setCornerRadius(16 * density);
-        background.setStroke(Math.round(2 * density), color);
-
-        driversTeam_layout.setBackground(background);
-
-        int soft = ColorUtils.compositeColors(
-                ColorUtils.setAlphaComponent(color, 31), Color.WHITE);
-
-        ViewCompat.setBackgroundTintList(teamPhotoBlock, ColorStateList.valueOf(soft));
-
-        arrow.setColorFilter(color);
-
-        if (seasonsSection != null) {
-            seasonsSection.setDefaultColor(color);
-        }
-    }
-
-    private void applyDefaultTeamCard() {
-        paintTeamCard(ContextCompat.getColor(requireContext(), R.color.grey));
-        teamCar_image.setImageResource(R.drawable.placeholder_car);
-    }
-
-    private void openTeamPage(
-            String teamId,
-            String driverTeam,
-            String currentSeason,
-            int lastSeason) {
-
-        FirebaseDatabase.getInstance()
-                .getReference()
-                .child("driverLineUp")
-                .child("season")
-                .child(String.valueOf(lastSeason))
-                .child(teamId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        if (!isAdded()) {
-                            return;
-                        }
-
-                        ArrayList<String> teamDrivers = new ArrayList<>();
-
-                        for (DataSnapshot driverSnapshot : snapshot.child("drivers").getChildren()) {
-                            String teamDriverName = driverSnapshot.getKey();
-
-                            if (teamDriverName != null) {
-                                teamDrivers.add(teamDriverName);
-                            }
-                        }
-
-                        Intent intent = new Intent(requireContext(), teamPageActivity.class);
-
-                        Bundle bundle = new Bundle();
-
-                        bundle.putString("teamName", driverTeam);
-                        bundle.putString("teamId", teamId);
-                        bundle.putStringArrayList("teamDrivers", teamDrivers);
-                        bundle.putString("currentSeason", currentSeason);
-
-                        intent.putExtras(bundle);
-
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        if (!isAdded()) {
-                            return;
-                        }
-
-                        Log.e("DriverStats", "Failed to load team lineup", error.toException());
-                    }
-                });
     }
 
     // ---------- helpers ----------

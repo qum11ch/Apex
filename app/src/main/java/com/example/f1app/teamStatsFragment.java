@@ -54,6 +54,24 @@ public class teamStatsFragment extends Fragment {
     private String teamName;
     private String currentSeason;
 
+    private static final String DASH = "\u2013";
+
+    private static final class LineupStat {
+        final String given;
+        final String family;
+        final TextView[] values;
+        String code;
+
+        LineupStat(String given, String family, TextView[] values) {
+            this.given = given;
+            this.family = family;
+            this.values = values;
+        }
+    }
+
+    private final ArrayList<LineupStat> lineupStats = new ArrayList<>();
+    private java.util.List<seasonDriverTable.Entry> seasonTable;
+
     public teamStatsFragment() {
         // required empty public constructor.
     }
@@ -79,6 +97,8 @@ public class teamStatsFragment extends Fragment {
         if (carsSection != null) {
             carsSection.stop();
         }
+
+        apiQueue.get().cancelAll(this);
 
         super.onDestroy();
     }
@@ -323,6 +343,8 @@ public class teamStatsFragment extends Fragment {
     private void showLineup(DatabaseReference rootRef, ArrayList<String> drivers) {
         lineupRow.removeAllViews();
         lineupItems.clear();
+        lineupStats.clear();
+        seasonTable = null;
 
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         int gap = Math.round(4 * getResources().getDisplayMetrics().density);
@@ -351,6 +373,19 @@ public class teamStatsFragment extends Fragment {
             lineupItems.add(views);
             styleItem(views, teamColor != null ? teamColor : neutral);
 
+            TextView[] statValues = {
+                    item.findViewById(R.id.lineup_stat_place),
+                    item.findViewById(R.id.lineup_stat_points),
+                    item.findViewById(R.id.lineup_stat_wins)
+            };
+
+            for (TextView value : statValues) {
+                value.setText(DASH);
+            }
+
+            LineupStat stat = new LineupStat(names[0], names[1], statValues);
+            lineupStats.add(stat);
+
             item.setOnClickListener(v ->
                     openDriver(rootRef, driverFullName, names[0], names[1]));
 
@@ -363,6 +398,9 @@ public class teamStatsFragment extends Fragment {
                             if (!isAdded() || code == null) {
                                 return;
                             }
+
+                            stat.code = code;
+                            applyStat(stat);
 
                             GlideApp.with(requireContext())
                                     .load(FirebaseStorage.getInstance().getReference().child(
@@ -380,6 +418,31 @@ public class teamStatsFragment extends Fragment {
                         }
                     });
         }
+
+        seasonDriverTable.load(this, this, currentSeason, entries -> {
+            seasonTable = entries;
+
+            for (LineupStat item : lineupStats) {
+                applyStat(item);
+            }
+        });
+    }
+
+    private void applyStat(LineupStat stat) {
+        if (seasonTable == null) {
+            return;
+        }
+
+        seasonDriverTable.Entry entry =
+                seasonDriverTable.find(seasonTable, stat.code, stat.given, stat.family);
+
+        if (entry == null) {
+            return;
+        }
+
+        stat.values[0].setText(entry.place);
+        stat.values[1].setText(entry.points);
+        stat.values[2].setText(entry.wins);
     }
 
     private void openDriver(DatabaseReference rootRef, String driverFullName,

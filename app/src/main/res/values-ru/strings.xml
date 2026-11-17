@@ -1141,4 +1141,6 @@
     <string name="bh_coverage">Гонок проверено: %1$d\nОшибок загрузки истории: %2$d</string>
 
     <string name="weekend_predictions_button">Прогнозы на этот Гран-при</string>
+
+    <string name="driver_team_seasons_title">Команда по сезонам</string>
 </resources>
