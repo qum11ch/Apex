@@ -64,7 +64,6 @@ final class driverSeasonsSection {
     private final Map<String, String> teamColors = new HashMap<>();
 
     private Integer defaultColor;
-    private RequestQueue queue;
 
     private RecyclerView pager;
     private LinearLayoutManager layoutManager;
@@ -73,16 +72,21 @@ final class driverSeasonsSection {
     private SeasonAdapter adapter;
 
     private int pendingYears;
+    private final String givenName;
+    private final int firstSeason;
 
     driverSeasonsSection(Fragment host, View root, String driverFullName, String driverCode,
-                         String driverId, String familyName, int latestSeason) {
+                         String driverId, String givenName, String familyName,
+                         int firstSeason, int latestSeason) {
 
         this.host = host;
         this.root = root;
         this.driverFullName = driverFullName;
         this.driverCode = driverCode;
         this.driverId = driverId;
+        this.givenName = givenName;
         this.familyName = familyName;
+        this.firstSeason = firstSeason;
         this.latest = latestSeason;
     }
 
@@ -95,19 +99,19 @@ final class driverSeasonsSection {
     }
 
     void stop() {
-        if (queue != null) {
-            queue.cancelAll(this);
-        }
+        // requests are shared and finish on their own
     }
 
     void start() {
-        if (latest < FIRST_PHOTO_YEAR) {
+        int first = Math.max(firstSeason, 1950);
+
+        if (latest < first) {
             return;
         }
 
-        pendingYears = latest - FIRST_PHOTO_YEAR + 1;
+        pendingYears = latest - first + 1;
 
-        for (int year = latest; year >= FIRST_PHOTO_YEAR; year--) {
+        for (int year = latest; year >= first; year--) {
             loadStanding(year);
         }
 
@@ -148,6 +152,14 @@ final class driverSeasonsSection {
     private void show() {
         if (years.isEmpty()) {
             return;
+        }
+
+        for (int year : years) {
+            if (year >= FIRST_PHOTO_YEAR) {
+                probePhoto(year, 0, new ArrayList<>());
+            } else {
+                photoChecked.add(year);
+            }
         }
 
         root.findViewById(R.id.seasons_header).setVisibility(View.VISIBLE);
@@ -275,35 +287,17 @@ final class driverSeasonsSection {
     // ---------- season results (the same source as the standings tables) ----------
 
     private void loadStanding(int year) {
-        if (queue == null) {
-            queue = apiQueue.get();
-        }
-
-        String url = "https://api.jolpi.ca/ergast/f1/" + year + "/driverstandings/?format=json";
-
-        JsonObjectRequest request = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    if (host.isAdded()) {
-                        try {
-                            readStanding(year, response);
-                        } catch (JSONException error) {
-                            Log.w(TAG, "Unexpected standings response for " + year, error);
-                        }
-                    }
-
-                    yearDone();
-                },
-                error -> {
-                    Log.w(TAG, "Standings are not available for " + year, error);
-                    yearDone();
+        jolpicaSeasons.driverStandings(year, response -> {
+            if (host.isAdded() && response != null) {
+                try {
+                    readStanding(year, response);
+                } catch (JSONException error) {
+                    Log.w(TAG, "Unexpected standings response for " + year, error);
                 }
-        );
+            }
 
-        request.setTag(this);
-        queue.add(request);
+            yearDone();
+        });
     }
 
     private void readStanding(int year, JSONObject response) throws JSONException {
@@ -356,13 +350,7 @@ final class driverSeasonsSection {
     }
 
     private boolean isThisDriver(JSONObject driver) {
-        String code = driver.optString("code", "");
-
-        if (driverCode != null && !driverCode.isEmpty() && !code.isEmpty()) {
-            return driverCode.equalsIgnoreCase(code);
-        }
-
-        return familyName != null && familyName.equalsIgnoreCase(driver.optString("familyName", ""));
+        return jolpicaSeasons.isDriver(driver, driverCode, givenName, familyName);
     }
 
     private void refresh(int year) {
@@ -449,9 +437,9 @@ final class driverSeasonsSection {
 
             Uri uri = uris.get(year);
 
-            if (uri != null) {
-                holder.missing.setVisibility(View.GONE);
+            holder.missing.setVisibility(View.GONE);
 
+            if (uri != null) {
                 GlideApp.with(holder.photo)
                         .load(uri)
                         .transition(DrawableTransitionOptions.withCrossFade())
@@ -459,10 +447,12 @@ final class driverSeasonsSection {
                         .into(holder.photo);
             } else {
                 GlideApp.with(holder.photo).clear(holder.photo);
-                holder.photo.setImageDrawable(null);
 
-                // still checking: nothing to say yet; checked and not found: say it
-                holder.missing.setVisibility(photoChecked.contains(year) ? View.VISIBLE : View.GONE);
+                if (photoChecked.contains(year)) {
+                    holder.photo.setImageResource(R.drawable.placeholder_driver);
+                } else {
+                    holder.photo.setImageDrawable(null);
+                }
             }
 
             for (int i = 0; i < holder.values.length; i++) {

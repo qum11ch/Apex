@@ -388,11 +388,13 @@ final class teamCarsSection {
                         .into(holder.photo);
             } else {
                 GlideApp.with(holder.photo).clear(holder.photo);
-                holder.photo.setImageDrawable(null);
+                holder.missing.setVisibility(View.GONE);
 
-                // still checking: nothing to say yet; checked and not found: say it
-                holder.missing.setVisibility(
-                        photoChecked.contains(year) ? View.VISIBLE : View.GONE);
+                if (photoChecked.contains(year)) {
+                    holder.photo.setImageResource(R.drawable.placeholder_car);
+                } else {
+                    holder.photo.setImageDrawable(null);
+                }
             }
 
             String[] values = standings.get(year);

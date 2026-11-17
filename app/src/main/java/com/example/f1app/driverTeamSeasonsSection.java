@@ -103,9 +103,6 @@ final class driverTeamSeasonsSection {
     }
 
     void stop() {
-        if (queue != null) {
-            queue.cancelAll(this);
-        }
     }
 
     void start() {
@@ -114,8 +111,6 @@ final class driverTeamSeasonsSection {
         if (lastSeason < first) {
             return;
         }
-
-        pendingYears = lastSeason - first + 1;
 
         if (currentSeason != null) {
             FirebaseDatabase.getInstance().getReference()
@@ -227,35 +222,53 @@ final class driverTeamSeasonsSection {
     // ---------- which team the driver raced for each year ----------
 
     private void loadDriverStanding(int year) {
-        if (queue == null) {
-            queue = apiQueue.get();
+        jolpicaSeasons.driverStandings(year, response -> {
+            if (!host.isAdded() || response == null) {
+                return;
+            }
+
+            try {
+                readDriverStanding(year, response);
+            } catch (JSONException error) {
+                Log.w(TAG, "Unexpected standings response for " + year, error);
+            }
+
+            if (teams.containsKey(year)) {
+                addYear(year);
+            }
+        });
+    }
+
+    /** A season is added the moment its team is known: newer ones first, older ones to the right. */
+    private void addYear(int year) {
+        if (years.contains(year)) {
+            return;
         }
 
-        String url = "https://api.jolpi.ca/ergast/f1/" + year + "/driverstandings/?format=json";
+        int index = 0;
 
-        JsonObjectRequest request = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    if (host.isAdded()) {
-                        try {
-                            readDriverStanding(year, response);
-                        } catch (JSONException error) {
-                            Log.w(TAG, "Unexpected standings response for " + year, error);
-                        }
-                    }
+        while (index < years.size() && years.get(index) > year) {
+            index++;
+        }
 
-                    yearDone();
-                },
-                error -> {
-                    Log.w(TAG, "Standings are not available for " + year, error);
-                    yearDone();
-                }
-        );
+        years.add(index, year);
 
-        request.setTag(this);
-        queue.add(request);
+        if (adapter == null) {
+            show();
+        } else {
+            adapter.notifyItemInserted(index);
+            updateArrows();
+        }
+
+        if (year >= 1958) {
+            loadConstructorYear(year);
+        }
+
+        if (year >= teamCarCatalog.FIRST_PHOTO_YEAR) {
+            probePhoto(year, 0, new ArrayList<>());
+        } else {
+            photoChecked.add(year);
+        }
     }
 
     private void readDriverStanding(int year, JSONObject response) throws JSONException {
@@ -302,84 +315,30 @@ final class driverTeamSeasonsSection {
     }
 
     private boolean isThisDriver(JSONObject driver) {
-        String code = driver.optString("code", "");
-
-        if (driverCode != null && !driverCode.isEmpty() && !code.isEmpty()) {
-            return driverCode.equalsIgnoreCase(code);
-        }
-
-        String family = driver.optString("familyName", "");
-        String given = driver.optString("givenName", "");
-
-        if (familyName == null || !familyName.equalsIgnoreCase(family)) {
-            return false;
-        }
-
-        // brothers and namesakes: the given name tells them apart
-        return givenName == null || givenName.isEmpty() || given.isEmpty()
-                || givenName.toLowerCase().contains(given.toLowerCase())
-                || given.toLowerCase().contains(givenName.toLowerCase());
-    }
-
-    /** Called once for every requested year, whatever the outcome. */
-    private void yearDone() {
-        pendingYears--;
-
-        if (pendingYears > 0 || !host.isAdded()) {
-            return;
-        }
-
-        years.addAll(teams.keySet());
-        Collections.sort(years, Collections.reverseOrder());
-
-        if (years.isEmpty()) {
-            return;
-        }
-
-        show();
-
-        for (int year : years) {
-            if (year >= 1958) {
-                loadConstructorYear(year);
-            }
-        }
-
-        for (int year : years) {
-            if (year >= teamCarCatalog.FIRST_PHOTO_YEAR) {
-                probePhoto(year, 0, new ArrayList<>());
-            } else {
-                photoChecked.add(year);
-            }
-        }
+        return jolpicaSeasons.isDriver(driver, driverCode, givenName, familyName);
     }
 
     // ---------- the results of the team (constructors' standings of one season) ----------
 
     private void loadConstructorYear(int year) {
-        String url = "https://api.jolpi.ca/ergast/f1/" + year + "/constructorstandings/?format=json";
+        jolpicaSeasons.constructorStandings(year, response -> {
+            if (!host.isAdded()) {
+                return;
+            }
 
-        JsonObjectRequest request = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    if (!host.isAdded()) {
-                        return;
-                    }
+            if (response == null) {
+                Log.w(TAG, "Constructor standings are not available for " + year);
+                return;
+            }
 
-                    try {
-                        readConstructorYear(year, response);
-                    } catch (JSONException error) {
-                        Log.w(TAG, "Unexpected constructor standings for " + year, error);
-                    }
+            try {
+                readConstructorYear(year, response);
+            } catch (JSONException error) {
+                Log.w(TAG, "Unexpected constructor standings for " + year, error);
+            }
 
-                    refresh(year);
-                },
-                error -> Log.w(TAG, "Constructor standings are not available for " + year, error)
-        );
-
-        request.setTag(this);
-        queue.add(request);
+            refresh(year);
+        });
     }
 
     private void readConstructorYear(int year, JSONObject response) throws JSONException {
@@ -595,9 +554,9 @@ final class driverTeamSeasonsSection {
 
             Uri uri = uris.get(year);
 
-            if (uri != null) {
-                holder.missing.setVisibility(View.GONE);
+            holder.missing.setVisibility(View.GONE);
 
+            if (uri != null) {
                 GlideApp.with(holder.photo)
                         .load(uri)
                         .transition(DrawableTransitionOptions.withCrossFade())
@@ -605,15 +564,22 @@ final class driverTeamSeasonsSection {
                         .into(holder.photo);
             } else {
                 GlideApp.with(holder.photo).clear(holder.photo);
-                holder.photo.setImageDrawable(null);
 
-                holder.missing.setVisibility(photoChecked.contains(year) ? View.VISIBLE : View.GONE);
+                if (photoChecked.contains(year)) {
+                    holder.photo.setImageResource(R.drawable.placeholder_car);
+                } else {
+                    holder.photo.setImageDrawable(null);
+                }
             }
 
             Map<String, String[]> byTeam = yearResults.get(year);
             String[] values = (team == null || byTeam == null)
                     ? null
                     : byTeam.get(teamCarCatalog.normalize(team[1]));
+
+            if (team != null && byTeam != null && values == null) {
+                Log.w(TAG, "TEAM NOT IN STANDINGS " + year + " " + team[0] + " (" + team[1] + ")");
+            }
 
             for (int i = 0; i < holder.values.length; i++) {
                 holder.values[i].setText(values != null ? values[i] : DASH);

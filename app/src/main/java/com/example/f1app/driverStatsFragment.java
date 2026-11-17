@@ -202,18 +202,21 @@ public class driverStatsFragment extends Fragment {
                                 snapshot.child("birthdayDate").getValue(String.class),
                                 snapshot.child("deathDate").getValue(String.class));
 
+                        Integer debutSeason = extractYear(mFirstGP);
+                        int firstSeasonOfDriver = debutSeason != null ? debutSeason : lastSeason;
+
                         seasonsSection = new driverSeasonsSection(
                                 driverStatsFragment.this,
                                 rootView,
                                 driverFullName,
                                 mDriverCode,
                                 snapshot.child("driverId").getValue(String.class),
+                                mDriverName,
                                 mDriverFamilyName,
+                                firstSeasonOfDriver,
                                 lastSeason);
 
                         seasonsSection.start();
-
-                        Integer debutSeason = extractYear(mFirstGP);
 
                         teamSeasonsSection = new driverTeamSeasonsSection(
                                 driverStatsFragment.this,
@@ -221,7 +224,7 @@ public class driverStatsFragment extends Fragment {
                                 mDriverCode,
                                 mDriverName,
                                 mDriverFamilyName,
-                                debutSeason != null ? debutSeason : lastSeason,
+                                firstSeasonOfDriver,
                                 lastSeason,
                                 mCurrentSeason);
 
