@@ -14,3 +14,6 @@
 .cxx
 local.properties
 secrets.properties
+
+# Android Studio / IntelliJ IDEA settings
+/.idea/
