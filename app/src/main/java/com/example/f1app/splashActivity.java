@@ -1,14 +1,14 @@
 package com.example.f1app;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 
+import androidx.appcompat.app.AppCompatActivity;
 
-public class splashActivity extends Activity {
+
+public class splashActivity extends AppCompatActivity {
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private boolean navigationStarted = false;
@@ -64,11 +64,6 @@ public class splashActivity extends Activity {
     }
 
     private boolean isSystemDarkTheme() {
-        int currentNightMode =
-                getResources().getConfiguration().uiMode
-                        & Configuration.UI_MODE_NIGHT_MASK;
-
-        return currentNightMode
-                == Configuration.UI_MODE_NIGHT_YES;
+        return themeStore.isDark(this);
     }
 }
