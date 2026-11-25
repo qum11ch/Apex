@@ -290,6 +290,10 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        ImageButton themeButton = findViewById(R.id.themeButton);
+        themeButton.setImageResource(themeMenu.iconFor(themeStore.get(this)));
+        themeButton.setOnClickListener(v -> themeMenu.show(this, v));
+
         if (currentUser == null) {
             openUsersPredictionsButton.setVisibility(View.GONE);
         } else {

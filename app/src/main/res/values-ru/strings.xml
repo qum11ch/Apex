@@ -1147,4 +1147,12 @@
     <string name="year_picker_title">Сезон</string>
     <string name="year_search_hint">Введите год</string>
     <string name="year_search_empty">Такого сезона нет</string>
+
+    <string name="theme_button">Тема</string>
+    <string name="theme_dialog_title">Тема приложения</string>
+    <string name="theme_system">Как в системе</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Тёмная</string>
+
+    <string name="theme_button_desc">Изменить тему</string>
 </resources>
