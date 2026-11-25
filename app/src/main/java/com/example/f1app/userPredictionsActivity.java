@@ -566,6 +566,16 @@ public class userPredictionsActivity extends AppCompatActivity {
 
         predictionResultsChart.setData(data);
         predictionResultsChart.setUsePercentValues(false);
+
+        int bg = androidx.core.content.ContextCompat.getColor(this, R.color.colorPrimary);
+        int text = androidx.core.content.ContextCompat.getColor(this, R.color.text_color_main);
+        predictionResultsChart.setHoleColor(bg);
+        predictionResultsChart.setEntryLabelColor(text);
+        predictionResultsChart.setCenterTextColor(text);
+        predictionResultsChart.getLegend().setTextColor(text);
+        data.setValueTextColor(text);
+        predictionResultsChart.invalidate();
+
         predictionResultsChart.getDescription().setEnabled(false);
         predictionResultsChart.setDrawHoleEnabled(true);
         predictionResultsChart.setHoleColor(Color.TRANSPARENT);

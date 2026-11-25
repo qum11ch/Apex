@@ -1168,4 +1168,11 @@
     <string name="year_picker_title">Season</string>
     <string name="year_search_hint">Enter a year</string>
     <string name="year_search_empty">No such season</string>
+
+    <string name="theme_button">Theme</string>
+    <string name="theme_dialog_title">App theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_button_desc">Change theme</string>
 </resources>

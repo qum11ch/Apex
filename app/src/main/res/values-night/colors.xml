@@ -100,4 +100,6 @@
     <color name="race_state_sprint_bg">#30D9A6F5</color>
 
     <color name="items_color">#FF222222</color>
+
+    <color name="theme_selected">#FF8A80</color>
 </resources>

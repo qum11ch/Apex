@@ -40,7 +40,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
                 android:text="@string/winners_wdc_header"
-                android:id="@+id/teamsHeader"
+                android:id="@+id/mainHeader"
                 android:gravity="center"
                 android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"/>
 

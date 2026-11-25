@@ -12,6 +12,7 @@ public class ApexApp extends Application {
     public void onCreate() {
         super.onCreate();
         appContext = getApplicationContext();
+        themeStore.apply(this);
     }
 
     static Context context() {

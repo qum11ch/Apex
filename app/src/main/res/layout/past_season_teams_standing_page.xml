@@ -29,7 +29,7 @@
             android:src="@drawable/back_arrow" />
 
         <TextView
-            android:id="@+id/teamsHeader"
+            android:id="@+id/mainHeader"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
