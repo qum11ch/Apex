@@ -113,7 +113,7 @@ public class pastSeasonTeamsStandingsActivity extends AppCompatActivity {
         shimmerFrameLayout = findViewById(R.id.shimmer_layout);
         recyclerView = findViewById(R.id.recyclerview_currentTeams);
         swipeLayout = findViewById(R.id.swipe_layout);
-        teamsHeader = findViewById(R.id.teamsHeader);
+        teamsHeader = findViewById(R.id.mainHeader);
         stateContainer = findViewById(R.id.state_container);
         stateMessage = findViewById(R.id.state_message);
         seasonScroll = findViewById(R.id.seasonScroll);
