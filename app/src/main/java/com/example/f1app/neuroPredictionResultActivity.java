@@ -443,134 +443,58 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 });
     }
 
-    private void getWeatherOld(Double lat, Double lon,
-                            String eventTime, String gpName,
-                            String[] driverCodes, String[] teamNames, String event, int gpRound,
-                            int circuitsCorners, Double circuitsLength, int isStreetCircuit,
-                            String circuitId){
+    private void getWeather(
+            Double lat,
+            Double lon,
+            String eventTime,
+            String gpName,
+            String[] driverCodes,
+            String[] teamNames,
+            String event,
+            int gpRound,
+            int circuitsCorners,
+            Double circuitsLength,
+            int isStreetCircuit,
+            String circuitId
+    ) {
+        final String key = eventTime.substring(0, 4) + "_" + circuitId + "_" + event;
 
-        String isoDateStr = eventTime.replace(" ", "T");
-        Log.i("WeatherDate", " " + eventTime);
+        FirebaseDatabase.getInstance().getReference("predictions").child(key)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        DataSnapshot params = snapshot.child("params");
+                        Double temp = params.child("airTemp").getValue(Double.class);
+                        Double pres = params.child("pressure").getValue(Double.class);
+                        Double hum = params.child("humidity").getValue(Double.class);
+                        Integer rain = params.child("rainfall").getValue(Integer.class);
+                        boolean isFinal = Boolean.TRUE.equals(
+                                snapshot.child("final").getValue(Boolean.class));
 
-        ZonedDateTime targetDate = ZonedDateTime.parse(isoDateStr);
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-
-        long daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), targetDate.toLocalDate());
-
-        String[] fullDate = eventTime.split(" ");
-        String date = fullDate[0];
-        String time = fullDate[1];
-
-        String targetTime = time.replace("Z", "");
-        targetTime = time.substring(0, targetTime.length() - 3);
-        String targetDatetime = date + "T" + targetTime;
-
-        RequestQueue queue = apiQueue.get();
-
-        String url;
-        ZonedDateTime oneYearEarlier;
-
-        if (daysBetween > 365){
-            oneYearEarlier = targetDate.minusYears(2);
-        }else{
-            oneYearEarlier = targetDate.minusYears(1);
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String prevYearDate = oneYearEarlier.format(formatter);
-
-
-        boolean prevYear = false;
-
-        if ((daysBetween <= 15) && (daysBetween >= -2)){
-            url = "https://api.open-meteo.com/v1/forecast?latitude="
-                    + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                    + date + "&end_date=" + date;
-        } else if (daysBetween > 15) {
-            daysBetween = daysBetween - 365;
-            if (daysBetween >= -2){
-                url = "https://api.open-meteo.com/v1/forecast?latitude="
-                        + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                        + prevYearDate + "&end_date=" + prevYearDate;
-            }else{
-                url = "https://archive-api.open-meteo.com/v1/archive?latitude="
-                        + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                        + prevYearDate + "&end_date=" + prevYearDate;
-            }
-            prevYear = true;
-        } else{
-            url = "https://archive-api.open-meteo.com/v1/archive?latitude="
-                    + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                    + date + "&end_date=" + date;
-        }
-
-        String finalTargetTime;
-        if (prevYear){
-            finalTargetTime = prevYearDate + "T" + targetTime;
-        } else {
-            finalTargetTime = targetDatetime;
-        }
-
-        Log.i("FatalError", " " + url);
-        JsonObjectRequest jsonObjectRequest = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try{
-                        JSONObject hourly = response.getJSONObject("hourly");
-
-                        JSONArray timeArray = hourly.getJSONArray("time");
-                        JSONArray tempArray = hourly.getJSONArray("temperature_2m");
-                        JSONArray pressureArray = hourly.getJSONArray("pressure_msl");
-                        JSONArray humidityArray = hourly.getJSONArray("relative_humidity_2m");
-                        JSONArray precipitationArray = hourly.getJSONArray("precipitation");
-
-                        int targetIndex = -1;
-
-                        for (int i = 0; i < timeArray.length(); i++) {
-                            if (timeArray.getString(i).equals(finalTargetTime)) {
-                                targetIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (targetIndex != -1) {
-                            double temp = tempArray.getDouble(targetIndex);
-                            double pressure = pressureArray.getDouble(targetIndex);
-                            double humidity = humidityArray.getDouble(targetIndex);
-                            double precipitation = precipitationArray.getDouble(targetIndex);
-                            boolean isRainfall = precipitation > 0.0;
-
-                            int rainfall = 0;
-                            if (isRainfall){
-                                rainfall = 1;
-                            }
-
-                            DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
-                            String year = targetDate.format(yearFormatter);
-
-                            predictRequest(gpName, Integer.parseInt(year), temp, pressure, humidity, rainfall, driverCodes,
-                                    teamNames, event, gpRound, circuitsCorners, circuitsLength,
-                                    isStreetCircuit, circuitId);
-
+                        if (isFinal && temp != null && pres != null && hum != null && rain != null) {
+                            weatherFromPreviousYear = false;
+                            setProgressStage(45,
+                                    getString(R.string.neuro_prediction_progress_weather_finish));
+                            predictRequest(gpName, Integer.parseInt(eventTime.substring(0, 4)),
+                                    temp, pres, hum, rain, driverCodes, teamNames, event, gpRound,
+                                    circuitsCorners, circuitsLength, isStreetCircuit, circuitId);
                         } else {
-                            Log.e("WeatherPredict", "Time " + finalTargetTime + " not found in response.");
+                            getWeatherRemote(lat, lon, eventTime, gpName, driverCodes, teamNames,
+                                    event, gpRound, circuitsCorners, circuitsLength,
+                                    isStreetCircuit, circuitId);
                         }
-
-
-                    }catch (JSONException e) {
-                        Log.e("predictPageActivity", "Wheather error " + e.getMessage());
                     }
-                }, error -> {
-                    Toast.makeText(neuroPredictionResultActivity.this, "Wheather error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d ("fatal", "Wheather error  " + error.getMessage());
-        });
 
-        queue.add(jsonObjectRequest);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        getWeatherRemote(lat, lon, eventTime, gpName, driverCodes, teamNames,
+                                event, gpRound, circuitsCorners, circuitsLength,
+                                isStreetCircuit, circuitId);
+                    }
+                });
     }
 
-    private void getWeather(
+    private void getWeatherRemote(
             Double lat,
             Double lon,
             String eventTime,
