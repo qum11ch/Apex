@@ -1241,4 +1241,16 @@
     <string name="compare_rates_note">Rates are counted per Grand Prix the driver entered.</string>
     <string name="compare_points_note">Points were awarded under different systems in different eras, so compare them with care.</string>
     <string name="compare_no_data_note">A dash means there is no data for that season.</string>
+
+    <string name="compare_tab_duel">Duel</string>
+    <string name="compare_duel_race">Races</string>
+    <string name="compare_duel_quali">Qualifying</string>
+    <string name="compare_duel_avg_quali">Average qualifying position</string>
+    <string name="compare_duel_avg_race">Average finish</string>
+    <string name="compare_duel_retired">Retirements</string>
+    <string name="compare_duel_round">Grand Prix</string>
+    <string name="compare_duel_quali_short">Qual.</string>
+    <string name="compare_duel_race_short">Race</string>
+    <string name="compare_duel_empty">No shared races in this season</string>
+    <string name="compare_duel_note">Only the races where both have a result are counted. The classified position is used: a retirement also has a place in the classification. The better position is highlighted in colour.</string>
 </resources>

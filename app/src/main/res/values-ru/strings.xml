@@ -1221,4 +1221,16 @@
     <string name="compare_rates_note">Доли считаются от числа Гран-при пилота.</string>
     <string name="compare_points_note">Очки в разные эпохи начислялись по разным системам, поэтому сравнивайте их осторожно.</string>
     <string name="compare_no_data_note">Прочерк означает, что за этот сезон данных нет.</string>
+
+    <string name="compare_tab_duel">Дуэль</string>
+    <string name="compare_duel_race">Гонки</string>
+    <string name="compare_duel_quali">Квалификации</string>
+    <string name="compare_duel_avg_quali">Средняя позиция в квалификации</string>
+    <string name="compare_duel_avg_race">Средний финиш</string>
+    <string name="compare_duel_retired">Сходы</string>
+    <string name="compare_duel_round">Этап</string>
+    <string name="compare_duel_quali_short">Квал.</string>
+    <string name="compare_duel_race_short">Гонка</string>
+    <string name="compare_duel_empty">В этом сезоне нет общих гонок</string>
+    <string name="compare_duel_note">Считаем гонки, в которых есть результат у обоих. Берём классифицированное место: сход тоже имеет место в протоколе. Цветом выделен тот, кто выше.</string>
 </resources>
