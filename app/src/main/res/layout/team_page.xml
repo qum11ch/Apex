@@ -104,6 +104,18 @@
                             android:paddingStart="15dp"
                             android:paddingEnd="15dp"
                             android:src="@drawable/back_arrow" />
+                        <ImageButton
+                            android:id="@+id/compare_button"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_centerVertical="true"
+                            android:layout_marginEnd="6dp"
+                            android:layout_toStartOf="@id/toggleButtonContainer"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/compare_button_description"
+                            android:padding="8dp"
+                            android:src="@drawable/ic_compare"
+                            app:tint="@color/white" />
                         <FrameLayout
                             android:layout_width="48dp"
                             android:layout_height="48dp"
@@ -128,7 +140,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:layout_toEndOf="@id/backButton"
-                            android:layout_toStartOf="@id/toggleButtonContainer"
+                            android:layout_toStartOf="@id/compare_button"
                             android:gravity="center"
                             android:textAppearance="@style/TextStyle.GoodTiming.Regular.ForHeader"
                             android:textColor="@color/white"

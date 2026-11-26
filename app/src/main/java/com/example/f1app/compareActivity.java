@@ -1,0 +1,651 @@
+package com.example.f1app;
+
+import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Locale;
+
+public class compareActivity extends AppCompatActivity {
+
+    static final String EXTRA_TYPE = "type";
+    static final String EXTRA_FIRST = "first";
+    static final String EXTRA_SECOND = "second";
+    static final String EXTRA_SEASON = "season";
+
+    private static final String PICK_A = "compare_pick_a";
+    private static final String PICK_B = "compare_pick_b";
+    private static final String PICK_YEAR = "compare_pick_year";
+    private static final int FIRST_YEAR = 1950;
+    private static final String DASH = "\u2013";
+
+    private int type;
+    private String keyA;
+    private String keyB;
+    private int currentSeason;
+
+    private compareParticipant a;
+    private compareParticipant b;
+    private compareLoader.Season seasonA;
+    private compareLoader.Season seasonB;
+
+    private boolean seasonTab = false;
+    private int year = -1;
+    private int seasonToken = 0;
+    private int loadToken = 0;
+
+    private LinearLayout content;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.compare_activity);
+        setupInsets();
+
+        WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView())
+                .setAppearanceLightStatusBars(false);
+
+        content = findViewById(R.id.compareContent);
+        findViewById(R.id.backButton).setOnClickListener(v -> finish());
+
+        Bundle extras = getIntent().getExtras();
+
+        if (extras == null || extras.getString(EXTRA_FIRST) == null
+                || extras.getString(EXTRA_SECOND) == null) {
+            finish();
+            return;
+        }
+
+        type = extras.getInt(EXTRA_TYPE, compareParticipant.DRIVER);
+        keyA = extras.getString(EXTRA_FIRST);
+        keyB = extras.getString(EXTRA_SECOND);
+
+        try {
+            currentSeason = Integer.parseInt(String.valueOf(extras.getString(EXTRA_SEASON)).trim());
+        } catch (NumberFormatException error) {
+            currentSeason = LocalDate.now().getYear();
+        }
+
+        getSupportFragmentManager().setFragmentResultListener(PICK_A, this,
+                (key, result) -> replace(true, result.getString(comparePickerSheet.KEY)));
+        getSupportFragmentManager().setFragmentResultListener(PICK_B, this,
+                (key, result) -> replace(false, result.getString(comparePickerSheet.KEY)));
+        getSupportFragmentManager().setFragmentResultListener(PICK_YEAR, this, (key, result) -> {
+            year = result.getInt(yearPickerSheet.YEAR);
+            loadSeason();
+            render();
+        });
+
+        loadParticipants();
+    }
+
+    private void setupInsets() {
+        View root = findViewById(R.id.compareRoot);
+        View header = findViewById(R.id.compareHeader);
+
+        final int left = root.getPaddingLeft();
+        final int top = root.getPaddingTop();
+        final int right = root.getPaddingRight();
+        final int bottom = root.getPaddingBottom();
+
+        final int hl = header.getPaddingLeft();
+        final int ht = header.getPaddingTop();
+        final int hr = header.getPaddingRight();
+        final int hb = header.getPaddingBottom();
+
+        ViewCompat.setOnApplyWindowInsetsListener(root, (view, windowInsets) -> {
+            Insets safe = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars()
+                    | WindowInsetsCompat.Type.displayCutout());
+
+            view.setPadding(left + safe.left, top, right + safe.right, bottom);
+            header.setPadding(hl, ht + safe.top, hr, hb);
+
+            return windowInsets;
+        });
+
+        ViewCompat.requestApplyInsets(root);
+        EdgeInsets.applyBottom(findViewById(R.id.compareScroll));
+    }
+
+    // ---------- loading ----------
+
+    private void loadParticipants() {
+        a = null;
+        b = null;
+        seasonA = null;
+        seasonB = null;
+        year = -1;
+
+        final int mine = ++loadToken;
+        final compareParticipant[] loaded = new compareParticipant[2];
+        final int[] pending = {2};
+
+        render();
+
+        compareLoader.load(type, keyA, p -> {
+            loaded[0] = p;
+            finishLoad(mine, loaded, pending);
+        });
+        compareLoader.load(type, keyB, p -> {
+            loaded[1] = p;
+            finishLoad(mine, loaded, pending);
+        });
+    }
+
+    private void finishLoad(int mine, compareParticipant[] loaded, int[] pending) {
+        if (--pending[0] > 0 || mine != loadToken || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        if (loaded[0] == null || loaded[1] == null) {
+            Toast.makeText(this, R.string.compare_load_error, Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        a = loaded[0];
+        b = loaded[1];
+        year = defaultYear(years());
+
+        if (seasonTab) {
+            loadSeason();
+        }
+
+        render();
+    }
+
+    private void replace(boolean first, String key) {
+        if (key == null) {
+            return;
+        }
+
+        if (first) {
+            keyA = key;
+        } else {
+            keyB = key;
+        }
+
+        loadParticipants();
+    }
+
+    private void loadSeason() {
+        if (a == null || b == null) {
+            return;
+        }
+
+        if (year < 0) {
+            year = defaultYear(years());
+        }
+
+        final int mine = ++seasonToken;
+        final compareLoader.Season[] loaded = new compareLoader.Season[2];
+        final int[] pending = {2};
+
+        seasonA = null;
+        seasonB = null;
+
+        compareLoader.season(a, year, s -> {
+            loaded[0] = s;
+            finishSeason(mine, loaded, pending);
+        });
+        compareLoader.season(b, year, s -> {
+            loaded[1] = s;
+            finishSeason(mine, loaded, pending);
+        });
+    }
+
+    private void finishSeason(int mine, compareLoader.Season[] loaded, int[] pending) {
+        if (--pending[0] > 0 || mine != seasonToken || isFinishing() || isDestroyed()) {
+            return;
+        }
+
+        seasonA = loaded[0];
+        seasonB = loaded[1];
+
+        if (seasonTab) {
+            render();
+        }
+    }
+
+    private ArrayList<Integer> years() {
+        ArrayList<Integer> list = new ArrayList<>();
+
+        if (a == null || b == null) {
+            return list;
+        }
+
+        int top = Math.min(Math.max(a.lastYear, b.lastYear), currentSeason);
+        int bottom = Math.max(Math.min(smallest(a.firstYear), smallest(b.firstYear)), FIRST_YEAR);
+
+        for (int y = top; y >= bottom; y--) {
+            if (a.racedIn(y) || b.racedIn(y)) {
+                list.add(y);
+            }
+        }
+
+        return list;
+    }
+
+    private int smallest(int firstYear) {
+        return firstYear > 0 ? firstYear : Integer.MAX_VALUE;
+    }
+
+    private int defaultYear(ArrayList<Integer> years) {
+        for (int y : years) {
+            if (a.racedIn(y) && b.racedIn(y)) {
+                return y;
+            }
+        }
+
+        return years.isEmpty() ? currentSeason : years.get(0);
+    }
+
+    // ---------- screen ----------
+
+    private void render() {
+        content.removeAllViews();
+
+        if (a == null || b == null) {
+            addProgress();
+            return;
+        }
+
+        int colorA = a.color;
+        int colorB = distance(a.color, b.color) < 60
+                ? (distance(a.color, b.altColor) < 60 ? 0xFF8E8E93 : b.altColor)
+                : b.color;
+
+        content.addView(buildCards(colorA, colorB));
+        content.addView(buildTabs());
+
+        if (seasonTab) {
+            renderSeason(colorA, colorB);
+        } else {
+            renderCareer(colorA, colorB);
+        }
+    }
+
+    private View buildCards(int colorA, int colorB) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+
+        row.addView(card(a, true, colorA), new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        TextView vs = text(getString(R.string.compare_vs), 14, R.color.text_color_thirdly);
+        vs.setTypeface(vs.getTypeface(), Typeface.BOLD);
+        vs.setPadding(dp(8), 0, dp(8), 0);
+        row.addView(vs);
+
+        row.addView(card(b, false, colorB), new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        return row;
+    }
+
+    private View card(compareParticipant p, boolean first, int stroke) {
+        LinearLayout card = new LinearLayout(this);
+        card.setOrientation(LinearLayout.VERTICAL);
+        card.setPadding(dp(14), dp(14), dp(14), dp(14));
+
+        GradientDrawable background = new GradientDrawable();
+        background.setColor(color(R.color.colorPrimary));
+        background.setCornerRadius(dp(16));
+        background.setStroke(dp(2), stroke);
+        card.setBackground(background);
+
+        if (!p.given.isEmpty()) {
+            TextView given = text(p.given, 14, R.color.text_color_secondary);
+            given.setSingleLine(true);
+            given.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            card.addView(given);
+        }
+
+        TextView name = text(p.type == compareParticipant.DRIVER ? p.family : p.title,
+                20, R.color.text_color_main);
+        name.setTypeface(name.getTypeface(), Typeface.BOLD);
+        name.setMaxLines(2);
+        name.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        card.addView(name);
+
+        if (!p.caption.isEmpty()) {
+            TextView caption = text(p.caption, 13, R.color.text_color_thirdly);
+            caption.setMaxLines(2);
+            caption.setEllipsize(android.text.TextUtils.TruncateAt.END);
+            card.addView(caption);
+        }
+
+        card.setClickable(true);
+        card.setFocusable(true);
+        card.setOnClickListener(v -> comparePickerSheet.show(getSupportFragmentManager(), type,
+                first ? keyB : keyA, first ? PICK_A : PICK_B));
+
+        return card;
+    }
+
+    private View buildTabs() {
+        LinearLayout bar = new LinearLayout(this);
+        bar.setOrientation(LinearLayout.HORIZONTAL);
+        bar.setPadding(dp(4), dp(4), dp(4), dp(4));
+        bar.setBackground(surface(color(R.color.account_settings_input_color), 12));
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = dp(16);
+        bar.setLayoutParams(params);
+
+        bar.addView(tab(R.string.compare_tab_career, !seasonTab, () -> {
+            seasonTab = false;
+            render();
+        }), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        bar.addView(tab(R.string.compare_tab_season, seasonTab, () -> {
+            seasonTab = true;
+
+            if (seasonA == null || seasonB == null) {
+                loadSeason();
+            }
+
+            render();
+        }), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+
+        return bar;
+    }
+
+    private TextView tab(int label, boolean selected, Runnable action) {
+        TextView view = text(getString(label), 14, R.color.text_color_main);
+        view.setGravity(Gravity.CENTER);
+        view.setMinHeight(dp(40));
+        view.setTypeface(view.getTypeface(), selected ? Typeface.BOLD : Typeface.NORMAL);
+        view.setBackground(selected ? surface(color(R.color.neuro_selected), 10) : null);
+        view.setOnClickListener(v -> action.run());
+        return view;
+    }
+
+    private void renderCareer(int colorA, int colorB) {
+        boolean driver = type == compareParticipant.DRIVER;
+
+        addRow(R.string.compare_metric_titles, a.stat("titles"), b.stat("titles"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+        addRow(R.string.compare_metric_wins, a.stat("wins"), b.stat("wins"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+        addRow(R.string.compare_metric_podiums, a.stat("podiums"), b.stat("podiums"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+        addRow(R.string.compare_metric_poles, a.stat("poles"), b.stat("poles"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+        addRow(R.string.compare_metric_fastest, a.stat("fastest"), b.stat("fastest"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+
+        if (driver) {
+            addRow(R.string.compare_metric_gp, a.stat("gp"), b.stat("gp"),
+                    compareMath.Mode.NEUTRAL, false, colorA, colorB);
+        } else {
+            addRow(R.string.compare_metric_entry, a.stat("enter"), b.stat("enter"),
+                    compareMath.Mode.NEUTRAL, false, colorA, colorB);
+        }
+
+        addRow(R.string.compare_metric_points, a.stat("points"), b.stat("points"),
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+
+        if (driver) {
+            addRow(R.string.compare_metric_win_rate,
+                    compareMath.rate(a.stat("wins"), a.stat("gp")),
+                    compareMath.rate(b.stat("wins"), b.stat("gp")),
+                    compareMath.Mode.HIGHER, true, colorA, colorB);
+            addRow(R.string.compare_metric_podium_rate,
+                    compareMath.rate(a.stat("podiums"), a.stat("gp")),
+                    compareMath.rate(b.stat("podiums"), b.stat("gp")),
+                    compareMath.Mode.HIGHER, true, colorA, colorB);
+            addRow(R.string.compare_metric_pole_rate,
+                    compareMath.rate(a.stat("poles"), a.stat("gp")),
+                    compareMath.rate(b.stat("poles"), b.stat("gp")),
+                    compareMath.Mode.HIGHER, true, colorA, colorB);
+            addNote(R.string.compare_rates_note);
+        }
+
+        addNote(R.string.compare_points_note);
+    }
+
+    private void renderSeason(int colorA, int colorB) {
+        ArrayList<Integer> list = years();
+
+        TextView chip = text(year + " \u25BE", 16, R.color.text_color_main);
+        chip.setTypeface(chip.getTypeface(), Typeface.BOLD);
+        chip.setGravity(Gravity.CENTER);
+        chip.setMinHeight(dp(44));
+        chip.setPadding(dp(20), dp(8), dp(20), dp(8));
+        chip.setBackground(surface(color(R.color.account_settings_input_color), 12));
+        chip.setOnClickListener(v -> {
+            if (!list.isEmpty()) {
+                yearPickerSheet.show(getSupportFragmentManager(), list, year, PICK_YEAR);
+            }
+        });
+
+        LinearLayout.LayoutParams chipParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        chipParams.gravity = Gravity.CENTER_HORIZONTAL;
+        chipParams.topMargin = dp(16);
+        content.addView(chip, chipParams);
+
+        if (seasonA == null || seasonB == null) {
+            addProgress();
+            return;
+        }
+
+        if (type == compareParticipant.DRIVER
+                && (!seasonA.team.isEmpty() || !seasonB.team.isEmpty())) {
+            TextView teams = text(getString(R.string.compare_season_teams,
+                            seasonA.team.isEmpty() ? DASH : seasonA.team,
+                            seasonB.team.isEmpty() ? DASH : seasonB.team),
+                    13, R.color.text_color_thirdly);
+            teams.setGravity(Gravity.CENTER);
+
+            LinearLayout.LayoutParams teamParams = new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            teamParams.topMargin = dp(10);
+            content.addView(teams, teamParams);
+        }
+
+        addRow(R.string.compare_metric_place, seasonA.place, seasonB.place,
+                compareMath.Mode.LOWER, false, colorA, colorB);
+        addRow(R.string.compare_metric_points, seasonA.points, seasonB.points,
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+        addRow(R.string.compare_metric_wins, seasonA.wins, seasonB.wins,
+                compareMath.Mode.HIGHER, false, colorA, colorB);
+
+        addNote(R.string.compare_no_data_note);
+    }
+
+    private void addRow(int label, double valueA, double valueB, compareMath.Mode mode,
+                        boolean percent, int colorA, int colorB) {
+        int leader = compareMath.leader(valueA, valueB, mode);
+        double[] shares = compareMath.shares(valueA, valueB, mode);
+
+        LinearLayout box = new LinearLayout(this);
+        box.setOrientation(LinearLayout.VERTICAL);
+
+        LinearLayout line = new LinearLayout(this);
+        line.setOrientation(LinearLayout.HORIZONTAL);
+        line.setGravity(Gravity.CENTER_VERTICAL);
+
+        TextView left = text(format(valueA, percent), 18, R.color.text_color_main);
+        left.setGravity(Gravity.START);
+        left.setTypeface(left.getTypeface(), leader == compareMath.FIRST ? Typeface.BOLD : Typeface.NORMAL);
+
+        TextView center = text(getString(label), 12, R.color.text_color_thirdly);
+        center.setAllCaps(true);
+        center.setGravity(Gravity.CENTER);
+
+        TextView right = text(format(valueB, percent), 18, R.color.text_color_main);
+        right.setGravity(Gravity.END);
+        right.setTypeface(right.getTypeface(), leader == compareMath.SECOND ? Typeface.BOLD : Typeface.NORMAL);
+
+        line.addView(left, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        line.addView(center, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.6f));
+        line.addView(right, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+        box.addView(line);
+
+        DualBar bar = new DualBar(this);
+        bar.set((float) shares[0], (float) shares[1], colorA, colorB,
+                color(R.color.neuro_divider),
+                leader == compareMath.SECOND, leader == compareMath.FIRST);
+
+        LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(10));
+        barParams.topMargin = dp(8);
+        box.addView(bar, barParams);
+
+        box.setContentDescription(getString(label) + ": " + format(valueA, percent)
+                + " / " + format(valueB, percent));
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = dp(18);
+        content.addView(box, params);
+    }
+
+    private void addNote(int text) {
+        TextView note = text(getString(text), 13, R.color.text_color_thirdly);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.topMargin = dp(16);
+        content.addView(note, params);
+    }
+
+    private void addProgress() {
+        ProgressBar bar = new ProgressBar(this);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.topMargin = dp(32);
+        content.addView(bar, params);
+    }
+
+    // ---------- helpers ----------
+
+    private String format(double value, boolean percent) {
+        if (Double.isNaN(value)) {
+            return DASH;
+        }
+
+        if (percent) {
+            return String.format(Locale.getDefault(), "%.1f%%", value);
+        }
+
+        if (value == Math.rint(value)) {
+            return String.format(Locale.getDefault(), "%d", (long) value);
+        }
+
+        return String.format(Locale.getDefault(), "%.1f", value);
+    }
+
+    private static int distance(int x, int y) {
+        int dr = Color.red(x) - Color.red(y);
+        int dg = Color.green(x) - Color.green(y);
+        int db = Color.blue(x) - Color.blue(y);
+        return (int) Math.sqrt(dr * dr + dg * dg + db * db);
+    }
+
+    private TextView text(String value, int size, int colorRes) {
+        TextView view = new TextView(this);
+        view.setText(value);
+        view.setTextSize(size);
+        view.setTextColor(color(colorRes));
+        return view;
+    }
+
+    private GradientDrawable surface(int color, int radius) {
+        GradientDrawable drawable = new GradientDrawable();
+        drawable.setColor(color);
+        drawable.setCornerRadius(dp(radius));
+        return drawable;
+    }
+
+    private int color(int id) {
+        return ContextCompat.getColor(this, id);
+    }
+
+    private int dp(float value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    /** Two bars growing from the centre: the first to the left, the second to the right. */
+    private static final class DualBar extends View {
+        private final Paint track = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint barA = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint barB = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final RectF rect = new RectF();
+        private float shareA;
+        private float shareB;
+
+        DualBar(Context context) {
+            super(context);
+        }
+
+        void set(float shareA, float shareB, int colorA, int colorB, int trackColor,
+                 boolean dimA, boolean dimB) {
+            this.shareA = shareA;
+            this.shareB = shareB;
+
+            track.setColor(trackColor);
+            barA.setColor(colorA);
+            barA.setAlpha(dimA ? 110 : 255);
+            barB.setColor(colorB);
+            barB.setAlpha(dimB ? 110 : 255);
+
+            invalidate();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            float w = getWidth();
+            float h = getHeight();
+            float half = w / 2f - 3f;
+            float r = h / 2f;
+
+            rect.set(0, 0, half, h);
+            canvas.drawRoundRect(rect, r, r, track);
+            rect.set(w - half, 0, w, h);
+            canvas.drawRoundRect(rect, r, r, track);
+
+            float la = shareA * half;
+            if (la > 0f) {
+                rect.set(half - la, 0, half, h);
+                canvas.drawRoundRect(rect, r, r, barA);
+            }
+
+            float lb = shareB * half;
+            if (lb > 0f) {
+                rect.set(w - half, 0, w - half + lb, h);
+                canvas.drawRoundRect(rect, r, r, barB);
+            }
+        }
+    }
+}

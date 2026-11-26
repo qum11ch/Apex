@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -117,6 +118,7 @@ public class driverPageActivity extends AppCompatActivity {
 
         currentDriverFullName = mDriverName + " " + mDriverFamilyName;
         setupFavouriteButton(currentDriverFullName);
+        setupCompare(currentDriverFullName, mCurrentSeason);
 
         loadDriverData(
                 currentDriverFullName,
@@ -297,6 +299,26 @@ public class driverPageActivity extends AppCompatActivity {
                         );
                     }
                 });
+    }
+
+    private void setupCompare(String fullName, String season) {
+        final String requestKey = "driver_compare_pick";
+
+        getSupportFragmentManager().setFragmentResultListener(requestKey, this, (key, result) -> {
+            String other = result.getString(comparePickerSheet.KEY);
+            if (other == null) return;
+
+            Intent intent = new Intent(this, compareActivity.class);
+            intent.putExtra(compareActivity.EXTRA_TYPE, compareParticipant.DRIVER);
+            intent.putExtra(compareActivity.EXTRA_FIRST, fullName);
+            intent.putExtra(compareActivity.EXTRA_SECOND, other);
+            intent.putExtra(compareActivity.EXTRA_SEASON, season);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.compare_button).setOnClickListener(v ->
+                comparePickerSheet.show(getSupportFragmentManager(),
+                        compareParticipant.DRIVER, fullName, requestKey));
     }
 
     private TextView driverFullNameView() {

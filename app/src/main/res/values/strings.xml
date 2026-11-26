@@ -1214,4 +1214,31 @@
     <string name="neuro_factor_track">Track</string>
     <string name="neuro_factor_weather">Weather</string>
     <string name="neuro_factor_season">Season and rules</string>
+
+    <string name="compare_title">Compare</string>
+    <string name="compare_button_description">Compare</string>
+    <string name="compare_vs">VS</string>
+    <string name="compare_tab_career">Career</string>
+    <string name="compare_tab_season">Season</string>
+    <string name="compare_pick_driver_title">Choose a driver</string>
+    <string name="compare_pick_team_title">Choose a team</string>
+    <string name="compare_pick_search_hint">Search</string>
+    <string name="compare_pick_empty">Nothing found</string>
+    <string name="compare_load_error">Could not load data</string>
+    <string name="compare_metric_titles">Championships</string>
+    <string name="compare_metric_wins">Wins</string>
+    <string name="compare_metric_podiums">Podiums</string>
+    <string name="compare_metric_poles">Poles</string>
+    <string name="compare_metric_fastest">Fastest laps</string>
+    <string name="compare_metric_gp">Grands Prix</string>
+    <string name="compare_metric_entry">First season</string>
+    <string name="compare_metric_points">Points</string>
+    <string name="compare_metric_win_rate">Win rate</string>
+    <string name="compare_metric_podium_rate">Podium rate</string>
+    <string name="compare_metric_pole_rate">Pole rate</string>
+    <string name="compare_metric_place">Championship position</string>
+    <string name="compare_season_teams">%1$s · %2$s</string>
+    <string name="compare_rates_note">Rates are counted per Grand Prix the driver entered.</string>
+    <string name="compare_points_note">Points were awarded under different systems in different eras, so compare them with care.</string>
+    <string name="compare_no_data_note">A dash means there is no data for that season.</string>
 </resources>

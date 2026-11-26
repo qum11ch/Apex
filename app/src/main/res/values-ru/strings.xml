@@ -1194,4 +1194,31 @@
     <string name="neuro_factor_track">Трасса</string>
     <string name="neuro_factor_weather">Погода</string>
     <string name="neuro_factor_season">Сезон и регламент</string>
+
+    <string name="compare_title">Сравнение</string>
+    <string name="compare_button_description">Сравнить</string>
+    <string name="compare_vs">VS</string>
+    <string name="compare_tab_career">Карьера</string>
+    <string name="compare_tab_season">Сезон</string>
+    <string name="compare_pick_driver_title">Выберите пилота</string>
+    <string name="compare_pick_team_title">Выберите команду</string>
+    <string name="compare_pick_search_hint">Поиск</string>
+    <string name="compare_pick_empty">Ничего не найдено</string>
+    <string name="compare_load_error">Не удалось загрузить данные</string>
+    <string name="compare_metric_titles">Титулы</string>
+    <string name="compare_metric_wins">Победы</string>
+    <string name="compare_metric_podiums">Подиумы</string>
+    <string name="compare_metric_poles">Поулы</string>
+    <string name="compare_metric_fastest">Быстрые круги</string>
+    <string name="compare_metric_gp">Гран-при</string>
+    <string name="compare_metric_entry">Первый сезон</string>
+    <string name="compare_metric_points">Очки</string>
+    <string name="compare_metric_win_rate">Доля побед</string>
+    <string name="compare_metric_podium_rate">Доля подиумов</string>
+    <string name="compare_metric_pole_rate">Доля поулов</string>
+    <string name="compare_metric_place">Место в чемпионате</string>
+    <string name="compare_season_teams">%1$s · %2$s</string>
+    <string name="compare_rates_note">Доли считаются от числа Гран-при пилота.</string>
+    <string name="compare_points_note">Очки в разные эпохи начислялись по разным системам, поэтому сравнивайте их осторожно.</string>
+    <string name="compare_no_data_note">Прочерк означает, что за этот сезон данных нет.</string>
 </resources>
