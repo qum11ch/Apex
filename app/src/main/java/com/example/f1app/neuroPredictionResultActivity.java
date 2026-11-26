@@ -77,6 +77,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     private TextView loadingWeatherPercent;
     private SwipeRefreshLayout swipeRefresh;
     private boolean predictionLoading = false;
+    private boolean weatherFromPreviousYear = false;
+    private View explainCard;
+    private TextView explainBody;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +145,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
 
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        explainCard = findViewById(R.id.neuroExplainCard);
+        explainBody = findViewById(R.id.neuroExplainBody);
 
         NestedScrollView scrollView = findViewById(R.id.scrollView);
 
@@ -592,6 +597,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         long daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), eventDate);
 
         boolean usePreviousYear = daysBetween > 15;
+        weatherFromPreviousYear = usePreviousYear;
 
         LocalDate weatherDate;
 
@@ -836,6 +842,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 boolean isStale = Boolean.TRUE.equals(staleValue);
 
+                                showPredictionBadge(
+                                        Boolean.TRUE.equals(responseMap.get("final")),
+                                        Boolean.TRUE.equals(responseMap.get("locked")),
+                                        responseMap.get("final_at"));
+
                                 if (isStale) {
                                     Toast.makeText(
                                             neuroPredictionResultActivity.this,
@@ -861,6 +872,12 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                         getString(R.string.neuro_prediction_progress_model_table)
                                 );
 
+                                List<String> expCodes = new ArrayList<>();
+                                List<String> expQ1 = new ArrayList<>();
+                                List<String> expQ2 = new ArrayList<>();
+                                List<String> expQ3 = new ArrayList<>();
+                                String source = String.valueOf(responseMap.get("source"));
+
                                 for (int i = 0; i < resultList.size(); i++) {
                                     Object item = resultList.get(i);
 
@@ -875,6 +892,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     String q1Time = readNullableString(qualiItem, event + "1");
                                     String q2Time = readNullableString(qualiItem, event + "2");
                                     String q3Time = readNullableString(qualiItem, event + "3");
+
+                                    expCodes.add(driverCode);
+                                    expQ1.add(q1Time);
+                                    expQ2.add(q2Time);
+                                    expQ3.add(q3Time);
 
                                     if (q1Time.isEmpty()) {
                                         q1Time = "--";
@@ -920,6 +942,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 hideShimmer(recyclerView, shimmerFrameLayout);
 
                                 adapter.notifyDataSetChanged();
+
+                                showExplanation(year, event, circuitId, source, isStale, expCodes, expQ1, expQ2, expQ3,
+                                        temp, hum, pres, rain, isStreetCircuit, circuitsLength, circuitsCorners);
 
                                 finishProgress();
 
@@ -969,6 +994,48 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                             );
                         }
                 );
+    }
+
+    private void showExplanation(int year, String event, String circuitId, String source,
+                                 boolean isStale, List<String> codes, List<String> q1,
+                                 List<String> q2, List<String> q3, double temp, double hum,
+                                 double pres, int rain, int street, double lengthKm, int corners) {
+        final String[] labels = event.equals("SQ")
+                ? new String[]{getString(R.string.sq1_header), getString(R.string.sq2_header),
+                getString(R.string.sq3_header)}
+                : new String[]{getString(R.string.q1_header), getString(R.string.q2_header),
+                getString(R.string.q3_header)};
+        final boolean fromCache = "cache".equals(source);
+        final neuroExplanation.Conditions local = new neuroExplanation.Conditions(
+                temp, hum, pres, rain > 0, street > 0, lengthKm, corners);
+        final String key = year + "_" + circuitId + "_" + event;
+
+        FirebaseDatabase.getInstance().getReference("predictions").child(key).child("params")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        neuroExplanation.Conditions saved =
+                                neuroExplanation.Conditions.fromSnapshot(snapshot);
+                        renderExplanation(codes, q1, q2, q3, labels,
+                                saved != null ? saved : local,
+                                isStale || (saved == null && fromCache));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        renderExplanation(codes, q1, q2, q3, labels, local, isStale || fromCache);
+                    }
+                });
+    }
+
+    private void renderExplanation(List<String> codes, List<String> q1, List<String> q2,
+                                   List<String> q3, String[] labels,
+                                   neuroExplanation.Conditions conditions, boolean inputsMayDiffer) {
+        if (isFinishing() || isDestroyed()) return;
+        List<String> lines = neuroExplanation.build(this, codes, q1, q2, q3, labels,
+                conditions, weatherFromPreviousYear, inputsMayDiffer);
+        explainBody.setText(android.text.TextUtils.join("\n\n", lines));
+        explainCard.setVisibility(View.VISIBLE);
     }
 
     private static String readString(
@@ -1110,6 +1177,31 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 );
 
         return userDateTime.format(formatter);
+    }
+
+    private void showPredictionBadge(boolean isFinal, boolean isLocked, Object finalAtValue) {
+        TextView badge = findViewById(R.id.neuroFinalBadge);
+        if (badge == null) return;
+
+        if (isFinal) {
+            String when = "";
+            try {
+                when = finalAtValue == null ? "" : formatDateForUser(String.valueOf(finalAtValue));
+            } catch (Exception ignored) {
+                // keep the badge without time
+            }
+            badge.setText(when.isEmpty()
+                    ? getString(R.string.neuro_badge_final)
+                    : getString(R.string.neuro_badge_final_at, when));
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_final);
+        } else if (isLocked) {
+            badge.setText(R.string.neuro_badge_locked);
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_muted);
+        } else {
+            badge.setText(R.string.neuro_badge_preliminary);
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_muted);
+        }
+        badge.setVisibility(View.VISIBLE);
     }
 
     public static ArrayList<String> correctTeamNames(ArrayList<String> teamIds){

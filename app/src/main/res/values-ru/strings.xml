@@ -1155,4 +1155,22 @@
     <string name="theme_dark">Тёмная</string>
 
     <string name="theme_button_desc">Изменить тему</string>
+
+    <string name="neuro_explain_title">Как читать прогноз</string>
+    <string name="neuro_explain_conditions">Расчёт сделан для: воздух %1$s °C, влажность %2$s %%, давление %3$s гПа, %4$s, %5$s.</string>
+    <string name="neuro_explain_rain_yes">ожидаются осадки</string>
+    <string name="neuro_explain_rain_no">без осадков</string>
+    <string name="neuro_explain_street">городская трасса</string>
+    <string name="neuro_explain_permanent">стационарная трасса</string>
+    <string name="neuro_explain_circuit">Длина круга %1$s км, поворотов: %2$d.</string>
+    <string name="neuro_explain_weather_forecast">Погода — почасовой прогноз на время сессии.</string>
+    <string name="neuro_explain_weather_last_year">До сессии больше 15 дней, поэтому вместо прогноза взята погода этого же дня в прошлом году.</string>
+    <string name="neuro_explain_cache_note">Прогноз хранится на сервере. Он пересчитывается только когда его открывают, а сохранённая версия старше суток: сначала показывается сохранённая, обновлённая появится при следующем открытии.</string>    <string name="neuro_explain_phases">Пилотов по сегментам: %1$s — %2$d, %3$s — %4$d, %5$s — %6$d.</string>
+    <string name="neuro_explain_pole">Поул в прогнозе: %1$s, %2$s. Отрыв от второго места: %3$s с.</string>
+    <string name="neuro_explain_disclaimer">Модель не сообщает, какой вклад внёс каждый фактор. Этот текст описывает входные данные и результат, а не причины.</string>
+
+    <string name="neuro_badge_final">Финальный прогноз</string>
+    <string name="neuro_badge_final_at">Финальный прогноз · %1$s</string>
+    <string name="neuro_badge_locked">Последний прогноз до сессии</string>
+    <string name="neuro_badge_preliminary">Предварительный прогноз</string>
 </resources>
