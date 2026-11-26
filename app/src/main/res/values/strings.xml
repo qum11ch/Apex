@@ -1188,6 +1188,8 @@
     <string name="neuro_explain_cache_note">The prediction is saved on the server. It is recalculated only when someone opens it and the saved version is more than a day old: the saved version is shown first, the new one appears the next time.</string>    <string name="neuro_explain_phases">Drivers per segment: %1$s — %2$d, %3$s — %4$d, %5$s — %6$d.</string>
     <string name="neuro_explain_pole">Predicted pole: %1$s, %2$s. Gap to second place: %3$s s.</string>
     <string name="neuro_explain_disclaimer">The model does not report how much each factor contributed. This text describes the input data and the result, not the reasons.</string>
+    <string name="neuro_explain_accuracy_collecting">Accuracy of final predictions is being collected: %1$d of %2$d races.</string>
+    <string name="neuro_explain_accuracy">Final predictions this season (%1$d races): pole guessed in %2$d, no more than one position off for %3$s%% of drivers.</string>
 
     <string name="neuro_badge_final">Final prediction</string>
     <string name="neuro_badge_final_at">Final prediction · %1$s</string>

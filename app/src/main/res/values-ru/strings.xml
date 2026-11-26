@@ -1168,6 +1168,8 @@
     <string name="neuro_explain_cache_note">Прогноз хранится на сервере. Он пересчитывается только когда его открывают, а сохранённая версия старше суток: сначала показывается сохранённая, обновлённая появится при следующем открытии.</string>    <string name="neuro_explain_phases">Пилотов по сегментам: %1$s — %2$d, %3$s — %4$d, %5$s — %6$d.</string>
     <string name="neuro_explain_pole">Поул в прогнозе: %1$s, %2$s. Отрыв от второго места: %3$s с.</string>
     <string name="neuro_explain_disclaimer">Модель не сообщает, какой вклад внёс каждый фактор. Этот текст описывает входные данные и результат, а не причины.</string>
+    <string name="neuro_explain_accuracy_collecting">Собираем статистику точности финальных прогнозов: %1$d из %2$d этапов.</string>
+    <string name="neuro_explain_accuracy">Финальные прогнозы сезона (этапов: %1$d): поул угадан в %2$d, ошибка не больше одной позиции у %3$s %% пилотов.</string>
 
     <string name="neuro_badge_final">Финальный прогноз</string>
     <string name="neuro_badge_final_at">Финальный прогноз · %1$s</string>

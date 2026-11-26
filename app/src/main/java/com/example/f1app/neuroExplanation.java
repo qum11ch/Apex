@@ -11,6 +11,29 @@ import java.util.Locale;
 final class neuroExplanation {
     private neuroExplanation() {}
 
+    static final int MIN_ACCURACY_RACES = 5;
+
+    static final class Accuracy {
+        final int races, poleHits;
+        final double within1;
+
+        Accuracy(int races, int poleHits, double within1) {
+            this.races = races;
+            this.poleHits = poleHits;
+            this.within1 = within1;
+        }
+
+        static Accuracy fromSnapshot(DataSnapshot s) {
+            if (s == null || !s.exists()) return null;
+            Long races = s.child("races").getValue(Long.class);
+            if (races == null) return null;
+            Long poles = s.child("pole_hits").getValue(Long.class);
+            Double within1 = s.child("within1_share").getValue(Double.class);
+            return new Accuracy(races.intValue(), poles == null ? 0 : poles.intValue(),
+                    within1 == null ? 0.0 : within1);
+        }
+    }
+
     static final class Conditions {
         final double airTemp, humidity, pressure, lengthKm;
         final boolean rain, street;
@@ -52,7 +75,8 @@ final class neuroExplanation {
 
     static List<String> build(Context context, List<String> codes, List<String> q1,
                               List<String> q2, List<String> q3, String[] labels,
-                              Conditions c, boolean previousYearWeather, boolean inputsMayDiffer) {
+                              Conditions c, boolean previousYearWeather, boolean inputsMayDiffer,
+                              Accuracy accuracy) {
         List<String> lines = new ArrayList<>();
 
         lines.add(context.getString(R.string.neuro_explain_conditions,
@@ -91,6 +115,16 @@ final class neuroExplanation {
             double gap = seconds(q3.get(second)) - seconds(q3.get(first));
             lines.add(context.getString(R.string.neuro_explain_pole,
                     codes.get(first), q3.get(first), format(gap, 3)));
+        }
+
+        if (accuracy != null) {
+            if (accuracy.races < MIN_ACCURACY_RACES) {
+                lines.add(context.getString(R.string.neuro_explain_accuracy_collecting,
+                        accuracy.races, MIN_ACCURACY_RACES));
+            } else {
+                lines.add(context.getString(R.string.neuro_explain_accuracy,
+                        accuracy.races, accuracy.poleHits, format(accuracy.within1 * 100, 0)));
+            }
         }
 
         lines.add(context.getString(R.string.neuro_explain_disclaimer));

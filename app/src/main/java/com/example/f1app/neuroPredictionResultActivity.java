@@ -929,6 +929,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 getString(R.string.sq3_header)}
                 : new String[]{getString(R.string.q1_header), getString(R.string.q2_header),
                 getString(R.string.q3_header)};
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = labels[i].toUpperCase(Locale.ROOT);
+        }
         final boolean fromCache = "cache".equals(source);
         final neuroExplanation.Conditions local = new neuroExplanation.Conditions(
                 temp, hum, pres, rain > 0, street > 0, lengthKm, corners);
@@ -940,24 +943,46 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         neuroExplanation.Conditions saved =
                                 neuroExplanation.Conditions.fromSnapshot(snapshot);
-                        renderExplanation(codes, q1, q2, q3, labels,
+                        loadAccuracyAndRender(year, codes, q1, q2, q3, labels,
                                 saved != null ? saved : local,
                                 isStale || (saved == null && fromCache));
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-                        renderExplanation(codes, q1, q2, q3, labels, local, isStale || fromCache);
+                        loadAccuracyAndRender(year, codes, q1, q2, q3, labels, local,
+                                isStale || fromCache);
+                    }
+                });
+    }
+
+    private void loadAccuracyAndRender(int year, List<String> codes, List<String> q1,
+                                       List<String> q2, List<String> q3, String[] labels,
+                                       neuroExplanation.Conditions conditions,
+                                       boolean inputsMayDiffer) {
+        FirebaseDatabase.getInstance().getReference("predictionAccuracy")
+                .child(String.valueOf(year))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        renderExplanation(codes, q1, q2, q3, labels, conditions, inputsMayDiffer,
+                                neuroExplanation.Accuracy.fromSnapshot(snapshot));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        renderExplanation(codes, q1, q2, q3, labels, conditions, inputsMayDiffer, null);
                     }
                 });
     }
 
     private void renderExplanation(List<String> codes, List<String> q1, List<String> q2,
                                    List<String> q3, String[] labels,
-                                   neuroExplanation.Conditions conditions, boolean inputsMayDiffer) {
+                                   neuroExplanation.Conditions conditions, boolean inputsMayDiffer,
+                                   neuroExplanation.Accuracy accuracy) {
         if (isFinishing() || isDestroyed()) return;
         List<String> lines = neuroExplanation.build(this, codes, q1, q2, q3, labels,
-                conditions, weatherFromPreviousYear, inputsMayDiffer);
+                conditions, weatherFromPreviousYear, inputsMayDiffer, accuracy);
         explainBody.setText(android.text.TextUtils.join("\n\n", lines));
         explainCard.setVisibility(View.VISIBLE);
     }
