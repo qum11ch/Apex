@@ -1281,4 +1281,22 @@
     <string name="tracks_car_best">Best car</string>
     <string name="tracks_car_second">Second car</string>
     <string name="tracks_note">Seasons %1$d–%2$d, the same as in the results tables.</string>
+
+    <string name="weather_title_race">Race forecast</string>
+    <string name="weather_title_now">Now at the circuit</string>
+    <string name="weather_title_weekend">Weekend weather</string>
+    <string name="weather_feels">feels like %1$s</string>
+    <string name="weather_rain">Rain %1$d%%</string>
+    <string name="weather_humidity">Humidity %1$d%%</string>
+    <string name="weather_wind">%1$s km/h</string>
+    <string name="weather_available_from">Forecast available from %1$s</string>
+    <string name="weather_updated_ago">Updated %1$d h ago</string>
+    <string name="weather_unavailable">Weather is unavailable. Check your connection.</string>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly">Partly cloudy</string>
+    <string name="weather_cloud">Overcast</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_rain_condition">Rain</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_storm">Thunderstorm</string>
 </resources>

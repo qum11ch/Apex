@@ -1261,4 +1261,22 @@
     <string name="tracks_car_best">Лучшая машина</string>
     <string name="tracks_car_second">Вторая машина</string>
     <string name="tracks_note">Данные за сезоны %1$d–%2$d, как в таблицах результатов.</string>
+
+    <string name="weather_title_race">Прогноз на гонку</string>
+    <string name="weather_title_now">Сейчас на трассе</string>
+    <string name="weather_title_weekend">Погода на уик-энд</string>
+    <string name="weather_feels">ощущается %1$s</string>
+    <string name="weather_rain">Дождь %1$d%%</string>
+    <string name="weather_humidity">Влажность %1$d%%</string>
+    <string name="weather_wind">%1$s м/с</string>
+    <string name="weather_available_from">Прогноз появится с %1$s</string>
+    <string name="weather_updated_ago">Обновлено %1$d ч назад</string>
+    <string name="weather_unavailable">Нет данных о погоде. Проверьте подключение.</string>
+    <string name="weather_clear">Ясно</string>
+    <string name="weather_partly">Переменная облачность</string>
+    <string name="weather_cloud">Пасмурно</string>
+    <string name="weather_fog">Туман</string>
+    <string name="weather_rain_condition">Дождь</string>
+    <string name="weather_snow">Снег</string>
+    <string name="weather_storm">Гроза</string>
 </resources>
