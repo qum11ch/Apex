@@ -1260,4 +1260,8 @@
     <string name="compare_duel_avg_race_team">Average finish of the best car</string>
     <string name="compare_duel_note_team">For a team the best car of the round counts: the team whose best car is higher wins. Points are the sum of both cars, retirements count both cars. The better side is highlighted in colour.</string>
     <string name="compare_pick_teammate">Teammate</string>
+
+    <string name="compare_chart_title">Points by round</string>
+    <string name="compare_chart_info">Round %1$d · %2$s: %3$s – %4$s</string>
+    <string name="compare_chart_empty">No points data for this season</string>
 </resources>

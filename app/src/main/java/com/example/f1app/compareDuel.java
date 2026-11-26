@@ -153,7 +153,7 @@ final class compareDuel {
         }
     }
 
-    private static String driverId(JSONObject standings, compareParticipant p) {
+    static String driverId(JSONObject standings, compareParticipant p) {
         if (standings == null) {
             return null;
         }
@@ -165,7 +165,7 @@ final class compareDuel {
         return id.isEmpty() ? null : id;
     }
 
-    private static String constructorId(JSONObject standings, compareParticipant p) {
+    static String constructorId(JSONObject standings, compareParticipant p) {
         if (standings == null) {
             return null;
         }

@@ -1240,4 +1240,8 @@
     <string name="compare_duel_avg_race_team">Средний финиш лучшей машины</string>
     <string name="compare_duel_note_team">Для команды берём лучшую машину этапа: побеждает та, чья лучшая машина выше. Очки — сумма обеих машин за этап, сходы считаются по обеим. Цветом выделен тот, кто выше.</string>
     <string name="compare_pick_teammate">Напарник</string>
+
+    <string name="compare_chart_title">Очки по этапам</string>
+    <string name="compare_chart_info">Этап %1$d · %2$s: %3$s – %4$s</string>
+    <string name="compare_chart_empty">Нет данных об очках за этот сезон</string>
 </resources>

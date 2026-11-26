@@ -16,13 +16,16 @@ import android.os.Bundle;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.style.StyleSpan;
+import android.util.TypedValue;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.graphics.Path;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -74,6 +77,9 @@ public class compareActivity extends AppCompatActivity {
 
     private LinearLayout content;
 
+    private compareSeries.Data chart;
+    private int chartToken = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -115,6 +121,7 @@ public class compareActivity extends AppCompatActivity {
             seasonA = null;
             seasonB = null;
             duel = null;
+            chart = null;
 
             if (tab == TAB_SEASON) {
                 loadSeason();
@@ -164,6 +171,7 @@ public class compareActivity extends AppCompatActivity {
         seasonA = null;
         seasonB = null;
         duel = null;
+        chart = null;
         year = -1;
 
         final int mine = ++loadToken;
@@ -235,6 +243,7 @@ public class compareActivity extends AppCompatActivity {
 
         seasonA = null;
         seasonB = null;
+        chart = null;
 
         compareLoader.season(a, year, s -> {
             loaded[0] = s;
@@ -244,6 +253,30 @@ public class compareActivity extends AppCompatActivity {
             loaded[1] = s;
             finishSeason(mine, loaded, pending);
         });
+
+        loadChart();
+    }
+
+    private void loadChart() {
+        if (a == null || b == null) {
+            return;
+        }
+
+        final int mine = ++chartToken;
+
+        compareSeries.Callback callback = data -> {
+            if (mine != chartToken || isFinishing() || isDestroyed()) {
+                return;
+            }
+
+            chart = data == null ? compareSeries.EMPTY : data;
+
+            if (tab == TAB_SEASON) {
+                render();
+            }
+        };
+
+        compareSeries.load(a, b, year, callback);
     }
 
     private void finishSeason(int mine, compareLoader.Season[] loaded, int[] pending) {
@@ -502,7 +535,51 @@ public class compareActivity extends AppCompatActivity {
         addRow(R.string.compare_metric_wins, seasonA.wins, seasonB.wins,
                 compareMath.Mode.HIGHER, false, colorA, colorB);
 
+        addChart(colorA, colorB);
         addNote(R.string.compare_no_data_note);
+    }
+
+    private void addChart(int colorA, int colorB) {
+        TextView title = text(getString(R.string.compare_chart_title), 12, R.color.text_color_thirdly);
+        title.setAllCaps(true);
+        title.setGravity(Gravity.CENTER);
+
+        LinearLayout.LayoutParams titleParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        titleParams.topMargin = dp(28);
+        content.addView(title, titleParams);
+
+        if (chart == null) {
+            addProgress();
+            return;
+        }
+
+        if (chart.a.length == 0) {
+            addNote(R.string.compare_chart_empty);
+            return;
+        }
+
+        TextView info = text("", 14, R.color.text_color_main);
+        info.setGravity(Gravity.CENTER);
+
+        LinearLayout.LayoutParams infoParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        infoParams.topMargin = dp(8);
+        content.addView(info, infoParams);
+
+        ChartView view = new ChartView(this);
+        view.setContentDescription(getString(R.string.compare_chart_title) + ": "
+                + format(chart.a[chart.a.length - 1], false) + " / "
+                + format(chart.b[chart.b.length - 1], false));
+        view.set(chart.a, chart.b, colorA, colorB, color(R.color.neuro_divider),
+                color(R.color.text_color_thirdly), index -> info.setText(getString(
+                        R.string.compare_chart_info, index + 1, raceTitle(chart.names[index]),
+                        format(chart.a[index], false), format(chart.b[index], false))));
+
+        LinearLayout.LayoutParams chartParams = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, dp(220));
+        chartParams.topMargin = dp(8);
+        content.addView(view, chartParams);
     }
 
     private void addYearChip() {
@@ -740,6 +817,200 @@ public class compareActivity extends AppCompatActivity {
             if (winsB > 0) {
                 rect.set(winsA > 0 ? widthA + 1.5f : 0, 0, w, h);
                 canvas.drawRoundRect(rect, r, r, barB);
+            }
+        }
+    }
+
+    /** Two cumulative lines; a touch picks the round. */
+    private static final class ChartView extends View {
+
+        interface Listener {
+            void onSelect(int index);
+        }
+
+        private final Paint lineA = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint lineB = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint grid = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint label = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint marker = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Path path = new Path();
+        private final float density;
+
+        private double[] a = new double[0];
+        private double[] b = new double[0];
+        private int colorA;
+        private int colorB;
+        private int selected = -1;
+        private float downX;
+        private float downY;
+        private Listener listener;
+
+        ChartView(Context context) {
+            super(context);
+            density = context.getResources().getDisplayMetrics().density;
+
+            for (Paint line : new Paint[]{lineA, lineB}) {
+                line.setStyle(Paint.Style.STROKE);
+                line.setStrokeWidth(3 * density);
+                line.setStrokeJoin(Paint.Join.ROUND);
+                line.setStrokeCap(Paint.Cap.ROUND);
+            }
+
+            grid.setStrokeWidth(density);
+            label.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 10,
+                    context.getResources().getDisplayMetrics()));
+            marker.setStyle(Paint.Style.FILL);
+        }
+
+        void set(double[] a, double[] b, int colorA, int colorB, int gridColor, int textColor,
+                 Listener listener) {
+            this.a = a;
+            this.b = b;
+            this.colorA = colorA;
+            this.colorB = colorB;
+            this.listener = listener;
+            lineA.setColor(colorA);
+            lineB.setColor(colorB);
+            grid.setColor(gridColor);
+            label.setColor(textColor);
+            selected = a.length - 1;
+
+            if (listener != null && selected >= 0) {
+                listener.onSelect(selected);
+            }
+
+            invalidate();
+        }
+
+        private static double niceMax(double max) {
+            if (max <= 0) {
+                return 10;
+            }
+
+            double step = Math.pow(10, Math.floor(Math.log10(max)));
+            double m = max / step;
+            double nice = m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10;
+
+            return nice * step;
+        }
+
+        private float left() {
+            return 34 * density;
+        }
+
+        private float plotWidth() {
+            return getWidth() - left() - 10 * density;
+        }
+
+        private float x(int index) {
+            int n = a.length;
+            return n == 1 ? left() + plotWidth() / 2f : left() + plotWidth() * index / (n - 1);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            int n = a.length;
+
+            if (n == 0) {
+                return;
+            }
+
+            float padTop = 8 * density;
+            float plotHeight = getHeight() - padTop - 8 * density;
+
+            double max = 0;
+            for (int i = 0; i < n; i++) {
+                max = Math.max(max, Math.max(a[i], b[i]));
+            }
+            double scale = niceMax(max);
+
+            for (int i = 0; i <= 4; i++) {
+                float y = padTop + plotHeight - plotHeight * i / 4f;
+                canvas.drawLine(left(), y, left() + plotWidth(), y, grid);
+                canvas.drawText(String.valueOf((long) Math.round(scale * i / 4)), 0,
+                        y - 3 * density, label);
+            }
+
+            draw(canvas, a, lineA, padTop, plotHeight, scale);
+            draw(canvas, b, lineB, padTop, plotHeight, scale);
+
+            if (selected >= 0 && selected < n) {
+                float sx = x(selected);
+                canvas.drawLine(sx, padTop, sx, padTop + plotHeight, grid);
+
+                marker.setColor(colorA);
+                canvas.drawCircle(sx, y(a[selected], padTop, plotHeight, scale), 5 * density, marker);
+                marker.setColor(colorB);
+                canvas.drawCircle(sx, y(b[selected], padTop, plotHeight, scale), 5 * density, marker);
+            }
+        }
+
+        private float y(double value, float padTop, float plotHeight, double scale) {
+            return padTop + plotHeight - (float) (value / scale) * plotHeight;
+        }
+
+        private void draw(Canvas canvas, double[] values, Paint line, float padTop,
+                          float plotHeight, double scale) {
+            path.reset();
+
+            for (int i = 0; i < values.length; i++) {
+                float px = x(i);
+                float py = y(values[i], padTop, plotHeight, scale);
+
+                if (i == 0) {
+                    path.moveTo(px, py);
+                } else {
+                    path.lineTo(px, py);
+                }
+            }
+
+            canvas.drawPath(path, line);
+        }
+
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            if (a.length == 0) {
+                return false;
+            }
+
+            switch (event.getActionMasked()) {
+                case MotionEvent.ACTION_DOWN:
+                    downX = event.getX();
+                    downY = event.getY();
+                    select(event.getX());
+                    return true;
+
+                case MotionEvent.ACTION_MOVE:
+                    if (Math.abs(event.getX() - downX) > Math.abs(event.getY() - downY)) {
+                        getParent().requestDisallowInterceptTouchEvent(true);
+                        select(event.getX());
+                    }
+                    return true;
+
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    getParent().requestDisallowInterceptTouchEvent(false);
+                    return true;
+
+                default:
+                    return super.onTouchEvent(event);
+            }
+        }
+
+        private void select(float touchX) {
+            int n = a.length;
+            float width = plotWidth();
+            int index = n == 1 || width <= 0 ? 0
+                    : Math.round((touchX - left()) / width * (n - 1));
+            index = Math.max(0, Math.min(n - 1, index));
+
+            if (index != selected) {
+                selected = index;
+                invalidate();
+
+                if (listener != null) {
+                    listener.onSelect(index);
+                }
             }
         }
     }
