@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -101,6 +102,8 @@ public class teamPageActivity extends AppCompatActivity {
                 });
             }
 
+            setupCompare(mTeamId, mCurrentSeason);
+
             LocalDate currentDate = LocalDate.now();
             String currentYear = Integer.toString(currentDate.getYear());
 
@@ -167,6 +170,26 @@ public class teamPageActivity extends AppCompatActivity {
 
             setupToolbar(mTeamName);
         }
+    }
+
+    private void setupCompare(String teamId, String season) {
+        final String requestKey = "team_compare_pick";
+
+        getSupportFragmentManager().setFragmentResultListener(requestKey, this, (key, result) -> {
+            String other = result.getString(comparePickerSheet.KEY);
+            if (other == null) return;
+
+            Intent intent = new Intent(this, compareActivity.class);
+            intent.putExtra(compareActivity.EXTRA_TYPE, compareParticipant.TEAM);
+            intent.putExtra(compareActivity.EXTRA_FIRST, teamId);
+            intent.putExtra(compareActivity.EXTRA_SECOND, other);
+            intent.putExtra(compareActivity.EXTRA_SEASON, season);
+            startActivity(intent);
+        });
+
+        findViewById(R.id.compare_button).setOnClickListener(v ->
+                comparePickerSheet.show(getSupportFragmentManager(),
+                        compareParticipant.TEAM, teamId, requestKey));
     }
 
     private void setupToolbar(String mTeamName) {

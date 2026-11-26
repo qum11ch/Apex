@@ -1194,4 +1194,71 @@
     <string name="neuro_factor_track">Трасса</string>
     <string name="neuro_factor_weather">Погода</string>
     <string name="neuro_factor_season">Сезон и регламент</string>
+
+    <string name="compare_title">Сравнение</string>
+    <string name="compare_button_description">Сравнить</string>
+    <string name="compare_vs">VS</string>
+    <string name="compare_tab_career">Карьера</string>
+    <string name="compare_tab_season">Сезон</string>
+    <string name="compare_pick_driver_title">Выберите пилота</string>
+    <string name="compare_pick_team_title">Выберите команду</string>
+    <string name="compare_pick_search_hint">Поиск</string>
+    <string name="compare_pick_empty">Ничего не найдено</string>
+    <string name="compare_pick_season_format">Сезон %1$s</string>
+    <string name="compare_pick_others">Остальные</string>
+    <string name="compare_load_error">Не удалось загрузить данные</string>
+    <string name="compare_metric_titles">Титулы</string>
+    <string name="compare_metric_wins">Победы</string>
+    <string name="compare_metric_podiums">Подиумы</string>
+    <string name="compare_metric_poles">Поулы</string>
+    <string name="compare_metric_fastest">Быстрые круги</string>
+    <string name="compare_metric_gp">Гран-при</string>
+    <string name="compare_metric_entry">Первый сезон</string>
+    <string name="compare_metric_points">Очки</string>
+    <string name="compare_metric_win_rate">Доля побед</string>
+    <string name="compare_metric_podium_rate">Доля подиумов</string>
+    <string name="compare_metric_pole_rate">Доля поулов</string>
+    <string name="compare_metric_place">Место в чемпионате</string>
+    <string name="compare_season_teams">%1$s · %2$s</string>
+    <string name="compare_rates_note">Доли считаются от числа Гран-при пилота.</string>
+    <string name="compare_points_note">Очки в разные эпохи начислялись по разным системам, поэтому сравнивайте их осторожно.</string>
+    <string name="compare_no_data_note">Прочерк означает, что за этот сезон данных нет.</string>
+
+    <string name="compare_tab_duel">Дуэль</string>
+    <string name="compare_duel_race">Гонки</string>
+    <string name="compare_duel_quali">Квалификации</string>
+    <string name="compare_duel_avg_quali">Средняя позиция в квалификации</string>
+    <string name="compare_duel_avg_race">Средний финиш</string>
+    <string name="compare_duel_retired">Сходы</string>
+    <string name="compare_duel_round">Этап</string>
+    <string name="compare_duel_quali_short">Квал.</string>
+    <string name="compare_duel_race_short">Гонка</string>
+    <string name="compare_duel_empty">В этом сезоне нет общих гонок</string>
+    <string name="compare_duel_note">Считаем гонки, в которых есть результат у обоих. Берём классифицированное место: сход тоже имеет место в протоколе. Цветом выделен тот, кто выше.</string>
+    <string name="compare_duel_points_short">Очки</string>
+    <string name="compare_duel_avg_quali_team">Средняя квалификация лучшей машины</string>
+    <string name="compare_duel_avg_race_team">Средний финиш лучшей машины</string>
+    <string name="compare_duel_note_team">Для команды берём лучшую машину этапа: побеждает та, чья лучшая машина выше. Очки — сумма обеих машин за этап, сходы считаются по обеим. Цветом выделен тот, кто выше.</string>
+    <string name="compare_pick_teammate">Напарник</string>
+
+    <string name="compare_chart_title">Очки по этапам</string>
+    <string name="compare_chart_info">Этап %1$d · %2$s: %3$s – %4$s</string>
+    <string name="compare_chart_empty">Нет данных об очках за этот сезон</string>
+    <string name="compare_chart_info_one">Этап %1$d · %2$s: %3$s оч.</string>
+
+    <string name="compare_tab_track">Трасса</string>
+    <string name="compare_circuit_pick_title">Выберите трассу</string>
+    <string name="compare_track_year">Год</string>
+    <string name="compare_track_best">Лучший результат</string>
+    <string name="compare_track_none">Нет трасс, на которых выступали оба</string>
+    <string name="compare_track_note">Считаем результаты обоих на выбранной трассе по годам, в которые они выступали оба. Цветом выделен тот, кто выше.</string>
+
+    <string name="tracks_mode_seasons">Сезоны</string>
+    <string name="tracks_mode_tracks">Трассы</string>
+    <string name="tracks_summary">Стартов: %1$d · побед: %2$d · подиумов: %3$d</string>
+    <string name="tracks_empty">Нет данных о результатах по трассам</string>
+    <string name="tracks_year">Год</string>
+    <string name="tracks_car_best">Лучшая машина</string>
+    <string name="tracks_car_second">Вторая машина</string>
+    <string name="tracks_note">Данные за сезоны %1$d–%2$d, как в таблицах результатов.</string>
 </resources>

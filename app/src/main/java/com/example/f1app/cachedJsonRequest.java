@@ -1,6 +1,7 @@
 package com.example.f1app;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -77,6 +78,10 @@ public class cachedJsonRequest extends JsonObjectRequest {
         }
 
         return error -> {
+            int status = error.networkResponse != null ? error.networkResponse.statusCode : -1;
+            Log.w("cachedJsonRequest", "request failed: " + url
+                    + " status=" + status + " error=" + error.getClass().getSimpleName());
+
             JSONObject saved = read(url);
 
             if (saved == null) {
@@ -86,7 +91,7 @@ public class cachedJsonRequest extends JsonObjectRequest {
                 return;
             }
 
-            networkNotice.showStale();
+            networkNotice.showStale(status);
             listener.onResponse(saved);
         };
     }

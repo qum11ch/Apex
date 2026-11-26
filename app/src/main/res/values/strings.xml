@@ -1214,4 +1214,71 @@
     <string name="neuro_factor_track">Track</string>
     <string name="neuro_factor_weather">Weather</string>
     <string name="neuro_factor_season">Season and rules</string>
+
+    <string name="compare_title">Compare</string>
+    <string name="compare_button_description">Compare</string>
+    <string name="compare_vs">VS</string>
+    <string name="compare_tab_career">Career</string>
+    <string name="compare_tab_season">Season</string>
+    <string name="compare_pick_driver_title">Choose a driver</string>
+    <string name="compare_pick_team_title">Choose a team</string>
+    <string name="compare_pick_search_hint">Search</string>
+    <string name="compare_pick_empty">Nothing found</string>
+    <string name="compare_pick_season_format">%1$s season</string>
+    <string name="compare_pick_others">Others</string>
+    <string name="compare_load_error">Could not load data</string>
+    <string name="compare_metric_titles">Championships</string>
+    <string name="compare_metric_wins">Wins</string>
+    <string name="compare_metric_podiums">Podiums</string>
+    <string name="compare_metric_poles">Poles</string>
+    <string name="compare_metric_fastest">Fastest laps</string>
+    <string name="compare_metric_gp">Grands Prix</string>
+    <string name="compare_metric_entry">First season</string>
+    <string name="compare_metric_points">Points</string>
+    <string name="compare_metric_win_rate">Win rate</string>
+    <string name="compare_metric_podium_rate">Podium rate</string>
+    <string name="compare_metric_pole_rate">Pole rate</string>
+    <string name="compare_metric_place">Championship position</string>
+    <string name="compare_season_teams">%1$s · %2$s</string>
+    <string name="compare_rates_note">Rates are counted per Grand Prix the driver entered.</string>
+    <string name="compare_points_note">Points were awarded under different systems in different eras, so compare them with care.</string>
+    <string name="compare_no_data_note">A dash means there is no data for that season.</string>
+
+    <string name="compare_tab_duel">Duel</string>
+    <string name="compare_duel_race">Races</string>
+    <string name="compare_duel_quali">Qualifying</string>
+    <string name="compare_duel_avg_quali">Average qualifying position</string>
+    <string name="compare_duel_avg_race">Average finish</string>
+    <string name="compare_duel_retired">Retirements</string>
+    <string name="compare_duel_round">Grand Prix</string>
+    <string name="compare_duel_quali_short">Qual.</string>
+    <string name="compare_duel_race_short">Race</string>
+    <string name="compare_duel_empty">No shared races in this season</string>
+    <string name="compare_duel_note">Only the races where both have a result are counted. The classified position is used: a retirement also has a place in the classification. The better position is highlighted in colour.</string>
+    <string name="compare_duel_points_short">Pts</string>
+    <string name="compare_duel_avg_quali_team">Average qualifying of the best car</string>
+    <string name="compare_duel_avg_race_team">Average finish of the best car</string>
+    <string name="compare_duel_note_team">For a team the best car of the round counts: the team whose best car is higher wins. Points are the sum of both cars, retirements count both cars. The better side is highlighted in colour.</string>
+    <string name="compare_pick_teammate">Teammate</string>
+
+    <string name="compare_chart_title">Points by round</string>
+    <string name="compare_chart_info">Round %1$d · %2$s: %3$s – %4$s</string>
+    <string name="compare_chart_empty">No points data for this season</string>
+    <string name="compare_chart_info_one">Round %1$d · %2$s: %3$s pts</string>
+
+    <string name="compare_tab_track">Track</string>
+    <string name="compare_circuit_pick_title">Choose a circuit</string>
+    <string name="compare_track_year">Year</string>
+    <string name="compare_track_best">Best result</string>
+    <string name="compare_track_none">No circuits where both raced</string>
+    <string name="compare_track_note">Results of both on the chosen circuit, for the years in which both raced. The better side is highlighted in colour.</string>
+
+    <string name="tracks_mode_seasons">Seasons</string>
+    <string name="tracks_mode_tracks">Circuits</string>
+    <string name="tracks_summary">Starts: %1$d · wins: %2$d · podiums: %3$d</string>
+    <string name="tracks_empty">No results by circuit yet</string>
+    <string name="tracks_year">Year</string>
+    <string name="tracks_car_best">Best car</string>
+    <string name="tracks_car_second">Second car</string>
+    <string name="tracks_note">Seasons %1$d–%2$d, the same as in the results tables.</string>
 </resources>

@@ -54,13 +54,26 @@ public final class networkNotice {
 
     /** Called when the server could not be reached and a saved answer was used instead. */
     static void showStale() {
+        showStale(-1);
+    }
+
+    static void showStale(int status) {
         Context app = ApexApp.context();
 
-        if (app != null) {
-            notice(app, text(
-                    "Сервер недоступен. Показаны сохранённые данные.",
-                    "Server unavailable. Showing saved data."));
+        if (app == null) {
+            return;
         }
+
+        if (status == 429) {
+            notice(app, text(
+                    "Слишком много запросов к серверу данных. Показаны сохранённые данные.",
+                    "Too many requests to the data server. Showing saved data."));
+            return;
+        }
+
+        notice(app, text(
+                "Сервер недоступен. Показаны сохранённые данные.",
+                "Server unavailable. Showing saved data."));
     }
 
     // ---------------------------------------------------------------- actions that need the server
