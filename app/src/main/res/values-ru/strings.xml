@@ -1237,4 +1237,5 @@
     <string name="compare_duel_avg_quali_team">Средняя квалификация лучшей машины</string>
     <string name="compare_duel_avg_race_team">Средний финиш лучшей машины</string>
     <string name="compare_duel_note_team">Для команды берём лучшую машину этапа: побеждает та, чья лучшая машина выше. Очки — сумма обеих машин за этап, сходы считаются по обеим. Цветом выделен тот, кто выше.</string>
+    <string name="compare_pick_teammate">Напарник</string>
 </resources>

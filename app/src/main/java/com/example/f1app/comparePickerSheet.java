@@ -4,6 +4,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,9 +26,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Locale;
+import java.util.Set;
 
 /** A searchable list of drivers or teams: a tap returns the key under the request key. */
 public class comparePickerSheet extends neuroBaseSheet {
@@ -38,18 +42,22 @@ public class comparePickerSheet extends neuroBaseSheet {
     private static final String ARG_TYPE = "type";
     private static final String ARG_EXCLUDE = "exclude";
     private static final String ARG_REQUEST = "request";
+    private static final String ARG_TEAM = "team";
+    private static final String ARG_SEASON = "season";
 
     private static final class Item {
         final String key;
         final String label;
         final String extra;
         final String sort;
+        final boolean mate;
 
-        Item(String key, String label, String extra, String sort) {
+        Item(String key, String label, String extra, String sort, boolean mate) {
             this.key = key;
             this.label = label;
             this.extra = extra;
             this.sort = sort;
+            this.mate = mate;
         }
     }
 
@@ -62,6 +70,11 @@ public class comparePickerSheet extends neuroBaseSheet {
     private String query = "";
 
     static void show(FragmentManager manager, int type, String exclude, String requestKey) {
+        show(manager, type, exclude, requestKey, "", "");
+    }
+
+    static void show(FragmentManager manager, int type, String exclude, String requestKey,
+                     String teamId, String season) {
         if (manager.findFragmentByTag(TAG) != null || manager.isStateSaved()) {
             return;
         }
@@ -72,6 +85,8 @@ public class comparePickerSheet extends neuroBaseSheet {
         args.putInt(ARG_TYPE, type);
         args.putString(ARG_EXCLUDE, exclude);
         args.putString(ARG_REQUEST, requestKey);
+        args.putString(ARG_TEAM, teamId == null ? "" : teamId);
+        args.putString(ARG_SEASON, season == null ? "" : season);
 
         sheet.setArguments(args);
         sheet.show(manager, TAG);
@@ -158,6 +173,56 @@ public class comparePickerSheet extends neuroBaseSheet {
     }
 
     private void load(int type, String exclude) {
+        if (type != compareParticipant.DRIVER) {
+            loadItems(type, exclude, Collections.emptySet());
+            return;
+        }
+
+        String requested = requireArguments().getString(ARG_SEASON, "");
+        final String season = requested.isEmpty()
+                ? String.valueOf(LocalDate.now().getYear()) : requested;
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("driverLineUp").child("season").child(season)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!isAdded()) {
+                            return;
+                        }
+
+                        Set<String> mates = new HashSet<>();
+
+                        for (DataSnapshot team : snapshot.getChildren()) {
+                            DataSnapshot drivers = team.child("drivers");
+
+                            if (!drivers.hasChild(exclude)
+                                    || Boolean.FALSE.equals(drivers.child(exclude).getValue())) {
+                                continue;
+                            }
+
+                            for (DataSnapshot driver : drivers.getChildren()) {
+                                if (driver.getKey() != null
+                                        && !Boolean.FALSE.equals(driver.getValue())) {
+                                    mates.add(driver.getKey());
+                                }
+                            }
+                        }
+
+                        mates.remove(exclude);
+                        loadItems(type, exclude, mates);
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        if (isAdded()) {
+                            loadItems(type, exclude, Collections.emptySet());
+                        }
+                    }
+                });
+    }
+
+    private void loadItems(int type, String exclude, Set<String> mates) {
         String node = type == compareParticipant.TEAM ? "constructors" : "drivers";
 
         FirebaseDatabase.getInstance().getReference().child(node)
@@ -180,16 +245,23 @@ public class comparePickerSheet extends neuroBaseSheet {
                                 String full = child.child("fullTeamName").getValue(String.class);
                                 String label = name == null ? key : name;
                                 all.add(new Item(key, label, full == null ? "" : full,
-                                        label.toLowerCase(Locale.ROOT)));
+                                        label.toLowerCase(Locale.ROOT), false));
                             } else {
                                 String team = child.child("driversTeam").getValue(String.class);
                                 String[] names = driverNameFormatter.split(key);
-                                all.add(new Item(key, key, team == null ? "" : team,
-                                        names[1].toLowerCase(Locale.ROOT) + " " + names[0].toLowerCase(Locale.ROOT)));
+                                boolean mate = mates.contains(key);
+                                String extra = (mate ? getString(R.string.compare_pick_teammate)
+                                        + (team == null ? "" : " \u00B7 ") : "")
+                                        + (team == null ? "" : team);
+
+                                all.add(new Item(key, key, extra,
+                                        names[1].toLowerCase(Locale.ROOT) + " "
+                                                + names[0].toLowerCase(Locale.ROOT), mate));
                             }
                         }
 
-                        Collections.sort(all, (x, y) -> x.sort.compareTo(y.sort));
+                        Collections.sort(all, (x, y) -> x.mate != y.mate
+                                ? (x.mate ? -1 : 1) : x.sort.compareTo(y.sort));
                         filter();
                     }
 

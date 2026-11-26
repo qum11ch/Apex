@@ -68,6 +68,8 @@ public class driverPageActivity extends AppCompatActivity {
 
     private TextView driverStatus;
 
+    private String pageTeamId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -510,6 +512,7 @@ public class driverPageActivity extends AppCompatActivity {
                             driverTeamId = pastTeamPalette.idForName(driverTeam);
                         }
 
+                        pageTeamId = driverTeamId == null ? "" : driverTeamId;
 
                         init(
                                 createDriverPageBundle(
@@ -537,6 +540,8 @@ public class driverPageActivity extends AppCompatActivity {
                                 "Failed to load constructor",
                                 error.toException()
                         );
+
+                        pageTeamId = "";
 
                         init(
                                 createDriverPageBundle(
