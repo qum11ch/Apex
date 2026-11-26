@@ -107,232 +107,42 @@
 
                     </LinearLayout>
                     <LinearLayout
-                        app:layout_constraintTop_toBottomOf="@id/date_layout"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginStart="5dp"
-                        android:paddingTop="5dp"
-                        android:paddingBottom="0dp"
-                        android:layout_marginEnd="5dp"
                         android:id="@+id/podium_layout"
+                        style="@style/RacePodiumStyle"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        style="@style/RacePodiumStyle"
-                        android:orientation="vertical">
+                        android:layout_marginStart="5dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="5dp"
+                        android:orientation="vertical"
+                        android:paddingTop="5dp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/date_layout">
+
                         <TextView
-                            android:textAlignment="center"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
                             android:id="@+id/infoRaceName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:textAlignment="center"
                             android:textAppearance="@style/TextStyle.GoodTiming.Bold"
                             android:textColor="@color/white"
-                            android:textSize="20sp"
-                            android:paddingStart="8dp"
-                            android:paddingEnd="8dp"/>
-                        <LinearLayout
-                            android:layout_marginTop="10dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:id="@+id/podiumImage_layout"
-                            android:baselineAligned="false"
-                            android:gravity="bottom"
-                            android:layout_width="match_parent"
-                            android:layout_height="160dp"
-                            android:orientation="horizontal"
-                            android:weightSum="3">
-                            <RelativeLayout
-                                android:paddingEnd="2.5dp"
-                                android:paddingStart="0dp"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1">
-                                <androidx.cardview.widget.CardView
-                                    android:layout_alignParentBottom="true"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="80dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@android:color/transparent"
-                                    app:cardCornerRadius="10dp">
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="@drawable/background_striped_lines_silver"
-                                        tools:ignore="TooDeepLayout" />
-                                </androidx.cardview.widget.CardView>
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="fitEnd"
-                                    android:id="@+id/secondPlace_image"
-                                    android:contentDescription="@string/_2nd_place_driver_image"
-                                    android:layout_alignParentBottom="true"/>
-                            </RelativeLayout>
-                            <RelativeLayout
-                                android:paddingEnd="2.5dp"
-                                android:paddingStart="2.5dp"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="1.1">
-                                <androidx.cardview.widget.CardView
-                                    android:layout_alignParentBottom="true"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="100dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@android:color/transparent"
-                                    app:cardCornerRadius="10dp">
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="@drawable/background_striped_lines_gold"
-                                        tools:ignore="TooDeepLayout"/>
-                                </androidx.cardview.widget.CardView>
+                            android:textSize="20sp" />
 
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="fitEnd"
-                                    android:id="@+id/firstPlace_image"
-                                    android:contentDescription="@string/_1st_place_driver_image"
-                                    android:layout_alignParentBottom="true"/>
-                            </RelativeLayout>
-                            <RelativeLayout
-                                android:paddingStart="2.5dp"
-                                android:paddingEnd="0dp"
-                                android:layout_width="0dp"
-                                android:layout_height="match_parent"
-                                android:layout_weight="0.9">
-                                <androidx.cardview.widget.CardView
-                                    android:layout_alignParentBottom="true"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="60dp"
-                                    app:cardElevation="0dp"
-                                    app:cardBackgroundColor="@android:color/transparent"
-                                    app:cardCornerRadius="10dp">
-                                    <View
-                                        android:layout_width="match_parent"
-                                        android:layout_height="match_parent"
-                                        android:background="@drawable/background_striped_lines_bronze"
-                                        tools:ignore="TooDeepLayout"/>
-                                </androidx.cardview.widget.CardView>
-                                <ImageView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="match_parent"
-                                    android:scaleType="fitEnd"
-                                    android:contentDescription="@string/_3rd_place_driver_image"
-                                    android:id="@+id/thirdPlace_image"
-                                    android:layout_alignParentBottom="true"/>
-                            </RelativeLayout>
-                        </LinearLayout>
                         <LinearLayout
-                            android:visibility="gone"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:layout_marginTop="5dp"
-                            android:id="@+id/podium_text"
+                            android:id="@+id/podiumRow"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:baselineAligned="false"
-                            android:orientation="horizontal"
-                            android:weightSum="3">
-
-                            <TextView
-                                android:id="@+id/secondPlace_info"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_weight="1"
-                                android:gravity="center"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
-                                android:text="@string/_2nd_place_header"
-                                android:textAllCaps="true"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textColor="@color/white"
-                                android:textSize="14sp" />
-
-                            <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_weight="1.1"
-                                android:id="@+id/firstPlace_info"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
-                                android:text="@string/_1st_place_header"
-                                android:gravity="center_horizontal|bottom"
-                                android:textAllCaps="true"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textSize="14sp"
-                                android:textColor="@color/white" />
-                            <TextView
-                                android:layout_marginStart="5dp"
-                                android:layout_marginEnd="5dp"
-                                android:layout_weight="0.9"
-                                android:id="@+id/thirdPlace_info"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:includeFontPadding="false"
-                                android:lineSpacingExtra="0dp"
-                                android:text="@string/_3rd_place_header"
-                                android:gravity="center"
-                                android:textAllCaps="true"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textSize="14sp"
-                                android:textColor="@color/white" />
-                        </LinearLayout>
-                        <LinearLayout
                             android:layout_marginStart="5dp"
+                            android:layout_marginTop="12dp"
                             android:layout_marginEnd="5dp"
-                            android:layout_marginTop="5dp"
-                            android:id="@+id/podium_codes"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="12dp"
                             android:baselineAligned="false"
-                            android:orientation="horizontal"
-                            android:weightSum="3"
-                            android:layout_marginBottom="10dp">
-                            <TextView
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="0dp"
-                                android:layout_marginEnd="2.5dp"
-                                android:layout_width="0dp"
-                                android:layout_weight="1"
-                                android:id="@+id/secondPlace_code"
-                                android:gravity="center"
-                                android:textAllCaps="true"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textSize="14sp"
-                                android:textColor="@color/white" />
-                            <TextView
-                                android:layout_marginStart="2.5dp"
-                                android:layout_marginEnd="2.5dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1.1"
-                                android:id="@+id/firstPlace_code"
-                                android:gravity="center"
-                                android:textAllCaps="true"
-                                android:textSize="14sp"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textColor="@color/white"/>
-                            <TextView
-                                android:layout_marginStart="2.5dp"
-                                android:layout_marginEnd="0dp"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.9"
-                                android:id="@+id/thirdPlace_code"
-                                android:gravity="center"
-                                android:textSize="14sp"
-                                android:textAllCaps="true"
-                                android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                                android:textColor="@color/white" />
-                        </LinearLayout>
+                            android:orientation="horizontal" />
                     </LinearLayout>
                     <TextView
                         android:id="@+id/show_results"

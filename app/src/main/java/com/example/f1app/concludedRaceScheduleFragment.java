@@ -25,9 +25,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.google.android.material.appbar.AppBarLayout;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -35,8 +33,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -45,13 +41,12 @@ import java.util.List;
 
 public class concludedRaceScheduleFragment extends Fragment {
     private List<scheduleData> datum;
-    private TextView secondPlace_code;
-    private TextView firstPlace_code;
-    private TextView thirdPlace_code;
     private scheduleAdapter adapter;
     private ToggleButton saveRaceButton;
     private LocalDate currentDate;
     private String fullRaceName_key, mRaceName, mYear;
+    private podiumCards podium;
+    private String mFirstPlaceCode, mSecondPlaceCode, mThirdPlaceCode;
 
 
     public concludedRaceScheduleFragment() {
@@ -74,13 +69,7 @@ public class concludedRaceScheduleFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         EdgeInsets.applyBottom(view.findViewById(R.id.nestedScrollView));
 
-        secondPlace_code = view.findViewById(R.id.secondPlace_code);
-        firstPlace_code = view.findViewById(R.id.firstPlace_code);
-        thirdPlace_code = view.findViewById(R.id.thirdPlace_code);
         TextView infoRaceName = view.findViewById(R.id.infoRaceName);
-        ImageView secondPlace_image = view.findViewById(R.id.secondPlace_image);
-        ImageView firstPlace_image = view.findViewById(R.id.firstPlace_image);
-        ImageView thirdPlace_image = view.findViewById(R.id.thirdPlace_image);
         ImageView backgroundImage = view.findViewById(R.id.background_img);
         TextView raceStatus = view.findViewById(R.id.raceStatus);
         TextView day_start = view.findViewById(R.id.day_start);
@@ -90,6 +79,8 @@ public class concludedRaceScheduleFragment extends Fragment {
         saveRaceButton = view.findViewById(R.id.saveRace);
         LinearLayout podiumLayout = view.findViewById(R.id.podium_layout);
         TextView dash = view.findViewById(R.id.dash);
+
+        podium = new podiumCards(view.findViewById(R.id.podiumRow), false);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);
@@ -103,24 +94,17 @@ public class concludedRaceScheduleFragment extends Fragment {
             mRaceName = getArguments().getString("raceName");
             String mRaceStartDay = getArguments().getString("raceStartDay");
             String mRaceEndDay = getArguments().getString("raceEndDay");
-            String mRaceStartMonth = getArguments().getString("raceStartMonth");
-            String mRaceEndMonth = getArguments().getString("raceEndMonth");
-            //String mRound = getArguments().getString("roundCount");
-            //String mCountry = getArguments().getString("raceCountry");
             String mRaceStartDate = getArguments().getString("dateStart");
             String mRaceEndDate = getArguments().getString("dateEnd");
 
             mYear = getArguments().getString("gpYear");
-            String mFirstPlaceCode = getArguments().getString("firstPlaceCode");
-            String mSecondPlaceCode = getArguments().getString("secondPlaceCode");
-            String mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
+            mFirstPlaceCode = getArguments().getString("firstPlaceCode");
+            mSecondPlaceCode = getArguments().getString("secondPlaceCode");
+            mThirdPlaceCode = getArguments().getString("thirdPlaceCode");
             boolean isCanceled = getArguments().getBoolean("isCanceled");
 
-            CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
             appBarLayout.setExpanded(true,true);
-
-            View toolbar = view.findViewById(R.id.toolbar);
 
             if (isCanceled){
                 raceStatus.setText(R.string.race_canceled_text);
@@ -171,110 +155,8 @@ public class concludedRaceScheduleFragment extends Fragment {
                     requireContext().startActivity(intent);
                 });
 
-                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-                FirebaseStorage storage = FirebaseStorage.getInstance();
-                StorageReference storageRef = storage.getReference();
-
-                StorageReference mWinnerImage = storageRef.child("drivers/" + mFirstPlaceCode.toLowerCase() + "_" + mYear + ".png");
-                StorageReference mSecondImage = storageRef.child("drivers/" + mSecondPlaceCode.toLowerCase() + "_" + mYear + ".png");
-                StorageReference mThirdImage = storageRef.child("drivers/" + mThirdPlaceCode.toLowerCase() + "_" + mYear + ".png");
-
-                GlideApp.with(requireContext())
-                        .load(mWinnerImage)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .error(R.drawable.placeholder_driver)
-                        .into(firstPlace_image);
-
-                GlideApp.with(requireContext())
-                        .load(mSecondImage)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .error(R.drawable.placeholder_driver)
-                        .into(secondPlace_image);
-
-                GlideApp.with(requireContext())
-                        .load(mThirdImage)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .error(R.drawable.placeholder_driver)
-                        .into(thirdPlace_image);
-
-                rootRef.child("drivers").orderByChild("driversCode").equalTo(mFirstPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            String driver = ds.getKey();
-                            String[] driverFullName = driver.split(" ");
-                            //String driverName;
-                            String driverFamilyName;
-                            if (driver.equals("Andrea Kimi Antonelli")){
-                                //    driverName = driverFullName[1];
-                                driverFamilyName = driverFullName[2];
-                            }else{
-                                //    driverName = driverFullName[0];
-                                driverFamilyName = driverFullName[1];
-                            }
-                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                            firstPlace_code.setText(driverFamilyName);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
-
-                rootRef.child("drivers").orderByChild("driversCode").equalTo(mSecondPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            String driver = ds.getKey();
-                            String[] driverFullName = driver.split(" ");
-                            String driverName;
-                            String driverFamilyName;
-                            if (driver.equals("Andrea Kimi Antonelli")){
-                                driverName = driverFullName[1];
-                                driverFamilyName = driverFullName[2];
-                            }else{
-                                driverName = driverFullName[0];
-                                driverFamilyName = driverFullName[1];
-                            }
-                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                            secondPlace_code.setText(driverFamilyName);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
-
-                rootRef.child("drivers").orderByChild("driversCode").equalTo(mThirdPlaceCode).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot ds: snapshot.getChildren()){
-                            String driver = ds.getKey();
-                            String[] driverFullName = driver.split(" ");
-                            //String driverName;
-                            String driverFamilyName;
-                            if (driver.equals("Andrea Kimi Antonelli")){
-                                //    driverName = driverFullName[1];
-                                driverFamilyName = driverFullName[2];
-                            }else{
-                                //    driverName = driverFullName[0];
-                                driverFamilyName = driverFullName[1];
-                            }
-                            //String mDriverName = driverName.charAt(0) + ". " + driverFamilyName;
-                            thirdPlace_code.setText(driverFamilyName);
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Log.e("concludedRacePage", "Drivers error:" + error.getMessage());
-                    }
-                });
+                // photos and codes at once; surnames, colours and gaps arrive with the round number
+                podium.showBasics(mYear, mFirstPlaceCode, mSecondPlaceCode, mThirdPlaceCode);
             }
 
             String localeRaceName = mRaceName.toLowerCase().replaceAll("\\s+", "_");
@@ -309,14 +191,6 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             String monthStartFull = dateStart.format(DateTimeFormatter.ofPattern("MMMM"));
             String monthEndFull = dateEnd.format(DateTimeFormatter.ofPattern("MMMM"));
-
-            //if(mRaceStartMonth.equals(mRaceEndMonth)){
-            //    month.setText(mRaceStartMonth);
-            //}
-            //else{
-            //    String monthAll = mRaceStartMonth + "-" + mRaceEndMonth;
-            //    month.setText(monthAll);
-            //}
 
             if(monthStartFull.equals(monthEndFull)){
                 month.setText(monthStartFull);
@@ -386,7 +260,7 @@ public class concludedRaceScheduleFragment extends Fragment {
     }
 
     public static void deleteRace(String fullRaceName_key,
-                                    ToggleButton toggleButton, Context context) {
+                                  ToggleButton toggleButton, Context context) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user == null) {
@@ -515,6 +389,12 @@ public class concludedRaceScheduleFragment extends Fragment {
                 Log.d("schedule_error", "exists=" + snapshot.exists() + " round=" + round + " isAdded=" + isAdded() + " key=" + raceName + " year=" + currentYear);
 
                 if (round != null && isAdded()) {
+                    // the round is known now: surnames, team colours and gaps of the podium
+                    if (podium != null) {
+                        podium.bind(currentYear, String.valueOf(round),
+                                mFirstPlaceCode, mSecondPlaceCode, mThirdPlaceCode);
+                    }
+
                     sessionResultsLoader.load(
                             concludedRaceScheduleFragment.this,
                             currentYear,
