@@ -1244,4 +1244,5 @@
     <string name="compare_chart_title">Очки по этапам</string>
     <string name="compare_chart_info">Этап %1$d · %2$s: %3$s – %4$s</string>
     <string name="compare_chart_empty">Нет данных об очках за этот сезон</string>
+    <string name="compare_chart_info_one">Этап %1$d · %2$s: %3$s оч.</string>
 </resources>

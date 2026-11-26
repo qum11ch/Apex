@@ -83,6 +83,9 @@ public class teamResultsFragment extends Fragment {
     private List<Integer> seasonsShown;
     private boolean showingRemembered = false;
 
+    private seasonChart seasonChart;
+    private int accentColor = 0xFF8E8E93;
+
     /** Everything one season of the team page shows, kept so a repeat visit needs no shimmer. */
     private static final class SeasonSnapshot {
         final ArrayList<String> drivers;
@@ -132,6 +135,7 @@ public class teamResultsFragment extends Fragment {
         summaryTop = view.findViewById(R.id.summary_top);
 
         buildSummary();
+        seasonChart = new seasonChart(this, view);
 
         if (getArguments() == null) {
             return;
@@ -173,6 +177,13 @@ public class teamResultsFragment extends Fragment {
 
                         applyAccent(pastTeamPalette.resolve(
                                 teamId, snapshot.child("color").getValue(String.class)));
+
+                        try {
+                            accentColor = Color.parseColor(pastTeamPalette.resolve(
+                                    teamId, snapshot.child("color").getValue(String.class)));
+                        } catch (IllegalArgumentException ignored) {
+                            // the neutral colour stays
+                        }
 
 
                         int earliestSeason = enterYear != null
@@ -342,6 +353,10 @@ public class teamResultsFragment extends Fragment {
 
 
     private void loadSeasonData(int season) {
+        compareParticipant participant = new compareParticipant(compareParticipant.TEAM, teamId);
+        participant.teamId = teamId;
+        seasonChart.load(participant, season, accentColor);
+
         final List<SeasonSnapshot> remembered = cachedList.recall(snapshotKey(season));
         showingRemembered = remembered != null && !remembered.isEmpty();
 

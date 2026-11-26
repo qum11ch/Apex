@@ -95,6 +95,41 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/season_chart_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_results_card"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/compare_chart_title"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/season_chart_info"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                    android:textColor="@color/text_color_secondary"
+                    android:textSize="13sp" />
+
+                <com.example.f1app.pointsChartView
+                    android:id="@+id/season_chart"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="8dp" />
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/results_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

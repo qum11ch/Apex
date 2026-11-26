@@ -13,19 +13,21 @@ final class compareSeries {
         final double[] a;
         final double[] b;
         final String[] names;
+        final String teamId;
 
-        Data(double[] a, double[] b, String[] names) {
+        Data(double[] a, double[] b, String[] names, String teamId) {
             this.a = a;
             this.b = b;
             this.names = names;
+            this.teamId = teamId;
         }
     }
+
+    static final Data EMPTY = new Data(new double[0], new double[0], new String[0], "");
 
     interface Callback {
         void onLoaded(Data data);
     }
-
-    static final Data EMPTY = new Data(new double[0], new double[0], new String[0]);
 
     private compareSeries() {
     }
@@ -156,6 +158,72 @@ final class compareSeries {
             labels[round - 1] = names.getOrDefault(round, "");
         }
 
-        return new Data(a, b, labels);
+        return new Data(a, b, labels, "");
+    }
+
+    static void loadOne(compareParticipant p, int year, Callback callback) {
+        if (p.type == compareParticipant.TEAM) {
+            jolpicaSeasons.constructorStandings(year, standings ->
+                    startOne(compareDuel.constructorId(standings, p), "", year, true, callback));
+            return;
+        }
+
+        jolpicaSeasons.driverStandings(year, standings -> {
+            JSONObject entry = standings == null ? null
+                    : jolpicaSeasons.driverEntry(standings, p.code, p.given, p.family);
+            JSONObject driver = entry == null ? null : entry.optJSONObject("Driver");
+            String id = driver == null ? "" : driver.optString("driverId", "");
+
+            JSONArray teams = entry == null ? null : entry.optJSONArray("Constructors");
+            JSONObject last = teams == null || teams.length() == 0
+                    ? null : teams.optJSONObject(teams.length() - 1);
+            String teamId = last == null ? "" : last.optString("constructorId", "");
+
+            startOne(id.isEmpty() ? null : id, teamId, year, false, callback);
+        });
+    }
+
+    private static void startOne(String id, String teamId, int year, boolean team, Callback callback) {
+        if (id == null) {
+            callback.onLoaded(null);
+            return;
+        }
+
+        JSONObject[] box = new JSONObject[2];
+        int[] pending = {2};
+
+        jolpicaSeasons.Callback results = r -> doneOne(box, 0, r, pending, teamId, callback);
+        jolpicaSeasons.Callback sprint = r -> doneOne(box, 1, r, pending, teamId, callback);
+
+        if (team) {
+            jolpicaSeasons.constructorResults(year, id, results);
+            jolpicaSeasons.constructorSprint(year, id, sprint);
+        } else {
+            jolpicaSeasons.driverResults(year, id, results);
+            jolpicaSeasons.driverSprint(year, id, sprint);
+        }
+    }
+
+    private static void doneOne(JSONObject[] box, int index, JSONObject response, int[] pending,
+                                String teamId, Callback callback) {
+        box[index] = response;
+
+        if (--pending[0] > 0) {
+            return;
+        }
+
+        if (box[0] == null) {
+            callback.onLoaded(null);
+            return;
+        }
+
+        Map<Integer, Double> points = new HashMap<>();
+        Map<Integer, String> names = new HashMap<>();
+
+        add(points, names, box[0], "Results");
+        add(points, names, box[1], "SprintResults");
+
+        Data data = compute(points, new HashMap<>(), names);
+        callback.onLoaded(new Data(data.a, new double[0], data.names, teamId));
     }
 }

@@ -69,6 +69,7 @@ public class driverResultsFragment extends Fragment {
     private List<Integer> seasonsShown;
     private boolean showingRemembered = false;
     private RequestQueue queue;
+    private seasonChart seasonChart;
 
     public driverResultsFragment() {
     }
@@ -106,6 +107,8 @@ public class driverResultsFragment extends Fragment {
         recyclerView.setAdapter(adapter);
 
         buildSummary();
+        seasonChart = new seasonChart(this, view);
+
         resultsLegend.build(
                 requireContext(),
                 view.findViewById(R.id.legend_left),
@@ -301,6 +304,8 @@ public class driverResultsFragment extends Fragment {
     }
 
     private void loadSeasonData(int season) {
+        loadSeasonChart(season);
+
         final List<driverResultsData> remembered = cachedList.recall(resultsKey(season));
         showingRemembered = remembered != null && !remembered.isEmpty();
 
@@ -408,6 +413,16 @@ public class driverResultsFragment extends Fragment {
                         showResultsError();
                     }
                 });
+    }
+
+    private void loadSeasonChart(int season) {
+        compareParticipant participant = new compareParticipant(
+                compareParticipant.DRIVER, driverFullName);
+        participant.code = driverCode == null ? "" : driverCode;
+        participant.given = driverName == null ? "" : driverName;
+        participant.family = driverFamilyName == null ? "" : driverFamilyName;
+
+        seasonChart.load(participant, season, ContextCompat.getColor(requireContext(), R.color.red));
     }
 
     private String resultsKey(int season) {

@@ -567,7 +567,7 @@ public class compareActivity extends AppCompatActivity {
         infoParams.topMargin = dp(8);
         content.addView(info, infoParams);
 
-        ChartView view = new ChartView(this);
+        pointsChartView view = new pointsChartView(this);
         view.setContentDescription(getString(R.string.compare_chart_title) + ": "
                 + format(chart.a[chart.a.length - 1], false) + " / "
                 + format(chart.b[chart.b.length - 1], false));

@@ -1264,4 +1264,5 @@
     <string name="compare_chart_title">Points by round</string>
     <string name="compare_chart_info">Round %1$d · %2$s: %3$s – %4$s</string>
     <string name="compare_chart_empty">No points data for this season</string>
+    <string name="compare_chart_info_one">Round %1$d · %2$s: %3$s pts</string>
 </resources>
