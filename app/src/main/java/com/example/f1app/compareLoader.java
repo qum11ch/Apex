@@ -225,7 +225,7 @@ final class compareLoader {
         result.wins = parseNumber(entry.optString("wins", ""));
     }
 
-    private static JSONObject constructorEntry(JSONObject response, String teamId) {
+    static JSONObject constructorEntry(JSONObject response, String teamId) {
         JSONObject data = response.optJSONObject("MRData");
         JSONObject table = data == null ? null : data.optJSONObject("StandingsTable");
         JSONArray lists = table == null ? null : table.optJSONArray("StandingsLists");

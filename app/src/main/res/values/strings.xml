@@ -1253,4 +1253,8 @@
     <string name="compare_duel_race_short">Race</string>
     <string name="compare_duel_empty">No shared races in this season</string>
     <string name="compare_duel_note">Only the races where both have a result are counted. The classified position is used: a retirement also has a place in the classification. The better position is highlighted in colour.</string>
+    <string name="compare_duel_points_short">Pts</string>
+    <string name="compare_duel_avg_quali_team">Average qualifying of the best car</string>
+    <string name="compare_duel_avg_race_team">Average finish of the best car</string>
+    <string name="compare_duel_note_team">For a team the best car of the round counts: the team whose best car is higher wins. Points are the sum of both cars, retirements count both cars. The better side is highlighted in colour.</string>
 </resources>

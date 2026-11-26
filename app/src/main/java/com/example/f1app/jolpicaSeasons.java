@@ -215,6 +215,16 @@ final class jolpicaSeasons {
                 + "/qualifying/?format=json&limit=100", 1, callback);
     }
 
+    static void constructorResults(int year, String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/" + year + "/constructors/" + constructorId
+                + "/results/?format=json&limit=100", 1, callback);
+    }
+
+    static void constructorQualifying(int year, String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/" + year + "/constructors/" + constructorId
+                + "/qualifying/?format=json&limit=100", 1, callback);
+    }
+
 
     /** The line of the driver in the standings of one season, or null. */
     static JSONObject driverEntry(JSONObject response, String code, String given, String family) {

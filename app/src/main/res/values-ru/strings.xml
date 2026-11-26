@@ -1233,4 +1233,8 @@
     <string name="compare_duel_race_short">Гонка</string>
     <string name="compare_duel_empty">В этом сезоне нет общих гонок</string>
     <string name="compare_duel_note">Считаем гонки, в которых есть результат у обоих. Берём классифицированное место: сход тоже имеет место в протоколе. Цветом выделен тот, кто выше.</string>
+    <string name="compare_duel_points_short">Очки</string>
+    <string name="compare_duel_avg_quali_team">Средняя квалификация лучшей машины</string>
+    <string name="compare_duel_avg_race_team">Средний финиш лучшей машины</string>
+    <string name="compare_duel_note_team">Для команды берём лучшую машину этапа: побеждает та, чья лучшая машина выше. Очки — сумма обеих машин за этап, сходы считаются по обеим. Цветом выделен тот, кто выше.</string>
 </resources>

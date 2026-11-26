@@ -39,4 +39,19 @@ public class compareDuelTest {
 
         assertEquals(0, r.rounds.size());
     }
+
+    @Test
+    public void teamBestCarDecidesAndPointsAreSummed() {
+        Map<Integer, compareDuel.Entry> a = new HashMap<>();
+        a.put(1, new compareDuel.Entry("GP1", 2, 18 + 10, 0));
+        Map<Integer, compareDuel.Entry> b = new HashMap<>();
+        b.put(1, new compareDuel.Entry("GP1", 1, 25, 1));
+
+        compareDuel.Result r = compareDuel.computeTeams(a, b, new HashMap<>(), new HashMap<>());
+
+        assertEquals(0, r.raceA);
+        assertEquals(1, r.raceB);
+        assertEquals(28.0, r.pointsA, 1e-9);
+        assertEquals(1, r.retiredB);
+    }
 }

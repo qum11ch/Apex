@@ -391,10 +391,7 @@ public class compareActivity extends AppCompatActivity {
 
         addTab(bar, R.string.compare_tab_career, TAB_CAREER);
         addTab(bar, R.string.compare_tab_season, TAB_SEASON);
-
-        if (type == compareParticipant.DRIVER) {
-            addTab(bar, R.string.compare_tab_duel, TAB_DUEL);
-        }
+        addTab(bar, R.string.compare_tab_duel, TAB_DUEL);
 
         return bar;
     }
@@ -748,7 +745,7 @@ public class compareActivity extends AppCompatActivity {
     }
 
     private void loadDuel() {
-        if (a == null || b == null || type != compareParticipant.DRIVER) {
+        if (a == null || b == null) {
             return;
         }
 
@@ -759,7 +756,7 @@ public class compareActivity extends AppCompatActivity {
         final int mine = ++duelToken;
         duel = null;
 
-        compareDuel.load(a, b, year, result -> {
+        final compareDuel.Callback callback = result -> {
             if (mine != duelToken || isFinishing() || isDestroyed()) {
                 return;
             }
@@ -769,10 +766,18 @@ public class compareActivity extends AppCompatActivity {
             if (tab == TAB_DUEL) {
                 render();
             }
-        });
+        };
+
+        if (type == compareParticipant.TEAM) {
+            compareDuel.loadTeams(a, b, year, callback);
+        } else {
+            compareDuel.load(a, b, year, callback);
+        }
     }
 
     private void renderDuel(int colorA, int colorB) {
+        boolean teams = type == compareParticipant.TEAM;
+
         addYearChip();
         addLegend(colorA, colorB);
 
@@ -789,24 +794,34 @@ public class compareActivity extends AppCompatActivity {
         addScore(R.string.compare_duel_race, duel.raceA, duel.raceB, colorA, colorB);
         addScore(R.string.compare_duel_quali, duel.qualiA, duel.qualiB, colorA, colorB);
 
-        addRow(R.string.compare_duel_avg_quali, duel.avgQualiA, duel.avgQualiB,
-                compareMath.Mode.LOWER, false, colorA, colorB);
-        addRow(R.string.compare_duel_avg_race, duel.avgRaceA, duel.avgRaceB,
-                compareMath.Mode.LOWER, false, colorA, colorB);
+        addRow(teams ? R.string.compare_duel_avg_quali_team : R.string.compare_duel_avg_quali,
+                duel.avgQualiA, duel.avgQualiB, compareMath.Mode.LOWER, false, colorA, colorB);
+        addRow(teams ? R.string.compare_duel_avg_race_team : R.string.compare_duel_avg_race,
+                duel.avgRaceA, duel.avgRaceB, compareMath.Mode.LOWER, false, colorA, colorB);
+
+        if (teams) {
+            addRow(R.string.compare_metric_points, duel.pointsA, duel.pointsB,
+                    compareMath.Mode.HIGHER, false, colorA, colorB);
+        }
+
         addRow(R.string.compare_duel_retired, duel.retiredA, duel.retiredB,
                 compareMath.Mode.LOWER, false, colorA, colorB);
 
         addRoundRow(getString(R.string.compare_duel_round),
                 headerCell(getString(R.string.compare_duel_quali_short)),
-                headerCell(getString(R.string.compare_duel_race_short)), true);
+                headerCell(getString(R.string.compare_duel_race_short)),
+                teams ? headerCell(getString(R.string.compare_duel_points_short)) : null,
+                true);
 
         for (compareDuel.Round round : duel.rounds) {
             addRoundRow(raceTitle(round.name),
                     duelCell(round.qualiA, round.qualiB, colorA, colorB),
-                    duelCell(round.raceA, round.raceB, colorA, colorB), false);
+                    duelCell(round.raceA, round.raceB, colorA, colorB),
+                    teams ? pointsCell(round.pointsA, round.pointsB, colorA, colorB) : null,
+                    false);
         }
 
-        addNote(R.string.compare_duel_note);
+        addNote(teams ? R.string.compare_duel_note_team : R.string.compare_duel_note);
     }
 
     private void addScore(int title, int winsA, int winsB, int colorA, int colorB) {
@@ -848,6 +863,10 @@ public class compareActivity extends AppCompatActivity {
     }
 
     private void addRoundRow(String name, View quali, View race, boolean header) {
+        addRoundRow(name, quali, race, null, header);
+    }
+
+    private void addRoundRow(String name, View quali, View race, View points, boolean header) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
@@ -859,9 +878,14 @@ public class compareActivity extends AppCompatActivity {
         nameView.setMaxLines(1);
         nameView.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
-        row.addView(nameView, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1.5f));
+        row.addView(nameView, new LinearLayout.LayoutParams(0,
+                ViewGroup.LayoutParams.WRAP_CONTENT, points != null ? 1.2f : 1.5f));
         row.addView(quali, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.8f));
         row.addView(race, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.8f));
+
+        if (points != null) {
+            row.addView(points, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 0.8f));
+        }
 
         content.addView(row, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -907,23 +931,43 @@ public class compareActivity extends AppCompatActivity {
         return view;
     }
 
-    private View duelCell(int x, int y, int colorA, int colorB) {
+    private View pairCell(String x, String y, int winner, int colorA, int colorB) {
         LinearLayout cell = new LinearLayout(this);
         cell.setOrientation(LinearLayout.HORIZONTAL);
         cell.setGravity(Gravity.CENTER);
 
-        if (x <= 0 || y <= 0) {
-            cell.addView(text(DASH, 14, R.color.text_color_thirdly));
-            return cell;
-        }
-
         TextView dash = text("\u2013", 14, R.color.text_color_thirdly);
         dash.setPadding(dp(4), 0, dp(4), 0);
 
-        cell.addView(badge(String.valueOf(x), 14, colorA, x < y));
+        cell.addView(badge(x, 14, colorA, winner == 1));
         cell.addView(dash);
-        cell.addView(badge(String.valueOf(y), 14, colorB, y < x));
+        cell.addView(badge(y, 14, colorB, winner == 2));
 
+        return cell;
+    }
+
+    private View duelCell(int x, int y, int colorA, int colorB) {
+        if (x <= 0 || y <= 0) {
+            return dashCell();
+        }
+
+        return pairCell(String.valueOf(x), String.valueOf(y),
+                x < y ? 1 : (y < x ? 2 : 0), colorA, colorB);
+    }
+
+    private View pointsCell(double x, double y, int colorA, int colorB) {
+        if (Double.isNaN(x) || Double.isNaN(y)) {
+            return dashCell();
+        }
+
+        return pairCell(format(x, false), format(y, false),
+                x > y ? 1 : (y > x ? 2 : 0), colorA, colorB);
+    }
+
+    private View dashCell() {
+        LinearLayout cell = new LinearLayout(this);
+        cell.setGravity(Gravity.CENTER);
+        cell.addView(text(DASH, 14, R.color.text_color_thirdly));
         return cell;
     }
 
