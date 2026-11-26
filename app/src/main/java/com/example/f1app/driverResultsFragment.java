@@ -71,6 +71,8 @@ public class driverResultsFragment extends Fragment {
     private RequestQueue queue;
     private seasonChart seasonChart;
 
+    private tracksSection tracks;
+
     public driverResultsFragment() {
     }
 
@@ -108,6 +110,7 @@ public class driverResultsFragment extends Fragment {
 
         buildSummary();
         seasonChart = new seasonChart(this, view);
+        tracks = new tracksSection(this, view);
 
         resultsLegend.build(
                 requireContext(),
@@ -136,6 +139,7 @@ public class driverResultsFragment extends Fragment {
         }
 
         driverFullName = driverName + " " + driverFamilyName;
+        tracks.configure(false, driverFullName);
 
         final List<Integer> rememberedSeasons = cachedList.recall("driver_seasons|" + driverFullName);
 
@@ -248,6 +252,7 @@ public class driverResultsFragment extends Fragment {
         Collections.reverse(availableSeasons);
 
         cachedList.remember("driver_seasons|" + driverFullName, availableSeasons);
+        tracks.setSeasons(availableSeasons);
 
         if (availableSeasons.equals(seasonsShown)) {
             return; // same buttons as before

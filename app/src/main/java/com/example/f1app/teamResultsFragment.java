@@ -86,6 +86,8 @@ public class teamResultsFragment extends Fragment {
     private seasonChart seasonChart;
     private int accentColor = 0xFF8E8E93;
 
+    private tracksSection tracks;
+
     /** Everything one season of the team page shows, kept so a repeat visit needs no shimmer. */
     private static final class SeasonSnapshot {
         final ArrayList<String> drivers;
@@ -136,6 +138,7 @@ public class teamResultsFragment extends Fragment {
 
         buildSummary();
         seasonChart = new seasonChart(this, view);
+        tracks = new tracksSection(this, view);
 
         if (getArguments() == null) {
             return;
@@ -147,6 +150,8 @@ public class teamResultsFragment extends Fragment {
         if (teamId.trim().isEmpty()) {
             return;
         }
+
+        tracks.configure(true, teamId);
 
         final List<Integer> rememberedSeasons = cachedList.recall("team_seasons|" + teamId);
 
@@ -296,6 +301,8 @@ public class teamResultsFragment extends Fragment {
         Collections.reverse(availableSeasons);
 
         cachedList.remember("team_seasons|" + teamId, availableSeasons);
+
+        tracks.setSeasons(availableSeasons);
 
         if (availableSeasons.equals(seasonsShown)) {
             return; // same buttons as before

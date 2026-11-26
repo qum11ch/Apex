@@ -1272,4 +1272,13 @@
     <string name="compare_track_best">Best result</string>
     <string name="compare_track_none">No circuits where both raced</string>
     <string name="compare_track_note">Results of both on the chosen circuit, for the years in which both raced. The better side is highlighted in colour.</string>
+
+    <string name="tracks_mode_seasons">Seasons</string>
+    <string name="tracks_mode_tracks">Circuits</string>
+    <string name="tracks_summary">Starts: %1$d · wins: %2$d · podiums: %3$d</string>
+    <string name="tracks_empty">No results by circuit yet</string>
+    <string name="tracks_year">Year</string>
+    <string name="tracks_car_best">Best car</string>
+    <string name="tracks_car_second">Second car</string>
+    <string name="tracks_note">Seasons %1$d–%2$d, the same as in the results tables.</string>
 </resources>

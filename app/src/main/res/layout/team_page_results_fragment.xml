@@ -34,216 +34,234 @@
                 android:textColor="@color/text_color_main"
                 android:textSize="28sp"
                 android:textStyle="bold" />
-
-            <HorizontalScrollView
-                android:id="@+id/seasonButtonsScroll"
+            <LinearLayout
+                android:id="@+id/results_mode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="14dp"
-                android:overScrollMode="never"
-                android:scrollbars="none">
-
-                <LinearLayout
-                    android:id="@+id/seasonButtonsLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_public_segment_track"
-                    android:orientation="horizontal"
-                    android:padding="4dp" />
-            </HorizontalScrollView>
+                android:orientation="horizontal" />
 
             <LinearLayout
-                android:id="@+id/summary_card"
+                android:id="@+id/seasons_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="14dp"
-                android:background="@drawable/bg_results_card"
-                android:divider="@drawable/divider_results"
-                android:orientation="vertical"
-                android:showDividers="middle"
-                android:visibility="gone">
-
-                <LinearLayout
-                    android:id="@+id/summary_top"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:divider="@drawable/divider_results"
-                    android:orientation="horizontal"
-                    android:showDividers="middle" />
-
-                <LinearLayout
-                    android:id="@+id/summary_row"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:divider="@drawable/divider_results"
-                    android:orientation="horizontal"
-                    android:showDividers="middle" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/season_chart_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_results_card"
-                android:orientation="vertical"
-                android:padding="12dp"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/compare_chart_title"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    android:textColor="@color/text_color_main"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/season_chart_info"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    android:textColor="@color/text_color_secondary"
-                    android:textSize="13sp" />
-
-                <com.example.f1app.pointsChartView
-                    android:id="@+id/season_chart"
-                    android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginTop="8dp" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/results_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_results_card"
                 android:orientation="vertical">
-
-                <LinearLayout
-                    android:id="@+id/results_header"
+                <HorizontalScrollView
+                    android:id="@+id/seasonButtonsScroll"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:baselineAligned="false"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:paddingStart="12dp"
-                    android:paddingTop="14dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="10dp">
-
-                    <TextView
-                        android:id="@+id/raceName_header"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="4dp"
-                        android:layout_weight="1.6"
-                        android:gravity="bottom"
-                        android:textStyle="bold"
-                        android:text="@string/race_name_header"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                        android:textColor="@color/text_color_main"
-                        android:textSize="16sp" />
+                    android:layout_marginTop="14dp"
+                    android:overScrollMode="never"
+                    android:scrollbars="none">
 
                     <LinearLayout
-                        android:id="@+id/header_drivers"
-                        android:layout_width="0dp"
+                        android:id="@+id/seasonButtonsLayout"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:background="@drawable/bg_public_segment_track"
+                        android:orientation="horizontal"
+                        android:padding="4dp" />
+                </HorizontalScrollView>
+
+                <LinearLayout
+                    android:id="@+id/summary_card"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:background="@drawable/bg_results_card"
+                    android:divider="@drawable/divider_results"
+                    android:orientation="vertical"
+                    android:showDividers="middle"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:id="@+id/summary_top"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
                         android:baselineAligned="false"
-                        android:orientation="horizontal" />
+                        android:divider="@drawable/divider_results"
+                        android:orientation="horizontal"
+                        android:showDividers="middle" />
+
+                    <LinearLayout
+                        android:id="@+id/summary_row"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:divider="@drawable/divider_results"
+                        android:orientation="horizontal"
+                        android:showDividers="middle" />
                 </LinearLayout>
 
-                <View
-                    android:id="@+id/line"
+                <LinearLayout
+                    android:id="@+id/season_chart_card"
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/colorPrimary" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_results_card"
+                    android:orientation="vertical"
+                    android:padding="12dp"
+                    android:visibility="gone">
 
-                <FrameLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/drivers_results"
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:nestedScrollingEnabled="false"
-                        android:overScrollMode="never"
-                        android:paddingStart="12dp"
-                        android:paddingEnd="12dp"
-                        android:visibility="gone" />
+                        android:text="@string/compare_chart_title"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                        android:textColor="@color/text_color_main"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                    <com.facebook.shimmer.ShimmerFrameLayout
-                        android:id="@+id/shimmer_layout"
+                    <TextView
+                        android:id="@+id/season_chart_info"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                        android:textColor="@color/text_color_secondary"
+                        android:textSize="13sp" />
+
+                    <com.example.f1app.pointsChartView
+                        android:id="@+id/season_chart"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="8dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/results_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_results_card"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:id="@+id/results_header"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:baselineAligned="false"
+                        android:gravity="bottom"
+                        android:orientation="horizontal"
                         android:paddingStart="12dp"
+                        android:paddingTop="14dp"
                         android:paddingEnd="12dp"
-                        app:duration="1000">
+                        android:paddingBottom="10dp">
+
+                        <TextView
+                            android:id="@+id/raceName_header"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="4dp"
+                            android:layout_weight="1.6"
+                            android:gravity="bottom"
+                            android:textStyle="bold"
+                            android:text="@string/race_name_header"
+                            android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
+                            android:textColor="@color/text_color_main"
+                            android:textSize="16sp" />
 
                         <LinearLayout
+                            android:id="@+id/header_drivers"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="2"
+                            android:baselineAligned="false"
+                            android:orientation="horizontal" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/line"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/colorPrimary" />
+
+                    <FrameLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/drivers_results"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                            <include layout="@layout/shimmer_team_result" />
-                        </LinearLayout>
-                    </com.facebook.shimmer.ShimmerFrameLayout>
-                </FrameLayout>
+                            android:nestedScrollingEnabled="false"
+                            android:overScrollMode="never"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            android:visibility="gone" />
+
+                        <com.facebook.shimmer.ShimmerFrameLayout
+                            android:id="@+id/shimmer_layout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingStart="12dp"
+                            android:paddingEnd="12dp"
+                            app:duration="1000">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical">
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                                <include layout="@layout/shimmer_team_result" />
+                            </LinearLayout>
+                        </com.facebook.shimmer.ShimmerFrameLayout>
+                    </FrameLayout>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/legend_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="1dp"
+                    android:layout_marginTop="24dp"
+                    android:text="@string/team_results_legend_title"
+                    android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
+                    android:textColor="@color/text_color_main"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:id="@+id/keyMapLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/bg_results_card"
+                    android:baselineAligned="false"
+                    android:orientation="horizontal"
+                    android:paddingStart="14dp"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="14dp"
+                    android:paddingBottom="10dp">
+
+                    <LinearLayout
+                        android:id="@+id/legend_left"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        android:orientation="vertical" />
+
+                    <LinearLayout
+                        android:id="@+id/legend_right"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical" />
+                </LinearLayout>
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/legend_title"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="1dp"
-                android:layout_marginTop="24dp"
-                android:text="@string/team_results_legend_title"
-                android:textAppearance="@style/TextStyle.Gram.Regular.Countdown"
-                android:textColor="@color/text_color_main"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
             <LinearLayout
-                android:id="@+id/keyMapLayout"
+                android:id="@+id/tracks_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:background="@drawable/bg_results_card"
-                android:baselineAligned="false"
-                android:orientation="horizontal"
-                android:paddingStart="14dp"
-                android:paddingTop="10dp"
-                android:paddingEnd="14dp"
-                android:paddingBottom="10dp">
-
-                <LinearLayout
-                    android:id="@+id/legend_left"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:orientation="vertical" />
-
-                <LinearLayout
-                    android:id="@+id/legend_right"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical" />
-            </LinearLayout>
+                android:orientation="vertical"
+                android:visibility="gone" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 </FrameLayout>

@@ -1252,4 +1252,13 @@
     <string name="compare_track_best">Лучший результат</string>
     <string name="compare_track_none">Нет трасс, на которых выступали оба</string>
     <string name="compare_track_note">Считаем результаты обоих на выбранной трассе по годам, в которые они выступали оба. Цветом выделен тот, кто выше.</string>
+
+    <string name="tracks_mode_seasons">Сезоны</string>
+    <string name="tracks_mode_tracks">Трассы</string>
+    <string name="tracks_summary">Стартов: %1$d · побед: %2$d · подиумов: %3$d</string>
+    <string name="tracks_empty">Нет данных о результатах по трассам</string>
+    <string name="tracks_year">Год</string>
+    <string name="tracks_car_best">Лучшая машина</string>
+    <string name="tracks_car_second">Вторая машина</string>
+    <string name="tracks_note">Данные за сезоны %1$d–%2$d, как в таблицах результатов.</string>
 </resources>
