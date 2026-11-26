@@ -76,10 +76,16 @@ final class compareDuel {
         double avgQualiB = Double.NaN;
         double pointsA = Double.NaN;
         double pointsB = Double.NaN;
+        int bestRaceA;
+        int bestRaceB;
     }
 
     interface Callback {
         void onLoaded(Result result);
+    }
+
+    private static int best(int current, int value) {
+        return current == 0 ? value : Math.min(current, value);
     }
 
     static final Result EMPTY = new Result();
@@ -187,6 +193,10 @@ final class compareDuel {
     }
 
     static Map<Integer, Race> parse(JSONObject response, boolean qualifying) {
+        return parse(response, qualifying, "round");
+    }
+
+    static Map<Integer, Race> parse(JSONObject response, boolean qualifying, String keyField) {
         Map<Integer, Race> result = new TreeMap<>();
         JSONArray races = races(response);
 
@@ -204,7 +214,7 @@ final class compareDuel {
                 continue;
             }
 
-            result.put(race.optInt("round", 0), new Race(
+            result.put(race.optInt(keyField, 0), new Race(
                     race.optString("raceName", ""),
                     row.optInt("position", 0),
                     row.optString("positionText", "")));
@@ -214,6 +224,10 @@ final class compareDuel {
     }
 
     static Map<Integer, Entry> parseTeam(JSONObject response, boolean qualifying) {
+        return parseTeam(response, qualifying, "round");
+    }
+
+    static Map<Integer, Entry> parseTeam(JSONObject response, boolean qualifying, String keyField) {
         Map<Integer, Entry> result = new TreeMap<>();
         JSONArray races = races(response);
 
@@ -256,7 +270,7 @@ final class compareDuel {
                 }
             }
 
-            result.put(race.optInt("round", 0),
+            result.put(race.optInt(keyField, 0),
                     new Entry(race.optString("raceName", ""), best, points, retired));
         }
 
@@ -306,6 +320,10 @@ final class compareDuel {
 
                 sumRaceA += rpa;
                 sumRaceB += rpb;
+
+                result.bestRaceA = best(result.bestRaceA, rpa);
+                result.bestRaceB = best(result.bestRaceB, rpb);
+
                 races++;
 
                 if ("R".equals(ra.text)) {
@@ -383,6 +401,10 @@ final class compareDuel {
 
                 sumRaceA += rpa;
                 sumRaceB += rpb;
+
+                result.bestRaceA = best(result.bestRaceA, rpa);
+                result.bestRaceB = best(result.bestRaceB, rpb);
+
                 races++;
 
                 ppa = ra.points;

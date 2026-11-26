@@ -41,6 +41,13 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class compareActivity extends AppCompatActivity {
+    private static final int TAB_TRACK = 3;
+    private static final String PICK_CIRCUIT = "compare_pick_circuit";
+
+    private compareTrack.Setup trackSetup;
+    private compareTrack.Circuit circuit;
+    private compareDuel.Result track;
+    private int trackToken = 0;
 
     static final String EXTRA_TYPE = "type";
     static final String EXTRA_FIRST = "first";
@@ -131,6 +138,19 @@ public class compareActivity extends AppCompatActivity {
 
             render();
         });
+        getSupportFragmentManager().setFragmentResultListener(PICK_CIRCUIT, this, (key, result) -> {
+            if (trackSetup == null) {
+                return;
+            }
+
+            compareTrack.Circuit picked = trackSetup.find(result.getString(circuitPickerSheet.KEY, ""));
+
+            if (picked != null) {
+                circuit = picked;
+                loadTrack();
+                render();
+            }
+        });
 
         loadParticipants();
     }
@@ -172,6 +192,9 @@ public class compareActivity extends AppCompatActivity {
         seasonB = null;
         duel = null;
         chart = null;
+        trackSetup = null;
+        circuit = null;
+        track = null;
         year = -1;
 
         final int mine = ++loadToken;
@@ -199,7 +222,7 @@ public class compareActivity extends AppCompatActivity {
             Toast.makeText(this, R.string.compare_load_error, Toast.LENGTH_SHORT).show();
             finish();
             return;
-        }
+        } else if (tab == TAB_TRACK) { loadTrackSetup(); }
 
         a = loaded[0];
         b = loaded[1];
@@ -347,7 +370,9 @@ public class compareActivity extends AppCompatActivity {
             renderSeason(colorA, colorB);
         } else if (tab == TAB_DUEL) {
             renderDuel(colorA, colorB);
-        } else {
+        } else if (tab == TAB_TRACK) {
+            renderTrack(colorA, colorB);
+        }else {
             renderCareer(colorA, colorB);
         }
     }
@@ -425,6 +450,7 @@ public class compareActivity extends AppCompatActivity {
         addTab(bar, R.string.compare_tab_career, TAB_CAREER);
         addTab(bar, R.string.compare_tab_season, TAB_SEASON);
         addTab(bar, R.string.compare_tab_duel, TAB_DUEL);
+        addTab(bar, R.string.compare_tab_track, TAB_TRACK);
 
         return bar;
     }
@@ -441,14 +467,65 @@ public class compareActivity extends AppCompatActivity {
                 loadDuel();
             }
 
+            if (target == TAB_TRACK && trackSetup == null) {
+                loadTrackSetup();
+            }
+
             render();
         }), new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
+    }
+
+    private void loadTrackSetup() {
+        if (a == null || b == null) {
+            return;
+        }
+
+        final int mine = ++trackToken;
+        trackSetup = null;
+
+        compareTrack.prepare(a, b, setup -> {
+            if (mine != trackToken || isFinishing() || isDestroyed()) {
+                return;
+            }
+
+            trackSetup = setup == null ? new compareTrack.Setup() : setup;
+            circuit = trackSetup.find(trackSetup.defaultCircuit);
+
+            if (circuit != null) {
+                loadTrack();
+            }
+
+            if (tab == TAB_TRACK) {
+                render();
+            }
+        });
+    }
+
+    private void loadTrack() {
+        if (trackSetup == null || circuit == null) {
+            return;
+        }
+
+        final int mine = ++trackToken;
+        track = null;
+
+        compareTrack.load(trackSetup, circuit.id, result -> {
+            if (mine != trackToken || isFinishing() || isDestroyed()) {
+                return;
+            }
+
+            track = result == null ? compareDuel.EMPTY : result;
+
+            if (tab == TAB_TRACK) {
+                render();
+            }
+        });
     }
 
     private TextView tabView(int label, boolean selected, Runnable action) {
         boolean light = checkLightTheme(this);
 
-        TextView view = text(getString(label), 14,
+        TextView view = text(getString(label), 13,
                 selected ? R.color.text_color_main : R.color.grey);
         view.setGravity(Gravity.CENTER);
         view.setMinHeight(dp(40));
@@ -1047,8 +1124,6 @@ public class compareActivity extends AppCompatActivity {
     }
 
     private void renderDuel(int colorA, int colorB) {
-        boolean teams = type == compareParticipant.TEAM;
-
         addYearChip();
         addLegend(colorA, colorB);
 
@@ -1057,42 +1132,112 @@ public class compareActivity extends AppCompatActivity {
             return;
         }
 
-        if (duel.rounds.isEmpty()) {
+        renderDuelBody(duel, false, colorA, colorB);
+    }
+
+    private void renderTrack(int colorA, int colorB) {
+        if (trackSetup == null) {
+            addProgress();
+            return;
+        }
+
+        if (trackSetup.circuits.isEmpty() || circuit == null) {
+            addNote(R.string.compare_track_none);
+            return;
+        }
+
+        addCircuitChip();
+        addLegend(colorA, colorB);
+
+        if (track == null) {
+            addProgress();
+            return;
+        }
+
+        renderDuelBody(track, true, colorA, colorB);
+    }
+
+    private void addCircuitChip() {
+        TextView chip = text(circuit.name + " \u25BE", 16, R.color.text_color_main);
+        chip.setTypeface(chip.getTypeface(), Typeface.BOLD);
+        chip.setGravity(Gravity.CENTER);
+        chip.setMinHeight(dp(44));
+        chip.setPadding(dp(20), dp(8), dp(20), dp(8));
+        chip.setBackground(surface(color(R.color.account_settings_input_color), 12));
+        chip.setOnClickListener(v -> {
+            ArrayList<String> ids = new ArrayList<>();
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<String> places = new ArrayList<>();
+
+            for (compareTrack.Circuit item : trackSetup.circuits) {
+                ids.add(item.id);
+                names.add(item.name);
+                places.add(item.place);
+            }
+
+            circuitPickerSheet.show(getSupportFragmentManager(), ids, names, places,
+                    circuit.id, PICK_CIRCUIT);
+        });
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.CENTER_HORIZONTAL;
+        params.topMargin = dp(16);
+        content.addView(chip, params);
+    }
+
+    private void renderDuelBody(compareDuel.Result d, boolean byYear, int colorA, int colorB) {
+        boolean teams = type == compareParticipant.TEAM;
+
+        if (d.rounds.isEmpty()) {
             addNote(R.string.compare_duel_empty);
             return;
         }
 
-        addScore(R.string.compare_duel_race, duel.raceA, duel.raceB, colorA, colorB);
-        addScore(R.string.compare_duel_quali, duel.qualiA, duel.qualiB, colorA, colorB);
+        addScore(R.string.compare_duel_race, d.raceA, d.raceB, colorA, colorB);
+        addScore(R.string.compare_duel_quali, d.qualiA, d.qualiB, colorA, colorB);
 
         addRow(teams ? R.string.compare_duel_avg_quali_team : R.string.compare_duel_avg_quali,
-                duel.avgQualiA, duel.avgQualiB, compareMath.Mode.LOWER, false, colorA, colorB);
+                d.avgQualiA, d.avgQualiB, compareMath.Mode.LOWER, false, colorA, colorB);
         addRow(teams ? R.string.compare_duel_avg_race_team : R.string.compare_duel_avg_race,
-                duel.avgRaceA, duel.avgRaceB, compareMath.Mode.LOWER, false, colorA, colorB);
+                d.avgRaceA, d.avgRaceB, compareMath.Mode.LOWER, false, colorA, colorB);
+
+        if (byYear) {
+            addRow(R.string.compare_track_best,
+                    d.bestRaceA > 0 ? d.bestRaceA : Double.NaN,
+                    d.bestRaceB > 0 ? d.bestRaceB : Double.NaN,
+                    compareMath.Mode.LOWER, false, colorA, colorB);
+        }
 
         if (teams) {
-            addRow(R.string.compare_metric_points, duel.pointsA, duel.pointsB,
+            addRow(R.string.compare_metric_points, d.pointsA, d.pointsB,
                     compareMath.Mode.HIGHER, false, colorA, colorB);
         }
 
-        addRow(R.string.compare_duel_retired, duel.retiredA, duel.retiredB,
+        addRow(R.string.compare_duel_retired, d.retiredA, d.retiredB,
                 compareMath.Mode.LOWER, false, colorA, colorB);
 
-        addRoundRow(getString(R.string.compare_duel_round),
+        addRoundRow(getString(byYear ? R.string.compare_track_year : R.string.compare_duel_round),
                 headerCell(getString(R.string.compare_duel_quali_short)),
                 headerCell(getString(R.string.compare_duel_race_short)),
                 teams ? headerCell(getString(R.string.compare_duel_points_short)) : null,
                 true);
 
-        for (compareDuel.Round round : duel.rounds) {
-            addRoundRow(raceTitle(round.name),
+        ArrayList<compareDuel.Round> ordered = new ArrayList<>(d.rounds);
+        if (byYear) {
+            java.util.Collections.reverse(ordered);
+        }
+
+        for (compareDuel.Round round : ordered) {
+            addRoundRow(byYear ? String.valueOf(round.round) : raceTitle(round.name),
                     duelCell(round.qualiA, round.qualiB, colorA, colorB),
                     duelCell(round.raceA, round.raceB, colorA, colorB),
                     teams ? pointsCell(round.pointsA, round.pointsB, colorA, colorB) : null,
                     false);
         }
 
-        addNote(teams ? R.string.compare_duel_note_team : R.string.compare_duel_note);
+        addNote(byYear ? R.string.compare_track_note
+                : (teams ? R.string.compare_duel_note_team : R.string.compare_duel_note));
     }
 
     private void addScore(int title, int winsA, int winsB, int colorA, int colorB) {

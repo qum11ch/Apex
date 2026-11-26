@@ -1265,4 +1265,11 @@
     <string name="compare_chart_info">Round %1$d · %2$s: %3$s – %4$s</string>
     <string name="compare_chart_empty">No points data for this season</string>
     <string name="compare_chart_info_one">Round %1$d · %2$s: %3$s pts</string>
+
+    <string name="compare_tab_track">Track</string>
+    <string name="compare_circuit_pick_title">Choose a circuit</string>
+    <string name="compare_track_year">Year</string>
+    <string name="compare_track_best">Best result</string>
+    <string name="compare_track_none">No circuits where both raced</string>
+    <string name="compare_track_note">Results of both on the chosen circuit, for the years in which both raced. The better side is highlighted in colour.</string>
 </resources>

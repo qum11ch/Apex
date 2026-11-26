@@ -235,6 +235,40 @@ final class jolpicaSeasons {
                 + "/sprint/?format=json&limit=100", 1, callback);
     }
 
+    static void driverCircuits(String driverId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/drivers/" + driverId
+                + "/circuits/?format=json&limit=100", 0, callback);
+    }
+
+    static void constructorCircuits(String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/constructors/" + constructorId
+                + "/circuits/?format=json&limit=100", 0, callback);
+    }
+
+    static void nextRace(Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/current/next/?format=json", 0, callback);
+    }
+
+    static void circuitDriverResults(String circuitId, String driverId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/circuits/" + circuitId + "/drivers/" + driverId
+                + "/results/?format=json&limit=100", 1, callback);
+    }
+
+    static void circuitDriverQualifying(String circuitId, String driverId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/circuits/" + circuitId + "/drivers/" + driverId
+                + "/qualifying/?format=json&limit=100", 1, callback);
+    }
+
+    static void circuitConstructorResults(String circuitId, String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/circuits/" + circuitId + "/constructors/" + constructorId
+                + "/results/?format=json&limit=100", 1, callback);
+    }
+
+    static void circuitConstructorQualifying(String circuitId, String constructorId, Callback callback) {
+        get("https://api.jolpi.ca/ergast/f1/circuits/" + circuitId + "/constructors/" + constructorId
+                + "/qualifying/?format=json&limit=100", 1, callback);
+    }
+
 
     /** The line of the driver in the standings of one season, or null. */
     static JSONObject driverEntry(JSONObject response, String code, String given, String family) {

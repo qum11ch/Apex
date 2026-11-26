@@ -1245,4 +1245,11 @@
     <string name="compare_chart_info">Этап %1$d · %2$s: %3$s – %4$s</string>
     <string name="compare_chart_empty">Нет данных об очках за этот сезон</string>
     <string name="compare_chart_info_one">Этап %1$d · %2$s: %3$s оч.</string>
+
+    <string name="compare_tab_track">Трасса</string>
+    <string name="compare_circuit_pick_title">Выберите трассу</string>
+    <string name="compare_track_year">Год</string>
+    <string name="compare_track_best">Лучший результат</string>
+    <string name="compare_track_none">Нет трасс, на которых выступали оба</string>
+    <string name="compare_track_note">Считаем результаты обоих на выбранной трассе по годам, в которые они выступали оба. Цветом выделен тот, кто выше.</string>
 </resources>
