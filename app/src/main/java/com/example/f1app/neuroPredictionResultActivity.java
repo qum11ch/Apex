@@ -378,7 +378,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                         }
 
                                         String minutes_sprint = "00";
-                                        String hours_sprint = Integer.toString(int_hours);
+                                        String hours_sprint = Integer.toString(int_hours_sprint);
                                         if (int_hours_sprint < 10){
                                             hours_sprint = "0" + hours_sprint;
                                         }
