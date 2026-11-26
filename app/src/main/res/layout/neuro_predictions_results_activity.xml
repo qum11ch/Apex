@@ -298,6 +298,7 @@
                         android:layout_marginEnd="10dp"
                         android:layout_below="@id/poleLap"
                         android:text="@string/neuro_design_results"
+                        android:id="@+id/neuroResultsHint"
                         android:textSize="13sp"
                         android:layout_marginBottom="10dp"
                         android:textColor="@color/white"/>

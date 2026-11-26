@@ -1175,4 +1175,15 @@
     <string name="neuro_badge_final_at">Финальный прогноз · %1$s</string>
     <string name="neuro_badge_locked">Последний прогноз до сессии</string>
     <string name="neuro_badge_preliminary">Предварительный прогноз</string>
+
+    <string name="neuro_factors_title">Что повлияло на время</string>
+    <string name="neuro_factors_legend">Вправо — быстрее среднего по сессии, влево — медленнее.</string>
+    <string name="neuro_factors_note">Это оценка того, как модель использовала данные, а не причина времени круга.</string>
+    <string name="neuro_factors_hint">Нажмите на пилота, чтобы увидеть, что повлияло на время.</string>
+    <string name="neuro_factors_seconds">%1$s с</string>
+    <string name="neuro_factor_driver">Пилот</string>
+    <string name="neuro_factor_team">Команда и машина</string>
+    <string name="neuro_factor_track">Трасса</string>
+    <string name="neuro_factor_weather">Погода</string>
+    <string name="neuro_factor_season">Сезон и регламент</string>
 </resources>

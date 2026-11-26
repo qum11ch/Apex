@@ -61,6 +61,7 @@ import java.util.Map;
 public class neuroPredictionResultActivity extends AppCompatActivity {
     private List<raceResultsQualiData> datum;
     private raceResultsQualiAdapter adapter;
+    private final Map<String, ArrayList<neuroFactorsSheet.Factor>> factorsByDriver = new HashMap<>();
     private RecyclerView recyclerView;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout, shimmerUpdateLayour;
     private TextView poleLapDriverName;
@@ -104,6 +105,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         datum = new ArrayList<>();
         adapter = new raceResultsQualiAdapter(neuroPredictionResultActivity.this, datum);
         recyclerView.setAdapter(adapter);
+        adapter.setOnDriverClick(this::openFactors);
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
@@ -790,6 +792,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 Log.i("py_predict_results", "Result: " + resultList);
 
                                 datum.clear();
+                                factorsByDriver.clear();
 
                                 setProgressStage(
                                         98,
@@ -816,6 +819,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     String q1Time = readNullableString(qualiItem, event + "1");
                                     String q2Time = readNullableString(qualiItem, event + "2");
                                     String q3Time = readNullableString(qualiItem, event + "3");
+
+                                    ArrayList<neuroFactorsSheet.Factor> factors = readFactors(qualiItem.get("Factors"));
+                                    if (!factors.isEmpty()) factorsByDriver.put(driverCode, factors);
 
                                     expCodes.add(driverCode);
                                     expQ1.add(q1Time);
@@ -864,6 +870,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 }
 
                                 hideShimmer(recyclerView, shimmerFrameLayout);
+
+                                adapter.setClickableDrivers(new java.util.HashSet<>(factorsByDriver.keySet()));
+                                updateFactorsHint();
 
                                 adapter.notifyDataSetChanged();
 
@@ -918,6 +927,37 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                             );
                         }
                 );
+    }
+
+    private static ArrayList<neuroFactorsSheet.Factor> readFactors(Object raw) {
+        ArrayList<neuroFactorsSheet.Factor> result = new ArrayList<>();
+        if (!(raw instanceof List)) return result;
+        for (Object item : (List<?>) raw) {
+            if (!(item instanceof Map)) continue;
+            Map<?, ?> map = (Map<?, ?>) item;
+            Object group = map.get("g");
+            Object seconds = map.get("s");
+            if (group instanceof String && seconds instanceof Number) {
+                result.add(new neuroFactorsSheet.Factor((String) group, ((Number) seconds).doubleValue()));
+            }
+        }
+        return result;
+    }
+
+    private void openFactors(String driverCode) {
+        ArrayList<neuroFactorsSheet.Factor> factors = factorsByDriver.get(driverCode);
+        if (factors == null || factors.isEmpty()) return;
+        String name = getDriverName(driverCode);
+        neuroFactorsSheet.newInstance(name != null ? name : driverCode, factors)
+                .show(getSupportFragmentManager(), "neuro_factors");
+    }
+
+    private void updateFactorsHint() {
+        TextView hint = findViewById(R.id.neuroResultsHint);
+        if (hint == null) return;
+        String base = getString(R.string.neuro_design_results);
+        hint.setText(factorsByDriver.isEmpty()
+                ? base : base + "\n" + getString(R.string.neuro_factors_hint));
     }
 
     private void showExplanation(int year, String event, String circuitId, String source,

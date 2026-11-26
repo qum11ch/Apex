@@ -1195,4 +1195,15 @@
     <string name="neuro_badge_final_at">Final prediction · %1$s</string>
     <string name="neuro_badge_locked">Last prediction before the session</string>
     <string name="neuro_badge_preliminary">Preliminary prediction</string>
+
+    <string name="neuro_factors_title">What affected the time</string>
+    <string name="neuro_factors_legend">Right: faster than the session average. Left: slower.</string>
+    <string name="neuro_factors_note">This estimates how the model used the data. It is not the cause of the lap time.</string>
+    <string name="neuro_factors_hint">Tap a driver to see what affected the time.</string>
+    <string name="neuro_factors_seconds">%1$s s</string>
+    <string name="neuro_factor_driver">Driver</string>
+    <string name="neuro_factor_team">Team and car</string>
+    <string name="neuro_factor_track">Track</string>
+    <string name="neuro_factor_weather">Weather</string>
+    <string name="neuro_factor_season">Season and rules</string>
 </resources>
