@@ -40,7 +40,7 @@
                 android:contentDescription="@string/theme_button_desc"
                 android:padding="10dp"
                 android:scaleType="fitCenter"
-                android:tint="@color/text_color_main" />
+                app:tint="@color/text_color_main" />
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
@@ -65,7 +65,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="24dp">
+                android:paddingBottom="45dp">
 
                 <TextView
                     android:id="@+id/progress_header"
