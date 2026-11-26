@@ -73,32 +73,42 @@ final class neuroExplanation {
         }
     }
 
-    static List<String> build(Context context, List<String> codes, List<String> q1,
-                              List<String> q2, List<String> q3, String[] labels,
-                              Conditions c, boolean previousYearWeather, boolean inputsMayDiffer,
-                              Accuracy accuracy) {
-        List<String> lines = new ArrayList<>();
+    static final class Text {
+        final List<String> summary;
+        final List<String> details;
 
-        lines.add(context.getString(R.string.neuro_explain_conditions,
+        Text(List<String> summary, List<String> details) {
+            this.summary = summary;
+            this.details = details;
+        }
+    }
+
+    static Text build(Context context, List<String> codes, List<String> q1,
+                      List<String> q2, List<String> q3, String[] labels,
+                      Conditions c, boolean previousYearWeather, boolean inputsMayDiffer,
+                      Accuracy accuracy) {
+        List<String> summary = new ArrayList<>();
+        List<String> details = new ArrayList<>();
+
+        summary.add(context.getString(R.string.neuro_explain_conditions_short,
                 format(c.airTemp, 1), format(c.humidity, 0), format(c.pressure, 0),
                 context.getString(c.rain ? R.string.neuro_explain_rain_yes
-                        : R.string.neuro_explain_rain_no),
+                        : R.string.neuro_explain_rain_no)));
+
+        summary.add(context.getString(R.string.neuro_explain_circuit_short,
+                format(c.lengthKm, 3), c.corners,
                 context.getString(c.street ? R.string.neuro_explain_street
                         : R.string.neuro_explain_permanent)));
 
-        lines.add(context.getString(R.string.neuro_explain_circuit,
-                format(c.lengthKm, 3), c.corners));
-
-        lines.add(context.getString(previousYearWeather
-                ? R.string.neuro_explain_weather_last_year
-                : R.string.neuro_explain_weather_forecast));
-
-        if (inputsMayDiffer) {
-            lines.add(context.getString(R.string.neuro_explain_cache_note));
+        if (previousYearWeather) {
+            summary.add(context.getString(R.string.neuro_explain_weather_last_year));
+        } else {
+            details.add(context.getString(R.string.neuro_explain_weather_forecast));
         }
 
-        lines.add(context.getString(R.string.neuro_explain_phases,
-                labels[0], count(q1), labels[1], count(q2), labels[2], count(q3)));
+        if (inputsMayDiffer) {
+            summary.add(context.getString(R.string.neuro_explain_cache_note));
+        }
 
         int first = -1, second = -1;
         for (int i = 0; i < q3.size(); i++) {
@@ -113,22 +123,25 @@ final class neuroExplanation {
         }
         if (first >= 0 && second >= 0) {
             double gap = seconds(q3.get(second)) - seconds(q3.get(first));
-            lines.add(context.getString(R.string.neuro_explain_pole,
+            summary.add(context.getString(R.string.neuro_explain_pole_short,
                     codes.get(first), q3.get(first), format(gap, 3)));
         }
 
+        summary.add(context.getString(R.string.neuro_explain_phases_short,
+                labels[0], count(q1), labels[1], count(q2), labels[2], count(q3)));
+
         if (accuracy != null) {
             if (accuracy.races < MIN_ACCURACY_RACES) {
-                lines.add(context.getString(R.string.neuro_explain_accuracy_collecting,
+                summary.add(context.getString(R.string.neuro_explain_accuracy_collecting,
                         accuracy.races, MIN_ACCURACY_RACES));
             } else {
-                lines.add(context.getString(R.string.neuro_explain_accuracy,
+                summary.add(context.getString(R.string.neuro_explain_accuracy,
                         accuracy.races, accuracy.poleHits, format(accuracy.within1 * 100, 0)));
             }
         }
 
-        lines.add(context.getString(R.string.neuro_explain_disclaimer));
-        return lines;
+        details.add(context.getString(R.string.neuro_explain_disclaimer));
+        return new Text(summary, details);
     }
 
     private static int count(List<String> times) {

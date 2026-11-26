@@ -1177,19 +1177,27 @@
     <string name="theme_button_desc">Change theme</string>
 
     <string name="neuro_explain_title">How to read this prediction</string>
-    <string name="neuro_explain_conditions">Calculated for: air %1$s °C, humidity %2$s%%, pressure %3$s hPa, %4$s, %5$s.</string>
     <string name="neuro_explain_rain_yes">precipitation expected</string>
     <string name="neuro_explain_rain_no">no precipitation</string>
     <string name="neuro_explain_street">street circuit</string>
     <string name="neuro_explain_permanent">permanent circuit</string>
-    <string name="neuro_explain_circuit">Lap length %1$s km, corners: %2$d.</string>
     <string name="neuro_explain_weather_forecast">Weather is the hourly forecast for the session time.</string>
     <string name="neuro_explain_weather_last_year">The session is more than 15 days away, so the weather of the same day last year is used instead of a forecast.</string>
-    <string name="neuro_explain_cache_note">The prediction is saved on the server. It is recalculated only when someone opens it and the saved version is more than a day old: the saved version is shown first, the new one appears the next time.</string>    <string name="neuro_explain_phases">Drivers per segment: %1$s — %2$d, %3$s — %4$d, %5$s — %6$d.</string>
+    <string name="neuro_explain_cache_note">The prediction is saved on the server. It is recalculated only when someone opens it and the saved version is more than a day old: the saved version is shown first, the new one appears the next time.</string>
     <string name="neuro_explain_pole">Predicted pole: %1$s, %2$s. Gap to second place: %3$s s.</string>
-    <string name="neuro_explain_disclaimer">The model does not report how much each factor contributed. This text describes the input data and the result, not the reasons.</string>
     <string name="neuro_explain_accuracy_collecting">Accuracy of final predictions is being collected: %1$d of %2$d races.</string>
     <string name="neuro_explain_accuracy">Final predictions this season (%1$d races): pole guessed in %2$d, no more than one position off for %3$s%% of drivers.</string>
+    <string name="neuro_explain_conditions_short">Conditions: %1$s °C · %2$s %% · %3$s hPa · %4$s</string>
+    <string name="neuro_explain_circuit_short">Track: %1$s km · %2$d turns · %3$s</string>
+    <string name="neuro_explain_pole_short">Pole: %1$s %2$s, gap to second %3$s s</string>
+    <string name="neuro_explain_phases_short">Drivers: %1$s — %2$d · %3$s — %4$d · %5$s — %6$d</string>
+    <string name="neuro_explain_details_show">About the model ▾</string>
+    <string name="neuro_explain_details_hide">About the model ▴</string>
+    <string name="neuro_explain_disclaimer">The prediction is built from input data: driver and team form, the track and the weather. The factors in a driver\'s panel show how the model used this data and do not explain the lap time. Real results may differ.</string>
+    <string name="neuro_design_final">Final prediction</string>
+    <string name="neuro_design_final_body">Before each qualifying the app prepares a final prediction using the current line-up and weather, and it does not change after the session starts. Other predictions are preliminary. Accuracy is counted only for final predictions, so the statistics build up gradually.</string>
+    <string name="neuro_design_factors">What affected the time</string>
+    <string name="neuro_design_factors_body">Tap a driver in the table to see up to three main factors: driver, team and car, track, weather and season. The bar shows the deviation from the session average time in seconds: right is faster, left is slower.</string>
 
     <string name="neuro_badge_final">Final prediction</string>
     <string name="neuro_badge_final_at">Final prediction · %1$s</string>

@@ -81,6 +81,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     private boolean weatherFromPreviousYear = false;
     private View explainCard;
     private TextView explainBody;
+    private TextView explainDetails, explainToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -125,6 +126,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         updateDate = findViewById(R.id.last_update_time);
         poleLapDriverLayout = findViewById(R.id.poleLapDriver_layout);
         updateDateLayout = findViewById(R.id.update_date_layout);
+
+        explainDetails = findViewById(R.id.explainDetails);
+        explainToggle = findViewById(R.id.explainToggle);
 
         loadingWeatherLayout = findViewById(R.id.loading_weather_layout);
         weatherProgress = findViewById(R.id.weather_progress);
@@ -1021,9 +1025,19 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                    neuroExplanation.Conditions conditions, boolean inputsMayDiffer,
                                    neuroExplanation.Accuracy accuracy) {
         if (isFinishing() || isDestroyed()) return;
-        List<String> lines = neuroExplanation.build(this, codes, q1, q2, q3, labels,
+        neuroExplanation.Text text = neuroExplanation.build(this, codes, q1, q2, q3, labels,
                 conditions, weatherFromPreviousYear, inputsMayDiffer, accuracy);
-        explainBody.setText(android.text.TextUtils.join("\n\n", lines));
+
+        explainBody.setText(android.text.TextUtils.join("\n\n", text.summary));
+        explainDetails.setText(android.text.TextUtils.join("\n\n", text.details));
+        explainDetails.setVisibility(View.GONE);
+        explainToggle.setText(R.string.neuro_explain_details_show);
+        explainToggle.setOnClickListener(v -> {
+            boolean open = explainDetails.getVisibility() != View.VISIBLE;
+            explainDetails.setVisibility(open ? View.VISIBLE : View.GONE);
+            explainToggle.setText(open ? R.string.neuro_explain_details_hide
+                    : R.string.neuro_explain_details_show);
+        });
         explainCard.setVisibility(View.VISIBLE);
     }
 
