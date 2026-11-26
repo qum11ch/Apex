@@ -1204,6 +1204,8 @@
     <string name="compare_pick_team_title">Выберите команду</string>
     <string name="compare_pick_search_hint">Поиск</string>
     <string name="compare_pick_empty">Ничего не найдено</string>
+    <string name="compare_pick_season_format">Сезон %1$s</string>
+    <string name="compare_pick_others">Остальные</string>
     <string name="compare_load_error">Не удалось загрузить данные</string>
     <string name="compare_metric_titles">Титулы</string>
     <string name="compare_metric_wins">Победы</string>

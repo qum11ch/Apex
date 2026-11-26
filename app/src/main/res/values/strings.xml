@@ -1224,6 +1224,8 @@
     <string name="compare_pick_team_title">Choose a team</string>
     <string name="compare_pick_search_hint">Search</string>
     <string name="compare_pick_empty">Nothing found</string>
+    <string name="compare_pick_season_format">%1$s season</string>
+    <string name="compare_pick_others">Others</string>
     <string name="compare_load_error">Could not load data</string>
     <string name="compare_metric_titles">Championships</string>
     <string name="compare_metric_wins">Wins</string>
