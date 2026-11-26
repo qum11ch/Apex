@@ -24,6 +24,8 @@ public class neuroPredictionInfoSheet extends neuroBaseSheet {
         addSection(content, R.string.neuro_design_capabilities, R.string.neuro_design_capabilities_body);
         addSection(content, R.string.neuro_design_round, R.string.neuro_design_round_body);
         addSection(content, R.string.neuro_design_major, R.string.neuro_design_major_body);
+        addSection(content, R.string.neuro_design_final, R.string.neuro_design_final_body);
+        addSection(content, R.string.neuro_design_factors, R.string.neuro_design_factors_body);
         TextView done = text(getString(R.string.neuro_design_done), 16, R.color.red);
         done.setTypeface(done.getTypeface(), Typeface.BOLD);
         done.setGravity(android.view.Gravity.CENTER);

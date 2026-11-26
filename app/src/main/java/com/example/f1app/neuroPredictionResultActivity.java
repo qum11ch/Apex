@@ -61,6 +61,7 @@ import java.util.Map;
 public class neuroPredictionResultActivity extends AppCompatActivity {
     private List<raceResultsQualiData> datum;
     private raceResultsQualiAdapter adapter;
+    private final Map<String, ArrayList<neuroFactorsSheet.Factor>> factorsByDriver = new HashMap<>();
     private RecyclerView recyclerView;
     private ShimmerFrameLayout shimmerFrameLayout, shimmerDriverLayout, shimmerUpdateLayour;
     private TextView poleLapDriverName;
@@ -77,6 +78,10 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
     private TextView loadingWeatherPercent;
     private SwipeRefreshLayout swipeRefresh;
     private boolean predictionLoading = false;
+    private boolean weatherFromPreviousYear = false;
+    private View explainCard;
+    private TextView explainBody;
+    private TextView explainDetails, explainToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +106,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         datum = new ArrayList<>();
         adapter = new raceResultsQualiAdapter(neuroPredictionResultActivity.this, datum);
         recyclerView.setAdapter(adapter);
+        adapter.setOnDriverClick(this::openFactors);
 
         ImageButton backButton = findViewById(R.id.backButton);
         backButton.setOnClickListener(v -> finish());
@@ -120,6 +126,9 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         updateDate = findViewById(R.id.last_update_time);
         poleLapDriverLayout = findViewById(R.id.poleLapDriver_layout);
         updateDateLayout = findViewById(R.id.update_date_layout);
+
+        explainDetails = findViewById(R.id.explainDetails);
+        explainToggle = findViewById(R.id.explainToggle);
 
         loadingWeatherLayout = findViewById(R.id.loading_weather_layout);
         weatherProgress = findViewById(R.id.weather_progress);
@@ -142,6 +151,8 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         windowInsetsController.setAppearanceLightStatusBars(false);
 
         swipeRefresh = findViewById(R.id.swipeRefresh);
+        explainCard = findViewById(R.id.neuroExplainCard);
+        explainBody = findViewById(R.id.neuroExplainBody);
 
         NestedScrollView scrollView = findViewById(R.id.scrollView);
 
@@ -378,7 +389,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                         }
 
                                         String minutes_sprint = "00";
-                                        String hours_sprint = Integer.toString(int_hours);
+                                        String hours_sprint = Integer.toString(int_hours_sprint);
                                         if (int_hours_sprint < 10){
                                             hours_sprint = "0" + hours_sprint;
                                         }
@@ -438,134 +449,58 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 });
     }
 
-    private void getWeatherOld(Double lat, Double lon,
-                            String eventTime, String gpName,
-                            String[] driverCodes, String[] teamNames, String event, int gpRound,
-                            int circuitsCorners, Double circuitsLength, int isStreetCircuit,
-                            String circuitId){
+    private void getWeather(
+            Double lat,
+            Double lon,
+            String eventTime,
+            String gpName,
+            String[] driverCodes,
+            String[] teamNames,
+            String event,
+            int gpRound,
+            int circuitsCorners,
+            Double circuitsLength,
+            int isStreetCircuit,
+            String circuitId
+    ) {
+        final String key = eventTime.substring(0, 4) + "_" + circuitId + "_" + event;
 
-        String isoDateStr = eventTime.replace(" ", "T");
-        Log.i("WeatherDate", " " + eventTime);
+        FirebaseDatabase.getInstance().getReference("predictions").child(key)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        DataSnapshot params = snapshot.child("params");
+                        Double temp = params.child("airTemp").getValue(Double.class);
+                        Double pres = params.child("pressure").getValue(Double.class);
+                        Double hum = params.child("humidity").getValue(Double.class);
+                        Integer rain = params.child("rainfall").getValue(Integer.class);
+                        boolean isFinal = Boolean.TRUE.equals(
+                                snapshot.child("final").getValue(Boolean.class));
 
-        ZonedDateTime targetDate = ZonedDateTime.parse(isoDateStr);
-        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("UTC"));
-
-        long daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), targetDate.toLocalDate());
-
-        String[] fullDate = eventTime.split(" ");
-        String date = fullDate[0];
-        String time = fullDate[1];
-
-        String targetTime = time.replace("Z", "");
-        targetTime = time.substring(0, targetTime.length() - 3);
-        String targetDatetime = date + "T" + targetTime;
-
-        RequestQueue queue = apiQueue.get();
-
-        String url;
-        ZonedDateTime oneYearEarlier;
-
-        if (daysBetween > 365){
-            oneYearEarlier = targetDate.minusYears(2);
-        }else{
-            oneYearEarlier = targetDate.minusYears(1);
-        }
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String prevYearDate = oneYearEarlier.format(formatter);
-
-
-        boolean prevYear = false;
-
-        if ((daysBetween <= 15) && (daysBetween >= -2)){
-            url = "https://api.open-meteo.com/v1/forecast?latitude="
-                    + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                    + date + "&end_date=" + date;
-        } else if (daysBetween > 15) {
-            daysBetween = daysBetween - 365;
-            if (daysBetween >= -2){
-                url = "https://api.open-meteo.com/v1/forecast?latitude="
-                        + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                        + prevYearDate + "&end_date=" + prevYearDate;
-            }else{
-                url = "https://archive-api.open-meteo.com/v1/archive?latitude="
-                        + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                        + prevYearDate + "&end_date=" + prevYearDate;
-            }
-            prevYear = true;
-        } else{
-            url = "https://archive-api.open-meteo.com/v1/archive?latitude="
-                    + lat + "&longitude=" + lon + "&hourly=temperature_2m,relative_humidity_2m,pressure_msl,precipitation,rain&timezone=GMT&start_date="
-                    + date + "&end_date=" + date;
-        }
-
-        String finalTargetTime;
-        if (prevYear){
-            finalTargetTime = prevYearDate + "T" + targetTime;
-        } else {
-            finalTargetTime = targetDatetime;
-        }
-
-        Log.i("FatalError", " " + url);
-        JsonObjectRequest jsonObjectRequest = new cachedJsonRequest(
-                Request.Method.GET,
-                url,
-                null,
-                response -> {
-                    try{
-                        JSONObject hourly = response.getJSONObject("hourly");
-
-                        JSONArray timeArray = hourly.getJSONArray("time");
-                        JSONArray tempArray = hourly.getJSONArray("temperature_2m");
-                        JSONArray pressureArray = hourly.getJSONArray("pressure_msl");
-                        JSONArray humidityArray = hourly.getJSONArray("relative_humidity_2m");
-                        JSONArray precipitationArray = hourly.getJSONArray("precipitation");
-
-                        int targetIndex = -1;
-
-                        for (int i = 0; i < timeArray.length(); i++) {
-                            if (timeArray.getString(i).equals(finalTargetTime)) {
-                                targetIndex = i;
-                                break;
-                            }
-                        }
-
-                        if (targetIndex != -1) {
-                            double temp = tempArray.getDouble(targetIndex);
-                            double pressure = pressureArray.getDouble(targetIndex);
-                            double humidity = humidityArray.getDouble(targetIndex);
-                            double precipitation = precipitationArray.getDouble(targetIndex);
-                            boolean isRainfall = precipitation > 0.0;
-
-                            int rainfall = 0;
-                            if (isRainfall){
-                                rainfall = 1;
-                            }
-
-                            DateTimeFormatter yearFormatter = DateTimeFormatter.ofPattern("yyyy");
-                            String year = targetDate.format(yearFormatter);
-
-                            predictRequest(gpName, Integer.parseInt(year), temp, pressure, humidity, rainfall, driverCodes,
-                                    teamNames, event, gpRound, circuitsCorners, circuitsLength,
-                                    isStreetCircuit, circuitId);
-
+                        if (isFinal && temp != null && pres != null && hum != null && rain != null) {
+                            weatherFromPreviousYear = false;
+                            setProgressStage(45,
+                                    getString(R.string.neuro_prediction_progress_weather_finish));
+                            predictRequest(gpName, Integer.parseInt(eventTime.substring(0, 4)),
+                                    temp, pres, hum, rain, driverCodes, teamNames, event, gpRound,
+                                    circuitsCorners, circuitsLength, isStreetCircuit, circuitId);
                         } else {
-                            Log.e("WeatherPredict", "Time " + finalTargetTime + " not found in response.");
+                            getWeatherRemote(lat, lon, eventTime, gpName, driverCodes, teamNames,
+                                    event, gpRound, circuitsCorners, circuitsLength,
+                                    isStreetCircuit, circuitId);
                         }
-
-
-                    }catch (JSONException e) {
-                        Log.e("predictPageActivity", "Wheather error " + e.getMessage());
                     }
-                }, error -> {
-                    Toast.makeText(neuroPredictionResultActivity.this, "Wheather error " + error.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.d ("fatal", "Wheather error  " + error.getMessage());
-        });
 
-        queue.add(jsonObjectRequest);
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        getWeatherRemote(lat, lon, eventTime, gpName, driverCodes, teamNames,
+                                event, gpRound, circuitsCorners, circuitsLength,
+                                isStreetCircuit, circuitId);
+                    }
+                });
     }
 
-    private void getWeather(
+    private void getWeatherRemote(
             Double lat,
             Double lon,
             String eventTime,
@@ -592,6 +527,7 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
         long daysBetween = ChronoUnit.DAYS.between(now.toLocalDate(), eventDate);
 
         boolean usePreviousYear = daysBetween > 15;
+        weatherFromPreviousYear = usePreviousYear;
 
         LocalDate weatherDate;
 
@@ -836,6 +772,11 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 boolean isStale = Boolean.TRUE.equals(staleValue);
 
+                                showPredictionBadge(
+                                        Boolean.TRUE.equals(responseMap.get("final")),
+                                        Boolean.TRUE.equals(responseMap.get("locked")),
+                                        responseMap.get("final_at"));
+
                                 if (isStale) {
                                     Toast.makeText(
                                             neuroPredictionResultActivity.this,
@@ -855,11 +796,18 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                 Log.i("py_predict_results", "Result: " + resultList);
 
                                 datum.clear();
+                                factorsByDriver.clear();
 
                                 setProgressStage(
                                         98,
                                         getString(R.string.neuro_prediction_progress_model_table)
                                 );
+
+                                List<String> expCodes = new ArrayList<>();
+                                List<String> expQ1 = new ArrayList<>();
+                                List<String> expQ2 = new ArrayList<>();
+                                List<String> expQ3 = new ArrayList<>();
+                                String source = String.valueOf(responseMap.get("source"));
 
                                 for (int i = 0; i < resultList.size(); i++) {
                                     Object item = resultList.get(i);
@@ -875,6 +823,14 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                                     String q1Time = readNullableString(qualiItem, event + "1");
                                     String q2Time = readNullableString(qualiItem, event + "2");
                                     String q3Time = readNullableString(qualiItem, event + "3");
+
+                                    ArrayList<neuroFactorsSheet.Factor> factors = readFactors(qualiItem.get("Factors"));
+                                    if (!factors.isEmpty()) factorsByDriver.put(driverCode, factors);
+
+                                    expCodes.add(driverCode);
+                                    expQ1.add(q1Time);
+                                    expQ2.add(q2Time);
+                                    expQ3.add(q3Time);
 
                                     if (q1Time.isEmpty()) {
                                         q1Time = "--";
@@ -919,7 +875,13 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
 
                                 hideShimmer(recyclerView, shimmerFrameLayout);
 
+                                adapter.setClickableDrivers(new java.util.HashSet<>(factorsByDriver.keySet()));
+                                updateFactorsHint();
+
                                 adapter.notifyDataSetChanged();
+
+                                showExplanation(year, event, circuitId, source, isStale, expCodes, expQ1, expQ2, expQ3,
+                                        temp, hum, pres, rain, isStreetCircuit, circuitsLength, circuitsCorners);
 
                                 finishProgress();
 
@@ -969,6 +931,114 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                             );
                         }
                 );
+    }
+
+    private static ArrayList<neuroFactorsSheet.Factor> readFactors(Object raw) {
+        ArrayList<neuroFactorsSheet.Factor> result = new ArrayList<>();
+        if (!(raw instanceof List)) return result;
+        for (Object item : (List<?>) raw) {
+            if (!(item instanceof Map)) continue;
+            Map<?, ?> map = (Map<?, ?>) item;
+            Object group = map.get("g");
+            Object seconds = map.get("s");
+            if (group instanceof String && seconds instanceof Number) {
+                result.add(new neuroFactorsSheet.Factor((String) group, ((Number) seconds).doubleValue()));
+            }
+        }
+        return result;
+    }
+
+    private void openFactors(String driverCode) {
+        ArrayList<neuroFactorsSheet.Factor> factors = factorsByDriver.get(driverCode);
+        if (factors == null || factors.isEmpty()) return;
+        String name = getDriverName(driverCode);
+        neuroFactorsSheet.newInstance(name != null ? name : driverCode, factors)
+                .show(getSupportFragmentManager(), "neuro_factors");
+    }
+
+    private void updateFactorsHint() {
+        TextView hint = findViewById(R.id.neuroResultsHint);
+        if (hint == null) return;
+        String base = getString(R.string.neuro_design_results);
+        hint.setText(factorsByDriver.isEmpty()
+                ? base : base + "\n" + getString(R.string.neuro_factors_hint));
+    }
+
+    private void showExplanation(int year, String event, String circuitId, String source,
+                                 boolean isStale, List<String> codes, List<String> q1,
+                                 List<String> q2, List<String> q3, double temp, double hum,
+                                 double pres, int rain, int street, double lengthKm, int corners) {
+        final String[] labels = event.equals("SQ")
+                ? new String[]{getString(R.string.sq1_header), getString(R.string.sq2_header),
+                getString(R.string.sq3_header)}
+                : new String[]{getString(R.string.q1_header), getString(R.string.q2_header),
+                getString(R.string.q3_header)};
+        for (int i = 0; i < labels.length; i++) {
+            labels[i] = labels[i].toUpperCase(Locale.ROOT);
+        }
+        final boolean fromCache = "cache".equals(source);
+        final neuroExplanation.Conditions local = new neuroExplanation.Conditions(
+                temp, hum, pres, rain > 0, street > 0, lengthKm, corners);
+        final String key = year + "_" + circuitId + "_" + event;
+
+        FirebaseDatabase.getInstance().getReference("predictions").child(key).child("params")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        neuroExplanation.Conditions saved =
+                                neuroExplanation.Conditions.fromSnapshot(snapshot);
+                        loadAccuracyAndRender(year, codes, q1, q2, q3, labels,
+                                saved != null ? saved : local,
+                                isStale || (saved == null && fromCache));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        loadAccuracyAndRender(year, codes, q1, q2, q3, labels, local,
+                                isStale || fromCache);
+                    }
+                });
+    }
+
+    private void loadAccuracyAndRender(int year, List<String> codes, List<String> q1,
+                                       List<String> q2, List<String> q3, String[] labels,
+                                       neuroExplanation.Conditions conditions,
+                                       boolean inputsMayDiffer) {
+        FirebaseDatabase.getInstance().getReference("predictionAccuracy")
+                .child(String.valueOf(year))
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        renderExplanation(codes, q1, q2, q3, labels, conditions, inputsMayDiffer,
+                                neuroExplanation.Accuracy.fromSnapshot(snapshot));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        renderExplanation(codes, q1, q2, q3, labels, conditions, inputsMayDiffer, null);
+                    }
+                });
+    }
+
+    private void renderExplanation(List<String> codes, List<String> q1, List<String> q2,
+                                   List<String> q3, String[] labels,
+                                   neuroExplanation.Conditions conditions, boolean inputsMayDiffer,
+                                   neuroExplanation.Accuracy accuracy) {
+        if (isFinishing() || isDestroyed()) return;
+        neuroExplanation.Text text = neuroExplanation.build(this, codes, q1, q2, q3, labels,
+                conditions, weatherFromPreviousYear, inputsMayDiffer, accuracy);
+
+        explainBody.setText(android.text.TextUtils.join("\n\n", text.summary));
+        explainDetails.setText(android.text.TextUtils.join("\n\n", text.details));
+        explainDetails.setVisibility(View.GONE);
+        explainToggle.setText(R.string.neuro_explain_details_show);
+        explainToggle.setOnClickListener(v -> {
+            boolean open = explainDetails.getVisibility() != View.VISIBLE;
+            explainDetails.setVisibility(open ? View.VISIBLE : View.GONE);
+            explainToggle.setText(open ? R.string.neuro_explain_details_hide
+                    : R.string.neuro_explain_details_show);
+        });
+        explainCard.setVisibility(View.VISIBLE);
     }
 
     private static String readString(
@@ -1110,6 +1180,31 @@ public class neuroPredictionResultActivity extends AppCompatActivity {
                 );
 
         return userDateTime.format(formatter);
+    }
+
+    private void showPredictionBadge(boolean isFinal, boolean isLocked, Object finalAtValue) {
+        TextView badge = findViewById(R.id.neuroFinalBadge);
+        if (badge == null) return;
+
+        if (isFinal) {
+            String when = "";
+            try {
+                when = finalAtValue == null ? "" : formatDateForUser(String.valueOf(finalAtValue));
+            } catch (Exception ignored) {
+                // keep the badge without time
+            }
+            badge.setText(when.isEmpty()
+                    ? getString(R.string.neuro_badge_final)
+                    : getString(R.string.neuro_badge_final_at, when));
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_final);
+        } else if (isLocked) {
+            badge.setText(R.string.neuro_badge_locked);
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_muted);
+        } else {
+            badge.setText(R.string.neuro_badge_preliminary);
+            badge.setBackgroundResource(R.drawable.bg_neuro_badge_muted);
+        }
+        badge.setVisibility(View.VISIBLE);
     }
 
     public static ArrayList<String> correctTeamNames(ArrayList<String> teamIds){

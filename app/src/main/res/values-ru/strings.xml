@@ -1155,4 +1155,43 @@
     <string name="theme_dark">Тёмная</string>
 
     <string name="theme_button_desc">Изменить тему</string>
+
+    <string name="neuro_explain_title">Как читать прогноз</string>
+    <string name="neuro_explain_rain_yes">ожидаются осадки</string>
+    <string name="neuro_explain_rain_no">без осадков</string>
+    <string name="neuro_explain_street">городская трасса</string>
+    <string name="neuro_explain_permanent">стационарная трасса</string>
+    <string name="neuro_explain_weather_forecast">Погода — почасовой прогноз на время сессии.</string>
+    <string name="neuro_explain_weather_last_year">До сессии больше 15 дней, поэтому вместо прогноза взята погода этого же дня в прошлом году.</string>
+    <string name="neuro_explain_cache_note">Прогноз хранится на сервере. Он пересчитывается только когда его открывают, а сохранённая версия старше суток: сначала показывается сохранённая, обновлённая появится при следующем открытии.</string>
+    <string name="neuro_explain_pole">Поул в прогнозе: %1$s, %2$s. Отрыв от второго места: %3$s с.</string>
+    <string name="neuro_explain_accuracy_collecting">Собираем статистику точности финальных прогнозов: %1$d из %2$d этапов.</string>
+    <string name="neuro_explain_accuracy">Финальные прогнозы сезона (этапов: %1$d): поул угадан в %2$d, ошибка не больше одной позиции у %3$s %% пилотов.</string>
+    <string name="neuro_explain_conditions_short">Условия: %1$s °C · %2$s %% · %3$s гПа · %4$s</string>
+    <string name="neuro_explain_circuit_short">Трасса: %1$s км · поворотов %2$d · %3$s</string>
+    <string name="neuro_explain_pole_short">Поул: %1$s %2$s, отрыв от второго %3$s с</string>
+    <string name="neuro_explain_phases_short">Пилотов: %1$s — %2$d · %3$s — %4$d · %5$s — %6$d</string>
+    <string name="neuro_explain_details_show">О модели ▾</string>
+    <string name="neuro_explain_details_hide">О модели ▴</string>
+    <string name="neuro_explain_disclaimer">Прогноз строится по входным данным: форма пилотов и команд, трасса, погода. Факторы в панели пилота показывают, как модель использовала эти данные, и не объясняют причины времени круга. Реальные результаты могут отличаться.</string>
+    <string name="neuro_design_final">Финальный прогноз</string>
+    <string name="neuro_design_final_body">Перед каждой квалификацией приложение готовит финальный прогноз по актуальному составу и погоде, и после старта сессии он не меняется. Остальные прогнозы предварительные. Точность считается только по финальным, поэтому статистика накапливается постепенно.</string>
+    <string name="neuro_design_factors">Что повлияло на время</string>
+    <string name="neuro_design_factors_body">Нажмите на пилота в таблице, чтобы увидеть до трёх главных факторов: пилот, команда и машина, трасса, погода, сезон. Полоска показывает отклонение от среднего времени по сессии в секундах: вправо — быстрее, влево — медленнее.</string>
+
+    <string name="neuro_badge_final">Финальный прогноз</string>
+    <string name="neuro_badge_final_at">Финальный прогноз · %1$s</string>
+    <string name="neuro_badge_locked">Последний прогноз до сессии</string>
+    <string name="neuro_badge_preliminary">Предварительный прогноз</string>
+
+    <string name="neuro_factors_title">Что повлияло на время</string>
+    <string name="neuro_factors_legend">Вправо — быстрее среднего по сессии, влево — медленнее.</string>
+    <string name="neuro_factors_note">Это оценка того, как модель использовала данные, а не причина времени круга.</string>
+    <string name="neuro_factors_hint">Нажмите на пилота, чтобы увидеть, что повлияло на время.</string>
+    <string name="neuro_factors_seconds">%1$s с</string>
+    <string name="neuro_factor_driver">Пилот</string>
+    <string name="neuro_factor_team">Команда и машина</string>
+    <string name="neuro_factor_track">Трасса</string>
+    <string name="neuro_factor_weather">Погода</string>
+    <string name="neuro_factor_season">Сезон и регламент</string>
 </resources>

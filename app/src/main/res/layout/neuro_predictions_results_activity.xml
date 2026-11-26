@@ -271,6 +271,23 @@
                             android:layout_height="wrap_content">
                             <include layout="@layout/shimmer_last_update"/>
                         </com.facebook.shimmer.ShimmerFrameLayout>
+
+                        <TextView
+                            android:id="@+id/neuroFinalBadge"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/update_date_layout"
+                            android:layout_marginStart="10dp"
+                            android:layout_marginBottom="12dp"
+                            android:paddingStart="10dp"
+                            android:paddingTop="4dp"
+                            android:paddingEnd="10dp"
+                            android:paddingBottom="4dp"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold"
+                            android:textColor="@color/white"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
                     </RelativeLayout>
 
                     <TextView
@@ -281,12 +298,14 @@
                         android:layout_marginEnd="10dp"
                         android:layout_below="@id/poleLap"
                         android:text="@string/neuro_design_results"
+                        android:id="@+id/neuroResultsHint"
                         android:textSize="13sp"
                         android:layout_marginBottom="10dp"
                         android:textColor="@color/white"/>
                 </com.example.f1app.StripedRelativeLayout>
                 <RelativeLayout
                     android:layout_below="@id/poleLap_layout"
+                    android:id="@+id/quali_table_container"
                     android:background="@color/colorPrimary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -413,6 +432,54 @@
                     </RelativeLayout>
 
                 </RelativeLayout>
+                <LinearLayout
+                    android:id="@+id/neuroExplainCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/quali_table_container"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/item_style_preds"
+                    android:orientation="vertical"
+                    android:padding="14dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        style="@style/Widget.Apex.Pred.Section"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/neuro_explain_title"
+                        android:textAllCaps="true" />
+
+                    <TextView
+                        android:id="@+id/neuroExplainBody"
+                        style="@style/Widget.Apex.Pred.Body"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp" />
+
+                    <TextView
+                        android:id="@+id/explainToggle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minHeight="48dp"
+                        android:gravity="center_vertical"
+                        android:text="@string/neuro_explain_details_show"
+                        android:textColor="@color/red"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground" />
+
+                    <TextView
+                        android:id="@+id/explainDetails"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        style="@style/Widget.Apex.Pred.Body"/>
+                </LinearLayout>
             </RelativeLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

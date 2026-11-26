@@ -29,6 +29,21 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
         this.dataList = datum;
     }
 
+    public interface OnDriverClick {
+        void onClick(String driverCode);
+    }
+
+    private OnDriverClick onDriverClick;
+    private java.util.Set<String> clickableDrivers = java.util.Collections.emptySet();
+
+    public void setOnDriverClick(OnDriverClick listener) {
+        this.onDriverClick = listener;
+    }
+
+    public void setClickableDrivers(java.util.Set<String> codes) {
+        this.clickableDrivers = codes;
+    }
+
     @NonNull
     @Override
     public raceResultsQualiAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -76,6 +91,15 @@ public class raceResultsQualiAdapter extends RecyclerView.Adapter<raceResultsQua
                     }
                 });
             }
+        }
+
+        boolean canOpen = onDriverClick != null && clickableDrivers.contains(mDriverCode);
+        holder.itemView.setClickable(canOpen);
+        holder.itemView.setOnClickListener(canOpen ? v -> onDriverClick.onClick(mDriverCode) : null);
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
+            android.util.TypedValue tv = new android.util.TypedValue();
+            context.getTheme().resolveAttribute(android.R.attr.selectableItemBackground, tv, true);
+            holder.itemView.setForeground(canOpen ? ContextCompat.getDrawable(context, tv.resourceId) : null);
         }
     }
 
