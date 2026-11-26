@@ -204,8 +204,6 @@ public class futureRaceScheduleFragment extends Fragment {
             recyclerView.setAdapter(adapter);
 
             getRaceSchedule(mRaceName, currentYear);
-            new weatherCard(view.findViewById(R.id.weather_container), false)
-                    .showRace(currentYear, mRaceName);
 
             //CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);

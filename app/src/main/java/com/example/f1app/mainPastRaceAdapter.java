@@ -29,6 +29,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.widget.ImageView;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+
 public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapter.DataHolder>{
     Activity context;
     List<concludedRacesData> dataList;
@@ -62,7 +67,7 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         concludedRacesData datum = dataList.get(position);
 
         String round = datum.getRoundNumber();
-        holder.round.setText(round);
+        holder.round.setText(context.getString(R.string.round_pill, round));
 
         String dateStart_string = datum.getDateStart();
         String dateEnd_string = datum.getDateEnd();
@@ -85,13 +90,7 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
             holder.cnd.setVisibility(View.GONE);
         }
 
-        if(monthStart.equals(monthEnd)){
-            holder.raceMonth.setText(monthStart);
-        }
-        else{
-            String month = monthStart + "-" + monthEnd;
-            holder.raceMonth.setText(month);
-        }
+        holder.dates.setText(mainFutureRaceAdapter.dateRange(dateStart, dateEnd));
 
         String localeRaceName = datum.getRaceName().toLowerCase().replaceAll("\\s+", "_");
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + currentYear;
@@ -136,16 +135,14 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         }
 
         holder.raceCountry.setText(locale);
-        holder.day_start.setText(dayStart);
-        holder.day_end.setText(dayEnd);
-
 
         String firstPlace_code = datum.getWinnerDriverCode();
         String secondPlace_code = datum.getSecondPlaceCode();
         String thirdPlace_code = datum.getThirdPlaceCode();
-        holder.firstPlace_code.setText(firstPlace_code);
-        holder.secondPlace_code.setText(secondPlace_code);
-        holder.thirdPlace_code.setText(thirdPlace_code);
+
+        String season = datum.getSeason() != null && !datum.getSeason().isEmpty()
+                ? datum.getSeason() : currentYear;
+        holder.podium.bind(datum, season);
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context, concludedRaceActivity.class);
@@ -177,24 +174,20 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
 
     public static class DataHolder extends RecyclerView.ViewHolder{
 
-        TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
-                secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
+        TextView round, raceCountry, raceName, circuitName, cnd, dates;
         ConstraintLayout constraintLayout;
         LinearLayout podiumNamesLayout;
+        mainPodiumBlock podium;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             cnd = itemView.findViewById(R.id.cnd_layout);
             podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
             round = itemView.findViewById(R.id.round);
-            day_start = itemView.findViewById(R.id.day_start);
-            day_end = itemView.findViewById(R.id.day_end);
-            raceMonth = itemView.findViewById(R.id.raceMonth);
+            dates = itemView.findViewById(R.id.raceDates);
+            podium = new mainPodiumBlock(itemView);
             raceCountry = itemView.findViewById(R.id.raceCountry);
             raceName = itemView.findViewById(R.id.raceName);
             circuitName = itemView.findViewById(R.id.circuitName);
-            secondPlace_code = itemView.findViewById(R.id.secondPlace_code);
-            firstPlace_code = itemView.findViewById(R.id.firstPlace_code);
-            thirdPlace_code = itemView.findViewById(R.id.thirdPlace_code);
             constraintLayout = itemView.findViewById(R.id.main_layout);
         }
     }

@@ -1262,8 +1262,8 @@
     <string name="tracks_car_second">Вторая машина</string>
     <string name="tracks_note">Данные за сезоны %1$d–%2$d, как в таблицах результатов.</string>
 
-    <string name="weather_title_race">Прогноз на гонку</string>
-    <string name="weather_title_now">Сейчас на трассе</string>
+    <string name="weather_title_race">Прогноз погоды на гонку</string>
+    <string name="weather_title_now">Погода сейчас на трассе</string>
     <string name="weather_title_weekend">Погода на уик-энд</string>
     <string name="weather_feels">ощущается %1$s</string>
     <string name="weather_rain">Дождь %1$d%%</string>
@@ -1279,4 +1279,28 @@
     <string name="weather_rain_condition">Дождь</string>
     <string name="weather_snow">Снег</string>
     <string name="weather_storm">Гроза</string>
+    <string name="weather_title">Прогноз погоды</string>
+
+    <string name="countdown_starts">%1$s начнётся через</string>
+    <string name="countdown_ends">%1$s закончится через</string>
+    <string name="countdown_days">%1$d д %2$02d ч %3$02d мин</string>
+    <string name="live_badge">LIVE</string>
+    <string name="weather_for_session">Погода: %1$s</string>
+    <string name="weather_wind_full">Ветер %1$s</string>
+    <string name="weather_rain_short">дождь %1$d%%</string>
+    <string name="session_short_first_practice_event">ПР1</string>
+    <string name="session_short_second_practice_event">ПР2</string>
+    <string name="session_short_third_practice_event">ПР3</string>
+    <string name="session_short_sprint_quali_event">СПР-КВАЛ</string>
+    <string name="session_short_sprint_event">СПРИНТ</string>
+    <string name="session_short_quali_event">КВАЛ</string>
+    <string name="session_short_race_event">ГОНКА</string>
+
+    <string name="round_pill">R%1$s</string>
+    <string name="unit_days">дн</string>
+    <string name="unit_hours">ч</string>
+    <string name="unit_minutes">мин</string>
+    <string name="unit_seconds">сек</string>
+    <string name="podium_pole">Поул</string>
+    <string name="podium_fastest">Быстрый круг</string>
 </resources>

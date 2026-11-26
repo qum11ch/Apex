@@ -102,4 +102,12 @@
     <color name="items_color">#FF222222</color>
 
     <color name="theme_selected">#FF8A80</color>
+
+    <color name="hero_card_bg">#2B2B30</color>
+    <color name="hero_card_stroke">#3A3A40</color>
+    <color name="hero_text">#FFFFFF</color>
+    <color name="hero_text_secondary">#B3FFFFFF</color>
+    <color name="hero_accent">#FF3B30</color>
+    <color name="hero_chip_bg">#1FFFFFFF</color>
+    <color name="hero_podium_plate">#14FFFFFF</color>
 </resources>

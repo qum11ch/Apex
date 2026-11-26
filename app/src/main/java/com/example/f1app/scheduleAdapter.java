@@ -32,6 +32,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
     boolean isPast;
     private static final long HOUR = 3600*1000;
     private static final long SPRINT_QUALI_DIFF = 44*60*1000;
+    private java.util.Map<String, weatherForecast.Hour> weather = new java.util.HashMap<>();
 
     public scheduleAdapter(Activity context , List<scheduleData> datum, boolean isPast){
         this.context = context;
@@ -72,6 +73,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         }
 
         holder.eventName.setText(context.getString(getStringByName(eventName + "_text")));
+        bindWeather(holder, eventName, eventDateData[3].equals("yes"));
 
         CharSequence results = datum.getResultsText();
 
@@ -93,6 +95,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
         ConstraintLayout constraintLayout;
         LinearLayout content_layout;
         TextView eventResults;
+        TextView eventWeather;
 
         public DataHolder(@NonNull View itemView) {
             super(itemView);
@@ -103,7 +106,38 @@ public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHo
             eventTime = itemView.findViewById(R.id.eventTime);
             constraintLayout = itemView.findViewById(R.id.main_layout);
             content_layout = itemView.findViewById(R.id.content_layout);
+            eventWeather = itemView.findViewById(R.id.eventWeather);
         }
+    }
+
+    public void setWeather(java.util.Map<String, weatherForecast.Hour> hours) {
+        weather = hours == null ? new java.util.HashMap<>() : hours;
+        notifyDataSetChanged();
+    }
+
+    private void bindWeather(DataHolder holder, String eventName, boolean finished) {
+        weatherForecast.Hour hour = finished ? null : weather.get(eventName);
+
+        if (hour == null) {
+            holder.eventWeather.setVisibility(View.GONE);
+            return;
+        }
+
+        int color = ContextCompat.getColor(context,
+                hour.rain >= 50 ? R.color.red : R.color.text_color_secondary);
+        int size = Math.round(18 * context.getResources().getDisplayMetrics().density);
+
+        android.graphics.drawable.Drawable icon = ContextCompat
+                .getDrawable(context, weatherCard.iconFor(hour.code)).mutate();
+        icon.setBounds(0, 0, size, size);
+        icon.setTint(color);
+
+        holder.eventWeather.setText(weatherCard.summary(context, hour));
+        holder.eventWeather.setTextColor(color);
+        holder.eventWeather.setCompoundDrawablesRelative(icon, null, null, null);
+        holder.eventWeather.setCompoundDrawablePadding(
+                Math.round(6 * context.getResources().getDisplayMetrics().density));
+        holder.eventWeather.setVisibility(View.VISIBLE);
     }
 
     private String[] getDate(String ourDate, String eventName)

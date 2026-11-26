@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     private mainDriversStandingsAdapter driversAdapter;
     private mainTeamsStandingsAdapter teamsAdapter;
     private mainPastRaceAdapter pastRaceAdapter;
-    private futureRaceAdapter futureRaceAdapter;
     private String currentSeason;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -99,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean accountNavigationInProgress = false;
     private Button allDriversButton;
     private int progressDelayMs = 500;
-    private weatherCard weather;
+    private mainFutureRaceAdapter futureRaceAdapter;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -112,7 +111,6 @@ public class MainActivity extends AppCompatActivity {
 
         View root = findViewById(R.id.main_root);
         View footerContainer = findViewById(R.id.footer_container);
-        weather = new weatherCard(findViewById(R.id.weather_container), true);
 
         final int initialLeft = root.getPaddingLeft();
         final int initialTop = root.getPaddingTop();
@@ -213,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
         pastRaceAdapter = new mainPastRaceAdapter(this, datumPast);
         rvPast.setAdapter(pastRaceAdapter);
 
-        futureRaceAdapter = new futureRaceAdapter(this, datumFuture);
+        futureRaceAdapter = new mainFutureRaceAdapter(this, datumFuture);
         rvFuture.setAdapter(futureRaceAdapter);
 
         Button winnersWDC = findViewById(R.id.winnersWDS);
@@ -356,7 +354,6 @@ public class MainActivity extends AppCompatActivity {
                                 getTeamStanding(currentSeason);
                                 getDriversStanding(currentSeason);
                                 getSchedule(currentYear, currentDate);
-                                weather.showNext(currentSeason);
                             }
 
                             @Override
@@ -542,7 +539,6 @@ public class MainActivity extends AppCompatActivity {
         getTeamStanding(currentSeason);
         getDriversStanding(currentSeason);
         getSchedule(currentYear, LocalDate.now());
-        weather.showNext(currentSeason);
 
         swipeLayout.setRefreshing(false);
     }

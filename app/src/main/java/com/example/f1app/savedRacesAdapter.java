@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
@@ -8,19 +7,14 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -34,7 +28,7 @@ import java.util.Locale;
 /**
  * Rows and tiles share the look of the schedule cards: the round in the accent colour, the date pill,
  * ShareTech info lines and the same weekend states. The data is already complete here,
- * so binding never touches the network.
+ * so binding never touches the network (the podium photos come from the cache of the podium cards).
  */
 public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdapter.DataHolder> {
 
@@ -49,7 +43,7 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
         void onDelete(savedRaceCard race);
     }
 
-    private static final String SEPARATOR = " \u00B7 ";
+    private static final String SEPARATOR = ", ";
 
     private final Listener listener;
     private ViewMode viewMode = ViewMode.LIST;
@@ -258,51 +252,23 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
         holder.podiumGroup.setVisibility(showPodium ? View.VISIBLE : View.GONE);
 
         if (showPodium) {
-            bindPodium(holder, context, race);
-        } else {
-            clearPodiumImages(holder);
+            bindPodium(holder, race);
         }
 
         bindStatus(holder, context, race, state, now);
         bindInfoLine(holder, context, race, state);
     }
 
-    private void bindPodium(DataHolder holder, Context context, savedRaceCard race) {
-        holder.firstCode.setText(race.winnerCode);
+    private void bindPodium(DataHolder holder, savedRaceCard race) {
+        if (holder.podium != null) { // row layout: cards with photos
+            holder.podium.bind(race.raceSeason, String.valueOf(race.round),
+                    race.winnerCode, race.secondCode, race.thirdCode);
+            return;
+        }
+
+        holder.firstCode.setText(race.winnerCode); // tile layout: codes only
         holder.secondCode.setText(race.secondCode);
         holder.thirdCode.setText(race.thirdCode);
-
-        if (holder.firstImage == null) {
-            return; // tile layout: codes only
-        }
-
-        if (!checkLightTheme(context)) {
-            holder.stripedFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-            holder.stripedSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-            holder.stripedThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-        }
-
-        StorageReference root = FirebaseStorage.getInstance().getReference();
-        loadDriver(holder.firstImage, root, race.winnerCode, race.raceSeason);
-        loadDriver(holder.secondImage, root, race.secondCode, race.raceSeason);
-        loadDriver(holder.thirdImage, root, race.thirdCode, race.raceSeason);
-    }
-
-    private static void loadDriver(ImageView view, StorageReference root, String code, String season) {
-        GlideApp.with(view)
-                .load(root.child("drivers/" + code.toLowerCase(Locale.ROOT) + "_" + season + ".png"))
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.placeholder_driver)
-                .into(view);
-    }
-
-    private static void clearPodiumImages(DataHolder holder) {
-        // A recycled holder must not show the previous card's drivers when its request finishes late.
-        if (holder.firstImage != null) {
-            GlideApp.with(holder.firstImage).clear(holder.firstImage);
-            GlideApp.with(holder.secondImage).clear(holder.secondImage);
-            GlideApp.with(holder.thirdImage).clear(holder.thirdImage);
-        }
     }
 
     /** The line under the circuit: what is happening with the weekend. */
@@ -392,7 +358,7 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
             if (!savedRaceCard.isMissing(race.fastestLapTime)) {
                 String lap = race.fastestLapTime.trim();
 
-                if (!savedRaceCard.isMissing(race.fastestLapDriver) && holder.firstImage != null) {
+                if (!savedRaceCard.isMissing(race.fastestLapDriver) && holder.podium != null) {
                     lap += SEPARATOR + race.fastestLapDriver.trim();
                 }
 
@@ -460,11 +426,10 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
     public static class DataHolder extends RecyclerView.ViewHolder {
         final View roundGroup, podiumGroup, statusRow, liveDot;
         final TextView round, dates, canceled, raceName, locale, circuit, statusText, infoLine, saveDate;
-        final TextView firstCode, secondCode, thirdCode;
+        final TextView firstCode, secondCode, thirdCode; // tile layout only
 
         // photos exist only in the row layout
-        final ImageView firstImage, secondImage, thirdImage;
-        final View stripedFirst, stripedSecond, stripedThird;
+        final podiumCards podium;
 
         public DataHolder(@NonNull View itemView) {
             super(itemView);
@@ -480,12 +445,9 @@ public class savedRacesAdapter extends ListAdapter<savedRaceCard, savedRacesAdap
             firstCode = itemView.findViewById(R.id.firstPlace_code);
             secondCode = itemView.findViewById(R.id.secondPlace_code);
             thirdCode = itemView.findViewById(R.id.thirdPlace_code);
-            firstImage = itemView.findViewById(R.id.firstPlace_image);
-            secondImage = itemView.findViewById(R.id.secondPlace_image);
-            thirdImage = itemView.findViewById(R.id.thirdPlace_image);
-            stripedFirst = itemView.findViewById(R.id.stripedImg_first);
-            stripedSecond = itemView.findViewById(R.id.stripedImg_second);
-            stripedThird = itemView.findViewById(R.id.stripedImg_third);
+
+            View row = itemView.findViewById(R.id.podiumRow);
+            podium = row == null ? null : new podiumCards((LinearLayout) row, true);
 
             statusRow = itemView.findViewById(R.id.status_row);
             liveDot = itemView.findViewById(R.id.live_dot);

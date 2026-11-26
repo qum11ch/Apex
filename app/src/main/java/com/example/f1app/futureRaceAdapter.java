@@ -42,7 +42,6 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
         LocalDate currentDate = LocalDate.now();
         String currentYear = Integer.toString(currentDate.getYear());
 
-
         futureRaceData datum = dataList.get(position);
 
         if (datum.isCanceled()){
@@ -124,7 +123,6 @@ public class futureRaceAdapter extends RecyclerView.Adapter<futureRaceAdapter.Da
 
         holder.constraintLayout.setOnClickListener(v -> {
             Intent intent = new Intent(context , futureRaceActivity.class);
-
             Bundle bundle = new Bundle();
             bundle.putString("raceName" , datum.getFutureRaceName());
             bundle.putString("futureRaceStartDay" , dayStart);

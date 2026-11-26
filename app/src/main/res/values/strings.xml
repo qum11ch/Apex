@@ -1282,8 +1282,8 @@
     <string name="tracks_car_second">Second car</string>
     <string name="tracks_note">Seasons %1$d–%2$d, the same as in the results tables.</string>
 
-    <string name="weather_title_race">Race forecast</string>
-    <string name="weather_title_now">Now at the circuit</string>
+    <string name="weather_title_race">Race weather forecast</string>
+    <string name="weather_title_now">Weather now at the circuit</string>
     <string name="weather_title_weekend">Weekend weather</string>
     <string name="weather_feels">feels like %1$s</string>
     <string name="weather_rain">Rain %1$d%%</string>
@@ -1299,4 +1299,28 @@
     <string name="weather_rain_condition">Rain</string>
     <string name="weather_snow">Snow</string>
     <string name="weather_storm">Thunderstorm</string>
+    <string name="weather_title">Weather forecast</string>
+
+    <string name="countdown_starts">%1$s starts in</string>
+    <string name="countdown_ends">%1$s ends in</string>
+    <string name="countdown_days">%1$d d %2$02d h %3$02d min</string>
+    <string name="live_badge">LIVE</string>
+    <string name="weather_for_session">Weather: %1$s</string>
+    <string name="weather_wind_full">Wind %1$s</string>
+    <string name="weather_rain_short">rain %1$d%%</string>
+    <string name="session_short_first_practice_event">FP1</string>
+    <string name="session_short_second_practice_event">FP2</string>
+    <string name="session_short_third_practice_event">FP3</string>
+    <string name="session_short_sprint_quali_event">SQ</string>
+    <string name="session_short_sprint_event">SPRINT</string>
+    <string name="session_short_quali_event">QUALI</string>
+    <string name="session_short_race_event">RACE</string>
+
+    <string name="round_pill">R%1$s</string>
+    <string name="unit_days">days</string>
+    <string name="unit_hours">hrs</string>
+    <string name="unit_minutes">min</string>
+    <string name="unit_seconds">sec</string>
+    <string name="podium_pole">Pole</string>
+    <string name="podium_fastest">Fastest lap</string>
 </resources>

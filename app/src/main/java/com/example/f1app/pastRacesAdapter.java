@@ -1,30 +1,20 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkLightTheme;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.android.material.imageview.ShapeableImageView;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /** Races of a past season as cards (the old look) or compact tiles, with a text filter. */
 public class pastRacesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -143,12 +133,6 @@ public class pastRacesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         // The 10dp gap on the right that the old layout got from its parent.
         holder.itemView.setPaddingRelative(0, 0, Math.round(10 * context.getResources().getDisplayMetrics().density), 0);
 
-        if (!checkLightTheme(context)) {
-            holder.stripedImgFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-            holder.stripedImgSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-            holder.stripedImgThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-        }
-
         holder.round.setText(race.getRoundNumber());
         holder.raceMonth.setText(monthText(item));
         holder.day_start.setText(item.dayStart);
@@ -157,41 +141,17 @@ public class pastRacesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         holder.circuitName.setText(item.circuitTitle);
         holder.raceCountry.setText(item.place);
 
-        holder.firstPlace_code.setText(race.getWinnerDriverCode());
-        holder.secondPlace_code.setText(race.getSecondPlaceCode());
-        holder.thirdPlace_code.setText(race.getThirdPlaceCode());
-
         if (race.isCanceled()) {
             holder.podiumNamesLayout.setVisibility(View.GONE);
-            holder.podiumImageLayout.setVisibility(View.GONE);
             holder.cnd.setVisibility(View.VISIBLE);
         } else {
             holder.podiumNamesLayout.setVisibility(View.VISIBLE);
-            holder.podiumImageLayout.setVisibility(View.VISIBLE);
             holder.cnd.setVisibility(View.GONE);
-
-            StorageReference root = FirebaseStorage.getInstance().getReference();
-            loadDriver(root, race.getWinnerDriverCode(), race.getSeason(), holder.firstPlace_image);
-            loadDriver(root, race.getSecondPlaceCode(), race.getSeason(), holder.secondPlace_image);
-            loadDriver(root, race.getThirdPlaceCode(), race.getSeason(), holder.thirdPlace_image);
+            holder.podium.bind(race.getSeason(), race.getRoundNumber(), race.getWinnerDriverCode(),
+                    race.getSecondPlaceCode(), race.getThirdPlaceCode());
         }
 
         holder.constraintLayout.setOnClickListener(v -> open(item));
-    }
-
-    private void loadDriver(StorageReference root, String code, String season, ImageView target) {
-        if (code == null || code.isEmpty()) {
-            target.setImageResource(R.drawable.placeholder_driver);
-            return;
-        }
-
-        StorageReference image = root.child("drivers/" + code.toLowerCase(Locale.ROOT) + "_" + season + ".png");
-
-        GlideApp.with(context)
-                .load(image)
-                .transition(DrawableTransitionOptions.withCrossFade())
-                .error(R.drawable.placeholder_driver)
-                .into(target);
     }
 
     private void bindTile(TileHolder holder, pastRaceItem item) {
@@ -257,21 +217,15 @@ public class pastRacesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     // ---------- holders ----------
 
     static class ListHolder extends RecyclerView.ViewHolder {
-        final TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
-                secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
-        final ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
+        final TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName, cnd;
         final ConstraintLayout constraintLayout;
-        final ShapeableImageView stripedImgFirst, stripedImgSecond, stripedImgThird;
-        final LinearLayout podiumImageLayout, podiumNamesLayout;
+        final LinearLayout podiumNamesLayout;
+        final podiumCards podium;
 
         ListHolder(@NonNull View itemView) {
             super(itemView);
             cnd = itemView.findViewById(R.id.cnd_layout);
-            podiumImageLayout = itemView.findViewById(R.id.podiumImage_layout);
             podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
-            stripedImgFirst = itemView.findViewById(R.id.stripedImg_first);
-            stripedImgSecond = itemView.findViewById(R.id.stripedImg_second);
-            stripedImgThird = itemView.findViewById(R.id.stripedImg_third);
             round = itemView.findViewById(R.id.round);
             day_start = itemView.findViewById(R.id.day_start);
             day_end = itemView.findViewById(R.id.day_end);
@@ -279,13 +233,8 @@ public class pastRacesAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
             raceCountry = itemView.findViewById(R.id.raceCountry);
             raceName = itemView.findViewById(R.id.raceName);
             circuitName = itemView.findViewById(R.id.circuitName);
-            secondPlace_code = itemView.findViewById(R.id.secondPlace_code);
-            firstPlace_code = itemView.findViewById(R.id.firstPlace_code);
-            thirdPlace_code = itemView.findViewById(R.id.thirdPlace_code);
             constraintLayout = itemView.findViewById(R.id.main_layout);
-            secondPlace_image = itemView.findViewById(R.id.secondPlace_image);
-            firstPlace_image = itemView.findViewById(R.id.firstPlace_image);
-            thirdPlace_image = itemView.findViewById(R.id.thirdPlace_image);
+            podium = new podiumCards(itemView.findViewById(R.id.podiumRow), true);
         }
     }
 
