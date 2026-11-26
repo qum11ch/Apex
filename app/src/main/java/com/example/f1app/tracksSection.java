@@ -60,11 +60,27 @@ final class tracksSection {
     private static final Map<String, String[]> CIRCUITS = new HashMap<>();
     private static boolean circuitsLoaded = false;
 
+    private static final Map<String, String> DRIVER_CODES = new HashMap<>();
+    private static boolean driversLoaded = false;
+
+    private final LinearLayout tracksList;
+    private final View legendTitle;
+    private final View legendCard;
+
     tracksSection(Fragment host, View root) {
         this.host = host;
         modeBar = root.findViewById(R.id.results_mode);
         seasonsGroup = root.findViewById(R.id.seasons_group);
         tracksGroup = root.findViewById(R.id.tracks_group);
+
+        tracksList = root.findViewById(R.id.tracks_list);
+        legendTitle = root.findViewById(R.id.tracks_legend_title);
+        legendCard = root.findViewById(R.id.tracks_legend_card);
+
+        resultsLegend.build(
+                host.requireContext(),
+                root.findViewById(R.id.tracks_legend_left),
+                root.findViewById(R.id.tracks_legend_right));
 
         modeBar.setBackground(rounded(color(R.color.account_settings_input_color), 14));
         modeBar.setPadding(dp(4), dp(4), dp(4), dp(4));
@@ -79,6 +95,12 @@ final class tracksSection {
         tracksButton.setOnClickListener(v -> select(true));
 
         style();
+    }
+
+    private void setLegendVisible(boolean visible) {
+        int visibility = visible ? View.VISIBLE : View.GONE;
+        legendTitle.setVisibility(visibility);
+        legendCard.setVisibility(visibility);
     }
 
     void configure(boolean team, String key) {
@@ -130,7 +152,7 @@ final class tracksSection {
         final int mine = ++token;
         render();
 
-        withCircuits(() -> {
+        prepare(() -> {
             if (mine != token || !host.isAdded()) {
                 return;
             }
@@ -144,6 +166,61 @@ final class tracksSection {
                 stats = result;
                 render();
             });
+        });
+    }
+
+    private void withDrivers(Runnable next) {
+        if (driversLoaded) {
+            next.run();
+            return;
+        }
+
+        FirebaseDatabase.getInstance().getReference().child("drivers")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for (DataSnapshot driver : snapshot.getChildren()) {
+                            String code = driver.child("driversCode").getValue(String.class);
+
+                            if (driver.getKey() != null && code != null) {
+                                DRIVER_CODES.put(driver.getKey(), code);
+                            }
+                        }
+
+                        driversLoaded = true;
+                        next.run();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        next.run();
+                    }
+                });
+    }
+
+    private String driverCode(String fullName) {
+        if (fullName == null || fullName.isEmpty()) {
+            return "";
+        }
+
+        String code = DRIVER_CODES.get(fullName);
+
+        if (code != null && !code.isEmpty()) {
+            return code;
+        }
+
+        String family = driverNameFormatter.split(fullName)[1];
+        return family.length() > 3 ? family.substring(0, 3).toUpperCase(Locale.ROOT)
+                : family.toUpperCase(Locale.ROOT);
+    }
+
+    private void prepare(Runnable next) {
+        withCircuits(() -> {
+            if (team) {
+                withDrivers(next);
+            } else {
+                next.run();
+            }
         });
     }
 
@@ -243,7 +320,8 @@ final class tracksSection {
     // ---------- list ----------
 
     private void render() {
-        tracksGroup.removeAllViews();
+        tracksList.removeAllViews();
+        setLegendVisible(false);
 
         if (!tracksMode) {
             return;
@@ -284,7 +362,7 @@ final class tracksSection {
         LinearLayout.LayoutParams cardParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         cardParams.topMargin = dp(14);
-        tracksGroup.addView(card, cardParams);
+        tracksList.addView(card, cardParams);
 
         int first = Integer.MAX_VALUE;
         int last = 0;
@@ -299,10 +377,12 @@ final class tracksSection {
         note.setTextSize(13);
         note.setTextColor(color(R.color.text_color_secondary));
 
+        setLegendVisible(true);
+
         LinearLayout.LayoutParams noteParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         noteParams.topMargin = dp(12);
-        tracksGroup.addView(note, noteParams);
+        tracksList.addView(note, noteParams);
     }
 
     private View circuitRow(trackResults.Stat stat) {
@@ -471,10 +551,25 @@ final class tracksSection {
 
         for (int i = 0; i < 2; i++) {
             View cell = inflater.inflate(R.layout.item_team_result_cell, cells, false);
-            cells.addView(cell, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
 
             String code = i < row.codes.size() ? row.codes.get(i) : "null";
             resultChipBinder.bind(host.requireContext(), cell.findViewById(R.id.result_chip), code);
+
+            LinearLayout box = new LinearLayout(host.requireContext());
+            box.setOrientation(LinearLayout.VERTICAL);
+            box.setGravity(Gravity.CENTER_HORIZONTAL);
+            box.addView(cell, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            TextView caption = new TextView(host.requireContext());
+            caption.setText(i < row.drivers.size() ? driverCode(row.drivers.get(i)) : "");
+            caption.setTextSize(11);
+            caption.setGravity(Gravity.CENTER);
+            caption.setTextColor(color(R.color.text_color_secondary));
+            box.addView(caption, new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            cells.addView(box, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
         }
 
         return view;
@@ -517,7 +612,7 @@ final class tracksSection {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.CENTER_HORIZONTAL;
         params.topMargin = dp(32);
-        tracksGroup.addView(bar, params);
+        tracksList.addView(bar, params);
     }
 
     private void addMessage(int text) {
@@ -527,7 +622,7 @@ final class tracksSection {
         view.setGravity(Gravity.CENTER);
         view.setPadding(dp(24), dp(32), dp(24), dp(32));
         view.setTextColor(color(R.color.text_color_main));
-        tracksGroup.addView(view);
+        tracksList.addView(view);
     }
 
     private String localized(String raceName) {

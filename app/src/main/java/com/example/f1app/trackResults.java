@@ -22,12 +22,18 @@ final class trackResults {
         final String raceName;
         final String circuitId;
         final List<String> codes;
+        final List<String> drivers;
 
         Row(int year, String raceName, String circuitId, List<String> codes) {
+            this(year, raceName, circuitId, codes, Collections.nCopies(codes.size(), ""));
+        }
+
+        Row(int year, String raceName, String circuitId, List<String> codes, List<String> drivers) {
             this.year = year;
             this.raceName = raceName;
             this.circuitId = circuitId;
             this.codes = codes;
+            this.drivers = drivers;
         }
     }
 
@@ -225,31 +231,24 @@ final class trackResults {
                 }
 
                 List<String> codes = new ArrayList<>();
+                List<String> names = new ArrayList<>();
 
                 if (team) {
                     for (DataSnapshot driver : season.getChildren()) {
                         DataSnapshot entry = driver.child(raceName);
 
                         if (key.equals(entry.child("TeamId").getValue(String.class))) {
-                            addIfStarted(codes, entry.child("Result").getValue(String.class));
+                            addIfStarted(codes, names, entry.child("Result").getValue(String.class),
+                                    driver.getKey());
                         }
                     }
                 } else {
-                    addIfStarted(codes, season.child(raceName).child("Result").getValue(String.class));
+                    addIfStarted(codes, names, season.child(raceName).child("Result").getValue(String.class), key);
                 }
 
                 if (!codes.isEmpty()) {
-                    Collections.sort(codes, (x, y) -> {
-                        int fx = finish(x);
-                        int fy = finish(y);
-
-                        if (fx > 0 && fy > 0) return Integer.compare(fx, fy);
-                        if (fx > 0) return -1;
-                        if (fy > 0) return 1;
-                        return 0;
-                    });
-
-                    rows.add(new Row(seasons.get(i), raceName, circuit, codes));
+                    sortByFinish(codes, names);
+                    rows.add(new Row(seasons.get(i), raceName, circuit, codes, names));
                 }
             }
         }
@@ -257,9 +256,42 @@ final class trackResults {
         callback.onLoaded(build(rows));
     }
 
-    private static void addIfStarted(List<String> codes, String code) {
+    private static void addIfStarted(List<String> codes, List<String> names, String code, String name) {
         if (started(code)) {
             codes.add(code.trim());
+            names.add(name == null ? "" : name);
         }
+    }
+
+    /** Better finishes first; the names keep their pairs. */
+    private static void sortByFinish(List<String> codes, List<String> names) {
+        List<Integer> order = new ArrayList<>();
+
+        for (int i = 0; i < codes.size(); i++) {
+            order.add(i);
+        }
+
+        Collections.sort(order, (x, y) -> {
+            int fx = finish(codes.get(x));
+            int fy = finish(codes.get(y));
+
+            if (fx > 0 && fy > 0) return Integer.compare(fx, fy);
+            if (fx > 0) return -1;
+            if (fy > 0) return 1;
+            return 0;
+        });
+
+        List<String> sortedCodes = new ArrayList<>();
+        List<String> sortedNames = new ArrayList<>();
+
+        for (int index : order) {
+            sortedCodes.add(codes.get(index));
+            sortedNames.add(names.get(index));
+        }
+
+        codes.clear();
+        codes.addAll(sortedCodes);
+        names.clear();
+        names.addAll(sortedNames);
     }
 }
