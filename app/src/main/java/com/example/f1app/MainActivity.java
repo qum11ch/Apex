@@ -313,6 +313,8 @@ public class MainActivity extends AppCompatActivity {
                 reminderSettingsDialog.show(this, () ->
                         reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f)));
 
+        predictionWatch.apply(this);
+
         reminderButton.setOnLongClickListener(v -> {
             boolean debuggable = (getApplicationInfo().flags
                     & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
@@ -325,6 +327,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this,
                     problem == null ? "Test notification in 10 s" : problem,
                     Toast.LENGTH_LONG).show();
+            predictionWatch.debugRun(this);
             return true;
         });
 

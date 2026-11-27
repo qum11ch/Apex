@@ -410,9 +410,16 @@
         <item quantity="many">за %d минут до старта</item>
         <item quantity="other">за %d минуты до старта</item>
     </plurals>
+    <string name="reminder_title">Уведомления</string>
+    <string name="reminder_switch">Напоминания о сессиях</string>
+    <string name="prediction_alerts_switch">Новые пользовательские прогнозы</string>
 
-    <string name="reminder_title">Напоминания о сессиях</string>
-    <string name="reminder_switch">Присылать напоминания</string>
+    <string name="notify_channel_predictions">Новые прогнозы</string>
+    <string name="notify_channel_predictions_desc">Сообщения об открытии пользовательских прогнозов</string>
+    <string name="notify_pred_title_one">Открыт новый прогноз</string>
+    <string name="notify_pred_title_many">Новых прогнозов: %1$d</string>
+    <string name="notify_pred_text_many">%1$s и ещё %2$d</string>
+    <string name="notify_pred_deadline">Приём ответов до %1$s</string>
     <string name="reminder_lead_label">Напоминать</string>
     <string name="past_season_result">Результаты Гран-при в</string>
     <string name="last_entry_text">Последнее участие в Гран-при</string>

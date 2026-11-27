@@ -111,6 +111,18 @@ final class reminderSettingsDialog {
             }
         });
 
+        SwitchCompat alerts = dialog.findViewById(R.id.predictionAlertsSwitch);
+        final boolean wasAlerts = reminderSettings.predictionAlertsEnabled(activity);
+
+        alerts.setChecked(wasAlerts);
+        alerts.setThumbTintList(thumbTint);
+        alerts.setTrackTintList(trackTint);
+        alerts.setOnCheckedChangeListener((button, checked) -> {
+            if (checked && !hasNotificationPermission(activity)) {
+                openSystemNotificationSettings(activity);
+            }
+        });
+
         dialog.setOnDismissListener(d -> {
             boolean enabled = toggle.isChecked();
             int lead = wasLead;
@@ -123,6 +135,11 @@ final class reminderSettingsDialog {
             if (enabled != wasEnabled || lead != wasLead) {
                 reminderSettings.save(activity, enabled, lead);
                 reminderSettings.reschedule(activity);
+            }
+
+            if (alerts.isChecked() != wasAlerts) {
+                reminderSettings.savePredictionAlerts(activity, alerts.isChecked());
+                predictionWatch.apply(activity);
             }
 
             if (onDismiss != null) {

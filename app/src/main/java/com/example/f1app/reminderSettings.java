@@ -18,6 +18,15 @@ final class reminderSettings {
     static final int DEFAULT_LEAD = 15;
     static final int[] OPTIONS = {5, 10, 15, 30, 60};
     static final String CHANNEL_ID = "channelID2";
+    static final String KEY_PREDICTIONS = "prediction_alerts_enabled";
+
+    static boolean predictionAlertsEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_PREDICTIONS, true);
+    }
+
+    static void savePredictionAlerts(Context context, boolean enabled) {
+        prefs(context).edit().putBoolean(KEY_PREDICTIONS, enabled).apply();
+    }
 
     private reminderSettings() {
     }

@@ -429,10 +429,18 @@
         <item quantity="one">%d minute before start</item>
         <item quantity="other">%d minutes before start</item>
     </plurals>
-
-    <string name="reminder_title">Session reminders</string>
-    <string name="reminder_switch">Send reminders</string>
     <string name="reminder_lead_label">Remind me</string>
+
+    <string name="reminder_title">Notifications</string>
+    <string name="reminder_switch">Session reminders</string>
+    <string name="prediction_alerts_switch">New user predictions</string>
+
+    <string name="notify_channel_predictions">New predictions</string>
+    <string name="notify_channel_predictions_desc">Alerts when user predictions open</string>
+    <string name="notify_pred_title_one">A new prediction is open</string>
+    <string name="notify_pred_title_many">New predictions: %1$d</string>
+    <string name="notify_pred_text_many">%1$s and %2$d more</string>
+    <string name="notify_pred_deadline">Answers accepted until %1$s</string>
     <string name="past_season_result">Race Results</string>
     <string name="last_entry_text">Last Entry</string>
     <string name="past_season_drivers">Drivers Standings</string>

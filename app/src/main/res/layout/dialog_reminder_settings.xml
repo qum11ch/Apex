@@ -35,4 +35,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/predictionAlertsSwitch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="@string/prediction_alerts_switch"
+        android:textColor="@color/text_color_main" />
 </LinearLayout>
