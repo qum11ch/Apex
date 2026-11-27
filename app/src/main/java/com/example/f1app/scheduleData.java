@@ -1,8 +1,11 @@
 package com.example.f1app;
 
+import org.json.JSONArray;
+
 public class scheduleData {
     String eventDate, eventName;
     CharSequence resultsText;
+    JSONArray results; // the whole classification of the session, once it is loaded
 
     public scheduleData(String eventDate, String eventName) {
         this.eventDate = eventDate;
@@ -27,4 +30,7 @@ public class scheduleData {
 
     public CharSequence getResultsText() { return resultsText; }
     public void setResultsText(CharSequence resultsText) { this.resultsText = resultsText; }
+
+    public JSONArray getResults() { return results; }
+    public void setResults(JSONArray results) { this.results = results; }
 }

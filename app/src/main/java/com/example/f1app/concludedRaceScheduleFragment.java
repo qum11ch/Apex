@@ -207,7 +207,15 @@ public class concludedRaceScheduleFragment extends Fragment {
             recyclerView.setAdapter(adapter);
             adapter.setOnWeatherClick((key, weather) -> weatherSheet.show(
                     requireContext(), getString(getStringByName(key + "_text")), weather));
-            adapter.setOnSessionClick(sessionKey -> show_results.performClick());
+            adapter.setOnSessionClick(sessionKey -> {
+                for (scheduleData item : datum) {
+                    if (sessionKey.equals(item.getEventName()) && item.getResults() != null) {
+                        sessionResultsSheet.show(getParentFragmentManager(),
+                                getString(getStringByName(sessionKey + "_text")), sessionKey, item.getResults());
+                        return;
+                    }
+                }
+            });
             loadWeekendWeather(view);
 
             getRaceSchedule(mRaceName, mYear);

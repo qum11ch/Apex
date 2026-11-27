@@ -286,7 +286,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         h.railBottom.setVisibility(position == rows.size() - 1 ? View.INVISIBLE : View.VISIBLE);
         styleDot(h.dot, race, live, next, finished);
 
-        boolean clickable = isPast && click != null && hasResults;
+        boolean clickable = click != null && hasResults;
         h.itemView.setOnClickListener(clickable ? v -> click.onClick(key) : null);
         h.itemView.setClickable(clickable);
     }

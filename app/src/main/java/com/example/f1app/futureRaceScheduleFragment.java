@@ -200,6 +200,15 @@ public class futureRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, false);
             recyclerView.setAdapter(adapter);
+            adapter.setOnSessionClick(sessionKey -> {
+                for (scheduleData item : datum) {
+                    if (sessionKey.equals(item.getEventName()) && item.getResults() != null) {
+                        sessionResultsSheet.show(getParentFragmentManager(),
+                                getString(getStringByName(sessionKey + "_text")), sessionKey, item.getResults());
+                        return;
+                    }
+                }
+            });
             adapter.setOnWeatherClick((key, weather) -> weatherSheet.show(
                     requireContext(), getString(getStringByName(key + "_text")), weather));
 
