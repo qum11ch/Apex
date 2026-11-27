@@ -40,9 +40,26 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
     Context context;
     List<teamsList> dataList;
 
+    private final java.util.Map<String, Long> stableIds = new java.util.HashMap<>();
+
+    private long nextStableId = 1L;
+
+    private long stableIdFor(String key) {
+        Long known = stableIds.get(key);
+
+        if (known != null) {
+            return known;
+        }
+
+        long created = nextStableId++;
+        stableIds.put(key, created);
+        return created;
+    }
+
     public teamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
         dataList = datum;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -55,6 +72,18 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
             view = LayoutInflater.from(context).inflate(R.layout.item_team, parent, false);
         }
         return new DataHolder(view);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        teamsList item = dataList.get(position);
+
+        String id = item.getTeamId();
+        String identity = id == null || id.trim().isEmpty()
+                ? "empty-header"
+                : id.trim();
+
+        return stableIdFor(item.getSeason() + "|" + identity);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -77,10 +106,6 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
 
         String darkTeamColor = datum.getTeamColor();
 
-        holder.team_car.setScaleX(1f);
-        holder.team_car.setImageDrawable(null);
-        holder.team_car.setImageBitmap(null);
-
         //String season = datum.getSeason();
 
         StorageReference mTeamCar = datum.getImageUrl();
@@ -92,10 +117,13 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         if (!carKey.equals(holder.carRequestKey)) {
             holder.carRequestKey = carKey;
 
-
             if (holder.carTarget != null) {
-                GlideApp.with(context).clear(holder.carTarget); // a late answer of the previous row is dropped
+                GlideApp.with(context).clear(holder.carTarget);
+                holder.carTarget = null;
             }
+
+            holder.team_car.setScaleX(1f);
+            holder.team_car.setImageDrawable(null);
 
             final Object carToken = new Object();
             holder.carToken = carToken;

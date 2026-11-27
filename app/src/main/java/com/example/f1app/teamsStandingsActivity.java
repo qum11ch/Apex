@@ -109,7 +109,7 @@ public class teamsStandingsActivity extends AppCompatActivity {
         });
 
         recyclerView = findViewById(R.id.recyclerview_currentTeams);
-        // recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
         LinearLayoutManager linearLayoutManager3 = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager3);
 
@@ -132,12 +132,18 @@ public class teamsStandingsActivity extends AppCompatActivity {
         });
 
         swipeLayout.setOnRefreshListener(() -> {
+            if (!networkNotice.ensureOnline(this)) {
+                swipeLayout.setRefreshing(false);
+                return;
+            }
+
             boolean hasData = !datum.isEmpty();
 
-            recyclerView.setVisibility(View.GONE); // pull-to-refresh: the shimmer comes back
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-            swipeLayout.setRefreshing(false);
+            if (!hasData) {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+            }
 
             getTeamStanding(season, hasData);
         });

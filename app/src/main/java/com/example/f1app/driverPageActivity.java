@@ -380,103 +380,19 @@ public class driverPageActivity extends AppCompatActivity {
     }
 
     private void loadDriverImage(
+            String driverId,
             String driverCode,
-            int latestSeason) {
-
-        if (driverCode == null
-                || driverCode.trim().isEmpty()
-                || latestSeason == -1) {
-
-            showDriverImagePlaceholder();
+            int latestSeason
+    ) {
+        if (isFinishing() || isDestroyed()) {
             return;
         }
 
-        String imagePath =
-                "drivers/"
-                        + driverCode.toLowerCase()
-                        + "_"
-                        + latestSeason
-                        + ".png";
-
-        StorageReference imageReference =
-                FirebaseStorage.getInstance()
-                        .getReference()
-                        .child(imagePath);
-
-        imageReference.getDownloadUrl()
-                .addOnSuccessListener(uri -> {
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
-
-                    GlideApp.with(getApplicationContext())
-                            .load(uri)
-                            .transition(
-                                    DrawableTransitionOptions
-                                            .withCrossFade()
-                            )
-                            .diskCacheStrategy(
-                                    DiskCacheStrategy.ALL
-                            )
-                            .error(R.drawable.placeholder_driver)
-                            .into(driverImage);
-                })
-                .addOnFailureListener(error -> {
-                    if (isFinishing() || isDestroyed()) {
-                        return;
-                    }
-
-                    Log.w(
-                            "DriverPage",
-                            "Driver image not found: "
-                                    + imagePath,
-                            error
-                    );
-
-                    showDriverImagePlaceholder();
-                });
-    }
-
-    private void loadDriverImage(
-            String driverId,
-            String driverCode,
-            int year) {
-
-        if (driverId != null && !driverId.trim().isEmpty()) {
-            String preferredPath =
-                    "drivers/" + driverId.trim() + "_" + year + ".png";
-
-            FirebaseStorage.getInstance()
-                    .getReference()
-                    .child(preferredPath)
-                    .getDownloadUrl()
-                    .addOnSuccessListener(uri -> {
-                        if (isFinishing() || isDestroyed()) {
-                            return;
-                        }
-
-                        GlideApp.with(this)
-                                .load(uri)
-                                .placeholder(R.drawable.placeholder_driver)
-                                .error(R.drawable.placeholder_driver)
-                                .into(driverImage);
-                    })
-                    .addOnFailureListener(error -> {
-                        if (isFinishing() || isDestroyed()) {
-                            return;
-                        }
-
-                        loadDriverImage(driverCode, year);
-                    });
-
-        } else {
-            loadDriverImage(driverCode, year);
-        }
-    }
-
-    private void showDriverImagePlaceholder() {
-        driverImage.setImageResource(
-                R.drawable.placeholder_driver
+        latestSeasonImages.loadDriver(
+                driverImage,
+                driverCode,
+                driverId,
+                latestSeason
         );
     }
 

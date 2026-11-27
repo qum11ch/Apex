@@ -524,12 +524,7 @@ final class teamCarsSection {
                         .into(holder.photo);
             } else {
                 GlideApp.with(holder.photo).clear(holder.photo);
-
-                if (photoChecked.contains(year)) {
-                    holder.photo.setImageResource(R.drawable.placeholder_car);
-                } else {
-                    holder.photo.setImageDrawable(null);
-                }
+                holder.photo.setImageResource(R.drawable.placeholder_car);
             }
 
             String[] values = standings.get(year);

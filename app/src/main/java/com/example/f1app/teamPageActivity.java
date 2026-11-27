@@ -137,15 +137,19 @@ public class teamPageActivity extends AppCompatActivity {
             });
 
             teamNameFull.setText(mTeamName);
-            StorageReference mTeamCar = storageRef.child("teams/" + mTeamId.toLowerCase() + "_"  + mCurrentSeason + ".png");
+            int headerYear;
 
-            GlideApp.with(getApplicationContext())
-                    .load(mTeamCar)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(true)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_car)
-                    .into(team_car);
+            try {
+                headerYear = Integer.parseInt(mCurrentSeason);
+            } catch (RuntimeException error) {
+                headerYear = LocalDate.now().getYear();
+            }
+
+            latestSeasonImages.loadTeam(
+                    team_car,
+                    mTeamId,
+                    headerYear
+            );
 
             StorageReference mTeamLogo;
 

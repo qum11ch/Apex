@@ -1387,4 +1387,6 @@
     <string name="empty_future_body">The calendar of the next season will appear here as soon as the race dates are known.</string>
     <string name="empty_concluded_title">No results yet</string>
     <string name="empty_concluded_body">Race results will appear here after the first race of the season.</string>
+
+    <string name="lineup_stats_season">Statistics for %1$s</string>
 </resources>

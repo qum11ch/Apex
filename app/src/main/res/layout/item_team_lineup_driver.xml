@@ -55,7 +55,15 @@
         app:autoSizeStepGranularity="1sp"
         app:autoSizeTextType="uniform"
         xmlns:app="http://schemas.android.com/apk/res-auto" />
-
+    <TextView
+        android:id="@+id/lineup_stats_season"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:gravity="center"
+        android:textColor="@color/text_color_secondary"
+        android:textSize="11sp"
+        android:visibility="gone" />
     <LinearLayout
         android:id="@+id/lineup_stats"
         android:layout_width="match_parent"

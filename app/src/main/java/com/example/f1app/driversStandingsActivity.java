@@ -84,7 +84,7 @@ public class driversStandingsActivity extends AppCompatActivity {
         shimmerFrameLayout.startShimmer();
 
         recyclerView = findViewById(R.id.recyclerview_currentDrivers);
-        // recyclerView.setHasFixedSize(true);
+        recyclerView.setItemAnimator(null);
         recyclerView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         recyclerView.setNestedScrollingEnabled(false);
 
@@ -117,12 +117,18 @@ public class driversStandingsActivity extends AppCompatActivity {
         });
 
         swipeLayout.setOnRefreshListener(() -> {
+            if (!networkNotice.ensureOnline(this)) {
+                swipeLayout.setRefreshing(false);
+                return;
+            }
+
             boolean hasData = !datum.isEmpty();
 
-            recyclerView.setVisibility(View.GONE); // pull-to-refresh: the shimmer comes back
-            shimmerFrameLayout.setVisibility(View.VISIBLE);
-            shimmerFrameLayout.startShimmer();
-            swipeLayout.setRefreshing(false);
+            if (!hasData) {
+                recyclerView.setVisibility(View.GONE);
+                shimmerFrameLayout.setVisibility(View.VISIBLE);
+                shimmerFrameLayout.startShimmer();
+            }
 
             getStanding(season, hasData);
         });

@@ -31,6 +31,22 @@ import java.util.List;
 public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandingsAdapter.DataHolder> {
     Context context;
     List<driversList> dataList;
+    private final java.util.Map<String, Long> stableIds =
+            new java.util.HashMap<>();
+
+    private long nextStableId = 1L;
+
+    private long stableIdFor(String key) {
+        Long known = stableIds.get(key);
+
+        if (known != null) {
+            return known;
+        }
+
+        long created = nextStableId++;
+        stableIds.put(key, created);
+        return created;
+    }
 
 
     @Override
@@ -45,6 +61,7 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
     public driversStandingsAdapter(Context context, List<driversList> datum) {
         this.context = context;
         dataList = datum;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -145,6 +162,18 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
             intent.putExtras(bundle);
             context.startActivity(intent);
         });
+    }
+
+    @Override
+    public long getItemId(int position) {
+        driversList item = dataList.get(position);
+
+        String code = item.getDriverCode();
+        String identity = code == null || code.trim().isEmpty()
+                ? "empty-header"
+                : code.trim().toLowerCase(java.util.Locale.ROOT);
+
+        return stableIdFor(item.getSeason() + "|" + identity);
     }
 
     private LayerDrawable createFrameWithLeftOffset(int colorWithAlphaLine, Context context) {
