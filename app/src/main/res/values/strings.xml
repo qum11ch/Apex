@@ -1401,7 +1401,7 @@
     <string name="promo_done_title">All predictions made</string>
     <string name="promo_done_cta">My answers</string>
 
-    <string name="promo_until">until close · %1$s</string>
+    <string name="promo_until">until close\n%1$s</string>
     <string name="promo_time_d">%1$d d</string>
     <string name="promo_time_h">%1$d h</string>
     <string name="promo_time_m">%1$d min</string>

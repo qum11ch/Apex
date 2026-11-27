@@ -205,22 +205,28 @@ final class predictionPromoBlock {
         long hours = (minutes % (24 * 60)) / 60;
         long mins = minutes % 60;
 
-        if (days > 0) {
-            String result = context.getString(R.string.promo_time_d, days);
+        StringBuilder result = new StringBuilder();
 
-            return hours > 0
-                    ? result + " " + context.getString(R.string.promo_time_h, hours)
-                    : result;
+        if (days > 0) {
+            result.append(context.getString(R.string.promo_time_d, days));
         }
 
         if (hours > 0) {
-            String result = context.getString(R.string.promo_time_h, hours);
+            if (result.length() > 0) {
+                result.append(' ');
+            }
 
-            return mins > 0
-                    ? result + " " + context.getString(R.string.promo_time_m, mins)
-                    : result;
+            result.append(context.getString(R.string.promo_time_h, hours));
         }
 
-        return context.getString(R.string.promo_time_m, mins);
+        if (mins > 0 || result.length() == 0) {
+            if (result.length() > 0) {
+                result.append(' ');
+            }
+
+            result.append(context.getString(R.string.promo_time_m, Math.max(1, mins)));
+        }
+
+        return result.toString();
     }
 }

@@ -1380,7 +1380,7 @@
     <string name="promo_done_title">Все прогнозы сделаны</string>
     <string name="promo_done_cta">Мои ответы</string>
 
-    <string name="promo_until">до закрытия · %1$s</string>
+    <string name="promo_until">до закрытия\n%1$s</string>
     <string name="promo_time_d">%1$d д</string>
     <string name="promo_time_h">%1$d ч</string>
     <string name="promo_time_m">%1$d мин</string>
