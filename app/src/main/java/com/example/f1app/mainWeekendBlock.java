@@ -58,6 +58,8 @@ final class mainWeekendBlock {
     private java.util.Map<String, sessionWeather> byKey = new java.util.HashMap<>();
     private String sourceNote = "";
 
+    private boolean weatherPending;
+
     mainWeekendBlock(View root) {
         context = root.getContext();
 
@@ -125,12 +127,13 @@ final class mainWeekendBlock {
             selectedKey = null;
             userPicked = false;
             shownState = "";
+            weatherPending = true;
             buildChips();
             block.setVisibility(View.VISIBLE);
             start();
 
-            // the same weather as on the race pages: session window plus F1 measurements
-            weekendWeather.load(context, year, raceName, (map, note) -> {
+            // one source: the session window plus the F1 measurements
+            weekendWeather.load(context, r.race.sessions, r.race.lat, r.race.lng, (map, note) -> {
                 if (!key.equals(boundKey) || sessions == null) {
                     return;
                 }
@@ -139,7 +142,24 @@ final class mainWeekendBlock {
                 sourceNote = note;
                 buildChips();
                 shownState = "";
-                refresh();
+
+                if (!map.isEmpty()) {
+                    weatherPending = false;
+                    refresh();
+                    return;
+                }
+
+                // the sessions have no weather: show the weather now at the circuit
+                loader.fetchCurrent(result, current -> {
+                    if (!key.equals(boundKey) || sessions == null) {
+                        return;
+                    }
+
+                    result = current;
+                    weatherPending = false;
+                    shownState = "";
+                    refresh();
+                });
             });
         });
     }
@@ -153,6 +173,7 @@ final class mainWeekendBlock {
         sessions = null;
         block.setVisibility(View.GONE);
         liveBadge.setVisibility(View.GONE);
+        weatherPending = false;
     }
 
     // ---------- timer ----------
@@ -402,15 +423,11 @@ final class mainWeekendBlock {
 
         String note = !byKey.isEmpty() ? sourceNote : weatherCard.note(context, result);
 
-        if (sw == null && current == null) {
+        if (sw == null && current == null && weatherPending) {
             weatherCaption.setText(R.string.weather_title);
             weatherBody.setVisibility(View.GONE);
-            weatherMessage.setText(note);
-            weatherMessage.setVisibility(View.VISIBLE);
+            weatherMessage.setVisibility(View.GONE);
             weatherNote.setVisibility(View.GONE);
-
-            weatherBody.setOnClickListener(null);
-            weatherBody.setClickable(false);
             return;
         }
 
