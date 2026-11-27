@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private int concludedRounds = 0;
     private int totalRounds = 0;
     private predictionPromoBlock promo;
+    private ImageButton reminderButton;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -302,6 +303,27 @@ public class MainActivity extends AppCompatActivity {
         themeButton.setImageResource(themeMenu.iconFor(themeStore.get(this)));
         themeButton.setOnClickListener(v -> themeMenu.show(this, v));
 
+        reminderButton = findViewById(R.id.reminderButton);
+        reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f);
+        reminderButton.setOnClickListener(v ->
+                reminderSettingsDialog.show(this, () ->
+                        reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f)));
+
+        reminderButton.setOnLongClickListener(v -> {
+            boolean debuggable = (getApplicationInfo().flags
+                    & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+
+            if (!debuggable) {
+                return false;
+            }
+
+            String problem = reminderSettings.debugFire(this, 10);
+            Toast.makeText(this,
+                    problem == null ? "Test notification in 10 s" : problem,
+                    Toast.LENGTH_LONG).show();
+            return true;
+        });
+
         if (currentUser == null) {
             openUsersPredictionsButton.setVisibility(View.GONE);
         } else {
@@ -456,6 +478,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (promo != null) {
             promo.refresh();
+        }
+
+        if (reminderButton != null) {
+            reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f);
         }
     }
 
@@ -1054,11 +1080,15 @@ public class MainActivity extends AppCompatActivity {
                             concludedRoundNumber.add(round.toString());
                             break;
                         case FUTURE:
-                            if (!isCanceled) futureRaceRoundNumber.add(round.toString());
+                            if (!isCanceled) {
+                                futureRaceRoundNumber.add(round.toString());
+                                addForReminders(ds, raceNames, circuitsId);
+                            }
                             break;
                         case ONGOING:
                         case AWAITING_RESULTS:
                             futureRaceRoundNumber.add(round.toString());
+                            addForReminders(ds, raceNames, circuitsId);
                             break;
                     }
                 }
@@ -1091,6 +1121,18 @@ public class MainActivity extends AppCompatActivity {
                 Log.e("scheduleActivityFirebaseError", error.getMessage());
             }
         });
+    }
+
+    private void addForReminders(DataSnapshot race,
+                                 ArrayList<String> raceNames,
+                                 ArrayList<String> circuitsId) {
+        String key = race.getKey();
+        String circuit = race.child("Circuit/circuitId").getValue(String.class);
+
+        if (key != null && circuit != null) {
+            raceNames.add(key);
+            circuitsId.add(circuit);
+        }
     }
 
     private void getPastRace(String currentYear, String round){
@@ -1208,67 +1250,97 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private void getRaceSchedule(ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId){
-        ArrayList<LinkedHashMap<String, String>> eventsPerRace = new ArrayList<>();
-        for (int i = 0; i < raceNames.size(); i++) {
-            String raceName = raceNames.get(i);
-            LinkedHashMap<String, String> eventsCountdown = new LinkedHashMap<>();
-            DatabaseReference rootRef = database.getReference();
-            int finalI = i;
-            rootRef.child("/schedule/season/" + currentYear + "/" + raceName).addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot snapshot) {
-                    String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class) +
-                            " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
-                    String race = snapshot.child("raceDate").getValue(String.class) +
-                            " " + snapshot.child("raceTime").getValue(String.class);
+    private void getRaceSchedule(ArrayList<String> raceNames, String currentYear,
+                                 ArrayList<String> circuitsId) {
+        final int total = raceNames.size();
+        Log.d("Reminders", "getRaceSchedule races=" + total);
 
-                    String raceQuali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class) +
-                            " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
+        if (total == 0) {
+            return;
+        }
 
-                    String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
-                    if (sprintDate.equals("N/A")){
-                        String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
-                                " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
+        final ArrayList<String> names = new ArrayList<>(raceNames);
+        final ArrayList<String> circuits = new ArrayList<>(circuitsId);
+        final ArrayList<LinkedHashMap<String, String>> eventsPerRace = new ArrayList<>();
 
-                        String thirdPractice = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class) +
-                                " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
+        for (int i = 0; i < total; i++) {
+            eventsPerRace.add(new LinkedHashMap<>());
+        }
 
-                        eventsCountdown.put("first_practice_event", firstPractice);
-                        eventsCountdown.put("second_practice_event", secondPractice);
-                        eventsCountdown.put("third_practice_event", thirdPractice);
-                        eventsCountdown.put("quali_event", raceQuali);
-                        eventsCountdown.put("race_event", race);
-                    }else{
-                        String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class) +
-                                " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
-                        String sprint = sprintDate +
-                                " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
+        final int[] answered = {0};
+        DatabaseReference rootRef = database.getReference();
 
-                        eventsCountdown.put("first_practice_event", firstPractice);
-                        eventsCountdown.put("sprint_quali_event", sprintQuali);
-                        eventsCountdown.put("sprint_event", sprint);
-                        eventsCountdown.put("quali_event", raceQuali);
-                        eventsCountdown.put("race_event", race);
-                    }
-                    eventsPerRace.add(eventsCountdown);
-                    if(finalI == raceNames.size() - 1){
-                        scheduleNotification(eventsPerRace, raceNames, currentYear, circuitsId);
-                    }
-                }
+        for (int i = 0; i < total; i++) {
+            final int index = i;
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError error) {
-                    showError("getRaceSchedule error" + error.getMessage());
-                    Log.e("futureActivityFirebaseError", error.getMessage());
-                }
-            });
+            rootRef.child("schedule").child("season").child(currentYear).child(names.get(i))
+                    .addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot snapshot) {
+                            if (snapshot.exists()) {
+                                fillEvents(snapshot, eventsPerRace.get(index));
+                            }
 
+                            finishRace();
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError error) {
+                            Log.w("Reminders", "Race read failed: " + error.getMessage());
+                            finishRace();
+                        }
+
+                        private void finishRace() {
+                            answered[0]++;
+
+                            if (answered[0] == total) {
+                                scheduleNotification(eventsPerRace, names, currentYear, circuits);
+                            }
+                        }
+                    });
+        }
+    }
+
+    private void fillEvents(DataSnapshot snapshot, LinkedHashMap<String, String> events) {
+        String firstPractice = snapshot.child("FirstPractice/firstPracticeDate").getValue(String.class)
+                + " " + snapshot.child("FirstPractice/firstPracticeTime").getValue(String.class);
+        String race = snapshot.child("raceDate").getValue(String.class)
+                + " " + snapshot.child("raceTime").getValue(String.class);
+        String quali = snapshot.child("Qualifying/raceQualiDate").getValue(String.class)
+                + " " + snapshot.child("Qualifying/raceQualiTime").getValue(String.class);
+
+        String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
+
+        if (sprintDate == null || "N/A".equals(sprintDate)) {
+            String second = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class)
+                    + " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
+            String third = snapshot.child("ThirdPractice/thirdPracticeDate").getValue(String.class)
+                    + " " + snapshot.child("ThirdPractice/thirdPracticeTime").getValue(String.class);
+
+            events.put("first_practice_event", firstPractice);
+            events.put("second_practice_event", second);
+            events.put("third_practice_event", third);
+            events.put("quali_event", quali);
+            events.put("race_event", race);
+        } else {
+            String sprintQuali = snapshot.child("SprintQualifying/sprintQualiDate").getValue(String.class)
+                    + " " + snapshot.child("SprintQualifying/sprintQualiTime").getValue(String.class);
+            String sprint = sprintDate
+                    + " " + snapshot.child("Sprint/sprintRaceTime").getValue(String.class);
+
+            events.put("first_practice_event", firstPractice);
+            events.put("sprint_quali_event", sprintQuali);
+            events.put("sprint_event", sprint);
+            events.put("quali_event", quali);
+            events.put("race_event", race);
         }
     }
 
     private void scheduleNotification(ArrayList<LinkedHashMap<String, String>> eventsPerRace, ArrayList<String> raceNames, String currentYear, ArrayList<String> circuitsId) {
+        Log.d("Reminders", "scheduleNotification races=" + raceNames.size()
+                + " perRace=" + eventsPerRace.size());
         ArrayList<String> eventsStr = new ArrayList<>();
+        ArrayList<String> circuitsStr = new ArrayList<>();
         SharedPreferences.Editor editor = mPrefs.edit();
         for (int i = 0; i < raceNames.size(); i++){
             LinkedHashMap<String, String> events = eventsPerRace.get(i);
@@ -1309,11 +1381,12 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
                 eventsStr.add(stringForSharedPrefs);
+                circuitsStr.add(circuitsId.get(i));
             }
 
         }
         JSONArray jsonArrayEvents = new JSONArray(eventsStr);
-        JSONArray jsonArrayCircuits = new JSONArray(circuitsId);
+        JSONArray jsonArrayCircuits = new JSONArray(circuitsStr);
         editor.putString("events_json", jsonArrayEvents.toString());
         editor.putString("circuits_json", jsonArrayCircuits.toString());
         editor.apply();
