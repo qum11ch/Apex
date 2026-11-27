@@ -1428,4 +1428,11 @@
     <string name="announcement_open_error">Не удалось открыть ссылку</string>
 
     <string name="reminder_battery_hint">Уведомления приходят с опозданием или не приходят? Нажмите, чтобы открыть настройки батареи, и разрешите приложению работать в фоне. На некоторых телефонах также нужно разрешить автозапуск.</string>
+
+    <string name="widget_next_race_label">Ближайший этап</string>
+    <string name="widget_next_race_description">Обратный отсчёт до ближайшей сессии и погода</string>
+    <string name="widget_no_data">Откройте Apex, чтобы загрузить расписание</string>
+    <string name="widget_season_over">Сезон завершён</string>
+    <string name="widget_in_days_hours">через %1$d д %2$d ч</string>
+    <string name="widget_live">LIVE</string>
 </resources>

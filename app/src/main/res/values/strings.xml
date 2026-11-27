@@ -1447,4 +1447,11 @@
     <string name="announcement_open_error">Could not open the link</string>
 
     <string name="reminder_battery_hint">Notifications late or missing? Tap to open the battery settings and let the app run in the background. Some phones also need autostart enabled.</string>
+
+    <string name="widget_next_race_label">Next stage</string>
+    <string name="widget_next_race_description">Countdown to the next session with the weather</string>
+    <string name="widget_no_data">Open Apex to load the schedule</string>
+    <string name="widget_season_over">The season is over</string>
+    <string name="widget_in_days_hours">in %1$d d %2$d h</string>
+    <string name="widget_live">LIVE</string>
 </resources>

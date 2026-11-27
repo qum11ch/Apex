@@ -466,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
             widgetSnapshotBuilder.refresh(getApplicationContext(), null, true, () -> {
                 widgetSnapshot s = widgetSnapshotStore.load(getApplicationContext());
                 Log.d("WidgetSnapshot", s == null ? "null" : s.toJson());
+                widgetNextRace.updateAll(getApplicationContext());
             });
         }
     }
