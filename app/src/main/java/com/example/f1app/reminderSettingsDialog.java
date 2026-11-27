@@ -21,9 +21,28 @@ import android.content.res.ColorStateList;
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.CompoundButtonCompat;
 
+import android.app.AlarmManager;
+import android.net.Uri;
+
 final class reminderSettingsDialog {
 
     private reminderSettingsDialog() {
+    }
+
+    private static void requestExactAlarmAccess(Activity activity) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            return;
+        }
+
+        AlarmManager alarms = (AlarmManager) activity.getSystemService(Activity.ALARM_SERVICE);
+
+        if (alarms.canScheduleExactAlarms()) {
+            return;
+        }
+
+        Intent intent = new Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                Uri.parse("package:" + activity.getPackageName()));
+        activity.startActivity(intent);
     }
 
     static void show(Activity activity, Runnable onDismiss) {
@@ -81,6 +100,14 @@ final class reminderSettingsDialog {
 
             if (checked && !hasNotificationPermission(activity)) {
                 openSystemNotificationSettings(activity);
+            }
+
+            if (checked) {
+                if (!hasNotificationPermission(activity)) {
+                    openSystemNotificationSettings(activity);
+                } else {
+                    requestExactAlarmAccess(activity);
+                }
             }
         });
 
