@@ -1,34 +1,26 @@
 package com.example.f1app;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.view.Gravity;
+import android.content.pm.ApplicationInfo;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.android.volley.Request;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * "Season is over": when every race of the season is concluded or canceled, the card with the top 3
- * of the drivers and of the teams replaces the "upcoming race" block.
+ * "Season is over": when every race of the season is concluded or canceled, the summary replaces the
+ * "upcoming race" block: the champions, the wide button of the prediction results and the top 3 of the
+ * drivers and of the teams (the cards of the home screen leaders in the colours of the podium).
  */
 final class seasonFinishedBlock {
 
@@ -36,29 +28,26 @@ final class seasonFinishedBlock {
         void openDrivers();
 
         void openTeams();
+
+        void openLeaderboard();
     }
 
-    private static final String BASE = "https://api.jolpi.ca/ergast/f1/";
-    private static final int NEUTRAL = 0xFF8E8E93;
-    private static final Map<String, Integer> BRIGHT = new HashMap<>();
-
-    private static final class Row {
-        String position = "";
-        String name = "";
-        String points = "";
-        String teamId = "";
-    }
+    /** Only honoured in a debuggable build: long press on the title of the home screen. */
+    static boolean debugForce = false;
 
     private final Context context;
     private final View card, futureHeader, futureLayout, predictButton;
-    private final TextView caption;
-    private final LinearLayout drivers, teams;
-    private final View driversLabel, teamsLabel;
-    private final List<Row> driverRows = new ArrayList<>();
-    private final List<Row> teamRows = new ArrayList<>();
-    private int token = 0;
-
     private final View[] hidden;
+    private final TextView caption, champion, constructors;
+    private final RecyclerView driversView, teamsView;
+    private final int[] tints;
+
+    private List<driversList> driverSource;
+    private List<teamsList> teamSource;
+    private mainDriversStandingsAdapter driversAdapter;
+    private mainTeamsStandingsAdapter teamsAdapter;
+    private boolean futureHidden;
+    private int token = 0;
 
     seasonFinishedBlock(View card, View futureHeader, View futureLayout, View predictButton,
                         Actions actions, View... hidden) {
@@ -69,20 +58,80 @@ final class seasonFinishedBlock {
         this.predictButton = predictButton;
         this.hidden = hidden;
 
-        caption = card.findViewById(R.id.finishedCaption);
-        drivers = card.findViewById(R.id.finishedDrivers);
-        teams = card.findViewById(R.id.finishedTeams);
-        driversLabel = card.findViewById(R.id.finishedDriversLabel);
-        teamsLabel = card.findViewById(R.id.finishedTeamsLabel);
+        tints = new int[]{
+                ContextCompat.getColor(context, R.color.podium_gold),
+                ContextCompat.getColor(context, R.color.podium_silver),
+                ContextCompat.getColor(context, R.color.podium_bronze)};
 
-        driversLabel.setOnClickListener(v -> actions.openDrivers());
-        drivers.setOnClickListener(v -> actions.openDrivers());
-        teamsLabel.setOnClickListener(v -> actions.openTeams());
-        teams.setOnClickListener(v -> actions.openTeams());
+        caption = card.findViewById(R.id.finishedCaption);
+        champion = card.findViewById(R.id.finishedChampion);
+        constructors = card.findViewById(R.id.finishedConstructor);
+        driversView = card.findViewById(R.id.finishedDriversList);
+        teamsView = card.findViewById(R.id.finishedTeamsList);
+
+        card.findViewById(R.id.finishedLeaderboardButton).setOnClickListener(v -> actions.openLeaderboard());
+        card.findViewById(R.id.finishedDriversLabel).setOnClickListener(v -> actions.openDrivers());
+        card.findViewById(R.id.finishedTeamsLabel).setOnClickListener(v -> actions.openTeams());
+    }
+
+    /** The lists of the home screen: the same objects the leaders use, so one load feeds both. */
+    void bindSources(List<driversList> driverList, List<teamsList> teamList) {
+        this.driverSource = driverList;
+        this.teamSource = teamList;
+
+        driversAdapter = new mainDriversStandingsAdapter(context, driverList);
+        driversAdapter.setPodiumTints(tints);
+        driversView.setLayoutManager(new LinearLayoutManager(context));
+        driversView.setNestedScrollingEnabled(false);
+        driversView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        driversView.setAdapter(driversAdapter);
+
+        teamsAdapter = new mainTeamsStandingsAdapter(context, teamList);
+        teamsAdapter.setPodiumTints(tints);
+        teamsView.setLayoutManager(new LinearLayoutManager(context));
+        teamsView.setNestedScrollingEnabled(false);
+        teamsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        teamsView.setAdapter(teamsAdapter);
+    }
+
+    /** The lists of the home screen changed: redraw the cards and the champions when the block is on screen. */
+    void update() {
+        if (card.getVisibility() != View.VISIBLE) {
+            return;
+        }
+
+        if (driversAdapter != null) {
+            driversAdapter.notifyDataSetChanged();
+        }
+
+        if (teamsAdapter != null) {
+            teamsAdapter.notifyDataSetChanged();
+        }
+
+        if (driverSource != null && !driverSource.isEmpty() && !driverSource.get(0).isStartSeason()) {
+            champion.setText(context.getString(R.string.finished_champion,
+                    driverSource.get(0).getDriverFamilyName()));
+            champion.setVisibility(View.VISIBLE);
+        } else {
+            champion.setVisibility(View.GONE);
+        }
+
+        if (teamSource != null && !teamSource.isEmpty() && !teamSource.get(0).getStartSeasonInfo()) {
+            constructors.setText(context.getString(R.string.finished_constructors,
+                    teamSource.get(0).getTeam()));
+            constructors.setVisibility(View.VISIBLE);
+        } else {
+            constructors.setVisibility(View.GONE);
+        }
     }
 
     void refresh(String season) {
         final int mine = ++token;
+
+        if (debugForce && (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            showFinished(season);
+            return;
+        }
 
         FirebaseDatabase.getInstance().getReference().child("schedule").child("season").child(season)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -127,6 +176,11 @@ final class seasonFinishedBlock {
         card.setVisibility(View.GONE);
         futureHeader.setVisibility(View.VISIBLE);
 
+        if (futureHidden) { // restore only what this block has hidden itself
+            futureLayout.setVisibility(View.VISIBLE);
+            futureHidden = false;
+        }
+
         for (View view : hidden) {
             view.setVisibility(View.VISIBLE);
         }
@@ -135,6 +189,7 @@ final class seasonFinishedBlock {
     private void showFinished(String season) {
         futureHeader.setVisibility(View.GONE);
         futureLayout.setVisibility(View.GONE);
+        futureHidden = true;
         predictButton.setVisibility(View.GONE);
 
         for (View view : hidden) {
@@ -144,189 +199,6 @@ final class seasonFinishedBlock {
         caption.setText(context.getString(R.string.finished_caption, season));
         card.setVisibility(View.VISIBLE);
 
-        driverRows.clear();
-        teamRows.clear();
-        render();
-
-        loadDrivers(season);
-        loadTeams(season);
-        loadColors();
-    }
-
-    // ---------- data ----------
-
-    private void loadDrivers(String season) {
-        String url = BASE + season + "/driverstandings/?format=json";
-
-        apiQueue.get().add(new cachedJsonRequest(Request.Method.GET, url, null,
-                response -> {
-                    JSONArray list = standings(response, "DriverStandings");
-
-                    driverRows.clear();
-
-                    for (int i = 0; list != null && i < Math.min(3, list.length()); i++) {
-                        JSONObject o = list.optJSONObject(i);
-
-                        if (o == null) {
-                            continue;
-                        }
-
-                        JSONObject driver = o.optJSONObject("Driver");
-                        JSONArray constructors = o.optJSONArray("Constructors");
-                        JSONObject team = constructors == null || constructors.length() == 0
-                                ? null : constructors.optJSONObject(constructors.length() - 1);
-
-                        Row row = new Row();
-                        row.position = o.optString("position", String.valueOf(i + 1));
-                        row.name = driver == null ? "" : driver.optString("familyName");
-                        row.points = points(o.optString("points"));
-                        row.teamId = team == null ? "" : team.optString("constructorId");
-                        driverRows.add(row);
-                    }
-
-                    render();
-                },
-                error -> {
-                }));
-    }
-
-    private void loadTeams(String season) {
-        String url = BASE + season + "/constructorstandings/?format=json";
-
-        apiQueue.get().add(new cachedJsonRequest(Request.Method.GET, url, null,
-                response -> {
-                    JSONArray list = standings(response, "ConstructorStandings");
-
-                    teamRows.clear();
-
-                    for (int i = 0; list != null && i < Math.min(3, list.length()); i++) {
-                        JSONObject o = list.optJSONObject(i);
-
-                        if (o == null) {
-                            continue;
-                        }
-
-                        JSONObject team = o.optJSONObject("Constructor");
-
-                        Row row = new Row();
-                        row.position = o.optString("position", String.valueOf(i + 1));
-                        row.name = team == null ? "" : team.optString("name");
-                        row.points = points(o.optString("points"));
-                        row.teamId = team == null ? "" : team.optString("constructorId");
-                        teamRows.add(row);
-                    }
-
-                    render();
-                },
-                error -> {
-                }));
-    }
-
-    private void loadColors() {
-        FirebaseDatabase.getInstance().getReference().child("constructors")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for (DataSnapshot team : snapshot.getChildren()) {
-                            if (team.getKey() != null) {
-                                BRIGHT.put(team.getKey(),
-                                        colorOf(team.getKey(), team.child("color").getValue(String.class)));
-                            }
-                        }
-
-                        render();
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        // the colours of the palette stay
-                    }
-                });
-    }
-
-    private static JSONArray standings(JSONObject response, String key) {
-        JSONObject data = response.optJSONObject("MRData");
-        JSONObject table = data == null ? null : data.optJSONObject("StandingsTable");
-        JSONArray lists = table == null ? null : table.optJSONArray("StandingsLists");
-        JSONObject first = lists == null || lists.length() == 0 ? null : lists.optJSONObject(0);
-
-        return first == null ? null : first.optJSONArray(key);
-    }
-
-    private static String points(String value) {
-        return value.endsWith(".0") ? value.substring(0, value.length() - 2) : value;
-    }
-
-    private static int colorOf(String teamId, String hex) {
-        try {
-            return Color.parseColor(pastTeamPalette.resolve(teamId, hex));
-        } catch (RuntimeException error) {
-            return NEUTRAL;
-        }
-    }
-
-    // ---------- the card ----------
-
-    private void render() {
-        fill(drivers, driverRows);
-        fill(teams, teamRows);
-
-        driversLabel.setVisibility(driverRows.isEmpty() ? View.GONE : View.VISIBLE);
-        teamsLabel.setVisibility(teamRows.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
-    private void fill(LinearLayout parent, List<Row> rows) {
-        parent.removeAllViews();
-
-        for (Row row : rows) {
-            Integer known = BRIGHT.get(row.teamId);
-            int color = known != null ? known : colorOf(row.teamId, null);
-
-            LinearLayout line = new LinearLayout(context);
-            line.setOrientation(LinearLayout.HORIZONTAL);
-            line.setGravity(Gravity.CENTER_VERTICAL);
-            line.setPadding(0, dp(8), 0, dp(8));
-
-            TextView position = text(row.position, 15, R.color.hero_text_secondary, true);
-            position.setGravity(Gravity.CENTER);
-            line.addView(position, new LinearLayout.LayoutParams(dp(28), ViewGroup.LayoutParams.WRAP_CONTENT));
-
-            View bar = new View(context);
-            android.graphics.drawable.GradientDrawable shape = new android.graphics.drawable.GradientDrawable();
-            shape.setColor(color);
-            shape.setCornerRadius(dp(2));
-            bar.setBackground(shape);
-            LinearLayout.LayoutParams barParams = new LinearLayout.LayoutParams(dp(4), dp(28));
-            barParams.setMarginStart(dp(4));
-            barParams.setMarginEnd(dp(12));
-            line.addView(bar, barParams);
-
-            TextView name = text(row.name, 16, R.color.hero_text, true);
-            line.addView(name, new LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f));
-
-            line.addView(text(row.points + " " + context.getString(R.string.pts_header),
-                    15, R.color.hero_text, true));
-
-            parent.addView(line, new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        }
-    }
-
-    private TextView text(String value, int size, int colorRes, boolean bold) {
-        TextView view = new TextView(context);
-        view.setText(value);
-        view.setTextSize(size);
-        view.setTextColor(ContextCompat.getColor(context, colorRes));
-        view.setMaxLines(1);
-
-        if (bold) {
-            view.setTypeface(view.getTypeface(), Typeface.BOLD);
-        }
-
-        return view;
-    }
-
-    private int dp(float value) {
-        return Math.round(value * context.getResources().getDisplayMetrics().density);
+        update();
     }
 }

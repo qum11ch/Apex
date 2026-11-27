@@ -33,6 +33,13 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
     Context context;
     List<teamsList> dataList;
 
+    private int[] podiumTints;
+
+    /** Colours of the places 1-3 instead of the colour of the team (null: the colour of the team). */
+    public void setPodiumTints(int[] colors) {
+        podiumTints = colors;
+    }
+
     public mainTeamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
         dataList = datum;
@@ -122,6 +129,11 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
                 });
 
         int colorRgb = teamColors.parse(darkTeamColor);
+
+        if (podiumTints != null && position < podiumTints.length) {
+            colorRgb = podiumTints[position];
+        }
+
         int alpha = 0xCC;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 

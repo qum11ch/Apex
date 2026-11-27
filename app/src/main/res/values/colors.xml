@@ -116,4 +116,8 @@
     <color name="hero_accent">#D50A00</color>
     <color name="hero_chip_bg">#FFFFFF</color>
     <color name="hero_podium_plate">#FFFFFF</color>
+
+    <color name="podium_gold">#C79A1B</color>
+    <color name="podium_silver">#7B8591</color>
+    <color name="podium_bronze">#A8672F</color>
 </resources>

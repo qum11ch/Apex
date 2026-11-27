@@ -23,6 +23,11 @@ import java.security.MessageDigest;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.os.Handler;
+import android.os.Looper;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * A drop-in JsonObjectRequest. Every good answer from the Jolpica API is also saved to disk;
  * when the server cannot be reached the saved answer is delivered instead of an error (once, no double delivery).
@@ -35,6 +40,9 @@ public class cachedJsonRequest extends JsonObjectRequest {
     private static final int MAX_CHARS = 2 * 1024 * 1024;
     private static final ExecutorService IO = Executors.newSingleThreadExecutor();
     private static boolean pruned = false;
+
+    private static final Set<String> RETRIED = ConcurrentHashMap.newKeySet();
+    private static final Handler RETRY = new Handler(Looper.getMainLooper());
 
     public cachedJsonRequest(int method, String url, JSONObject jsonRequest,
                              Response.Listener<JSONObject> listener,
@@ -65,6 +73,7 @@ public class cachedJsonRequest extends JsonObjectRequest {
         }
 
         return response -> {
+            RETRIED.remove(url);
             store(url, response);
             listener.onResponse(response);
         };
@@ -81,6 +90,14 @@ public class cachedJsonRequest extends JsonObjectRequest {
             int status = error.networkResponse != null ? error.networkResponse.statusCode : -1;
             Log.w("cachedJsonRequest", "request failed: " + url
                     + " status=" + status + " error=" + error.getClass().getSimpleName());
+            if (status == 429 && RETRIED.add(url)) {
+                // throttled: one more try after a pause, the saved answer stays the last resort
+                RETRY.postDelayed(() -> apiQueue.get().add(
+                        new cachedJsonRequest(Request.Method.GET, url, null, listener, errorListener)), 2500L);
+                return;
+            }
+
+            RETRIED.remove(url);
 
             JSONObject saved = read(url);
 

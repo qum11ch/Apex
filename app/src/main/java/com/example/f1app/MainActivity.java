@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     private int progressDelayMs = 500;
     private mainFutureRaceAdapter futureRaceAdapter;
     private seasonFinishedBlock seasonFinished;
+    private String predictionSeason;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -347,11 +348,40 @@ public class MainActivity extends AppCompatActivity {
                     public void openTeams() {
                         startActivity_getSeason(teamsStandingsActivity.class);
                     }
+
+                    @Override
+                    public void openLeaderboard() {
+                        Intent intent = new Intent(MainActivity.this, leaderboardActivity.class);
+                        intent.putExtra("currentSeason", predictionSeason);
+                        startActivity(intent);
+                    }
                 },
                 findViewById(R.id.top_drivers_header),
                 findViewById(R.id.top_drivers),
                 findViewById(R.id.top_teams_header),
                 findViewById(R.id.top_teams));
+
+        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            findViewById(R.id.mainHeader).setOnLongClickListener(v -> {
+                seasonFinishedBlock.debugForce = !seasonFinishedBlock.debugForce;
+                seasonFinished.refresh(currentSeason != null
+                        ? currentSeason : String.valueOf(LocalDate.now().getYear()));
+                Toast.makeText(this, "season finished: " + seasonFinishedBlock.debugForce,
+                        Toast.LENGTH_SHORT).show();
+                return true;
+            });
+        }
+
+        seasonFinished.bindSources(datumDrivers, datumTeams);
+
+        RecyclerView.AdapterDataObserver standingsObserver = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                seasonFinished.update();
+            }
+        };
+        driversAdapter.registerAdapterDataObserver(standingsObserver);
+        teamsAdapter.registerAdapterDataObserver(standingsObserver);
 
         DatabaseReference rootRef = database.getReference();
 
@@ -362,6 +392,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
 
                                 currentSeason = snapshot.child("season").getValue(String.class);
+                                predictionSeason = snapshot.child("predictions_season").getValue(String.class);
 
                                 if (currentSeason == null || currentSeason.trim().isEmpty()) {
                                     showError("Сезон не найден в Firebase");

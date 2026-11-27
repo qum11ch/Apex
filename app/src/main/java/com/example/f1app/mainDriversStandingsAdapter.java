@@ -27,6 +27,13 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
     Context context;
     List<driversList> dataList;
 
+    private int[] podiumTints;
+
+    /** Colours of the places 1-3 instead of the colour of the team (null: the colour of the team). */
+    public void setPodiumTints(int[] colors) {
+        podiumTints = colors;
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -88,6 +95,10 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
 
         //String mTeamId = datum.getConstructorId();
         int colorRgb = teamColors.parse(darkTeamColor);
+
+        if (podiumTints != null && position < podiumTints.length) {
+            colorRgb = podiumTints[position];
+        }
 
         int alpha = 0xCC;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
