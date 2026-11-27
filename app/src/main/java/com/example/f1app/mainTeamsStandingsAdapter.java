@@ -33,20 +33,6 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
     Context context;
     List<teamsList> dataList;
 
-    private int[] podiumTints;
-
-    private int championLabel = 0;
-
-    /** A badge on the card of the first place (0: none). */
-    public void setChampionLabel(int stringRes) {
-        championLabel = stringRes;
-    }
-
-    /** Colours of the places 1-3 instead of the colour of the team (null: the colour of the team). */
-    public void setPodiumTints(int[] colors) {
-        podiumTints = colors;
-    }
-
     public mainTeamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
         dataList = datum;
@@ -137,19 +123,6 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
 
         int colorRgb = teamColors.parse(darkTeamColor);
 
-        if (podiumTints != null && position < podiumTints.length) {
-            colorRgb = podiumTints[position];
-        }
-
-        if (holder.championBadge != null) {
-            if (championLabel != 0 && position == 0) {
-                holder.championBadge.setText(championLabel);
-                holder.championBadge.setVisibility(View.VISIBLE);
-            } else {
-                holder.championBadge.setVisibility(View.GONE);
-            }
-        }
-
         int alpha = 0xCC;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 
@@ -207,7 +180,6 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         CardView cardView;
         ImageView teamCar;
         LinearLayout itemTeam;
-        TextView championBadge;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             itemTeam = itemView.findViewById(R.id.item_team);
@@ -219,7 +191,6 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
             teamPosition = itemView.findViewById(R.id.team_placement);
             constraintLayout = itemView.findViewById(R.id.main_layout);
             teamCar = itemView.findViewById(R.id.team_car);
-            championBadge = itemView.findViewById(R.id.championBadge);
         }
     }
 }

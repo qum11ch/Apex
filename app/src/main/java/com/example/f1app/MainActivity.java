@@ -101,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
     private mainFutureRaceAdapter futureRaceAdapter;
     private seasonFinishedBlock seasonFinished;
     private String predictionSeason;
+    private boolean seasonOver = false;
+    private int concludedRounds = 0;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -355,12 +357,20 @@ public class MainActivity extends AppCompatActivity {
                         intent.putExtra("currentSeason", predictionSeason);
                         startActivity(intent);
                     }
+
+                    @Override
+                    public void onFinishedChanged(boolean finished) {
+                        seasonOver = finished;
+                        updateContenders();
+                    }
                 },
                 findViewById(R.id.top_drivers_header),
                 findViewById(R.id.top_drivers),
                 findViewById(R.id.top_teams_header),
                 findViewById(R.id.top_teams),
-                findViewById(R.id.leaderboardButton));
+                findViewById(R.id.leaderboardButton),
+                findViewById(R.id.progress_header),
+                findViewById(R.id.race_progress_layout));
 
         if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             findViewById(R.id.mainHeader).setOnLongClickListener(v -> {
@@ -441,6 +451,11 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
+    }
+
+    private void updateContenders() {
+        findViewById(R.id.winnersWDS).setVisibility(
+                concludedRounds > 0 && !seasonOver ? View.VISIBLE : View.GONE);
     }
 
     private void openAccountOrLogin() {
@@ -646,7 +661,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void postProgress(int progress, long totalRounds) {
-        findViewById(R.id.winnersWDS).setVisibility(progress > 0 ? View.VISIBLE : View.GONE);
+        concludedRounds = progress;
+        updateContenders();
 
         cachedList.putExtra("main_progress", String.valueOf(progress), String.valueOf(totalRounds));
         String strProgress = progress + "/" + totalRounds;

@@ -1338,11 +1338,8 @@
 
     <string name="finished_caption">Сезон %1$s завершён</string>
     <string name="finished_title">Итоги сезона</string>
-
-    <string name="finished_champion">Чемпион мира: %1$s</string>
-    <string name="finished_constructors">Кубок конструкторов: %1$s</string>
     <string name="finished_open_leaderboard">Итоги прогнозов</string>
-
+    <string name="finished_points_label">очков</string>
     <string name="finished_drivers">Пилоты →</string>
     <string name="finished_teams">Команды →</string>
     <string name="champion_driver">★ Чемпион мира</string>
