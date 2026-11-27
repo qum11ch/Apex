@@ -30,6 +30,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import android.os.Build;
+
 public class BootService extends Service {
     SharedPreferences mPrefs;
 
@@ -58,11 +60,24 @@ public class BootService extends Service {
         if (intent!=null){
             Bundle bundle = intent.getExtras();
             mPrefs = getApplicationContext().getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+
+            reminderSettings.cancelAll(this);
+
+            if (!reminderSettings.enabled(this)) {
+                stopSelf(startId);
+                return START_NOT_STICKY;
+            }
+
+            final int leadMinutes = reminderSettings.leadMinutes(this);
+
             JSONArray jsonArrayEvents;
             JSONArray jsonArrayCircuits;
             assert bundle != null;
             String mChannelId = bundle.getString("channelId");
-            long fiveMinutesMillis = TimeUnit.MINUTES.toMillis(5);
+
+            long leadMillis = TimeUnit.MINUTES.toMillis(leadMinutes);
+            long afterEndMillis = TimeUnit.MINUTES.toMillis(5);
+
             int iterator = 0;
             try {
                 jsonArrayEvents = new JSONArray(mPrefs.getString("events_json", "[]"));
@@ -94,7 +109,8 @@ public class BootService extends Service {
                         String newDateEnd = dateTimeEnd.format(fullDateFormatter);
 
                         String body = getApplicationContext().getString(getStringByName(eventName + "_text"));
-                        String bodyStart = body + " " + getString(R.string.notify_start_text);
+                        String bodyStart = body.trim() + " " + getResources()
+                                .getQuantityString(R.plurals.notify_start_in, leadMinutes, leadMinutes);
                         String bodyEnd = body + " " + getString(R.string.notify_end_text);
                         Date current = Calendar.getInstance().getTime();
                         String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -104,8 +120,8 @@ public class BootService extends Service {
                             Date eventStart_date = dateFormat.parse(newDateStart);
                             Date eventEnd_date = dateFormat.parse(newDateEnd);
 
-                            Date notifyStart_date = new Date(eventStart_date.getTime() - fiveMinutesMillis);
-                            Date notifyEnd_date = new Date(eventEnd_date.getTime() + fiveMinutesMillis);
+                            Date notifyStart_date = new Date(eventStart_date.getTime() - leadMillis);
+                            Date notifyEnd_date = new Date(eventEnd_date.getTime() + afterEndMillis);
 
                             long diffStart = notifyStart_date.getTime() - current.getTime();
                             long diffEnd = notifyEnd_date.getTime() - current.getTime();
@@ -121,6 +137,7 @@ public class BootService extends Service {
                         iterator += 2;
                     }
                 }
+                reminderSettings.saveAlarmCount(this, iterator);
                 return START_STICKY;
 
             } catch (JSONException e) {
@@ -141,9 +158,21 @@ public class BootService extends Service {
         intentStart.putExtra("body", body);
         PendingIntent pendingIntentStart = PendingIntent.getBroadcast(getApplicationContext(), iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
-        alarmManagerStart.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP,
-                date.getTime(),
-                pendingIntentStart);
+        long when = date.getTime();
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+                    && !alarmManagerStart.canScheduleExactAlarms()) {
+                alarmManagerStart.setAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP, when, pendingIntentStart);
+            } else {
+                alarmManagerStart.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP, when, pendingIntentStart);
+            }
+        } catch (SecurityException error) {
+            alarmManagerStart.setAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP, when, pendingIntentStart);
+        }
     }
 
     @Override

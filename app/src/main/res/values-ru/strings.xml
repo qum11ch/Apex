@@ -387,7 +387,23 @@
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>
     <string name="race_canceled_text">Отменено</string>
-    <string name="notify_start_text"> начнется через 5 минут!</string>
+    <plurals name="notify_start_in">
+        <item quantity="one">начнётся через %d минуту!</item>
+        <item quantity="few">начнётся через %d минуты!</item>
+        <item quantity="many">начнётся через %d минут!</item>
+        <item quantity="other">начнётся через %d минуты!</item>
+    </plurals>
+
+    <plurals name="reminder_option">
+        <item quantity="one">за %d минуту до старта</item>
+        <item quantity="few">за %d минуты до старта</item>
+        <item quantity="many">за %d минут до старта</item>
+        <item quantity="other">за %d минуты до старта</item>
+    </plurals>
+
+    <string name="reminder_title">Напоминания о сессиях</string>
+    <string name="reminder_switch">Присылать напоминания</string>
+    <string name="reminder_lead_label">Напоминать</string>
     <string name="notify_end_text"> закончилась!</string>
     <string name="past_season_result">Результаты Гран-при в</string>
     <string name="last_entry_text">Последнее участие в Гран-при</string>
