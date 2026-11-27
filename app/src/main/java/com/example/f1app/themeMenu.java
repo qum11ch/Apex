@@ -11,7 +11,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import androidx.core.content.ContextCompat;
 
 final class themeMenu {
     private themeMenu() {}
@@ -64,26 +63,6 @@ final class themeMenu {
             });
             card.addView(row);
         }
-
-        View divider = new View(activity);
-        LinearLayout.LayoutParams dividerParams = new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, Math.max(1, Math.round(density)));
-        dividerParams.setMargins(0, pad, 0, pad);
-        divider.setLayoutParams(dividerParams);
-        divider.setBackgroundColor(ContextCompat.getColor(activity, R.color.stroke_option_color));
-        card.addView(divider);
-
-        View reminders = inflater.inflate(R.layout.item_theme_option, card, false);
-        ((ImageView) reminders.findViewById(R.id.optionIcon))
-                .setImageResource(R.drawable.ic_notifications);
-        ((TextView) reminders.findViewById(R.id.optionLabel))
-                .setText(R.string.reminder_title);
-        reminders.findViewById(R.id.optionCheck).setVisibility(View.GONE);
-        reminders.setOnClickListener(v -> {
-            popup.dismiss();
-            reminderSettingsDialog.show(activity);
-        });
-        card.addView(reminders);
 
         popup.showAsDropDown(anchor, 0, 0, Gravity.END);
     }

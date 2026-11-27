@@ -16,12 +16,17 @@ import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
 
+import android.content.res.ColorStateList;
+
+import androidx.core.graphics.ColorUtils;
+import androidx.core.widget.CompoundButtonCompat;
+
 final class reminderSettingsDialog {
 
     private reminderSettingsDialog() {
     }
 
-    static void show(Activity activity) {
+    static void show(Activity activity, Runnable onDismiss) {
         Dialog dialog = new Dialog(activity);
         dialog.setContentView(R.layout.dialog_reminder_settings);
 
@@ -40,6 +45,19 @@ final class reminderSettingsDialog {
         final boolean wasEnabled = reminderSettings.enabled(activity);
         final int wasLead = reminderSettings.leadMinutes(activity);
 
+        int accent = ContextCompat.getColor(activity, R.color.hero_accent);
+        int idle = ContextCompat.getColor(activity, R.color.grey);
+
+        int[][] states = {{android.R.attr.state_checked}, {}};
+
+        ColorStateList thumbTint = new ColorStateList(states, new int[]{accent, idle});
+        ColorStateList trackTint = new ColorStateList(states, new int[]{
+                ColorUtils.setAlphaComponent(accent, 90),
+                ColorUtils.setAlphaComponent(idle, 90)});
+
+        toggle.setThumbTintList(thumbTint);
+        toggle.setTrackTintList(trackTint);
+
         for (int minutes : reminderSettings.OPTIONS) {
             RadioButton option = new RadioButton(activity);
             option.setId(View.generateViewId());
@@ -47,6 +65,7 @@ final class reminderSettingsDialog {
             option.setText(activity.getResources()
                     .getQuantityString(R.plurals.reminder_option, minutes, minutes));
             option.setTextColor(ContextCompat.getColor(activity, R.color.text_color_main));
+            CompoundButtonCompat.setButtonTintList(option, thumbTint);
             group.addView(option);
 
             if (minutes == wasLead) {
@@ -77,6 +96,10 @@ final class reminderSettingsDialog {
             if (enabled != wasEnabled || lead != wasLead) {
                 reminderSettings.save(activity, enabled, lead);
                 reminderSettings.reschedule(activity);
+            }
+
+            if (onDismiss != null) {
+                onDismiss.run();
             }
         });
 

@@ -40,6 +40,49 @@ final class reminderSettings {
         return DEFAULT_LEAD;
     }
 
+    static boolean debugFire(Context context, int seconds) {
+        Context app = context.getApplicationContext();
+        String eventsJson = prefs(app).getString("events_json", "[]");
+        String circuitsJson = prefs(app).getString("circuits_json", "[]");
+
+        try {
+            org.json.JSONArray events = new org.json.JSONArray(eventsJson);
+            org.json.JSONArray circuits = new org.json.JSONArray(circuitsJson);
+
+            if (events.length() == 0 || circuits.length() == 0) {
+                return false;
+            }
+
+            String[] race = events.getString(0).split("%")[0].split("\\$");
+
+            Intent intent = new Intent(app, NotifyReceiver.class);
+            intent.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
+            intent.putExtra("channelId", CHANNEL_ID);
+            intent.putExtra("season", race[0]);
+            intent.putExtra("raceName", race[1]);
+            intent.putExtra("circuitId", circuits.getString(0));
+            intent.putExtra("title", app.getString(R.string.reminder_title));
+            intent.putExtra("body", "Test");
+
+            PendingIntent pending = PendingIntent.getBroadcast(
+                    app, 9999, intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+
+            AlarmManager alarms = (AlarmManager) app.getSystemService(Context.ALARM_SERVICE);
+            long when = System.currentTimeMillis() + seconds * 1000L;
+
+            try {
+                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pending);
+            } catch (SecurityException error) {
+                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pending);
+            }
+
+            return true;
+        } catch (org.json.JSONException | RuntimeException error) {
+            return false;
+        }
+    }
+
     static void save(Context context, boolean enabled, int leadMinutes) {
         prefs(context).edit()
                 .putBoolean(KEY_ENABLED, enabled)

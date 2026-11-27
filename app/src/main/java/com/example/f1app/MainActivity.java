@@ -302,6 +302,27 @@ public class MainActivity extends AppCompatActivity {
         themeButton.setImageResource(themeMenu.iconFor(themeStore.get(this)));
         themeButton.setOnClickListener(v -> themeMenu.show(this, v));
 
+        ImageButton reminderButton = findViewById(R.id.reminderButton);
+        reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f);
+        reminderButton.setOnClickListener(v ->
+                reminderSettingsDialog.show(this, () ->
+                        reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f)));
+
+        reminderButton.setOnLongClickListener(v -> {
+            boolean debuggable = (getApplicationInfo().flags
+                    & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
+
+            if (!debuggable) {
+                return false;
+            }
+
+            boolean scheduled = reminderSettings.debugFire(this, 10);
+            Toast.makeText(this,
+                    scheduled ? "Test notification in 10 s" : "No saved events yet",
+                    Toast.LENGTH_SHORT).show();
+            return true;
+        });
+
         if (currentUser == null) {
             openUsersPredictionsButton.setVisibility(View.GONE);
         } else {
