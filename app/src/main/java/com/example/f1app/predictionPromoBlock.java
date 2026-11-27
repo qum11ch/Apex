@@ -21,11 +21,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import androidx.core.content.ContextCompat;
+
 /** The card of the home screen that leads to the predictions; it does not depend on season time */
 final class predictionPromoBlock {
     private final Context context;
     private final View card;
-    private final TextView caption, title, subtitle, cta;
+    private final TextView caption, title, subtitle, cta, time;
     private final Supplier<String> season;
     private int token = 0;
 
@@ -37,6 +39,7 @@ final class predictionPromoBlock {
         title = card.findViewById(R.id.promoTitle);
         subtitle = card.findViewById(R.id.promoSubtitle);
         cta = card.findViewById(R.id.promoCta);
+        time = card.findViewById(R.id.promoTime);
     }
 
     void stop() {
@@ -149,7 +152,7 @@ final class predictionPromoBlock {
     private void showOpen(int titleRes, int count, predictionListItem nearest, long now) {
         caption.setText(R.string.promo_caption);
         title.setText(context.getString(titleRes, count));
-        subtitle.setText(closing(nearest, now));
+        showTime(nearest, now);
         cta.setText(R.string.promo_cta);
         card.setOnClickListener(v ->
                 context.startActivity(new Intent(context, predictionActivity.class)));
@@ -159,7 +162,7 @@ final class predictionPromoBlock {
     private void showAllDone(predictionListItem nearest, long now) {
         caption.setText(R.string.promo_caption);
         title.setText(R.string.promo_done_title);
-        subtitle.setText(closing(nearest, now));
+        showTime(nearest, now);
         cta.setText(R.string.promo_done_cta);
         card.setOnClickListener(v ->
                 context.startActivity(new Intent(context, userPredictionsActivity.class)));
@@ -169,6 +172,7 @@ final class predictionPromoBlock {
     private void showResults() {
         caption.setText(R.string.promo_caption);
         title.setText(R.string.promo_results_title);
+        time.setVisibility(View.GONE);
         subtitle.setText(R.string.promo_results_body);
         cta.setText(R.string.promo_results_cta);
         card.setOnClickListener(v -> {
@@ -185,22 +189,38 @@ final class predictionPromoBlock {
         card.setVisibility(View.VISIBLE);
     }
 
-    private String closing(predictionListItem item, long now) {
-        return item.getLocalizedTitle() + "\n"
-                + context.getString(R.string.promo_closes, inText(item.getDeadline() - now));
+    private void showTime(predictionListItem item, long now) {
+        long minutes = Math.max(1, (item.getDeadline() - now) / 60_000L);
+
+        time.setText(formatLeft(minutes));
+        time.setTextColor(ContextCompat.getColor(context,
+                minutes < 24 * 60 ? R.color.hero_accent : R.color.hero_text));
+        time.setVisibility(View.VISIBLE);
+
+        subtitle.setText(context.getString(R.string.promo_until, item.getLocalizedTitle()));
     }
 
-    private String inText(long millis) {
-        long minutes = Math.max(1, millis / 60_000L);
+    private String formatLeft(long minutes) {
+        long days = minutes / (24 * 60);
+        long hours = (minutes % (24 * 60)) / 60;
+        long mins = minutes % 60;
 
-        if (minutes >= 24 * 60) {
-            return context.getString(R.string.in_days, minutes / (24 * 60));
+        if (days > 0) {
+            String result = context.getString(R.string.promo_time_d, days);
+
+            return hours > 0
+                    ? result + " " + context.getString(R.string.promo_time_h, hours)
+                    : result;
         }
 
-        if (minutes >= 60) {
-            return context.getString(R.string.in_hours, minutes / 60);
+        if (hours > 0) {
+            String result = context.getString(R.string.promo_time_h, hours);
+
+            return mins > 0
+                    ? result + " " + context.getString(R.string.promo_time_m, mins)
+                    : result;
         }
 
-        return context.getString(R.string.in_minutes, minutes);
+        return context.getString(R.string.promo_time_m, mins);
     }
 }
