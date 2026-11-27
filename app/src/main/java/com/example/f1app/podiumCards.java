@@ -104,12 +104,7 @@ final class podiumCards {
                 continue;
             }
 
-            GlideApp.with(photo)
-                    .load(FirebaseStorage.getInstance().getReference()
-                            .child("drivers/" + code.toLowerCase(Locale.ROOT) + "_" + season + ".png"))
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .error(R.drawable.placeholder_driver)
-                    .into(photo);
+            driverPhotos.load(photo, code, season);
         }
     }
 

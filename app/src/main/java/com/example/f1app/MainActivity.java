@@ -373,6 +373,7 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.leaderboardButton));
 
         seasonFinished.bindSources(datumDrivers, datumTeams);
+        seasonFinished.applyRemembered();
 
         RecyclerView.AdapterDataObserver standingsObserver = new RecyclerView.AdapterDataObserver() {
             @Override
@@ -390,32 +391,28 @@ public class MainActivity extends AppCompatActivity {
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String fromStatus = snapshot.child("season").getValue(String.class);
 
-                                currentSeason = snapshot.child("season").getValue(String.class);
-                                predictionSeason = snapshot.child("predictions_season").getValue(String.class);
-
-                                if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                                if (fromStatus == null || fromStatus.trim().isEmpty()) {
                                     showError("Сезон не найден в Firebase");
                                     return;
                                 }
 
-                                Boolean enabled  = snapshot.child("enablePredicts")
-                                        .getValue(Boolean.class);
+                                Boolean enabled = snapshot.child("enablePredicts").getValue(Boolean.class);
 
-                                predict.setVisibility(Boolean.TRUE.equals(enabled) ? View.VISIBLE : View.GONE);
+                                // the button of the neuro prediction stays hidden when the season is over
+                                predict.setVisibility(Boolean.TRUE.equals(enabled) && !seasonOver ? View.VISIBLE : View.GONE);
 
-                                boolean otherYear = !currentSeason.equals(String.valueOf(LocalDate.now().getYear()));
-                                ((TextView) findViewById(R.id.top_drivers_header)).setText(otherYear
-                                        ? getString(R.string.top_drivers) + " " + currentSeason
-                                        : getString(R.string.top_drivers));
-                                ((TextView) findViewById(R.id.top_teams_header)).setText(otherYear
-                                        ? getString(R.string.top_3_teams) + " " + currentSeason
-                                        : getString(R.string.top_3_teams));
+                                seasonResolver.resolve(fromStatus, season -> {
+                                    if (isFinishing() || isDestroyed()) return;
 
-                                getTeamStanding(currentSeason);
-                                getDriversStanding(currentSeason);
-                                getSchedule(currentYear, currentDate);
-                                seasonFinished.refresh(currentYear);
+                                    currentSeason = season;
+
+                                    getTeamStanding(currentSeason);
+                                    getDriversStanding(currentSeason);
+                                    getSchedule(currentYear, currentDate);
+                                    seasonFinished.refresh(currentYear);
+                                });
                             }
 
                             @Override
@@ -548,6 +545,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (seasonOver) {
+            // the results of a finished season do not change: only check the state again
+            seasonFinished.refresh(String.valueOf(LocalDate.now().getYear()));
+            swipeLayout.setRefreshing(false);
+            return;
+        }
+
         String currentYear = Integer.toString(LocalDate.now().getYear());
 
         cachedList.reset(datumDrivers);
@@ -579,15 +583,20 @@ public class MainActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            currentSeason = snapshot.child("season").getValue(String.class);
+                            String fromStatus = snapshot.child("season").getValue(String.class);
 
-                            if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                            if (fromStatus == null || fromStatus.trim().isEmpty()) {
                                 swipeLayout.setRefreshing(false);
                                 showError("Firebase error");
                                 return;
                             }
 
-                            loadMainData(currentYear);
+                            seasonResolver.resolve(fromStatus, season -> {
+                                if (isFinishing() || isDestroyed()) return;
+
+                                currentSeason = season;
+                                loadMainData(currentYear);
+                            });
                         }
 
                         @Override
@@ -891,6 +900,11 @@ public class MainActivity extends AppCompatActivity {
                                                     smth.setSeason(season);
                                                     smth.setImageUrl(mTeamCar);
                                                     smth.setTeamColor(mTeamColor);
+                                                    teamCardColors.ensure(smth, () -> {
+                                                        if (!isFinishing() && !isDestroyed()) {
+                                                            teamsAdapter.notifyDataSetChanged();
+                                                        }
+                                                    });
                                                     datumTeams.add(smth);
                                                     hideShimmer(rvTeams, sfTeams);
                                                     teamsAdapter.notifyDataSetChanged();
@@ -944,8 +958,12 @@ public class MainActivity extends AppCompatActivity {
                                                 smth.setSeason(season);
                                                 smth.setImageUrl(mTeamCar);
                                                 smth.setTeamColor(teamColor);
-
                                                 hideShimmer(rvTeams, sfTeams);
+                                                teamCardColors.ensure(smth, () -> {
+                                                    if (!isFinishing() && !isDestroyed()) {
+                                                        teamsAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
                                                 datumTeams.add(smth);
                                                 teamsAdapter.notifyDataSetChanged();
                                             }

@@ -68,17 +68,13 @@ public class driversStandingsAdapter extends RecyclerView.Adapter<driversStandin
 
         String season = datum.getSeason();
         String darkTeamColor = datum.getTeamColor();
-
-        holder.driverImage.setImageDrawable(null);
         //holder.driverTeam_logo.setImageDrawable(null);
 
-        StorageReference mDriverImage = datum.getImageUrl();
-
-        GlideApp.with(context)
-                .load(mDriverImage)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_driver)
-                .into(holder.driverImage);
+        driverPhotos.load(
+                holder.driverImage,
+                datum.getDriverCode(),
+                datum.getSeason()
+        );
 
         //String mTeamId = datum.getConstructorId();
 

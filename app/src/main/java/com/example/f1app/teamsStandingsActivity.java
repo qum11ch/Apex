@@ -459,6 +459,11 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                         String constructorId = child.child("constructorId").getValue(String.class);
                                         String constructorsName = child.child("name").getValue(String.class);
 
+                                        final String constructorColor = teamColors.put(
+                                                constructorId,
+                                                child.child("darkColor").getValue(String.class)
+                                        );
+
                                         StorageReference mTeamCar = storageRef.child("teams/" + constructorId.toLowerCase() + "_"  + currentYear + ".png");
 
                                         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
@@ -471,10 +476,10 @@ public class teamsStandingsActivity extends AppCompatActivity {
                                                     teamDrivers.add(driverFullname);
                                                 }
                                                 teamsList smth = new teamsList(constructorsName, "", "", constructorId, true);
-                                                smth.setSeason(mCurrentSeason);
+                                                smth.setSeason(currentYear);
                                                 smth.setDrivers(teamDrivers);
                                                 smth.setImageUrl(mTeamCar);
-                                                smth.setTeamColor(colorOrDefault(snapshot.child("darkColor").getValue(String.class)));
+                                                smth.setTeamColor(teamColors.hex(constructorColor));
                                                 deliverTeam(smth, expected[0], silent, token);
                                             }
                                             @Override

@@ -29,6 +29,9 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
+import android.content.SharedPreferences;
+import java.time.LocalDate;
+
 /**
  * The home screen when the season is over or there is no calendar yet.
  * - Every race of the season is concluded or canceled: one card "Season results" replaces the "upcoming race" block.
@@ -61,6 +64,8 @@ final class seasonFinishedBlock {
     private boolean futureHidden;
     private int token = 0;
 
+    private final SharedPreferences memory;
+
     seasonFinishedBlock(View card, View futureHeader, View futureLayout, View predictButton,
                         Actions actions, View... hidden) {
         this.context = card.getContext();
@@ -71,6 +76,7 @@ final class seasonFinishedBlock {
         this.futureLayout = futureLayout;
         this.predictButton = predictButton;
         this.hidden = hidden;
+        this.memory = context.getSharedPreferences("season_finished", Context.MODE_PRIVATE);
 
         metals = new int[]{
                 ContextCompat.getColor(context, R.color.podium_gold),
@@ -87,6 +93,19 @@ final class seasonFinishedBlock {
         card.findViewById(R.id.finishedLeaderboardButton).setOnClickListener(v -> actions.openLeaderboard());
         driversLabel.setOnClickListener(v -> actions.openDrivers());
         teamsLabel.setOnClickListener(v -> actions.openTeams());
+    }
+
+    private String memoryKey() {
+        return "finished|" + LocalDate.now().getYear();
+    }
+
+    /** The state of the last run, applied at once: the screen does not jump when the answer of the network comes. */
+    void applyRemembered() {
+        String shown = memory.getString(memoryKey(), null);
+
+        if (shown != null) {
+            showFinished(shown, memory.getBoolean(memoryKey() + "|fallback", false));
+        }
     }
 
     /** The lists of the home screen: the numbers, the photos and the colours are already in them. */
@@ -177,6 +196,7 @@ final class seasonFinishedBlock {
     }
 
     private void showRegular() {
+        memory.edit().remove(memoryKey()).apply();
         card.setVisibility(View.GONE);
         emptyCard.setVisibility(View.GONE);
         futureHeader.setVisibility(View.VISIBLE);
@@ -195,6 +215,7 @@ final class seasonFinishedBlock {
 
     /** No calendar and no season to look back at: the same words as the empty schedule screen. */
     private void showEmpty() {
+        memory.edit().remove(memoryKey()).apply();
         card.setVisibility(View.GONE);
         emptyCard.setVisibility(View.VISIBLE);
 
@@ -207,6 +228,7 @@ final class seasonFinishedBlock {
     }
 
     private void showFinished(String season, boolean fallback) {
+        memory.edit().putString(memoryKey(), season).putBoolean(memoryKey() + "|fallback", fallback).apply();
         emptyCard.setVisibility(View.GONE);
 
         futureHeader.setVisibility(View.GONE);
@@ -288,11 +310,12 @@ final class seasonFinishedBlock {
         }
 
         ImageView photo = view.findViewById(R.id.seasonPhoto);
-        GlideApp.with(photo)
-                .load(driver.getImageUrl())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_driver)
-                .into(photo);
+
+        driverPhotos.load(
+                photo,
+                driver.getDriverCode(),
+                driver.getSeason()
+        );
 
         view.setOnClickListener(v -> {
             Intent intent = new Intent(context, driverPageActivity.class);

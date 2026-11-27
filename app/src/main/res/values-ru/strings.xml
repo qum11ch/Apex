@@ -312,6 +312,11 @@
     <string name="bahrain_grand_prix_in_malaysia_text">Гран-при Бахрейна в Малазии</string>
     <string name="argentine_grand_prix_text">Гран-при Аргентины</string>
     <string name="san_marino_grand_prix_text">Гран-при Сан-Марино</string>
+    <string name="portuguese_grand_prix_text">Гран-при Португалии</string>
+    <string name="french_grand_prix_text">Гран-при Франции</string>
+    <string name="turkish_grand_prix_text">Гран-при Турции</string>
+    <string name="styrian_grand_prix_text">Гран-при Штирии</string>
+    <string name="russian_grand_prix_text">Гран-при России</string>
 
     <string name="barcelona_grand_prix_locality">Испания</string>
     <string name="brazilian_grand_prix_locality">Бразилия</string>
@@ -340,6 +345,11 @@
     <string name="são_paulo_grand_prix_locality">Бразилия</string>
     <string name="united_states_grand_prix_locality">США</string>
     <string name="bahrain_grand_prix_in_malaysia_locality">Малазия</string>
+    <string name="portuguese_grand_prix_locality">Португалия</string>
+    <string name="french_grand_prix_locality">Франция</string>
+    <string name="styrian_grand_prix_locality">Штирия</string>
+    <string name="russian_grand_prix_locality">Россия</string>
+    <string name="turkish_grand_prix_locality">Турция</string>
 
     <string name="times">раз</string>
 
@@ -369,6 +379,10 @@
     <string name="americas_text">Трасса Америк</string>
     <string name="madring_text">Мадринг</string>
     <string name="sepang_text">Сепанг</string>
+    <string name="portimao_text">Международный автодром Алгарве</string>
+    <string name="ricard_text">Автодром Поль Рикар</string>
+    <string name="istanbul_text">Истанбул Парк</string>
+    <string name="sochi_text">Сочи Автодром</string>
 
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>

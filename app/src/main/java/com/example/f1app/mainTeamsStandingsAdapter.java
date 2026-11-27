@@ -29,6 +29,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bumptech.glide.RequestBuilder;
+
 public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsStandingsAdapter.DataHolder>{
     Context context;
     List<teamsList> dataList;
@@ -81,12 +83,34 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         final Object carToken = new Object();
         holder.carToken = carToken;
 
-        holder.carTarget = GlideApp.with(context)
+        RequestBuilder<Bitmap> carRequest = GlideApp.with(context)
                 .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_car)
                 .load(mTeamCar)
-                .into(new CustomTarget<Bitmap>() {
+                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                .error(R.drawable.placeholder_car);
+
+        if ("2027".equals(datum.getSeason()) && mTeamCar != null) {
+            String path = mTeamCar.getPath();
+            String previousPath = path.replace("2027", "2026");
+
+            if (!path.equals(previousPath)) {
+                StorageReference previousCar = mTeamCar.getRoot().child(
+                        previousPath.startsWith("/")
+                                ? previousPath.substring(1)
+                                : previousPath
+                );
+
+                carRequest = carRequest.error(
+                        GlideApp.with(context)
+                                .asBitmap()
+                                .load(previousCar)
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                .error(R.drawable.placeholder_car)
+                );
+            }
+        }
+
+        holder.carTarget = carRequest.into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource,
                                                 @Nullable Transition<? super Bitmap> transition) {

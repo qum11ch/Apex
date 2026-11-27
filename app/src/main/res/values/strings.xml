@@ -328,6 +328,11 @@
     <string name="malaysian_grand_prix_text">Malaysian Grand Prix</string>
     <string name="argentine_grand_prix_text">Argentine Grand Prix</string>
     <string name="san_marino_grand_prix_text">San Marino Grand Prix</string>
+    <string name="portuguese_grand_prix_text">Portuguese Grand Prix</string>
+    <string name="french_grand_prix_text">French Grand Prix</string>
+    <string name="turkish_grand_prix_text">Turkish Grand Prix</string>
+    <string name="styrian_grand_prix_text">Styrian Grand Prix</string>
+    <string name="russian_grand_prix_text">Russian Grand Prix</string>
 
     <string name="abu_dhabi_grand_prix_locality">Abu Dhabi</string>
     <string name="australian_grand_prix_locality">Australia</string>
@@ -356,6 +361,12 @@
     <string name="barcelona_grand_prix_locality">Spain</string>
     <string name="brazilian_grand_prix_locality">Brazil</string>
     <string name="bahrain_grand_prix_in_malaysia_locality">Malaysia</string>
+    <string name="portuguese_grand_prix_locality">Portugal</string>
+    <string name="french_grand_prix_locality">France</string>
+    <string name="styrian_grand_prix_locality">Styria</string>
+    <string name="russian_grand_prix_locality">Russia</string>
+    <string name="turkish_grand_prix_locality">Turkey</string>
+
     <string name="last_update_text">Last update:</string>
 
     <string name="times"> </string>
@@ -386,6 +397,10 @@
     <string name="americas_text">Circuit of The Americas</string>
     <string name="madring_text">Circuit de Madring</string>
     <string name="sepang_text">Sepang International Circuit</string>
+    <string name="portimao_text">Autódromo Internacional do Algarve</string>
+    <string name="ricard_text">Circuit Paul Ricard</string>
+    <string name="istanbul_text">Istanbul Park</string>
+    <string name="sochi_text">Sochi Autodrom</string>
 
     <string name="points_text">Points</string>
     <string name="points_text_lowered">points</string>

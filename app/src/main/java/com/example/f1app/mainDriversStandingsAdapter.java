@@ -75,14 +75,11 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             holder.driver_points.setVisibility(View.VISIBLE);
         }
 
-        holder.driverImage.setImageDrawable(null);
-        StorageReference mDriverImage = datum.getImageUrl();
-
-        GlideApp.with(context)
-                .load(mDriverImage)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_driver)
-                .into(holder.driverImage);
+        driverPhotos.load(
+                holder.driverImage,
+                datum.getDriverCode(),
+                datum.getSeason()
+        );
 
 
         //String mTeamId = datum.getConstructorId();
