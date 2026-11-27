@@ -96,8 +96,6 @@ public class futureRaceScheduleFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if (!getArguments().isEmpty()){
@@ -204,6 +202,7 @@ public class futureRaceScheduleFragment extends Fragment {
             recyclerView.setAdapter(adapter);
 
             getRaceSchedule(mRaceName, currentYear);
+            loadWeekendWeather(view, currentYear);
 
             //CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
@@ -219,6 +218,18 @@ public class futureRaceScheduleFragment extends Fragment {
             currentTimer = null;
         }
         isFragmentActive = false;
+    }
+
+    private void loadWeekendWeather(View root, String season) {
+        TextView note = root.findViewById(R.id.weather_note);
+
+        weekendWeather.load(requireContext(), season, mRaceName, (byKey, text) -> {
+            if (!isAdded()) return;
+
+            adapter.setWeather(byKey);
+            note.setText(text);
+            note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
+        });
     }
 
     private void setupWeekendPredictions(Button button, String season, String roundText) {

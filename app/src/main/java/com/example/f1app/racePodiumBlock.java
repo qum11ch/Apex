@@ -16,6 +16,9 @@ final class racePodiumBlock {
     private final podiumCards cards;
     private final View facts, tilePole, tileFastest, tileClimber, tileRetired;
     private final TextView factPole, factFastest, factClimber, factRetired, subtitle;
+    private final View tileWeather;
+    private final TextView factWeather;
+    private final android.widget.ImageView factWeatherIcon;
 
     private String boundKey = "";
     private int token = 0;
@@ -34,6 +37,22 @@ final class racePodiumBlock {
         factFastest = root.findViewById(R.id.factFastest);
         factClimber = root.findViewById(R.id.factClimber);
         factRetired = root.findViewById(R.id.factRetired);
+        tileWeather = root.findViewById(R.id.tileWeather);
+        factWeather = root.findViewById(R.id.factWeather);
+        factWeatherIcon = root.findViewById(R.id.factWeatherIcon);
+    }
+
+    void setRaceWeather(sessionWeather weather) {
+        if (weather == null) {
+            tileWeather.setVisibility(View.GONE);
+            return;
+        }
+
+        factWeather.setText(weather.text);
+        factWeatherIcon.setImageResource(weather.icon);
+        factWeatherIcon.setColorFilter(Color.WHITE);
+        tileWeather.setVisibility(View.VISIBLE);
+        facts.setVisibility(View.VISIBLE);
     }
 
     void showBasics(String season, String... codes) {

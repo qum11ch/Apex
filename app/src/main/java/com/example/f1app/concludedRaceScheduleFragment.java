@@ -85,8 +85,6 @@ public class concludedRaceScheduleFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if(!getArguments().isEmpty()){
@@ -207,9 +205,27 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, true);
             recyclerView.setAdapter(adapter);
+            adapter.setOnSessionClick(sessionKey -> show_results.performClick());
+            loadWeekendWeather(view);
 
             getRaceSchedule(mRaceName, mYear);
         }
+    }
+
+    private void loadWeekendWeather(View root) {
+        TextView note = root.findViewById(R.id.weather_note);
+
+        weekendWeather.load(requireContext(), mYear, mRaceName, (byKey, text) -> {
+            if (!isAdded()) return;
+
+            adapter.setWeather(byKey);
+            note.setText(text);
+            note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
+
+            if (podium != null) {
+                podium.setRaceWeather(byKey.get("race_event"));
+            }
+        });
     }
 
     public static void saveRace(LocalDate currentDate,

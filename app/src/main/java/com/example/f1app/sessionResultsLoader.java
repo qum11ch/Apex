@@ -45,7 +45,7 @@ public final class sessionResultsLoader {
                         datum.get(i).setResultsText(
                                 jolpicaSessions.podiumText(results, codeColor)
                         );
-                        adapter.notifyItemChanged(i);
+                        adapter.notifyDataSetChanged();
                         break;
                     }
                 }

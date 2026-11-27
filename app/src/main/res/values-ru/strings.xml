@@ -1308,4 +1308,12 @@
     <string name="fact_retired">Сошли</string>
     <string name="fact_retired_value">%1$d из %2$d</string>
     <string name="race_laps_total">Кругов: %1$d</string>
+
+    <string name="session_until">до %1$s</string>
+    <string name="in_days">через %1$d д</string>
+    <string name="in_hours">через %1$d ч</string>
+    <string name="in_minutes">через %1$d мин</string>
+    <string name="weather_precip_mm">%1$s мм</string>
+    <string name="weather_dry">сухо</string>
+    <string name="fact_weather">Погода в гонке</string>
 </resources>

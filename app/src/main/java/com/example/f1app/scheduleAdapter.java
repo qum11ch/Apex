@@ -3,208 +3,340 @@ package com.example.f1app;
 import static com.example.f1app.MainActivity.getStringByName;
 
 import android.app.Activity;
-import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.TimeZone;
+import java.util.Map;
 
-public class scheduleAdapter extends RecyclerView.Adapter<scheduleAdapter.DataHolder>{
-    Activity context;
-    List<scheduleData> dataList;
-    boolean isPast;
-    private static final long HOUR = 3600*1000;
-    private static final long SPRINT_QUALI_DIFF = 44*60*1000;
-    private java.util.Map<String, weatherForecast.Hour> weather = new java.util.HashMap<>();
+/** The weekend as a timeline grouped by day: time, state, results and weather of every session. */
+public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    public scheduleAdapter(Activity context , List<scheduleData> datum, boolean isPast){
+    public interface SessionClick {
+        void onClick(String eventKey);
+    }
+
+    private static final int TYPE_DAY = 0;
+    private static final int TYPE_SESSION = 1;
+    private static final long HOUR = 3_600_000L;
+    private static final long SPRINT_QUALI = 44 * 60_000L;
+
+    private static final class Row {
+        final String day;
+        final scheduleData data;
+        final long start, end;
+
+        Row(String day) {
+            this.day = day;
+            this.data = null;
+            this.start = 0;
+            this.end = 0;
+        }
+
+        Row(scheduleData data, long start, long end) {
+            this.day = null;
+            this.data = data;
+            this.start = start;
+            this.end = end;
+        }
+
+        boolean header() {
+            return day != null;
+        }
+    }
+
+    private final Activity context;
+    private final List<scheduleData> dataList;
+    private final boolean isPast;
+    private final List<Row> rows = new ArrayList<>();
+    private Map<String, sessionWeather> weather = new HashMap<>();
+    private SessionClick click;
+
+    public scheduleAdapter(Activity context, List<scheduleData> datum, boolean isPast) {
         this.context = context;
-        dataList = datum;
+        this.dataList = datum;
         this.isPast = isPast;
+
+        registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                rebuild();
+            }
+        });
+
+        rebuild();
     }
 
-    @NonNull
-    @Override
-    public scheduleAdapter.DataHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_schedule, parent , false);
-        return new DataHolder(view);
+    public void setWeather(Map<String, sessionWeather> byKey) {
+        weather = byKey == null ? new HashMap<>() : byKey;
+        notifyDataSetChanged();
     }
 
-    @Override
-    public void onBindViewHolder(@NonNull scheduleAdapter.DataHolder holder, int position) {
-        scheduleData datum = dataList.get(position);
+    public void setOnSessionClick(SessionClick listener) {
+        click = listener;
+        notifyDataSetChanged();
+    }
 
-        String eventDate = datum.getEventDate();
-        String eventName = datum.getEventName();
+    // ---------- rows ----------
 
-        String[] eventDateData = getDate(eventDate, eventName);
+    private void rebuild() {
+        rows.clear();
 
-        holder.eventDay.setText(eventDateData[0]);
-        holder.eventTime.setText(eventDateData[1]);
-        holder.eventMonth.setText(eventDateData[2]);
+        List<Row> sessions = new ArrayList<>();
 
-        if (!isPast){
-            if (eventDateData[3].equals("yes")){
-                holder.eventName.setTextColor(ContextCompat.getColor(context, R.color.black));
-                holder.eventDay.setTextColor(ContextCompat.getColor(context, R.color.black));
-                holder.eventTime.setTextColor(ContextCompat.getColor(context, R.color.black));
-                holder.eventMonth.setTextColor(ContextCompat.getColor(context, R.color.black));
+        for (scheduleData item : dataList) {
+            Long start = startMillis(item.getEventDate());
 
-                holder.content_layout.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_silver)));
-                holder.eventMonth.setBackgroundTintList(ColorStateList.valueOf(ContextCompat.getColor(context,R.color.white)));
+            if (start != null) {
+                sessions.add(new Row(item, start, start + durationOf(item.getEventName())));
             }
         }
 
-        holder.eventName.setText(context.getString(getStringByName(eventName + "_text")));
-        bindWeather(holder, eventName, eventDateData[3].equals("yes"));
+        sessions.sort((a, b) -> Long.compare(a.start, b.start));
 
-        CharSequence results = datum.getResultsText();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("EEEE, d MMMM", Locale.getDefault());
+        LocalDate lastDay = null;
 
-        if (results != null && results.length() > 0) {
-            holder.eventResults.setText(results);
-            holder.eventResults.setVisibility(View.VISIBLE);
-        } else {
-            holder.eventResults.setVisibility(View.GONE);
+        for (Row row : sessions) {
+            ZonedDateTime time = Instant.ofEpochMilli(row.start).atZone(ZoneId.systemDefault());
+            LocalDate day = time.toLocalDate();
+
+            if (!day.equals(lastDay)) {
+                String label = time.format(format);
+                rows.add(new Row(label.substring(0, 1).toUpperCase(Locale.getDefault()) + label.substring(1)));
+                lastDay = day;
+            }
+
+            rows.add(row);
         }
+    }
+
+    private static Long startMillis(String eventDate) {
+        try {
+            return Instant.parse(eventDate.trim().replaceAll("\\s+", "T")).toEpochMilli();
+        } catch (Exception error) {
+            return null;
+        }
+    }
+
+    private static long durationOf(String key) {
+        if ("race_event".equals(key)) {
+            return 2 * HOUR;
+        }
+
+        return "sprint_quali_event".equals(key) ? SPRINT_QUALI : HOUR;
+    }
+
+    private long nextStart(long now) {
+        long best = Long.MAX_VALUE;
+
+        for (Row row : rows) {
+            if (!row.header() && row.start > now && row.start < best) {
+                best = row.start;
+            }
+        }
+
+        return best;
+    }
+
+    // ---------- adapter ----------
+
+    @Override
+    public int getItemViewType(int position) {
+        return rows.get(position).header() ? TYPE_DAY : TYPE_SESSION;
     }
 
     @Override
     public int getItemCount() {
-        return dataList.size();
+        return rows.size();
     }
 
-    public static class DataHolder extends RecyclerView.ViewHolder{
-        TextView eventDay, eventMonth, eventName, eventTime;
-        ConstraintLayout constraintLayout;
-        LinearLayout content_layout;
-        TextView eventResults;
-        TextView eventWeather;
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(context);
 
-        public DataHolder(@NonNull View itemView) {
-            super(itemView);
-            eventResults = itemView.findViewById(R.id.eventResults);
-            eventDay = itemView.findViewById(R.id.eventDay);
-            eventMonth = itemView.findViewById(R.id.eventMonth);
-            eventName = itemView.findViewById(R.id.eventName);
-            eventTime = itemView.findViewById(R.id.eventTime);
-            constraintLayout = itemView.findViewById(R.id.main_layout);
-            content_layout = itemView.findViewById(R.id.content_layout);
-            eventWeather = itemView.findViewById(R.id.eventWeather);
+        if (viewType == TYPE_DAY) {
+            return new DayHolder(inflater.inflate(R.layout.item_schedule_day, parent, false));
         }
+
+        return new SessionHolder(inflater.inflate(R.layout.item_schedule, parent, false));
     }
 
-    public void setWeather(java.util.Map<String, weatherForecast.Hour> hours) {
-        weather = hours == null ? new java.util.HashMap<>() : hours;
-        notifyDataSetChanged();
-    }
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        Row row = rows.get(position);
+        int line = color(R.color.hero_card_stroke);
 
-    private void bindWeather(DataHolder holder, String eventName, boolean finished) {
-        weatherForecast.Hour hour = finished ? null : weather.get(eventName);
-
-        if (hour == null) {
-            holder.eventWeather.setVisibility(View.GONE);
+        if (holder instanceof DayHolder) {
+            DayHolder day = (DayHolder) holder;
+            day.dayText.setText(row.day);
+            day.railTop.setBackgroundColor(line);
+            day.railBottom.setBackgroundColor(line);
+            day.railTop.setVisibility(position == 0 ? View.INVISIBLE : View.VISIBLE);
             return;
         }
 
-        int color = ContextCompat.getColor(context,
-                hour.rain >= 50 ? R.color.red : R.color.text_color_secondary);
-        int size = Math.round(18 * context.getResources().getDisplayMetrics().density);
+        SessionHolder h = (SessionHolder) holder;
+        String key = row.data.getEventName();
+        long now = System.currentTimeMillis();
+        boolean live = now >= row.start && now < row.end;
+        boolean finished = now >= row.end;
+        boolean next = !isPast && !live && !finished && row.start == nextStart(now);
+        boolean race = "race_event".equals(key);
 
-        android.graphics.drawable.Drawable icon = ContextCompat
-                .getDrawable(context, weatherCard.iconFor(hour.code)).mutate();
-        icon.setBounds(0, 0, size, size);
-        icon.setTint(color);
+        ZonedDateTime start = Instant.ofEpochMilli(row.start).atZone(ZoneId.systemDefault());
+        DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
 
-        holder.eventWeather.setText(weatherCard.summary(context, hour));
-        holder.eventWeather.setTextColor(color);
-        holder.eventWeather.setCompoundDrawablesRelative(icon, null, null, null);
-        holder.eventWeather.setCompoundDrawablePadding(
-                Math.round(6 * context.getResources().getDisplayMetrics().density));
-        holder.eventWeather.setVisibility(View.VISIBLE);
+        h.time.setText(start.format(time));
+        h.time.setTextColor(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+
+        if (race) {
+            h.duration.setVisibility(View.GONE);
+        } else {
+            h.duration.setVisibility(View.VISIBLE);
+            h.duration.setText(context.getString(R.string.session_until,
+                    Instant.ofEpochMilli(row.end).atZone(ZoneId.systemDefault()).format(time)));
+        }
+
+        h.name.setText(context.getString(getStringByName(key + "_text")));
+        h.name.setTextSize(race ? 18 : 16);
+        h.name.setTextColor(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+
+        if (live) {
+            h.status.setText(R.string.live_badge);
+            h.status.setVisibility(View.VISIBLE);
+        } else if (next) {
+            h.status.setText(inText(row.start - now));
+            h.status.setVisibility(View.VISIBLE);
+        } else {
+            h.status.setVisibility(View.GONE);
+        }
+
+        CharSequence results = row.data.getResultsText();
+        boolean hasResults = results != null && results.length() > 0;
+
+        if (hasResults) {
+            h.results.setText(results);
+            h.results.setVisibility(View.VISIBLE);
+        } else {
+            h.results.setVisibility(View.GONE);
+        }
+
+        sessionWeather w = weather.get(key);
+
+        if (w != null) {
+            h.weatherIcon.setImageResource(w.icon);
+            h.weatherIcon.setColorFilter(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+            h.temp.setText(w.temp);
+            h.detail.setText(w.detail);
+            h.detail.setTextColor(color(w.wet ? R.color.hero_accent : R.color.hero_text_secondary));
+            h.weatherBox.setVisibility(View.VISIBLE);
+        } else {
+            h.weatherBox.setVisibility(View.GONE);
+        }
+
+        h.railTop.setBackgroundColor(line);
+        h.railBottom.setBackgroundColor(line);
+        h.railTop.setVisibility(View.VISIBLE);
+        h.railBottom.setVisibility(position == rows.size() - 1 ? View.INVISIBLE : View.VISIBLE);
+        styleDot(h.dot, race, live, next, finished);
+
+        boolean clickable = isPast && click != null && hasResults;
+        h.itemView.setOnClickListener(clickable ? v -> click.onClick(key) : null);
+        h.itemView.setClickable(clickable);
     }
 
-    private String[] getDate(String ourDate, String eventName)
-    {
-        String date = ourDate.replaceAll("\\s+", "T");
-        String dayEvent;
-        String timeEvent;
-        String monthEvent;
-        String isFinished = "";
-        Instant dateInst = Instant.parse(date);
-        ZonedDateTime dateTime = dateInst.atZone(ZoneId.systemDefault());
-        Date currentDate = Calendar.getInstance().getTime();
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        DateTimeFormatter  fullDateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z", Locale.ENGLISH);
-        String newDate = dateTime.format(fullDateFormatter);
-        try
-        {
-            Date value = formatter.parse(newDate);
-            Date compareValue;
-            if (eventName.equals("race_event")){
-                compareValue = new Date(value.getTime() + 2 * HOUR);
-            }else{
-                compareValue = value;
-            }
+    private void styleDot(View dot, boolean race, boolean live, boolean next, boolean finished) {
+        int size = Math.round((race ? 14 : 10) * context.getResources().getDisplayMetrics().density);
+        ViewGroup.LayoutParams params = dot.getLayoutParams();
+        params.width = size;
+        params.height = size;
+        dot.setLayoutParams(params);
 
-            if (currentDate.after(compareValue)){
-                isFinished = "yes";
-            }else{
-                isFinished = "no";
-            }
+        GradientDrawable shape = new GradientDrawable();
+        shape.setShape(GradientDrawable.OVAL);
+        int stroke = Math.round(2 * context.getResources().getDisplayMetrics().density);
 
-            SimpleDateFormat dayFormatter = new SimpleDateFormat("dd", Locale.getDefault());
-            dayFormatter.setTimeZone(TimeZone.getDefault());
-            dayEvent = dayFormatter.format(value);
-
-            SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm", Locale.getDefault());
-            timeFormatter.setTimeZone(TimeZone.getDefault());
-            String timeEvent1 = timeFormatter.format(value);
-
-
-            Date timeEnd = new Date(value.getTime() + HOUR);
-            timeFormatter.setTimeZone(TimeZone.getDefault());
-            String timeEvent2 = timeFormatter.format(timeEnd);
-
-            Date timeEnd_sprintQ = new Date(value.getTime() + SPRINT_QUALI_DIFF);
-            timeFormatter.setTimeZone(TimeZone.getDefault());
-            String timeEvent3 = timeFormatter.format(timeEnd_sprintQ);
-
-            timeEvent = timeEvent1 + "-" + timeEvent2;
-
-            SimpleDateFormat monthFormatter = new SimpleDateFormat("MMM", Locale.getDefault());
-            monthFormatter.setTimeZone(TimeZone.getDefault());
-            monthEvent = monthFormatter.format(value);
-
-            if (eventName.equals("race_event")){
-                timeEvent = timeEvent1;
-            } else if (eventName.equals("sprint_quali_event")) {
-                timeEvent = timeEvent1 + "-" + timeEvent3;
-            }
-
+        if (finished) {
+            shape.setColor(color(R.color.hero_text_secondary));
+        } else if (live) {
+            shape.setColor(color(R.color.hero_accent));
+        } else {
+            shape.setColor(color(R.color.hero_card_bg));
+            shape.setStroke(stroke, color(next || race ? R.color.hero_accent : R.color.hero_text_secondary));
         }
-        catch (Exception e)
-        {
-            dayEvent = "00";
-            timeEvent = "00:00";
-            monthEvent = "JAN";
+
+        dot.setBackground(shape);
+    }
+
+    private String inText(long millis) {
+        long minutes = Math.max(1, millis / 60_000L);
+
+        if (minutes >= 24 * 60) {
+            return context.getString(R.string.in_days, minutes / (24 * 60));
         }
-        return new String[] {dayEvent, timeEvent, monthEvent, isFinished};
+
+        if (minutes >= 60) {
+            return context.getString(R.string.in_hours, minutes / 60);
+        }
+
+        return context.getString(R.string.in_minutes, minutes);
+    }
+
+    private int color(int res) {
+        return ContextCompat.getColor(context, res);
+    }
+
+    // ---------- holders ----------
+
+    static class DayHolder extends RecyclerView.ViewHolder {
+        final TextView dayText;
+        final View railTop, railBottom;
+
+        DayHolder(@NonNull View itemView) {
+            super(itemView);
+            dayText = itemView.findViewById(R.id.dayText);
+            railTop = itemView.findViewById(R.id.railTop);
+            railBottom = itemView.findViewById(R.id.railBottom);
+        }
+    }
+
+    static class SessionHolder extends RecyclerView.ViewHolder {
+        final TextView time, duration, name, status, results, temp, detail;
+        final ImageView weatherIcon;
+        final View weatherBox, railTop, railBottom, dot;
+
+        SessionHolder(@NonNull View itemView) {
+            super(itemView);
+            time = itemView.findViewById(R.id.eventTime);
+            duration = itemView.findViewById(R.id.eventDuration);
+            name = itemView.findViewById(R.id.eventName);
+            status = itemView.findViewById(R.id.eventStatus);
+            results = itemView.findViewById(R.id.eventResults);
+            temp = itemView.findViewById(R.id.eventTemp);
+            detail = itemView.findViewById(R.id.eventWeatherDetail);
+            weatherIcon = itemView.findViewById(R.id.eventWeatherIcon);
+            weatherBox = itemView.findViewById(R.id.weatherBox);
+            railTop = itemView.findViewById(R.id.railTop);
+            railBottom = itemView.findViewById(R.id.railBottom);
+            dot = itemView.findViewById(R.id.eventDot);
+        }
     }
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <Space
+        android:layout_width="52dp"
+        android:layout_height="1dp" />
+
+    <FrameLayout
+        android:layout_width="28dp"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/railTop"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <View
+                android:id="@+id/railBottom"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+        </LinearLayout>
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/dayText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:letterSpacing="0.04"
+        android:paddingTop="14dp"
+        android:paddingBottom="6dp"
+        android:textColor="@color/hero_text_secondary"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>

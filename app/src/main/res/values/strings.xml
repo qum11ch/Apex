@@ -1328,4 +1328,12 @@
     <string name="fact_retired">Retirements</string>
     <string name="fact_retired_value">%1$d of %2$d</string>
     <string name="race_laps_total">Laps: %1$d</string>
+
+    <string name="session_until">until %1$s</string>
+    <string name="in_days">in %1$d d</string>
+    <string name="in_hours">in %1$d h</string>
+    <string name="in_minutes">in %1$d min</string>
+    <string name="weather_precip_mm">%1$s mm</string>
+    <string name="weather_dry">dry</string>
+    <string name="fact_weather">Race weather</string>
 </resources>
