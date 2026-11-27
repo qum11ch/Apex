@@ -70,12 +70,14 @@ final class reminderSettings {
 
             Intent intent = new Intent(app, NotifyReceiver.class);
             intent.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
-            intent.putExtra("channelId", CHANNEL_ID);
+            intent.putExtra("eventKey", "quali_event");
+            intent.putExtra("start", true);
+            intent.putExtra("startMillis", System.currentTimeMillis() + leadMinutes(app) * 60_000L);
+            intent.putExtra("leadMinutes", leadMinutes(app));
+            intent.putExtra("notificationId", 9000);
             intent.putExtra("season", race[0]);
             intent.putExtra("raceName", race[1]);
             intent.putExtra("circuitId", circuits.getString(0));
-            intent.putExtra("title", app.getString(R.string.reminder_title));
-            intent.putExtra("body", "Test");
 
             PendingIntent pending = PendingIntent.getBroadcast(
                     app, 9999, intent,

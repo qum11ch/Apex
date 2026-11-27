@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private int concludedRounds = 0;
     private int totalRounds = 0;
     private predictionPromoBlock promo;
+    private ImageButton reminderButton;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -302,7 +303,7 @@ public class MainActivity extends AppCompatActivity {
         themeButton.setImageResource(themeMenu.iconFor(themeStore.get(this)));
         themeButton.setOnClickListener(v -> themeMenu.show(this, v));
 
-        ImageButton reminderButton = findViewById(R.id.reminderButton);
+        reminderButton = findViewById(R.id.reminderButton);
         reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f);
         reminderButton.setOnClickListener(v ->
                 reminderSettingsDialog.show(this, () ->
@@ -477,6 +478,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (promo != null) {
             promo.refresh();
+        }
+
+        if (reminderButton != null) {
+            reminderButton.setAlpha(reminderSettings.enabled(this) ? 1f : 0.4f);
         }
     }
 

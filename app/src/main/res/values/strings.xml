@@ -410,10 +410,20 @@
     <string name="delete_race_text">Are you sure you want to delete this race from saved races list?</string>
     <string name="race_finished_text">Finished</string>
     <string name="race_canceled_text">Canceled</string>
-    <plurals name="notify_start_in">
-        <item quantity="one">starts in %d minute</item>
-        <item quantity="other">starts in %d minutes</item>
+
+    <plurals name="notify_start_title">
+        <item quantity="one">%1$s · in %2$d minute</item>
+        <item quantity="other">%1$s · in %2$d minutes</item>
     </plurals>
+    <string name="notify_start_subtitle">%1$s · starts at %2$s</string>
+    <string name="notify_end_title">Finished: %1$s</string>
+    <string name="notify_end_subtitle">%1$s · results in the app</string>
+    <string name="notify_action_predictions">Predictions (%1$d)</string>
+    <string name="notify_action_disable">Turn off</string>
+    <string name="notify_channel_start">Before a session</string>
+    <string name="notify_channel_start_desc">Reminders shortly before a session starts</string>
+    <string name="notify_channel_end">After a session</string>
+    <string name="notify_channel_end_desc">A note when a session has finished</string>
 
     <plurals name="reminder_option">
         <item quantity="one">%d minute before start</item>
@@ -423,7 +433,6 @@
     <string name="reminder_title">Session reminders</string>
     <string name="reminder_switch">Send reminders</string>
     <string name="reminder_lead_label">Remind me</string>
-    <string name="notify_end_text">is ended</string>
     <string name="past_season_result">Race Results</string>
     <string name="last_entry_text">Last Entry</string>
     <string name="past_season_drivers">Drivers Standings</string>

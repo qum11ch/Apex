@@ -387,12 +387,22 @@
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>
     <string name="race_canceled_text">Отменено</string>
-    <plurals name="notify_start_in">
-        <item quantity="one">начнётся через %d минуту!</item>
-        <item quantity="few">начнётся через %d минуты!</item>
-        <item quantity="many">начнётся через %d минут!</item>
-        <item quantity="other">начнётся через %d минуты!</item>
+
+    <plurals name="notify_start_title">
+        <item quantity="one">%1$s · через %2$d минуту</item>
+        <item quantity="few">%1$s · через %2$d минуты</item>
+        <item quantity="many">%1$s · через %2$d минут</item>
+        <item quantity="other">%1$s · через %2$d минуты</item>
     </plurals>
+    <string name="notify_start_subtitle">%1$s · начало в %2$s</string>
+    <string name="notify_end_title">Завершено: %1$s</string>
+    <string name="notify_end_subtitle">%1$s · результаты в приложении</string>
+    <string name="notify_action_predictions">Прогнозы (%1$d)</string>
+    <string name="notify_action_disable">Отключить</string>
+    <string name="notify_channel_start">Перед стартом сессии</string>
+    <string name="notify_channel_start_desc">Напоминания незадолго до начала сессии</string>
+    <string name="notify_channel_end">После сессии</string>
+    <string name="notify_channel_end_desc">Уведомление о завершении сессии</string>
 
     <plurals name="reminder_option">
         <item quantity="one">за %d минуту до старта</item>
@@ -404,7 +414,6 @@
     <string name="reminder_title">Напоминания о сессиях</string>
     <string name="reminder_switch">Присылать напоминания</string>
     <string name="reminder_lead_label">Напоминать</string>
-    <string name="notify_end_text"> закончилась!</string>
     <string name="past_season_result">Результаты Гран-при в</string>
     <string name="last_entry_text">Последнее участие в Гран-при</string>
     <string name="past_season_drivers">Личный зачет в</string>
