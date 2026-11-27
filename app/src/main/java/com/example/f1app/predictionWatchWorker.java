@@ -34,6 +34,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import android.view.View;
+import android.widget.RemoteViews;
+
 public class predictionWatchWorker extends Worker {
     static final String KEY_SEEN = "seen_open_predictions";
     private static final String CHANNEL_ID = "prediction_open";
@@ -134,38 +137,49 @@ public class predictionWatchWorker extends Worker {
         manager.createNotificationChannel(channel);
 
         predictionListItem first = fresh.get(0);
-        String title;
-        String text;
-        StringBuilder big = new StringBuilder();
+        String title = context.getString(fresh.size() == 1
+                ? R.string.notify_pred_title_one : R.string.notify_pred_title_many);
+        String count = String.valueOf(fresh.size());
 
-        if (fresh.size() == 1) {
-            title = context.getString(R.string.notify_pred_title_one);
-            text = first.getLocalizedTitle();
-            big.append(first.getLocalizedTitle());
+        RemoteViews collapsed = new RemoteViews(context.getPackageName(),
+                R.layout.notification_predictions_collapsed);
+        collapsed.setTextViewText(R.id.notifBadge, count);
+        collapsed.setTextViewText(R.id.notifTitle, title);
+        collapsed.setTextViewText(R.id.notifLine, first.getLocalizedTitle());
 
-            String description = first.getLocalizedDescription();
+        RemoteViews expanded = new RemoteViews(context.getPackageName(),
+                R.layout.notification_predictions_expanded);
+        expanded.setTextViewText(R.id.notifBadge, count);
+        expanded.setTextViewText(R.id.notifTitle, title);
+        expanded.removeAllViews(R.id.notifRows);
 
-            if (description != null && !description.isEmpty()) {
-                big.append("\n").append(description);
-            }
-        } else {
-            title = context.getString(R.string.notify_pred_title_many, fresh.size());
-            text = context.getString(R.string.notify_pred_text_many,
-                    first.getLocalizedTitle(), fresh.size() - 1);
+        int shown = Math.min(fresh.size(), 3);
 
-            for (int i = 0; i < Math.min(fresh.size(), 5); i++) {
-                if (i > 0) {
-                    big.append("\n");
-                }
+        for (int i = 0; i < shown; i++) {
+            predictionListItem item = fresh.get(i);
+            RemoteViews row = new RemoteViews(context.getPackageName(),
+                    R.layout.notification_prediction_row);
 
-                big.append(fresh.get(i).getLocalizedTitle());
-            }
+            row.setTextViewText(R.id.rowTitle, item.getLocalizedTitle());
+            row.setTextViewText(R.id.rowDeadline, context.getString(R.string.notify_pred_row_deadline,
+                    DateUtils.formatDateTime(context, item.getDeadline(),
+                            DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME
+                                    | DateUtils.FORMAT_ABBREV_MONTH)));
+
+            String points = points(item.getPoints());
+            row.setTextViewText(R.id.rowPoints, points);
+            row.setViewVisibility(R.id.rowPoints, points.isEmpty() ? View.GONE : View.VISIBLE);
+
+            expanded.addView(R.id.notifRows, row);
         }
 
-        big.append("\n").append(context.getString(R.string.notify_pred_deadline,
-                DateUtils.formatDateTime(context, first.getDeadline(),
-                        DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME
-                                | DateUtils.FORMAT_ABBREV_MONTH)));
+        if (fresh.size() > shown) {
+            expanded.setTextViewText(R.id.notifMore,
+                    context.getString(R.string.notify_pred_more, fresh.size() - shown));
+            expanded.setViewVisibility(R.id.notifMore, View.VISIBLE);
+        } else {
+            expanded.setViewVisibility(R.id.notifMore, View.GONE);
+        }
 
         PendingIntent open = TaskStackBuilder.create(context)
                 .addNextIntent(new Intent(context, MainActivity.class))
@@ -177,11 +191,21 @@ public class predictionWatchWorker extends Worker {
                 .setSmallIcon(R.drawable.ic_stat_session)
                 .setColor(ContextCompat.getColor(context, R.color.hero_accent))
                 .setContentTitle(title)
-                .setContentText(text)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(big.toString()))
+                .setContentText(first.getLocalizedTitle())
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(collapsed)
+                .setCustomBigContentView(expanded)
                 .setContentIntent(open)
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_RECOMMENDATION)
                 .build());
+    }
+
+    private static String points(Double value) {
+        if (value == null || value <= 0) {
+            return "";
+        }
+
+        return value == Math.rint(value) ? "+" + value.longValue() : "+" + value;
     }
 }
