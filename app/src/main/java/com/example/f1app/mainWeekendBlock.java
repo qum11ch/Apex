@@ -408,6 +408,9 @@ final class mainWeekendBlock {
             weatherMessage.setText(note);
             weatherMessage.setVisibility(View.VISIBLE);
             weatherNote.setVisibility(View.GONE);
+
+            weatherBody.setOnClickListener(null);
+            weatherBody.setClickable(false);
             return;
         }
 
@@ -436,11 +439,20 @@ final class mainWeekendBlock {
                 weatherHumidity.setText(context.getString(R.string.weather_humidity, (int) Math.round(sw.humidity)));
             }
 
+            final sessionWeather shown = sw;
+            final String shownKey = selectedKey;
+            weatherBody.setClickable(true);
+            weatherBody.setOnClickListener(v ->
+                    weatherSheet.show(context, sessionName(shownKey), shown));
+
             return;
         }
 
         // the weekend is further than the forecast reaches: the weather now at the circuit
         weatherCaption.setText(R.string.weather_title_now);
+        weatherBody.setOnClickListener(null);
+        weatherBody.setClickable(false);
+
         weatherIcon.setImageResource(weatherCard.iconFor(current.code));
         weatherIcon.setColorFilter(color(R.color.hero_text));
         weatherTemp.setText(weatherCard.degrees(current.temp));

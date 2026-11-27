@@ -200,7 +200,7 @@ public class futureRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, false);
             recyclerView.setAdapter(adapter);
-            adapter.setOnWeatherClick((key, weather) -> weatherDetailsSheet.show(
+            adapter.setOnWeatherClick((key, weather) -> weatherSheet.show(
                     requireContext(), getString(getStringByName(key + "_text")), weather));
 
             getRaceSchedule(mRaceName, currentYear);
