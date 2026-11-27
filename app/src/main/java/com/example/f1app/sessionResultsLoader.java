@@ -40,7 +40,7 @@ public final class sessionResultsLoader {
 
                 for (int i = 0; i < datum.size(); i++) {
                     if (key.equals(datum.get(i).getEventName())) {
-                        int codeColor = ContextCompat.getColor(context, R.color.text_color_main);
+                        int codeColor = ContextCompat.getColor(fragment.requireContext(), R.color.hero_text);
 
                         datum.get(i).setResultsText(
                                 jolpicaSessions.podiumText(results, codeColor)

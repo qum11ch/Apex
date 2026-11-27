@@ -160,6 +160,87 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/predictionPromoCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/promoCaption"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:letterSpacing="0.06"
+                            android:textAllCaps="true"
+                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                            android:textColor="@color/hero_accent"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/promoTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                            android:textColor="@color/hero_text"
+                            android:textSize="17sp" />
+                        <TextView
+                            android:id="@+id/promoTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:includeFontPadding="false"
+                            android:maxLines="1"
+                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                            android:textColor="@color/hero_accent"
+                            android:textSize="24sp"
+                            android:visibility="gone"
+                            app:autoSizeMaxTextSize="24sp"
+                            app:autoSizeMinTextSize="15sp"
+                            app:autoSizeStepGranularity="1sp"
+                            app:autoSizeTextType="uniform" />
+                        <TextView
+                            android:id="@+id/promoSubtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:ellipsize="end"
+                            android:maxLines="2"
+                            android:textColor="@color/hero_text_secondary"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/promoCta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:background="@drawable/bg_round_pill"
+                        android:paddingStart="12dp"
+                        android:paddingTop="6dp"
+                        android:paddingEnd="12dp"
+                        android:paddingBottom="6dp"
+                        android:textColor="@color/hero_accent"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+
+                <LinearLayout
                     android:id="@+id/seasonEmptyCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -335,7 +416,6 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
-                    android:gravity="end"
                     android:text="@string/last_concluded_race" />
 
                 <LinearLayout
@@ -410,7 +490,7 @@
 
                 <Button
                     android:id="@+id/allDriversButton"
-                    style="@style/Widget.Apex.SecondaryButton"
+                    style="@style/Widget.Apex.ThirdButton"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -426,8 +506,7 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
-                    android:text="@string/top_3_teams"
-                    android:textAlignment="textEnd" />
+                    android:text="@string/top_3_teams"/>
 
                 <LinearLayout
                     android:id="@+id/top_teams"
