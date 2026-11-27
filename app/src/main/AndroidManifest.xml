@@ -23,17 +23,14 @@
         tools:targetApi="34" >
         <service
             android:name=".BootService"
-            android:permission="android.permission.BIND_JOB_SERVICE"
-            android:exported="true"/>
+            android:exported="false" />
 
-        <receiver android:name=".NotifyReceiver"
-            android:permission="TAKE_THIS_NOTIFICATION_RIGHT_NOW"
-            android:enabled="true"
-            android:exported="true"
+        <receiver
+            android:name=".NotifyReceiver"
+            android:exported="false"
             android:process=":remote">
             <intent-filter>
-                <action android:name="android.intent.action.TAKE_THIS_NOTIFICATION_RIGHT_NOW" />
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
