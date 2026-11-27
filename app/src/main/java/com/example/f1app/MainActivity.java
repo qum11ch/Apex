@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
     private Button allDriversButton;
     private int progressDelayMs = 500;
     private mainFutureRaceAdapter futureRaceAdapter;
+    private seasonFinishedBlock seasonFinished;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -331,6 +332,27 @@ public class MainActivity extends AppCompatActivity {
 
         Button predict = findViewById(R.id.predict);
 
+        seasonFinished = new seasonFinishedBlock(
+                findViewById(R.id.seasonFinishedCard),
+                findViewById(R.id.futureRace_header),
+                futureLayout,
+                findViewById(R.id.predict),
+                new seasonFinishedBlock.Actions() {
+                    @Override
+                    public void openDrivers() {
+                        startActivity_getSeason(driversStandingsActivity.class);
+                    }
+
+                    @Override
+                    public void openTeams() {
+                        startActivity_getSeason(teamsStandingsActivity.class);
+                    }
+                },
+                findViewById(R.id.top_drivers_header),
+                findViewById(R.id.top_drivers),
+                findViewById(R.id.top_teams_header),
+                findViewById(R.id.top_teams));
+
         DatabaseReference rootRef = database.getReference();
 
         rootRef.child("status")
@@ -354,6 +376,7 @@ public class MainActivity extends AppCompatActivity {
                                 getTeamStanding(currentSeason);
                                 getDriversStanding(currentSeason);
                                 getSchedule(currentYear, currentDate);
+                                seasonFinished.refresh(currentYear);
                             }
 
                             @Override
@@ -539,6 +562,7 @@ public class MainActivity extends AppCompatActivity {
         getTeamStanding(currentSeason);
         getDriversStanding(currentSeason);
         getSchedule(currentYear, LocalDate.now());
+        seasonFinished.refresh(currentYear);
 
         swipeLayout.setRefreshing(false);
     }

@@ -1335,4 +1335,9 @@
     <string name="info_forecast">Прогноз на гонку</string>
     <string name="info_winner_prev">Победитель %1$s</string>
     <string name="info_laps">Кругов</string>
+
+    <string name="finished_caption">Сезон %1$s завершён</string>
+    <string name="finished_title">Итоги сезона</string>
+    <string name="finished_drivers">Пилоты</string>
+    <string name="finished_teams">Команды</string>
 </resources>

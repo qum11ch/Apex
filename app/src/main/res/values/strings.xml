@@ -1355,4 +1355,9 @@
     <string name="info_forecast">Race forecast</string>
     <string name="info_winner_prev">%1$s winner</string>
     <string name="info_laps">Laps</string>
+
+    <string name="finished_caption">Season %1$s is over</string>
+    <string name="finished_title">Season results</string>
+    <string name="finished_drivers">Drivers</string>
+    <string name="finished_teams">Teams</string>
 </resources>
