@@ -40,40 +40,78 @@
 
         <activity
             android:name=".accountSettingsActivity"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:name=".resetPageActivity"
-            android:windowSoftInputMode="adjustPan"/>
-        <activity android:name=".concludedRaceActivity" />
-        <activity android:name=".futureRaceActivity"/>
-        <activity android:name=".scheduleActivity" />
-        <activity android:name=".driversStandingsActivity" />
-        <activity android:name=".teamsStandingsActivity" />
+            android:windowSoftInputMode="adjustPan"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".concludedRaceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".futureRaceActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".scheduleActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".driversStandingsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".teamsStandingsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity android:name=".teamPageActivity"
-            android:theme="@style/AppTheme.CollapsingToolbar"/>
+            android:theme="@style/AppTheme.CollapsingToolbar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity android:name=".driverPageActivity"
-            android:theme="@style/AppTheme.CollapsingToolbar"/>
-        <activity android:name=".raceResultsActivity"/>
-        <activity android:name=".pastSeasonDriversStandingsActivity"/>
-        <activity android:name=".pastSeasonTeamsStandingsActivity"/>
-        <activity android:name=".pastSeasonScheduleActivity"/>
+            android:theme="@style/AppTheme.CollapsingToolbar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".raceResultsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".pastSeasonDriversStandingsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".pastSeasonTeamsStandingsActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".pastSeasonScheduleActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:name=".logInPageActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:name=".registerPageActivity"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity android:name=".accountPageActivity"
-            android:theme="@style/AppTheme.CollapsingToolbar"/>
-        <activity android:name=".savedRacesActivity" />
+            android:theme="@style/AppTheme.CollapsingToolbar"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".savedRacesActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity android:name=".splashNotificationActivity"
             android:noHistory="true"
-            android:exported="true"/>
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:theme="@style/RemoveAppSplashTheme"
             android:name=".splashActivity"
             android:exported="true"
-            android:noHistory="true">
+            android:noHistory="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -81,32 +119,66 @@
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
-        <activity android:name=".neuroPredictionActivity"/>
-        <activity android:name=".neuroPredictionResultActivity"/>
-        <activity android:name=".winnersWDCActivity"/>
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".neuroPredictionActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".neuroPredictionResultActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity android:name=".winnersWDCActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:name=".userPredictionsActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
         <activity
             android:name=".predictionActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
 
         <activity
             android:name=".predictionFormActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
 
         <activity
             android:name=".leaderboardActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
 
         <activity
             android:name=".publicProfileActivity"
-            android:exported="false" />
-        <activity android:name=".awardsCollectionActivity" android:exported="false" />
-        <activity android:name=".displayedAwardPickerActivity" android:exported="false" />
-        <activity android:name=".allDriversActivity" android:exported="false" />
-        <activity android:name=".compareActivity" android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity
+            android:name=".awardsCollectionActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity
+            android:name=".displayedAwardPickerActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity
+            android:name=".allDriversActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
+        <activity
+            android:name=".compareActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity,DiscouragedApi"/>
     </application>
 
 </manifest>
