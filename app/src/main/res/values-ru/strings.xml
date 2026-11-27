@@ -1409,4 +1409,10 @@
     <string name="promo_time_d">%1$d д</string>
     <string name="promo_time_h">%1$d ч</string>
     <string name="promo_time_m">%1$d мин</string>
+
+    <string name="announcement_close">Закрыть</string>
+    <string name="announcement_cta_predictions">Прогнозы</string>
+    <string name="announcement_cta_leaderboard">Рейтинг</string>
+    <string name="announcement_cta_update">Обновить</string>
+    <string name="announcement_cta_link">Открыть</string>
 </resources>

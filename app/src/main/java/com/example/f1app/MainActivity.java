@@ -105,6 +105,7 @@ public class MainActivity extends AppCompatActivity {
     private int concludedRounds = 0;
     private int totalRounds = 0;
     private predictionPromoBlock promo;
+    private announcementBlock announcements;
     private ImageButton reminderButton;
 
     private com.google.firebase.database.Query scheduleQuery;
@@ -209,7 +210,10 @@ public class MainActivity extends AppCompatActivity {
         datumPast = new cachedList<>("main_past");
         datumFuture = new cachedList<>("main_future");
 
-        promo = new predictionPromoBlock(findViewById(R.id.predictionPromoCard), () -> currentSeason);
+        promo = new predictionPromoBlock(
+                findViewById(R.id.predictionPromoCard), () -> currentSeason);
+        announcements = new announcementBlock(
+                findViewById(R.id.announcementCard), () -> currentSeason);
 
         driversAdapter = new mainDriversStandingsAdapter(this, datumDrivers);
         rvDrivers.setAdapter(driversAdapter);
@@ -478,6 +482,10 @@ public class MainActivity extends AppCompatActivity {
 
         if (promo != null) {
             promo.refresh();
+        }
+
+        if (announcements != null) {
+            announcements.refresh();
         }
 
         if (reminderButton != null) {
@@ -1044,6 +1052,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         if (promo != null) {
             promo.stop();
+        }
+
+        if (announcements != null) {
+            announcements.stop();
         }
 
         super.onDestroy();

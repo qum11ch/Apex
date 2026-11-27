@@ -79,6 +79,77 @@
                 android:orientation="vertical"
                 android:paddingBottom="45dp">
 
+                <LinearLayout
+                    android:id="@+id/announcementCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="16dp"
+                    android:paddingTop="14dp"
+                    android:paddingEnd="6dp"
+                    android:paddingBottom="14dp"
+                    android:visibility="gone">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/announcementTitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                            android:textColor="@color/hero_text"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/announcementBody"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:ellipsize="end"
+                            android:maxLines="4"
+                            android:textColor="@color/hero_text_secondary"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/announcementCta"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:background="@drawable/bg_round_pill"
+                            android:paddingStart="12dp"
+                            android:paddingTop="6dp"
+                            android:paddingEnd="12dp"
+                            android:paddingBottom="6dp"
+                            android:textColor="@color/hero_accent"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:visibility="gone" />
+                    </LinearLayout>
+
+                    <ImageButton
+                        android:id="@+id/announcementClose"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="top"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="@string/announcement_close"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_close_small"
+                        app:tint="@color/hero_text_secondary" />
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/progress_header"
                     style="@style/Widget.Apex.SectionHeader"

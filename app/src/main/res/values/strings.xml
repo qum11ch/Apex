@@ -1426,4 +1426,10 @@
     <string name="promo_time_d">%1$d d</string>
     <string name="promo_time_h">%1$d h</string>
     <string name="promo_time_m">%1$d min</string>
+
+    <string name="announcement_close">Close</string>
+    <string name="announcement_cta_predictions">Predictions</string>
+    <string name="announcement_cta_leaderboard">Leaderboard</string>
+    <string name="announcement_cta_update">Update</string>
+    <string name="announcement_cta_link">Open</string>
 </resources>
