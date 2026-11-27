@@ -45,6 +45,10 @@ public class concludedRaceFragment extends Fragment {
     private concludedRacesAdapter concludedAdapter;
     private pastSeasonsRacesAdapter pastSeasonAdapter;
     private String adapterType;
+    private int loadGeneration = 0;
+
+    private final java.util.Set<Integer> finishedRequests =
+            new java.util.HashSet<>();
 
     public concludedRaceFragment() {
     }
@@ -68,6 +72,8 @@ public class concludedRaceFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        final int generation = ++loadGeneration;
+        finishedRequests.clear();
         setupFooterClearance(view);
 
         LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
@@ -127,80 +133,181 @@ public class concludedRaceFragment extends Fragment {
                 return;
             }
 
-            for (int i = 0; i < concludedRaceRoundNumber.size(); i++) {
-                String raceRound = concludedRaceRoundNumber.get(i);
+            DatabaseReference rootRef =
+                    FirebaseDatabase.getInstance().getReference();
 
-                DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-                rootRef.child("schedule/season/" + season)
+            for (int i = 0; i < concludedRaceRoundNumber.size(); i++) {
+                final int requestId = i;
+                final String raceRound = concludedRaceRoundNumber.get(i);
+                final int round;
+
+                try {
+                    round = Integer.parseInt(raceRound);
+                } catch (RuntimeException error) {
+                    Log.w("concludedRaceFragment",
+                            "Invalid round: " + raceRound, error);
+
+                    finishRequest(generation, requestId);
+                    continue;
+                }
+
+                rootRef.child("schedule")
+                        .child("season")
+                        .child(season)
                         .orderByChild("round")
-                        .equalTo(Integer.parseInt(raceRound))
+                        .equalTo(round)
+                        .limitToFirst(1)
                         .addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
-                            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                                for (DataSnapshot ds : snapshot.getChildren()) {
-                                    String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
-                                    Boolean isCanceled = ds.child("Canceled").getValue(Boolean.class);
-                                    boolean canceled = Boolean.TRUE.equals(isCanceled);
+                            public void onDataChange(
+                                    @NonNull DataSnapshot snapshot
+                            ) {
+                                if (!isLoadActive(generation)) {
+                                    return;
+                                }
 
-                                    boolean hasWinner = winnerCode != null
-                                            && !winnerCode.trim().isEmpty()
-                                            && !"N/A".equalsIgnoreCase(winnerCode.trim());
-                                    if (hasWinner || canceled) {
-                                        String raceName = ds.child("Circuit/raceName").getValue(String.class);
-                                        String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
-                                        String dateEnd = ds.child("raceDate").getValue(String.class);
-                                        String circuitId = ds.child("Circuit/circuitId").getValue(String.class);
-                                        String secondCode = ds.child("RaceResults/raceSecondCode").getValue(String.class);
-                                        String thirdCode = ds.child("RaceResults/raceThirdCode").getValue(String.class);
+                                if (!snapshot.hasChildren()) {
+                                    finishRequest(generation, requestId);
+                                    return;
+                                }
 
-                                        rootRef.child("circuits/" + circuitId)
-                                                .addListenerForSingleValueEvent(new ValueEventListener() {
+                                DataSnapshot race =
+                                        snapshot.getChildren().iterator().next();
+
+                                final String winnerCode = race
+                                        .child("RaceResults/raceWinnerCode")
+                                        .getValue(String.class);
+
+                                final boolean canceled = Boolean.TRUE.equals(
+                                        race.child("Canceled")
+                                                .getValue(Boolean.class));
+
+                                boolean hasWinner = winnerCode != null
+                                        && !winnerCode.trim().isEmpty()
+                                        && !"N/A".equalsIgnoreCase(
+                                        winnerCode.trim());
+
+                                if (!hasWinner && !canceled) {
+                                    finishRequest(generation, requestId);
+                                    return;
+                                }
+
+                                final String raceName = race
+                                        .child("Circuit/raceName")
+                                        .getValue(String.class);
+
+                                final String dateStart = race
+                                        .child("FirstPractice/firstPracticeDate")
+                                        .getValue(String.class);
+
+                                final String dateEnd = race
+                                        .child("raceDate")
+                                        .getValue(String.class);
+
+                                final String circuitId = race
+                                        .child("Circuit/circuitId")
+                                        .getValue(String.class);
+
+                                final String secondCode = race
+                                        .child("RaceResults/raceSecondCode")
+                                        .getValue(String.class);
+
+                                final String thirdCode = race
+                                        .child("RaceResults/raceThirdCode")
+                                        .getValue(String.class);
+
+                                if (circuitId == null
+                                        || circuitId.trim().isEmpty()) {
+                                    Log.w("concludedRaceFragment",
+                                            "Missing circuit for round "
+                                                    + raceRound);
+
+                                    finishRequest(generation, requestId);
+                                    return;
+                                }
+
+                                rootRef.child("circuits")
+                                        .child(circuitId)
+                                        .addListenerForSingleValueEvent(
+                                                new ValueEventListener() {
                                                     @Override
-                                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                        String circuitName = dataSnapshot.child("circuitName").getValue(String.class);
-                                                        String raceCountry = dataSnapshot.child("country").getValue(String.class);
-                                                        String raceLocation = dataSnapshot.child("location").getValue(String.class);
-
-                                                        concludedRacesData concludedRace = new concludedRacesData(
-                                                                dateStart, dateEnd, raceName, raceRound,
-                                                                circuitName, raceCountry, raceLocation,
-                                                                winnerCode, secondCode, thirdCode, season
-                                                        );
-                                                        concludedRace.setCanceled(canceled);
-
-                                                        datum.add(concludedRace);
-                                                        if (adapterType.equals("schedule")) {
-                                                            concludedAdapter.notifyDataSetChanged();
-                                                        } else {
-                                                            pastSeasonAdapter.notifyDataSetChanged();
+                                                    public void onDataChange(
+                                                            @NonNull DataSnapshot circuit
+                                                    ) {
+                                                        if (!isLoadActive(generation)) {
+                                                            return;
                                                         }
-                                                        loadedItemsCount++;
-                                                        if (loadedItemsCount >= totalItemsToLoad) {
-                                                            hideShimmer();
+
+                                                        if (!circuit.exists()) {
+                                                            finishRequest(
+                                                                    generation,
+                                                                    requestId);
+                                                            return;
                                                         }
+
+                                                        String circuitName = circuit
+                                                                .child("circuitName")
+                                                                .getValue(String.class);
+
+                                                        String country = circuit
+                                                                .child("country")
+                                                                .getValue(String.class);
+
+                                                        String location = circuit
+                                                                .child("location")
+                                                                .getValue(String.class);
+
+                                                        concludedRacesData result =
+                                                                new concludedRacesData(
+                                                                        dateStart,
+                                                                        dateEnd,
+                                                                        raceName,
+                                                                        raceRound,
+                                                                        circuitName,
+                                                                        country,
+                                                                        location,
+                                                                        winnerCode,
+                                                                        secondCode,
+                                                                        thirdCode,
+                                                                        season);
+
+                                                        result.setCanceled(canceled);
+                                                        datum.add(result);
+
+                                                        RecyclerView.Adapter<?> adapter =
+                                                                recyclerView.getAdapter();
+
+                                                        if (adapter != null) {
+                                                            adapter.notifyDataSetChanged();
+                                                        }
+
+                                                        finishRequest(
+                                                                generation, requestId);
                                                     }
 
                                                     @Override
-                                                    public void onCancelled(@NonNull DatabaseError error) {
-                                                        Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
+                                                    public void onCancelled(
+                                                            @NonNull DatabaseError error
+                                                    ) {
+                                                        Log.w("concludedRaceFragment",
+                                                                "Circuit load failed",
+                                                                error.toException());
+
+                                                        finishRequest(
+                                                                generation, requestId);
                                                     }
                                                 });
-                                    } else {
-                                        loadedItemsCount++;
-                                        if (loadedItemsCount >= totalItemsToLoad) {
-                                            hideShimmer();
-                                        }
-                                    }
-                                }
                             }
 
                             @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-                                Log.e("concludedRaceFragmentFirebaseError", error.getMessage());
-                                loadedItemsCount++;
-                                if (loadedItemsCount >= totalItemsToLoad) {
-                                    hideShimmer();
-                                }
+                            public void onCancelled(
+                                    @NonNull DatabaseError error
+                            ) {
+                                Log.w("concludedRaceFragment",
+                                        "Round load failed",
+                                        error.toException());
+
+                                finishRequest(generation, requestId);
                             }
                         });
             }
@@ -214,6 +321,27 @@ public class concludedRaceFragment extends Fragment {
                 startActivity(intent);
                 requireActivity().overridePendingTransition(0, 0);
             });
+        }
+    }
+
+    private boolean isLoadActive(int generation) {
+        return generation == loadGeneration
+                && isAdded()
+                && getView() != null
+                && recyclerView != null
+                && shimmerFrameLayout != null;
+    }
+
+    private void finishRequest(int generation, int requestId) {
+        if (!isLoadActive(generation)
+                || !finishedRequests.add(requestId)) {
+            return;
+        }
+
+        loadedItemsCount++;
+
+        if (loadedItemsCount >= totalItemsToLoad) {
+            hideShimmer();
         }
     }
 
@@ -282,28 +410,54 @@ public class concludedRaceFragment extends Fragment {
     }
 
     private void hideShimmer() {
-        cachedList.finish(datum); // every round has answered
+        final int generation = loadGeneration;
+
+        if (!isLoadActive(generation)) {
+            return;
+        }
+
+        cachedList.finish(datum);
 
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
         }
 
         hideShimmerRunnable = () -> {
-            if (isAdded()) {
-                recyclerView.setVisibility(View.VISIBLE);
-                shimmerFrameLayout.setVisibility(View.GONE);
-                shimmerFrameLayout.stopShimmer();
+            if (!isLoadActive(generation)) {
+                return;
             }
+
+            recyclerView.setVisibility(View.VISIBLE);
+            shimmerFrameLayout.stopShimmer();
+            shimmerFrameLayout.setVisibility(View.GONE);
         };
 
         handler.postDelayed(hideShimmerRunnable, 500);
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        ++loadGeneration;
+
         if (hideShimmerRunnable != null) {
             handler.removeCallbacks(hideShimmerRunnable);
+            hideShimmerRunnable = null;
         }
+
+        if (shimmerFrameLayout != null) {
+            shimmerFrameLayout.stopShimmer();
+        }
+
+        if (recyclerView != null) {
+            recyclerView.setAdapter(null);
+        }
+
+        concludedAdapter = null;
+        pastSeasonAdapter = null;
+        recyclerView = null;
+        shimmerFrameLayout = null;
+        finishedRequests.clear();
+
+        super.onDestroyView();
     }
 }

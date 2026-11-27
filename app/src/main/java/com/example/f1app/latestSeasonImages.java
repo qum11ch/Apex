@@ -14,6 +14,17 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.ContextWrapper;
+
+import androidx.lifecycle.Lifecycle;
+import androidx.lifecycle.LifecycleEventObserver;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.ViewTreeLifecycleOwner;
+
+import java.lang.ref.WeakReference;
+
 final class latestSeasonImages {
 
     private static final String TAG = "LatestSeasonImages";
@@ -77,26 +88,93 @@ final class latestSeasonImages {
         }
     }
 
+    private static boolean isScreenAlive(ImageView image) {
+        Context context = image.getContext();
+
+        while (context instanceof ContextWrapper) {
+            if (context instanceof Activity) {
+                Activity activity = (Activity) context;
+                return !activity.isFinishing() && !activity.isDestroyed();
+            }
+
+            Context base = ((ContextWrapper) context).getBaseContext();
+
+            if (base == context) {
+                break;
+            }
+
+            context = base;
+        }
+
+        return true;
+    }
+
     private static void load(
-            ImageView target,
+            ImageView image,
             String folder,
             List<String> ids,
             int latestYear,
             int placeholder
     ) {
-        Object token = new Object();
-        target.setTag(R.id.latest_season_image_token, token);
-
-        if (ids.isEmpty() || latestYear <= 0) {
-            GlideApp.with(target).clear(target);
-            target.setImageResource(placeholder);
+        if (!isScreenAlive(image)) {
             return;
         }
 
+        LifecycleOwner owner = ViewTreeLifecycleOwner.get(image);
+        final Lifecycle lifecycle = owner != null
+                ? owner.getLifecycle()
+                : null;
+
+        if (lifecycle != null
+                && lifecycle.getCurrentState() == Lifecycle.State.DESTROYED) {
+            return;
+        }
+
+        Object token = new Object();
+        image.setTag(R.id.latest_season_image_token, token);
+
+        if (ids.isEmpty() || latestYear <= 0) {
+            GlideApp.with(image).clear(image);
+            image.setImageResource(placeholder);
+            return;
+        }
+
+        final WeakReference<ImageView> imageRef =
+                new WeakReference<>(image);
+
+        final LifecycleEventObserver destroyObserver = (source, event) -> {
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                ImageView current = imageRef.get();
+
+                if (current != null
+                        && current.getTag(R.id.latest_season_image_token)
+                        == token) {
+                    current.setTag(R.id.latest_season_image_token, null);
+                }
+            }
+        };
+
+        if (lifecycle != null) {
+            lifecycle.addObserver(destroyObserver);
+        }
+
         inventory(folder, files -> {
-            if (target.getTag(R.id.latest_season_image_token) != token) {
+            if (lifecycle != null) {
+                lifecycle.removeObserver(destroyObserver);
+            }
+
+            ImageView target = imageRef.get();
+
+            if (target == null
+                    || target.getTag(R.id.latest_season_image_token) != token
+                    || !isScreenAlive(target)
+                    || (lifecycle != null
+                    && lifecycle.getCurrentState()
+                    == Lifecycle.State.DESTROYED)) {
                 return;
             }
+
+            // Ошибка списка не должна стирать уже показанное фото.
 
             // Ошибка списка не должна стирать уже показанное фото.
             if (files == null) {

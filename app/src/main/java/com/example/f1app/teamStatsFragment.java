@@ -396,15 +396,19 @@ public class teamStatsFragment extends Fragment {
             item.setOnClickListener(v ->
                     openDriver(rootRef, driverFullName, names[0], names[1]));
 
-            rootRef.child("drivers").child(driverFullName).child("driversCode")
+            rootRef.child("drivers").child(driverFullName)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String code = snapshot.getValue(String.class);
-
-                            if (!isAdded() || code == null) {
+                            if (!isLineupRequestValid(requestToken, requestView)) {
                                 return;
                             }
+
+                            String code = snapshot.child("driversCode")
+                                    .getValue(String.class);
+
+                            String driverId = snapshot.child("driverId")
+                                    .getValue(String.class);
 
                             stat.code = code;
                             applyStat(stat);
@@ -420,7 +424,7 @@ public class teamStatsFragment extends Fragment {
                             latestSeasonImages.loadDriver(
                                     photo,
                                     code,
-                                    null,
+                                    driverId,
                                     photoYear
                             );
                         }
@@ -657,5 +661,11 @@ public class teamStatsFragment extends Fragment {
                 break;
         }
         return " ";
+    }
+
+    @Override
+    public void onDestroyView() {
+        ++lineupStatsToken;
+        super.onDestroyView();
     }
 }
