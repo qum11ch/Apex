@@ -1445,4 +1445,6 @@
     <string name="update_install">Install</string>
     <string name="update_store_error">Could not open the store</string>
     <string name="announcement_open_error">Could not open the link</string>
+
+    <string name="reminder_battery_hint">Notifications late or missing? Tap to open the battery settings and let the app run in the background. Some phones also need autostart enabled.</string>
 </resources>
