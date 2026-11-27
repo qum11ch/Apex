@@ -7,7 +7,7 @@
     android:paddingEnd="4dp">
 
     <Space
-        android:layout_width="52dp"
+        android:layout_width="68dp"
         android:layout_height="1dp" />
 
     <FrameLayout

@@ -200,9 +200,12 @@ public class futureRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, false);
             recyclerView.setAdapter(adapter);
+            adapter.setOnWeatherClick((key, weather) -> weatherDetailsSheet.show(
+                    requireContext(), getString(getStringByName(key + "_text")), weather));
 
             getRaceSchedule(mRaceName, currentYear);
             loadWeekendWeather(view, currentYear);
+            futureHeaderInfo.loadHistory(view, currentYear, getArguments().getString("circuitId"));
 
             //CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
@@ -227,6 +230,7 @@ public class futureRaceScheduleFragment extends Fragment {
             if (!isAdded()) return;
 
             adapter.setWeather(byKey);
+            futureHeaderInfo.bindWeather(root, byKey.get("race_event"));
             note.setText(text);
             note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
         });

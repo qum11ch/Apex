@@ -1316,4 +1316,23 @@
     <string name="weather_precip_mm">%1$s мм</string>
     <string name="weather_dry">сухо</string>
     <string name="fact_weather">Погода в гонке</string>
+
+    <string name="weather_raining">дождь</string>
+    <string name="weather_rain_brief">кратко дождь</string>
+    <string name="track_dry">Сухая</string>
+    <string name="track_drying">Подсыхающая</string>
+    <string name="track_wet">Мокрая</string>
+    <string name="track_showers">Местами влажная</string>
+    <string name="sheet_air">Воздух</string>
+    <string name="sheet_track">Трасса</string>
+    <string name="sheet_humidity">Влажность</string>
+    <string name="sheet_wind">Ветер</string>
+    <string name="sheet_rain">Осадки</string>
+    <string name="sheet_state">Состояние трассы</string>
+    <string name="sheet_source_measured">Замеры F1 (OpenF1)</string>
+    <string name="sheet_source_model">Модель Open-Meteo</string>
+    <string name="weather_note_measured">Замеры F1 (OpenF1), Open-Meteo.com</string>
+    <string name="info_forecast">Прогноз на гонку</string>
+    <string name="info_winner_prev">Победитель %1$s</string>
+    <string name="info_laps">Кругов</string>
 </resources>

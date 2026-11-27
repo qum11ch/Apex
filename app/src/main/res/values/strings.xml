@@ -1336,4 +1336,23 @@
     <string name="weather_precip_mm">%1$s mm</string>
     <string name="weather_dry">dry</string>
     <string name="fact_weather">Race weather</string>
+
+    <string name="weather_raining">rain</string>
+    <string name="weather_rain_brief">brief rain</string>
+    <string name="track_dry">Dry</string>
+    <string name="track_drying">Drying</string>
+    <string name="track_wet">Wet</string>
+    <string name="track_showers">Damp in places</string>
+    <string name="sheet_air">Air</string>
+    <string name="sheet_track">Track</string>
+    <string name="sheet_humidity">Humidity</string>
+    <string name="sheet_wind">Wind</string>
+    <string name="sheet_rain">Precipitation</string>
+    <string name="sheet_state">Track condition</string>
+    <string name="sheet_source_measured">F1 measurements (OpenF1)</string>
+    <string name="sheet_source_model">Open-Meteo model</string>
+    <string name="weather_note_measured">F1 measurements (OpenF1), Open-Meteo.com</string>
+    <string name="info_forecast">Race forecast</string>
+    <string name="info_winner_prev">%1$s winner</string>
+    <string name="info_laps">Laps</string>
 </resources>

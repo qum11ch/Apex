@@ -205,6 +205,8 @@ public class concludedRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, true);
             recyclerView.setAdapter(adapter);
+            adapter.setOnWeatherClick((key, weather) -> weatherDetailsSheet.show(
+                    requireContext(), getString(getStringByName(key + "_text")), weather));
             adapter.setOnSessionClick(sessionKey -> show_results.performClick());
             loadWeekendWeather(view);
 

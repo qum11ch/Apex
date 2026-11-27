@@ -4,6 +4,8 @@ import static com.example.f1app.MainActivity.getStringByName;
 
 import android.app.Activity;
 import android.graphics.drawable.GradientDrawable;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,10 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public interface SessionClick {
         void onClick(String eventKey);
+    }
+
+    public interface WeatherClick {
+        void onClick(String eventKey, sessionWeather weather);
     }
 
     private static final int TYPE_DAY = 0;
@@ -67,6 +73,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private final List<Row> rows = new ArrayList<>();
     private Map<String, sessionWeather> weather = new HashMap<>();
     private SessionClick click;
+    private WeatherClick weatherClick;
 
     public scheduleAdapter(Activity context, List<scheduleData> datum, boolean isPast) {
         this.context = context;
@@ -90,6 +97,11 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     public void setOnSessionClick(SessionClick listener) {
         click = listener;
+        notifyDataSetChanged();
+    }
+
+    public void setOnWeatherClick(WeatherClick listener) {
+        weatherClick = listener;
         notifyDataSetChanged();
     }
 
@@ -200,12 +212,14 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         boolean finished = now >= row.end;
         boolean next = !isPast && !live && !finished && row.start == nextStart(now);
         boolean race = "race_event".equals(key);
+        // only the finished sessions of a weekend that goes on are dimmed
+        boolean dim = finished && !isPast;
 
         ZonedDateTime start = Instant.ofEpochMilli(row.start).atZone(ZoneId.systemDefault());
         DateTimeFormatter time = DateTimeFormatter.ofPattern("HH:mm");
 
         h.time.setText(start.format(time));
-        h.time.setTextColor(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+        h.time.setTextColor(color(dim ? R.color.hero_text_secondary : R.color.hero_text));
 
         if (race) {
             h.duration.setVisibility(View.GONE);
@@ -217,7 +231,7 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         h.name.setText(context.getString(getStringByName(key + "_text")));
         h.name.setTextSize(race ? 18 : 16);
-        h.name.setTextColor(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+        h.name.setTextColor(color(dim ? R.color.hero_text_secondary : R.color.hero_text));
 
         if (live) {
             h.status.setText(R.string.live_badge);
@@ -243,11 +257,25 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (w != null) {
             h.weatherIcon.setImageResource(w.icon);
-            h.weatherIcon.setColorFilter(color(finished ? R.color.hero_text_secondary : R.color.hero_text));
+            h.weatherIcon.setColorFilter(color(dim ? R.color.hero_text_secondary : R.color.hero_text));
             h.temp.setText(w.temp);
-            h.detail.setText(w.detail);
-            h.detail.setTextColor(color(w.wet ? R.color.hero_accent : R.color.hero_text_secondary));
+            h.temp.setTextColor(color(dim ? R.color.hero_text_secondary : R.color.hero_text));
+
+            SpannableStringBuilder detail = new SpannableStringBuilder(w.rain);
+
+            if (w.wet) {
+                detail.setSpan(new ForegroundColorSpan(color(R.color.hero_accent)),
+                        0, w.rain.length(), 0);
+            }
+
+            detail.append(", ").append(w.wind);
+            h.detail.setText(detail);
+            h.detail.setTextColor(color(R.color.hero_text_secondary));
             h.weatherBox.setVisibility(View.VISIBLE);
+
+            boolean tappable = weatherClick != null;
+            h.weatherBox.setOnClickListener(tappable ? v -> weatherClick.onClick(key, w) : null);
+            h.weatherBox.setClickable(tappable);
         } else {
             h.weatherBox.setVisibility(View.GONE);
         }
@@ -264,7 +292,8 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void styleDot(View dot, boolean race, boolean live, boolean next, boolean finished) {
-        int size = Math.round((race ? 14 : 10) * context.getResources().getDisplayMetrics().density);
+        float density = context.getResources().getDisplayMetrics().density;
+        int size = Math.round((race ? 14 : 10) * density);
         ViewGroup.LayoutParams params = dot.getLayoutParams();
         params.width = size;
         params.height = size;
@@ -272,12 +301,12 @@ public class scheduleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         GradientDrawable shape = new GradientDrawable();
         shape.setShape(GradientDrawable.OVAL);
-        int stroke = Math.round(2 * context.getResources().getDisplayMetrics().density);
+        int stroke = Math.round(2 * density);
 
-        if (finished) {
-            shape.setColor(color(R.color.hero_text_secondary));
-        } else if (live) {
+        if (live || (finished && race)) {
             shape.setColor(color(R.color.hero_accent));
+        } else if (finished) {
+            shape.setColor(color(R.color.hero_text_secondary));
         } else {
             shape.setColor(color(R.color.hero_card_bg));
             shape.setStroke(stroke, color(next || race ? R.color.hero_accent : R.color.hero_text_secondary));
