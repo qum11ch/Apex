@@ -1016,7 +1016,10 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        removeScheduleListener();
+        if (promo != null) {
+            promo.stop();
+        }
+
         super.onDestroy();
     }
 

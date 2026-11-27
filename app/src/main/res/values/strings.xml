@@ -1397,4 +1397,7 @@
     <string name="promo_results_title">Prediction results</string>
     <string name="promo_results_body">Season leaderboard</string>
     <string name="promo_results_cta">Leaderboard</string>
+    <string name="promo_left_title">Awaiting your answer: %1$d</string>
+    <string name="promo_done_title">All predictions made</string>
+    <string name="promo_done_cta">My answers</string>
 </resources>

@@ -1376,4 +1376,7 @@
     <string name="promo_results_title">Итоги прогнозов</string>
     <string name="promo_results_body">Рейтинг игроков сезона</string>
     <string name="promo_results_cta">Рейтинг</string>
+    <string name="promo_left_title">Ждут ответа: %1$d</string>
+    <string name="promo_done_title">Все прогнозы сделаны</string>
+    <string name="promo_done_cta">Мои ответы</string>
 </resources>
