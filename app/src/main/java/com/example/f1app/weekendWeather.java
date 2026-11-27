@@ -54,6 +54,17 @@ final class weekendWeather {
     private weekendWeather() {
     }
 
+    /** The same weather for sessions and coordinates the caller has already read. */
+    static void load(Context context, List<raceWeekendStatus.SessionInfo> sessions,
+                     double lat, double lng, Callback callback) {
+        if (sessions == null || sessions.isEmpty() || Double.isNaN(lat) || Double.isNaN(lng)) {
+            callback.onLoaded(new HashMap<>(), "");
+            return;
+        }
+
+        request(context.getApplicationContext(), lat, lng, sessions, callback);
+    }
+
     static void load(Context context, String season, String raceName, Callback callback) {
         final Context app = context.getApplicationContext();
 

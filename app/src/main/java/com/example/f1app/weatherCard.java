@@ -25,6 +25,8 @@ final class weatherCard {
     private static final String DASH = "\u2013";
 
     static final class Race {
+        double lat = Double.NaN;
+        double lng = Double.NaN;
         String name = "";
         String circuitId = "";
         boolean canceled;
@@ -79,6 +81,34 @@ final class weatherCard {
                 });
     }
 
+    /** The weather now at the circuit: only when the sessions have no weather of their own. */
+    void fetchCurrent(Result base, Listener listener) {
+        final int mine = token;
+        final Race race = base.race;
+
+        if (Double.isNaN(race.lat) || Double.isNaN(race.lng)) {
+            listener.onResult(base);
+            return;
+        }
+
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+        LocalDate firstDay = day(race.sessions.get(0).start);
+        final LocalDate availableFrom = firstDay.isAfter(weatherForecast.horizonEnd(today))
+                ? firstDay.minusDays(weatherForecast.HORIZON_DAYS - 1) : null;
+
+        weatherForecast.load(race.lat, race.lng, null, null, data -> {
+            if (mine != token) {
+                return;
+            }
+
+            Result result = new Result();
+            result.race = race;
+            result.data = data;
+            result.availableFrom = availableFrom;
+            listener.onResult(result);
+        });
+    }
+
     private static Race parse(DataSnapshot s) {
         Race race = new Race();
         race.name = s.getKey() == null ? "" : s.getKey();
@@ -109,16 +139,15 @@ final class weatherCard {
                             return;
                         }
 
-                        Place place = new Place();
                         Object lat = snapshot.child("lat").getValue();
                         Object lng = snapshot.child("lng").getValue();
 
                         if (lat instanceof Number && lng instanceof Number) {
-                            place.lat = ((Number) lat).doubleValue();
-                            place.lng = ((Number) lng).doubleValue();
+                            race.lat = ((Number) lat).doubleValue();
+                            race.lng = ((Number) lng).doubleValue();
                         }
 
-                        loadWeather(race, place, mine, listener);
+                        finish(race, null, null, listener);
                     }
 
                     @Override
@@ -128,35 +157,6 @@ final class weatherCard {
                         }
                     }
                 });
-    }
-
-    private void loadWeather(Race race, Place place, int mine, Listener listener) {
-        if (Double.isNaN(place.lat)) {
-            finish(race, null, null, listener);
-            return;
-        }
-
-        LocalDate today = LocalDate.now(ZoneOffset.UTC);
-        LocalDate horizon = weatherForecast.horizonEnd(today);
-        LocalDate firstDay = day(race.sessions.get(0).start);
-        LocalDate lastDay = day(race.raceStart);
-
-        LocalDate from = null;
-        LocalDate to = null;
-
-        if (!firstDay.isAfter(horizon)) {
-            from = firstDay;
-            to = lastDay.isAfter(horizon) ? horizon : lastDay;
-        }
-
-        final LocalDate availableFrom = from == null
-                ? firstDay.minusDays(weatherForecast.HORIZON_DAYS - 1) : null;
-
-        weatherForecast.load(place.lat, place.lng, from, to, data -> {
-            if (mine == token) {
-                finish(race, data, availableFrom, listener);
-            }
-        });
     }
 
     private static void finish(Race race, weatherForecast.Data data, LocalDate availableFrom,
