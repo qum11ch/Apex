@@ -20,7 +20,8 @@ import java.util.Locale;
 
 /**
  * Three podium cards: the photo on the colour of the team, the place, the surname.
- * Full mode adds the team and the gap; compact mode is for lists.
+ * Full mode adds the team and the gap; compact mode is for lists;
+ * onDark is for surfaces that are dark in every theme (the header of the race page).
  */
 final class podiumCards {
 
@@ -31,6 +32,10 @@ final class podiumCards {
     private int token = 0;
 
     podiumCards(LinearLayout row, boolean compact) {
+        this(row, compact, false);
+    }
+
+    podiumCards(LinearLayout row, boolean compact, boolean onDark) {
         this.context = row.getContext();
         this.compact = compact;
 
@@ -39,6 +44,13 @@ final class podiumCards {
         for (int i = 0; i < 3; i++) {
             View card = inflater.inflate(R.layout.view_podium_driver, row, false);
             ((TextView) card.findViewById(R.id.podiumPlace)).setText(String.valueOf(i + 1));
+
+            if (onDark) {
+                card.setBackgroundResource(R.drawable.bg_podium_card_dark);
+                ((TextView) card.findViewById(R.id.podiumSurname)).setTextColor(Color.WHITE);
+                ((TextView) card.findViewById(R.id.podiumTeam)).setTextColor(Color.parseColor("#B3FFFFFF"));
+                ((TextView) card.findViewById(R.id.podiumGap)).setTextColor(Color.WHITE);
+            }
 
             if (compact) {
                 card.findViewById(R.id.podiumTile).getLayoutParams().height = dp(72);

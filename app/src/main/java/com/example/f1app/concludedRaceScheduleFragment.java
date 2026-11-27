@@ -45,7 +45,7 @@ public class concludedRaceScheduleFragment extends Fragment {
     private ToggleButton saveRaceButton;
     private LocalDate currentDate;
     private String fullRaceName_key, mRaceName, mYear;
-    private podiumCards podium;
+    private racePodiumBlock podium;
     private String mFirstPlaceCode, mSecondPlaceCode, mThirdPlaceCode;
 
 
@@ -80,7 +80,7 @@ public class concludedRaceScheduleFragment extends Fragment {
         LinearLayout podiumLayout = view.findViewById(R.id.podium_layout);
         TextView dash = view.findViewById(R.id.dash);
 
-        podium = new podiumCards(view.findViewById(R.id.podiumRow), false);
+        podium = new racePodiumBlock(view);
 
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);

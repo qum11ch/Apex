@@ -133,6 +133,16 @@
                             android:textColor="@color/white"
                             android:textSize="20sp" />
 
+                        <TextView
+                            android:id="@+id/podiumSubtitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="12sp"
+                            android:visibility="gone" />
+
                         <LinearLayout
                             android:id="@+id/podiumRow"
                             android:layout_width="match_parent"
@@ -140,9 +150,150 @@
                             android:layout_marginStart="5dp"
                             android:layout_marginTop="12dp"
                             android:layout_marginEnd="5dp"
-                            android:layout_marginBottom="12dp"
                             android:baselineAligned="false"
                             android:orientation="horizontal" />
+
+                        <LinearLayout
+                            android:id="@+id/raceFacts"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="2dp"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="12dp"
+                            android:orientation="vertical"
+                            android:visibility="gone">
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/tilePole"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="3dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_podium_card_dark"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:letterSpacing="0.06"
+                                        android:text="@string/podium_pole"
+                                        android:textAllCaps="true"
+                                        android:textColor="#B3FFFFFF"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/factPole"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:textColor="@color/white"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/tileFastest"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="3dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_podium_card_dark"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:letterSpacing="0.06"
+                                        android:text="@string/podium_fastest"
+                                        android:textAllCaps="true"
+                                        android:textColor="#B3FFFFFF"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/factFastest"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:textColor="@color/white"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:baselineAligned="false"
+                                android:orientation="horizontal">
+
+                                <LinearLayout
+                                    android:id="@+id/tileClimber"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="3dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_podium_card_dark"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:letterSpacing="0.06"
+                                        android:text="@string/fact_climber"
+                                        android:textAllCaps="true"
+                                        android:textColor="#B3FFFFFF"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/factClimber"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:textColor="@color/white"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:id="@+id/tileRetired"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_margin="3dp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/bg_podium_card_dark"
+                                    android:orientation="vertical"
+                                    android:padding="12dp">
+
+                                    <TextView
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:letterSpacing="0.06"
+                                        android:text="@string/fact_retired"
+                                        android:textAllCaps="true"
+                                        android:textColor="#B3FFFFFF"
+                                        android:textSize="11sp" />
+
+                                    <TextView
+                                        android:id="@+id/factRetired"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="4dp"
+                                        android:textColor="@color/white"
+                                        android:textSize="15sp"
+                                        android:textStyle="bold" />
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
                     </LinearLayout>
                     <TextView
                         android:id="@+id/show_results"
