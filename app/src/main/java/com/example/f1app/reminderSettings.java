@@ -7,6 +7,9 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
+
+import org.json.JSONException;
 
 final class reminderSettings {
     static final String KEY_ENABLED = "reminders_enabled";
@@ -40,20 +43,30 @@ final class reminderSettings {
         return DEFAULT_LEAD;
     }
 
-    static boolean debugFire(Context context, int seconds) {
+    static String debugFire(Context context, int seconds) {
         Context app = context.getApplicationContext();
-        String eventsJson = prefs(app).getString("events_json", "[]");
-        String circuitsJson = prefs(app).getString("circuits_json", "[]");
 
         try {
-            org.json.JSONArray events = new org.json.JSONArray(eventsJson);
-            org.json.JSONArray circuits = new org.json.JSONArray(circuitsJson);
+            org.json.JSONArray events =
+                    new org.json.JSONArray(prefs(app).getString("events_json", "[]"));
+            org.json.JSONArray circuits =
+                    new org.json.JSONArray(prefs(app).getString("circuits_json", "[]"));
 
-            if (events.length() == 0 || circuits.length() == 0) {
-                return false;
+            if (events.length() == 0) {
+                return "events_json is empty";
             }
 
-            String[] race = events.getString(0).split("%")[0].split("\\$");
+            if (circuits.length() == 0) {
+                return "circuits_json is empty";
+            }
+
+            String first = events.getString(0);
+            String[] race = first.split("%")[0].split("\\$");
+
+            if (race.length < 2) {
+                Log.w("ReminderDebug", "Unexpected format: " + first);
+                return "Unexpected event format";
+            }
 
             Intent intent = new Intent(app, NotifyReceiver.class);
             intent.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
@@ -77,9 +90,10 @@ final class reminderSettings {
                 alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pending);
             }
 
-            return true;
-        } catch (org.json.JSONException | RuntimeException error) {
-            return false;
+            return null;
+        } catch (JSONException | RuntimeException error) {
+            Log.w("ReminderDebug", "debugFire failed", error);
+            return error.getClass().getSimpleName() + ": " + error.getMessage();
         }
     }
 
