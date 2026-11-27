@@ -1358,10 +1358,12 @@
 
     <string name="finished_caption">Season %1$s is over</string>
     <string name="finished_title">Season results</string>
-    <string name="finished_drivers">Drivers of the season</string>
-    <string name="finished_teams">Teams of the season</string>
 
     <string name="finished_champion">World champion: %1$s</string>
     <string name="finished_constructors">Constructors\' champion: %1$s</string>
     <string name="finished_open_leaderboard">Prediction results</string>
+    <string name="finished_drivers">Drivers →</string>
+    <string name="finished_teams">Teams →</string>
+    <string name="champion_driver">★ World champion</string>
+    <string name="champion_team">★ Constructors\' champion</string>
 </resources>

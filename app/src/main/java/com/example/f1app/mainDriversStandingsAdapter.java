@@ -34,6 +34,13 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         podiumTints = colors;
     }
 
+    private int championLabel = 0;
+
+    /** A badge on the card of the first place (0: none). */
+    public void setChampionLabel(int stringRes) {
+        championLabel = stringRes;
+    }
+
 
     @Override
     public int getItemViewType(int position) {
@@ -100,6 +107,15 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             colorRgb = podiumTints[position];
         }
 
+        if (holder.championBadge != null) {
+            if (championLabel != 0 && position == 0) {
+                holder.championBadge.setText(championLabel);
+                holder.championBadge.setVisibility(View.VISIBLE);
+            } else {
+                holder.championBadge.setVisibility(View.GONE);
+            }
+        }
+
         int alpha = 0xCC;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 
@@ -136,6 +152,7 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
         CardView cardView;
         LinearLayout itemDriver;
         ImageView driverImage;
+        TextView championBadge;
 
         public DataHolder(@NonNull View itemView) {
             super(itemView);
@@ -149,6 +166,7 @@ public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriver
             itemDriver = itemView.findViewById(R.id.item_driver);
             driverImage = itemView.findViewById(R.id.driverImage);
             driverPointsText = itemView.findViewById(R.id.driver_points_text);
+            championBadge = itemView.findViewById(R.id.championBadge);
         }
     }
 }

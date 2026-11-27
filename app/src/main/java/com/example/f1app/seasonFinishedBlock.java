@@ -18,9 +18,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 /**
- * "Season is over": when every race of the season is concluded or canceled, the summary replaces the
- * "upcoming race" block: the champions, the wide button of the prediction results and the top 3 of the
- * drivers and of the teams (the cards of the home screen leaders in the colours of the podium).
+ * "Season is over": when every race of the season is concluded or canceled, one card "Season results"
+ * replaces the "upcoming race" block: the wide button of the prediction results, the top 3 of the
+ * drivers and of the teams (the cards of the home screen leaders in the colours of the podium,
+ * the champions marked with a badge).
  */
 final class seasonFinishedBlock {
 
@@ -38,12 +39,10 @@ final class seasonFinishedBlock {
     private final Context context;
     private final View card, futureHeader, futureLayout, predictButton;
     private final View[] hidden;
-    private final TextView caption, champion, constructors;
+    private final TextView caption;
     private final RecyclerView driversView, teamsView;
     private final int[] tints;
 
-    private List<driversList> driverSource;
-    private List<teamsList> teamSource;
     private mainDriversStandingsAdapter driversAdapter;
     private mainTeamsStandingsAdapter teamsAdapter;
     private boolean futureHidden;
@@ -64,8 +63,6 @@ final class seasonFinishedBlock {
                 ContextCompat.getColor(context, R.color.podium_bronze)};
 
         caption = card.findViewById(R.id.finishedCaption);
-        champion = card.findViewById(R.id.finishedChampion);
-        constructors = card.findViewById(R.id.finishedConstructor);
         driversView = card.findViewById(R.id.finishedDriversList);
         teamsView = card.findViewById(R.id.finishedTeamsList);
 
@@ -76,11 +73,9 @@ final class seasonFinishedBlock {
 
     /** The lists of the home screen: the same objects the leaders use, so one load feeds both. */
     void bindSources(List<driversList> driverList, List<teamsList> teamList) {
-        this.driverSource = driverList;
-        this.teamSource = teamList;
-
         driversAdapter = new mainDriversStandingsAdapter(context, driverList);
         driversAdapter.setPodiumTints(tints);
+        driversAdapter.setChampionLabel(R.string.champion_driver);
         driversView.setLayoutManager(new LinearLayoutManager(context));
         driversView.setNestedScrollingEnabled(false);
         driversView.setOverScrollMode(View.OVER_SCROLL_NEVER);
@@ -88,13 +83,14 @@ final class seasonFinishedBlock {
 
         teamsAdapter = new mainTeamsStandingsAdapter(context, teamList);
         teamsAdapter.setPodiumTints(tints);
+        teamsAdapter.setChampionLabel(R.string.champion_team);
         teamsView.setLayoutManager(new LinearLayoutManager(context));
         teamsView.setNestedScrollingEnabled(false);
         teamsView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         teamsView.setAdapter(teamsAdapter);
     }
 
-    /** The lists of the home screen changed: redraw the cards and the champions when the block is on screen. */
+    /** The lists of the home screen changed: redraw the cards when the block is on screen. */
     void update() {
         if (card.getVisibility() != View.VISIBLE) {
             return;
@@ -106,22 +102,6 @@ final class seasonFinishedBlock {
 
         if (teamsAdapter != null) {
             teamsAdapter.notifyDataSetChanged();
-        }
-
-        if (driverSource != null && !driverSource.isEmpty() && !driverSource.get(0).isStartSeason()) {
-            champion.setText(context.getString(R.string.finished_champion,
-                    driverSource.get(0).getDriverFamilyName()));
-            champion.setVisibility(View.VISIBLE);
-        } else {
-            champion.setVisibility(View.GONE);
-        }
-
-        if (teamSource != null && !teamSource.isEmpty() && !teamSource.get(0).getStartSeasonInfo()) {
-            constructors.setText(context.getString(R.string.finished_constructors,
-                    teamSource.get(0).getTeam()));
-            constructors.setVisibility(View.VISIBLE);
-        } else {
-            constructors.setVisibility(View.GONE);
         }
     }
 

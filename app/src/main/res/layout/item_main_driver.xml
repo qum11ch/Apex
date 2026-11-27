@@ -92,6 +92,23 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
                     android:textSize="16sp"/>
+                <TextView
+                    android:id="@+id/championBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/driver_points_text"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/bg_champion_badge"
+                    android:letterSpacing="0.04"
+                    android:paddingStart="10dp"
+                    android:paddingTop="3dp"
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:textAllCaps="true"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
             </RelativeLayout>
         </LinearLayout>
 

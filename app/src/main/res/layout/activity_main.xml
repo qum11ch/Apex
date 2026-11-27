@@ -164,97 +164,79 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
                     android:orientation="vertical"
+                    android:paddingStart="18dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="16dp"
                     android:visibility="gone">
 
-                    <LinearLayout
+                    <TextView
+                        android:id="@+id/finishedCaption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.06"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                        android:textColor="@color/hero_accent"
+                        android:textSize="12sp" />
+
+                    <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:background="@drawable/bg_hero_card"
-                        android:orientation="vertical"
-                        android:paddingStart="18dp"
-                        android:paddingTop="16dp"
-                        android:paddingEnd="18dp"
-                        android:paddingBottom="16dp">
-
-                        <TextView
-                            android:id="@+id/finishedCaption"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:letterSpacing="0.06"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                            android:textColor="@color/hero_accent"
-                            android:textSize="12sp" />
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:text="@string/finished_title"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                            android:textColor="@color/hero_text" />
-
-                        <TextView
-                            android:id="@+id/finishedChampion"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:textColor="@color/hero_text"
-                            android:textSize="15sp"
-                            android:textStyle="bold"
-                            android:visibility="gone" />
-
-                        <TextView
-                            android:id="@+id/finishedConstructor"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:textColor="@color/hero_text_secondary"
-                            android:textSize="14sp"
-                            android:visibility="gone" />
-                    </LinearLayout>
+                        android:layout_marginTop="8dp"
+                        android:text="@string/finished_title"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/hero_text" />
 
                     <Button
                         android:id="@+id/finishedLeaderboardButton"
                         style="@style/Widget.Apex.MainButton"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="14dp"
                         android:text="@string/finished_open_leaderboard" />
 
                     <TextView
                         android:id="@+id/finishedDriversLabel"
-                        style="@style/Widget.Apex.SectionHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:text="@string/finished_drivers" />
+                        android:layout_marginTop="18dp"
+                        android:letterSpacing="0.06"
+                        android:text="@string/finished_drivers"
+                        android:textAllCaps="true"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/finishedDriversList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:nestedScrollingEnabled="false"
                         android:overScrollMode="never" />
 
                     <TextView
                         android:id="@+id/finishedTeamsLabel"
-                        style="@style/Widget.Apex.SectionHeader"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="12dp"
+                        android:letterSpacing="0.06"
                         android:text="@string/finished_teams"
-                        android:textAlignment="textEnd" />
+                        android:textAllCaps="true"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/finishedTeamsList"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="8dp"
                         android:nestedScrollingEnabled="false"
                         android:overScrollMode="never" />
                 </LinearLayout>
@@ -444,6 +426,7 @@
                 </LinearLayout>
 
                 <Button
+                    android:visibility="gone"
                     android:id="@+id/winnersWDS"
                     style="@style/Widget.Apex.MainButton"
                     android:layout_width="match_parent"

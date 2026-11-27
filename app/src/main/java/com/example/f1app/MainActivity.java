@@ -359,7 +359,8 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.top_drivers_header),
                 findViewById(R.id.top_drivers),
                 findViewById(R.id.top_teams_header),
-                findViewById(R.id.top_teams));
+                findViewById(R.id.top_teams),
+                findViewById(R.id.leaderboardButton));
 
         if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             findViewById(R.id.mainHeader).setOnLongClickListener(v -> {
@@ -645,6 +646,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void postProgress(int progress, long totalRounds) {
+        findViewById(R.id.winnersWDS).setVisibility(progress > 0 ? View.VISIBLE : View.GONE);
+
         cachedList.putExtra("main_progress", String.valueOf(progress), String.valueOf(totalRounds));
         String strProgress = progress + "/" + totalRounds;
         if (progress>10 && progress<=13){
