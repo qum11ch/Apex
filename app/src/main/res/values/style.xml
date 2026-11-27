@@ -417,6 +417,14 @@
         <item name="android:stateListAnimator">@null</item>
     </style>
 
+    <style name="Widget.Apex.ThirdButton" parent="Widget.Apex.MainButton">
+        <item name="android:background">@drawable/bg_hero_button</item>
+        <item name="android:textColor">@color/text_color_main</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+
 
     <style name="Widget.Apex.Pred.Big" parent="TextStyle.Audiowide.ForPTS">
         <item name="android:textColor">@color/text_color_main</item>

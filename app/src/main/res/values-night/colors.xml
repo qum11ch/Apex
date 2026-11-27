@@ -103,7 +103,7 @@
 
     <color name="theme_selected">#FF8A80</color>
 
-    <color name="hero_card_bg">#2B2B30</color>
+    <color name="hero_card_bg">#303030</color>
     <color name="hero_card_stroke">#3A3A40</color>
     <color name="hero_text">#FFFFFF</color>
     <color name="hero_text_secondary">#B3FFFFFF</color>

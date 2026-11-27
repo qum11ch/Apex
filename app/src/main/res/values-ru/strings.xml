@@ -1368,4 +1368,12 @@
     <string name="empty_concluded_body">Результаты этапов появятся здесь после первой гонки сезона.</string>
 
     <string name="lineup_stats_season">Статистика за %1$s</string>
+
+    <string name="promo_caption">Прогнозы</string>
+    <string name="promo_open_title">Открыто прогнозов: %1$d</string>
+    <string name="promo_closes">Закрытие %1$s</string>
+    <string name="promo_cta">Сделать</string>
+    <string name="promo_results_title">Итоги прогнозов</string>
+    <string name="promo_results_body">Рейтинг игроков сезона</string>
+    <string name="promo_results_cta">Рейтинг</string>
 </resources>

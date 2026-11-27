@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean seasonOver = false;
     private int concludedRounds = 0;
     private int totalRounds = 0;
+    private predictionPromoBlock promo;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -206,6 +207,8 @@ public class MainActivity extends AppCompatActivity {
         datumTeams = new cachedList<>("main_teams");
         datumPast = new cachedList<>("main_past");
         datumFuture = new cachedList<>("main_future");
+
+        promo = new predictionPromoBlock(findViewById(R.id.predictionPromoCard), () -> currentSeason);
 
         driversAdapter = new mainDriversStandingsAdapter(this, datumDrivers);
         rvDrivers.setAdapter(driversAdapter);
@@ -445,6 +448,15 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (promo != null) {
+            promo.refresh();
+        }
     }
 
     private void updateContenders() {
