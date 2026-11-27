@@ -328,13 +328,15 @@ public class NotifyReceiver extends BroadcastReceiver {
         }
 
         if (job.start && job.openPredictions > 0) {
-            builder.addAction(0,
-                    context.getString(R.string.notify_action_predictions, job.openPredictions),
-                    predictionsIntent(job));
+            expanded.setTextViewText(R.id.notifPrimary,
+                    context.getString(R.string.notify_action_predictions, job.openPredictions));
+            expanded.setViewVisibility(R.id.notifPrimary, View.VISIBLE);
+            expanded.setOnClickPendingIntent(R.id.notifPrimary, predictionsIntent(job));
         }
 
-        builder.addAction(0, context.getString(R.string.notify_action_disable),
-                disableIntent(job));
+        expanded.setTextViewText(R.id.notifSecondary,
+                context.getString(R.string.notify_action_disable));
+        expanded.setOnClickPendingIntent(R.id.notifSecondary, disableIntent(job));
 
         context.getSystemService(NotificationManager.class)
                 .notify(job.notificationId, builder.build());
@@ -442,6 +444,7 @@ public class NotifyReceiver extends BroadcastReceiver {
         Intent predictions = new Intent(job.context, predictionActivity.class);
         predictions.putExtra("season", job.season);
         predictions.putExtra("raceRound", job.round);
+        predictions.putExtra("dismissNotification", job.notificationId);
 
         return TaskStackBuilder.create(job.context)
                 .addNextIntent(new Intent(job.context, MainActivity.class))

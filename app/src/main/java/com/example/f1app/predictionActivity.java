@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import androidx.core.app.NotificationManagerCompat;
+
 public class predictionActivity extends AppCompatActivity {
     private static final String CACHE_KEY = "open_predictions";
     private RecyclerView recyclerView;
@@ -58,6 +60,12 @@ public class predictionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.predictions_activity);
+
+        int dismiss = getIntent().getIntExtra("dismissNotification", 0);
+
+        if (dismiss != 0) {
+            NotificationManagerCompat.from(this).cancel(dismiss);
+        }
 
         setupPredictionsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.predictionsRecyclerView));
