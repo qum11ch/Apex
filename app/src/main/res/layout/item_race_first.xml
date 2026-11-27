@@ -169,176 +169,22 @@
                     android:lineSpacingExtra="0dp"
                     android:textAppearance="@style/TextStyle.ShareTechCYR.ForInfo"
                     android:layout_marginBottom="10dp"/>
-                <LinearLayout
-                    android:id="@+id/podiumImage_layout"
-                    android:baselineAligned="false"
-                    android:gravity="bottom"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_below="@id/circuitName"
-                    android:weightSum="3">
-                    <RelativeLayout
-                        android:paddingEnd="10dp"
-                        android:paddingStart="0dp"
-                        android:layout_width="0dp"
-                        android:layout_height="84dp"
-                        android:layout_weight="1">
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/stripedImg_first"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines_white"/>
-                        <ImageView
-                            android:id="@+id/firstPlace_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:scaleType="fitCenter"
-                            android:layout_alignParentBottom="true"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:paddingStart="0dp"
-                        android:paddingEnd="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="84dp"
-                        android:layout_weight="1">
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/stripedImg_second"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines_white"/>
-                        <ImageView
-                            android:id="@+id/secondPlace_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="84dp"
-                            android:scaleType="fitCenter"
-                            android:layout_alignParentBottom="true"/>
-                    </RelativeLayout>
-                    <RelativeLayout
-                        android:paddingStart="0dp"
-                        android:paddingEnd="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="84dp"
-                        android:layout_weight="1">
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:id="@+id/stripedImg_third"
-                            app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.TopSide"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/background_striped_lines_white"/>
-                        <ImageView
-                            android:scaleType="fitCenter"
-                            android:id="@+id/thirdPlace_image"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent" />
-                    </RelativeLayout>
-                </LinearLayout>
+
                 <LinearLayout
                     android:id="@+id/podiumNamesLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/podiumImage_layout"
+                    android:layout_below="@id/circuitName"
                     android:layout_marginBottom="10dp"
-                    android:baselineAligned="false"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
-                    <RelativeLayout
-                        android:layout_marginEnd="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-                        <TextView
-                            android:textColor="@color/text_color_secondary"
-                            android:layout_width="15dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:text="@string/one"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                            tools:ignore="RtlCompat" />
+                    android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/firstPlace_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            tools:ignore="RtlCompat" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_marginEnd="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:textColor="@color/text_color_secondary"
-                            android:layout_width="15dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:text="@string/two"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                            tools:ignore="RtlCompat" />
-
-                        <TextView
-                            android:id="@+id/secondPlace_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:textAlignment="center"
-                            android:textAllCaps="true"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            tools:ignore="RtlCompat" />
-                    </RelativeLayout>
-
-                    <RelativeLayout
-                        android:layout_marginEnd="10dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:textColor="@color/text_color_secondary"
-                            android:layout_width="15dp"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:text="@string/three"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                            tools:ignore="RtlCompat" />
-
-                        <TextView
-                            android:id="@+id/thirdPlace_code"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:gravity="center"
-                            android:includeFontPadding="false"
-                            android:lineSpacingExtra="0dp"
-                            android:textAllCaps="true"
-                            android:textAlignment="center"
-                            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForCodes"
-                            tools:ignore="RtlCompat" />
-                    </RelativeLayout>
+                    <LinearLayout
+                        android:id="@+id/podiumRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="7dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>

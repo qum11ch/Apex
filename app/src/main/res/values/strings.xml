@@ -328,6 +328,11 @@
     <string name="malaysian_grand_prix_text">Malaysian Grand Prix</string>
     <string name="argentine_grand_prix_text">Argentine Grand Prix</string>
     <string name="san_marino_grand_prix_text">San Marino Grand Prix</string>
+    <string name="portuguese_grand_prix_text">Portuguese Grand Prix</string>
+    <string name="french_grand_prix_text">French Grand Prix</string>
+    <string name="turkish_grand_prix_text">Turkish Grand Prix</string>
+    <string name="styrian_grand_prix_text">Styrian Grand Prix</string>
+    <string name="russian_grand_prix_text">Russian Grand Prix</string>
 
     <string name="abu_dhabi_grand_prix_locality">Abu Dhabi</string>
     <string name="australian_grand_prix_locality">Australia</string>
@@ -356,6 +361,12 @@
     <string name="barcelona_grand_prix_locality">Spain</string>
     <string name="brazilian_grand_prix_locality">Brazil</string>
     <string name="bahrain_grand_prix_in_malaysia_locality">Malaysia</string>
+    <string name="portuguese_grand_prix_locality">Portugal</string>
+    <string name="french_grand_prix_locality">France</string>
+    <string name="styrian_grand_prix_locality">Styria</string>
+    <string name="russian_grand_prix_locality">Russia</string>
+    <string name="turkish_grand_prix_locality">Turkey</string>
+
     <string name="last_update_text">Last update:</string>
 
     <string name="times"> </string>
@@ -386,6 +397,10 @@
     <string name="americas_text">Circuit of The Americas</string>
     <string name="madring_text">Circuit de Madring</string>
     <string name="sepang_text">Sepang International Circuit</string>
+    <string name="portimao_text">Autódromo Internacional do Algarve</string>
+    <string name="ricard_text">Circuit Paul Ricard</string>
+    <string name="istanbul_text">Istanbul Park</string>
+    <string name="sochi_text">Sochi Autodrom</string>
 
     <string name="points_text">Points</string>
     <string name="points_text_lowered">points</string>
@@ -1117,8 +1132,8 @@
     <string name="ps_clear_search">Clear search</string>
     <string name="ps_view_as_tiles">Show as tiles</string>
     <string name="ps_view_as_list">Show as list</string>
-    <string name="ps_history_button">Past results</string>
-    <string name="ps_history_subtitle">Past results</string>
+    <string name="ps_history_button">Results of other years</string>
+    <string name="ps_history_subtitle">Results of other years</string>
 
     <string name="public_stats_rank_global">overall</string>
     <string name="public_stats_rank_season">this season</string>
@@ -1281,4 +1296,97 @@
     <string name="tracks_car_best">Best car</string>
     <string name="tracks_car_second">Second car</string>
     <string name="tracks_note">Seasons %1$d–%2$d, the same as in the results tables.</string>
+
+    <string name="weather_title_race">Race weather forecast</string>
+    <string name="weather_title_now">Weather now at the circuit</string>
+    <string name="weather_title_weekend">Weekend weather</string>
+    <string name="weather_feels">feels like %1$s</string>
+    <string name="weather_rain">Rain %1$d%%</string>
+    <string name="weather_humidity">Humidity %1$d%%</string>
+    <string name="weather_wind">%1$s km/h</string>
+    <string name="weather_available_from">Forecast available from %1$s</string>
+    <string name="weather_updated_ago">Updated %1$d h ago</string>
+    <string name="weather_unavailable">Weather is unavailable. Check your connection.</string>
+    <string name="weather_clear">Clear</string>
+    <string name="weather_partly">Partly cloudy</string>
+    <string name="weather_cloud">Overcast</string>
+    <string name="weather_fog">Fog</string>
+    <string name="weather_rain_condition">Rain</string>
+    <string name="weather_snow">Snow</string>
+    <string name="weather_storm">Thunderstorm</string>
+    <string name="weather_title">Weather forecast</string>
+
+    <string name="countdown_starts">%1$s starts in</string>
+    <string name="countdown_ends">%1$s ends in</string>
+    <string name="countdown_days">%1$d d %2$02d h %3$02d min</string>
+    <string name="live_badge">LIVE</string>
+    <string name="weather_for_session">Weather: %1$s</string>
+    <string name="weather_wind_full">Wind %1$s</string>
+    <string name="weather_rain_short">rain %1$d%%</string>
+    <string name="session_short_first_practice_event">FP1</string>
+    <string name="session_short_second_practice_event">FP2</string>
+    <string name="session_short_third_practice_event">FP3</string>
+    <string name="session_short_sprint_quali_event">SQ</string>
+    <string name="session_short_sprint_event">SPRINT</string>
+    <string name="session_short_quali_event">QUALI</string>
+    <string name="session_short_race_event">RACE</string>
+
+    <string name="round_pill">R%1$s</string>
+    <string name="unit_days">days</string>
+    <string name="unit_hours">hrs</string>
+    <string name="unit_minutes">min</string>
+    <string name="unit_seconds">sec</string>
+    <string name="podium_pole">Pole</string>
+    <string name="podium_fastest">Fastest lap</string>
+
+    <string name="fact_climber">Most places gained</string>
+    <string name="fact_retired">Retirements</string>
+    <string name="fact_retired_value">%1$d of %2$d</string>
+    <string name="race_laps_total">Laps: %1$d</string>
+
+    <string name="session_until">until %1$s</string>
+    <string name="in_days">in %1$d d</string>
+    <string name="in_hours">in %1$d h</string>
+    <string name="in_minutes">in %1$d min</string>
+    <string name="weather_precip_mm">%1$s mm</string>
+    <string name="weather_dry">dry</string>
+    <string name="fact_weather">Race weather</string>
+
+    <string name="weather_raining">rain</string>
+    <string name="weather_rain_brief">brief rain</string>
+    <string name="track_dry">Dry</string>
+    <string name="track_drying">Drying</string>
+    <string name="track_wet">Wet</string>
+    <string name="track_showers">Damp in places</string>
+    <string name="sheet_air">Air</string>
+    <string name="sheet_track">Track</string>
+    <string name="sheet_humidity">Humidity</string>
+    <string name="sheet_wind">Wind</string>
+    <string name="sheet_rain">Precipitation</string>
+    <string name="sheet_state">Track condition</string>
+    <string name="weather_credit">Weather data by %1$s</string>
+    <string name="sheet_source_measured">Weather: Open-Meteo.com</string>
+    <string name="sheet_source_model">Model data. Weather: Open-Meteo.com</string>
+    <string name="info_forecast">Race forecast</string>
+    <string name="info_winner_prev">%1$s winner</string>
+    <string name="info_laps">Laps</string>
+
+    <string name="finished_caption">Season %1$s is over</string>
+    <string name="finished_title">Season results</string>
+    <string name="finished_points_label">points</string>
+    <string name="finished_open_leaderboard">Prediction results</string>
+    <string name="finished_drivers">Drivers →</string>
+    <string name="finished_teams">Teams →</string>
+    <string name="champion_driver">★ World champion</string>
+    <string name="champion_team">★ Constructors\' champion</string>
+
+    <string name="finished_next_hint">The %1$s calendar will be published later</string>
+
+    <string name="empty_caption">Season %1$s</string>
+    <string name="empty_future_title">No upcoming races yet</string>
+    <string name="empty_future_body">The calendar of the next season will appear here as soon as the race dates are known.</string>
+    <string name="empty_concluded_title">No results yet</string>
+    <string name="empty_concluded_body">Race results will appear here after the first race of the season.</string>
+
+    <string name="lineup_stats_season">Statistics for %1$s</string>
 </resources>

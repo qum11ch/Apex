@@ -135,9 +135,9 @@
 
                 <LinearLayout
                     android:id="@+id/main_future"
-                    style="@style/RaceLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
                     android:orientation="vertical">
@@ -146,9 +146,6 @@
                         android:id="@+id/recyclerView_future"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="5dp"
                         android:overScrollMode="never"
                         android:visibility="gone" />
 
@@ -156,13 +153,178 @@
                         android:id="@+id/shimmerFuture_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginEnd="15dp"
-                        android:layout_marginBottom="15dp"
                         app:duration="1500">
 
                         <include layout="@layout/shimmer_future_race" />
                     </com.facebook.shimmer.ShimmerFrameLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/seasonEmptyCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/empty_future_title"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/hero_text" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/empty_future_body"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/seasonFinishedCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
+                    android:orientation="vertical"
+                    android:paddingStart="18dp"
+                    android:paddingTop="16dp"
+                    android:paddingEnd="18dp"
+                    android:paddingBottom="16dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/finishedCaption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:letterSpacing="0.06"
+                        android:textAllCaps="true"
+                        android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                        android:textColor="@color/hero_accent"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/finished_title"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/hero_text" />
+
+                    <TextView
+                        android:id="@+id/finishedHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/finishedLeaderboardButton"
+                        style="@style/Widget.Apex.MainButton"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="14dp"
+                        android:text="@string/finished_open_leaderboard" />
+
+                    <TextView
+                        android:id="@+id/finishedDriversLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:letterSpacing="0.06"
+                        android:text="@string/finished_drivers"
+                        android:textAllCaps="true"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/finishedDriversRow"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="-3dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="-3dp"
+                        android:baselineAligned="false"
+                        android:orientation="horizontal" />
+
+                    <TextView
+                        android:id="@+id/finishedTeamsLabel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="18dp"
+                        android:letterSpacing="0.06"
+                        android:text="@string/finished_teams"
+                        android:textAllCaps="true"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/finishedTeamsList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:orientation="vertical" />
+                </LinearLayout>
+
+                <Button
+                    android:id="@+id/predict"
+                    style="@style/Widget.Apex.MainButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/predict_button"
+                    android:visibility="gone" />
+
+                <Button
+                    android:id="@+id/predictionsPageButton"
+                    style="@style/Widget.Apex.MainButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/prediction_button_text" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/userPredictionsButton"
+                        style="@style/Widget.Apex.MainButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_weight="1"
+                        android:text="@string/user_prediction_button_text"
+                        android:visibility="gone" />
+
+                    <Button
+                        android:id="@+id/leaderboardButton"
+                        style="@style/Widget.Apex.MainButton"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/leaderboard_title" />
                 </LinearLayout>
 
                 <TextView
@@ -178,20 +340,17 @@
 
                 <LinearLayout
                     android:id="@+id/main_past"
-                    style="@style/RaceLayoutInverted"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
                     android:orientation="vertical">
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/recyclerView_past"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="15dp"
-                        android:layout_marginBottom="5dp"
                         android:overScrollMode="never"
                         android:visibility="gone" />
 
@@ -199,62 +358,12 @@
                         android:id="@+id/shimmerPast_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="15dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_marginBottom="15dp"
                         app:duration="1500">
 
                         <include layout="@layout/shimmer_concluded_race_main" />
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
 
-                <Button
-                    android:id="@+id/predict"
-                    style="@style/Widget.Apex.MainButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/predict_button"
-                    android:visibility="gone" />
-                <Button
-                    android:id="@+id/winnersWDS"
-                    style="@style/Widget.Apex.MainButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/winners_wdc_button_text" />
-                <Button
-                    android:id="@+id/predictionsPageButton"
-                    style="@style/Widget.Apex.MainButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/prediction_button_text" />
-                <Button
-                    android:id="@+id/userPredictionsButton"
-                    style="@style/Widget.Apex.MainButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/user_prediction_button_text"
-                    android:visibility="gone" />
-                <Button
-                    android:id="@+id/leaderboardButton"
-                    style="@style/Widget.Apex.MainButton"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:text="@string/leaderboard_title" />
                 <TextView
                     android:id="@+id/top_drivers_header"
                     style="@style/Widget.Apex.SectionHeader"
@@ -317,8 +426,8 @@
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="20dp"
                     android:layout_marginEnd="10dp"
-                    android:textAlignment="textEnd"
-                    android:text="@string/top_3_teams" />
+                    android:text="@string/top_3_teams"
+                    android:textAlignment="textEnd" />
 
                 <LinearLayout
                     android:id="@+id/top_teams"
@@ -353,6 +462,17 @@
                         </LinearLayout>
                     </com.facebook.shimmer.ShimmerFrameLayout>
                 </LinearLayout>
+
+                <Button
+                    android:visibility="gone"
+                    android:id="@+id/winnersWDS"
+                    style="@style/Widget.Apex.MainButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/winners_wdc_button_text" />
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

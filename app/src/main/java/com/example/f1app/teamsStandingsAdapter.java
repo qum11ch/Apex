@@ -34,14 +34,32 @@ import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
+import com.bumptech.glide.RequestBuilder;
 
 public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAdapter.DataHolder>{
     Context context;
     List<teamsList> dataList;
 
+    private final java.util.Map<String, Long> stableIds = new java.util.HashMap<>();
+
+    private long nextStableId = 1L;
+
+    private long stableIdFor(String key) {
+        Long known = stableIds.get(key);
+
+        if (known != null) {
+            return known;
+        }
+
+        long created = nextStableId++;
+        stableIds.put(key, created);
+        return created;
+    }
+
     public teamsStandingsAdapter(Context context , List<teamsList> datum){
         this.context = context;
         dataList = datum;
+        setHasStableIds(true);
     }
 
     @NonNull
@@ -56,6 +74,18 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         return new DataHolder(view);
     }
 
+    @Override
+    public long getItemId(int position) {
+        teamsList item = dataList.get(position);
+
+        String id = item.getTeamId();
+        String identity = id == null || id.trim().isEmpty()
+                ? "empty-header"
+                : id.trim();
+
+        return stableIdFor(item.getSeason() + "|" + identity);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public void onBindViewHolder(@NonNull DataHolder holder, int position) {
@@ -63,72 +93,95 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         ArrayList<String> teamDrivers = datum.getDrivers();
         holder.teamName.setText(datum.getTeam());
 
-        holder.teamDriverFirst.setText(getFamilyName(teamDrivers.get(0)));
-        holder.teamDriverSecond.setText(getFamilyName(teamDrivers.get(1)));
+        String firstDriver = teamDrivers != null && !teamDrivers.isEmpty()
+                ? teamDrivers.get(0)
+                : null;
+
+        String secondDriver = teamDrivers != null && teamDrivers.size() > 1
+                ? teamDrivers.get(1)
+                : null;
+
+        holder.teamDriverFirst.setText(getFamilyName(firstDriver));
+        holder.teamDriverSecond.setText(getFamilyName(secondDriver));
 
         String darkTeamColor = datum.getTeamColor();
-
-        holder.team_car.setScaleX(1f);
-        holder.team_car.setImageDrawable(null);
-        holder.team_car.setImageBitmap(null);
 
         //String season = datum.getSeason();
 
         StorageReference mTeamCar = datum.getImageUrl();
 
+        String carKey = datum.getTeamId()
+                + "|" + datum.getSeason()
+                + "|" + (mTeamCar == null ? "" : mTeamCar.toString());
 
-        if (holder.carTarget != null) {
-            GlideApp.with(context).clear(holder.carTarget); // a late answer of the previous row is dropped
+        if (!carKey.equals(holder.carRequestKey)) {
+            holder.carRequestKey = carKey;
+
+            if (holder.carTarget != null) {
+                GlideApp.with(context).clear(holder.carTarget);
+                holder.carTarget = null;
+            }
+
+            holder.team_car.setScaleX(1f);
+            holder.team_car.setImageDrawable(null);
+
+            final Object carToken = new Object();
+            holder.carToken = carToken;
+
+            RequestBuilder<Bitmap> carRequest = GlideApp.with(context)
+                    .asBitmap()
+                    .load(mTeamCar)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .error(R.drawable.placeholder_car);
+
+            if ("2027".equals(datum.getSeason()) && mTeamCar != null) {
+                String currentPath = mTeamCar.getPath();
+                String previousPath = currentPath.replace("2027", "2026");
+
+                // Используем тот же bucket и структуру пути.
+                // Если года в пути нет, не повторяем тот же запрос.
+                if (!previousPath.equals(currentPath)) {
+                    StorageReference previousCar = mTeamCar.getRoot()
+                            .child(previousPath.startsWith("/")
+                                    ? previousPath.substring(1)
+                                    : previousPath);
+
+                    carRequest = carRequest.error(
+                            GlideApp.with(context)
+                                    .asBitmap()
+                                    .load(previousCar)
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .error(R.drawable.placeholder_car)
+                    );
+                }
+            }
+
+            holder.carTarget = carRequest.into(new CustomTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource,
+                                            @Nullable Transition<? super Bitmap> transition) {
+                    if (holder.carToken != carToken) {
+                        return; // the row now shows another team
+                    }
+
+                    int width = resource.getWidth();
+                    int height = resource.getHeight();
+
+                    Bitmap displayBitmap = Bitmap.createBitmap(resource, 0, 0,
+                            width / 2, height);
+
+                    holder.team_car.setImageBitmap(displayBitmap);
+                    holder.team_car.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    holder.team_car.setScaleX(1f);
+                }
+
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                }
+            });
+
         }
-
-        final Object carToken = new Object();
-        holder.carToken = carToken;
-
-        holder.carTarget = GlideApp.with(context)
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_car)
-                .load(mTeamCar)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource,
-                                                @Nullable Transition<? super Bitmap> transition) {
-                        if (holder.carToken != carToken) {
-                            return; // the row now shows another team
-                        }
-
-
-                        int width = resource.getWidth();
-                        int height = resource.getHeight();
-
-                        Bitmap leftHalf = Bitmap.createBitmap(resource, 0, 0,
-                                width / 2, height);
-
-                        Bitmap displayBitmap;
-                        // if (datum.getTeamId().equals("audi")) {
-                            //     Bitmap rightHalf = Bitmap.createBitmap(resource, width / 2, 0,
-                            //             width / 2, height);
-                            //     Matrix mirrorMatrix = new Matrix();
-                            //     mirrorMatrix.preScale(-1f, 1f);
-                            //     displayBitmap = Bitmap.createBitmap(
-                                    //             rightHalf, 0, 0,
-                            //             rightHalf.getWidth(), rightHalf.getHeight(),
-                            //             mirrorMatrix, true
-                                    //     );
-                            // } else {
-                        displayBitmap = leftHalf;
-                        // }
-
-                        holder.team_car.setImageBitmap(displayBitmap);
-                        holder.team_car.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        holder.team_car.setScaleX(1f);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-
-                    }
-                });
 
         //String mTeamId = datum.getTeamId();
 
@@ -254,6 +307,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         }
 
         holder.carToken = null;
+        holder.carRequestKey = null;
     }
 
     @Override
@@ -261,15 +315,42 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         return dataList.size();
     }
 
-    public static String getFamilyName (String driverFullname){
-        String[] parts = driverFullname.split(" ");
-        String driverFamilyName;
-        if(driverFullname.equals("Andrea Kimi Antonelli")){
-            driverFamilyName = parts[2];
-        }else{
-            driverFamilyName = parts[1];
+    public static String getFamilyName(String driverFullname) {
+        if (driverFullname == null) {
+            return "—";
         }
-        return driverFamilyName;
+
+        String name = driverFullname.trim().replaceAll("\\s+", " ");
+
+        if (name.isEmpty()
+                || "N/A".equalsIgnoreCase(name)
+                || "null".equalsIgnoreCase(name)
+                || "TBA".equalsIgnoreCase(name)
+                || "TBC".equalsIgnoreCase(name)) {
+            return "—";
+        }
+
+        // Эти фамилии состоят из нескольких слов.
+        String[] compoundSurnames = {
+                "de la Rosa",
+                "van der Garde",
+                "van der Merwe",
+                "de Vries",
+                "di Resta"
+        };
+
+        for (String surname : compoundSurnames) {
+            if (name.equalsIgnoreCase(surname)
+                    || name.toLowerCase(java.util.Locale.ROOT)
+                    .endsWith(" " + surname.toLowerCase(java.util.Locale.ROOT))) {
+                return surname;
+            }
+        }
+
+        // Одна фамилия или код остаются без изменений.
+        // Для полного имени берём последнее слово, в том числе у Antonelli.
+        int lastSpace = name.lastIndexOf(' ');
+        return lastSpace >= 0 ? name.substring(lastSpace + 1) : name;
     }
 
     public static class DataHolder extends RecyclerView.ViewHolder{
@@ -282,6 +363,7 @@ public class teamsStandingsAdapter extends RecyclerView.Adapter<teamsStandingsAd
         RelativeLayout team_layout;
         CardView cardView;
         LinearLayout itemTeam, itemTeamLine;
+        String carRequestKey;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             itemTeamLine = itemView.findViewById(R.id.item_team_line);

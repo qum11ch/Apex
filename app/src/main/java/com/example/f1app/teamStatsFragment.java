@@ -37,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 public class teamStatsFragment extends Fragment {
-
     private TextView fullTeamName, enterYear, teamBase, teamChief, techChief, chassis, powerUnit;
     private TextView championshipsValue, pointsValue, winsValue, podiumsValue, polesValue;
     private ImageView flag;
@@ -57,6 +56,7 @@ public class teamStatsFragment extends Fragment {
     private static final String DASH = "\u2013";
 
     private static final class LineupStat {
+        TextView seasonLabel;
         final String given;
         final String family;
         final TextView[] values;
@@ -71,6 +71,9 @@ public class teamStatsFragment extends Fragment {
 
     private final ArrayList<LineupStat> lineupStats = new ArrayList<>();
     private java.util.List<seasonDriverTable.Entry> seasonTable;
+
+    private String lineupStatsSeason;
+    private int lineupStatsToken = 0;
 
     public teamStatsFragment() {
         // required empty public constructor.
@@ -345,6 +348,9 @@ public class teamStatsFragment extends Fragment {
         lineupItems.clear();
         lineupStats.clear();
         seasonTable = null;
+        lineupStatsSeason = null;
+        final int requestToken = ++lineupStatsToken;
+        final View requestView = getView();
 
         LayoutInflater inflater = LayoutInflater.from(requireContext());
         int gap = Math.round(4 * getResources().getDisplayMetrics().density);
@@ -384,32 +390,43 @@ public class teamStatsFragment extends Fragment {
             }
 
             LineupStat stat = new LineupStat(names[0], names[1], statValues);
+            stat.seasonLabel = item.findViewById(R.id.lineup_stats_season);
             lineupStats.add(stat);
 
             item.setOnClickListener(v ->
                     openDriver(rootRef, driverFullName, names[0], names[1]));
 
-            rootRef.child("drivers").child(driverFullName).child("driversCode")
+            rootRef.child("drivers").child(driverFullName)
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            String code = snapshot.getValue(String.class);
-
-                            if (!isAdded() || code == null) {
+                            if (!isLineupRequestValid(requestToken, requestView)) {
                                 return;
                             }
+
+                            String code = snapshot.child("driversCode")
+                                    .getValue(String.class);
+
+                            String driverId = snapshot.child("driverId")
+                                    .getValue(String.class);
 
                             stat.code = code;
                             applyStat(stat);
 
-                            GlideApp.with(requireContext())
-                                    .load(FirebaseStorage.getInstance().getReference().child(
-                                            "drivers/" + code.toLowerCase() + "_"
-                                                    + currentSeason + ".png"))
-                                    .transition(DrawableTransitionOptions.withCrossFade())
-                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    .error(R.drawable.placeholder_driver)
-                                    .into(photo);
+                            int photoYear;
+
+                            try {
+                                photoYear = Integer.parseInt(currentSeason);
+                            } catch (RuntimeException error) {
+                                photoYear = LocalDate.now().getYear();
+                            }
+
+                            latestSeasonImages.loadDriver(
+                                    photo,
+                                    code,
+                                    driverId,
+                                    photoYear
+                            );
                         }
 
                         @Override
@@ -419,22 +436,159 @@ public class teamStatsFragment extends Fragment {
                     });
         }
 
-        seasonDriverTable.load(this, this, currentSeason, entries -> {
-            seasonTable = entries;
+        final String selectedSeason = currentSeason;
 
-            for (LineupStat item : lineupStats) {
-                applyStat(item);
+        seasonDriverTable.load(this, this, selectedSeason, entries -> {
+            if (!isLineupRequestValid(requestToken, requestView)) {
+                return;
             }
+
+            if (!entries.isEmpty()) {
+                showLineupTable(entries, selectedSeason);
+                return;
+            }
+
+            loadPreviousLineupStats(
+                    selectedSeason, requestToken, requestView);
         });
     }
 
+    private boolean isLineupRequestValid(int token, View expectedView) {
+        return isAdded()
+                && expectedView != null
+                && getView() == expectedView
+                && token == lineupStatsToken;
+    }
+
+    private void showLineupTable(
+            java.util.List<seasonDriverTable.Entry> entries,
+            String statsSeason
+    ) {
+        seasonTable = entries;
+        lineupStatsSeason = statsSeason;
+
+        for (LineupStat item : lineupStats) {
+            applyStat(item);
+        }
+    }
+
+    private void loadPreviousLineupStats(
+            String selectedSeason,
+            int requestToken,
+            View requestView
+    ) {
+        final String previousSeason;
+
+        try {
+            previousSeason = String.valueOf(
+                    Integer.parseInt(selectedSeason) - 1);
+        } catch (NumberFormatException error) {
+            return;
+        }
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("schedule")
+                .child("season")
+                .child(selectedSeason)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        if (!isLineupRequestValid(requestToken, requestView)) {
+                            return;
+                        }
+
+                        if (!isDefinitelyBeforeFirstRace(snapshot)) {
+                            return;
+                        }
+
+                        seasonDriverTable.load(
+                                teamStatsFragment.this,
+                                teamStatsFragment.this,
+                                previousSeason,
+                                entries -> {
+                                    if (!isLineupRequestValid(
+                                            requestToken, requestView)) {
+                                        return;
+                                    }
+
+                                    if (!entries.isEmpty()) {
+                                        showLineupTable(entries, previousSeason);
+                                    }
+                                });
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        Log.w("teamStats",
+                                "Cannot verify preseason state",
+                                error.toException());
+                    }
+                });
+    }
+
+    private boolean isDefinitelyBeforeFirstRace(DataSnapshot schedule) {
+        java.time.LocalDate today =
+                java.time.LocalDate.now(java.time.ZoneOffset.UTC);
+
+        java.time.format.DateTimeFormatter format =
+                java.time.format.DateTimeFormatter.ofPattern(
+                        "yyyy-M-d", java.util.Locale.ROOT);
+
+        boolean hasRace = false;
+
+        for (DataSnapshot race : schedule.getChildren()) {
+            if (raceWeekendStatus.isCanceled(race)) {
+                continue;
+            }
+
+            // Если уже записан результат, сезон точно начался.
+            if (raceWeekendStatus.isValidCode(
+                    race.child("RaceResults/raceWinnerCode")
+                            .getValue(String.class))) {
+                return false;
+            }
+
+            String date = race.child("raceDate").getValue(String.class);
+
+            if (date == null) {
+                return false;
+            }
+
+            try {
+                java.time.LocalDate raceDay =
+                        java.time.LocalDate.parse(date.trim(), format);
+
+                // В день первой гонки старые данные уже не подставляем.
+                if (!raceDay.isAfter(today)) {
+                    return false;
+                }
+
+                hasRace = true;
+            } catch (java.time.format.DateTimeParseException error) {
+                return false;
+            }
+        }
+
+        return hasRace;
+    }
+
     private void applyStat(LineupStat stat) {
+        for (TextView value : stat.values) {
+            value.setText(DASH);
+        }
+
+        stat.seasonLabel.setVisibility(View.GONE);
+
         if (seasonTable == null) {
             return;
         }
 
         seasonDriverTable.Entry entry =
-                seasonDriverTable.find(seasonTable, stat.code, stat.given, stat.family);
+                seasonDriverTable.find(
+                        seasonTable,
+                        stat.code,
+                        stat.given,
+                        stat.family);
 
         if (entry == null) {
             return;
@@ -443,6 +597,13 @@ public class teamStatsFragment extends Fragment {
         stat.values[0].setText(entry.place);
         stat.values[1].setText(entry.points);
         stat.values[2].setText(entry.wins);
+
+        if (lineupStatsSeason != null) {
+            stat.seasonLabel.setText(getString(
+                    R.string.lineup_stats_season,
+                    lineupStatsSeason));
+            stat.seasonLabel.setVisibility(View.VISIBLE);
+        }
     }
 
     private void openDriver(DatabaseReference rootRef, String driverFullName,
@@ -500,5 +661,11 @@ public class teamStatsFragment extends Fragment {
                 break;
         }
         return " ";
+    }
+
+    @Override
+    public void onDestroyView() {
+        ++lineupStatsToken;
+        super.onDestroyView();
     }
 }

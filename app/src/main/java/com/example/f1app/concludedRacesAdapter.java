@@ -1,6 +1,5 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.checkLightTheme;
 import static com.example.f1app.MainActivity.getStringByName;
 import static com.example.f1app.teamsStandingsActivity.localizeLocality;
 
@@ -10,24 +9,18 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -62,7 +55,6 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
             view = LayoutInflater.from(context).inflate(R.layout.item_concluded_race, parent, false);
         }
 
-
         return new DataHolder(view, viewType);
     }
 
@@ -88,20 +80,11 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         String monthStart = dateStart.format(DateTimeFormatter.ofPattern("MMM"));
         String monthEnd = dateEnd.format(DateTimeFormatter.ofPattern("MMM"));
 
-        //String monthStartFull = dateStart.format(DateTimeFormatter.ofPattern("M"));
-        //String monthEndFull = dateEnd.format(DateTimeFormatter.ofPattern("M"));
-
         if (datum.isCanceled()){
             holder.podiumNamesLayout.setVisibility(View.GONE);
-            if (getItemViewType(position) == 1){
-                holder.podiumImageLayout.setVisibility(View.GONE);
-            }
             holder.cnd.setVisibility(View.VISIBLE);
         }else {
             holder.podiumNamesLayout.setVisibility(View.VISIBLE);
-            if (getItemViewType(position) == 1){
-                holder.podiumImageLayout.setVisibility(View.VISIBLE);
-            }
             holder.cnd.setVisibility(View.GONE);
         }
 
@@ -117,29 +100,11 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + mSeason;
         holder.raceName.setText(pastRaceName);
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference();
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("circuits").orderByChild("circuitName").equalTo(datum.getCircuitName()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot circtuitSnap: snapshot.getChildren()){
-                    String circuitId = circtuitSnap.child("circuitId").getValue(String.class);
-                    holder.circuitName.setText(context.getString(getStringByName(circuitId + "_text")));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        circuitNames.bind(context, datum.getCircuitName(), holder.circuitName);
 
         String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){
             ArrayList<String> localizedData = localizeLocality(datum.getLocality(), datum.getCountry(), context);
-            //String country = localizedData.get(0);
-            //String cityName = localizedData.get(1);
             locale = localizedData.get(2);
         }else{
             String cityName = datum.getLocality();
@@ -163,46 +128,18 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         holder.day_start.setText(dayStart);
         holder.day_end.setText(dayEnd);
 
-
         String firstPlace_code = datum.getWinnerDriverCode();
         String secondPlace_code = datum.getSecondPlaceCode();
         String thirdPlace_code = datum.getThirdPlaceCode();
-        holder.firstPlace_code.setText(firstPlace_code);
-        holder.secondPlace_code.setText(secondPlace_code);
-        holder.thirdPlace_code.setText(thirdPlace_code);
 
-        if (holder.getItemViewType() == 1){
-            StorageReference mWinnerImage;
-            StorageReference mSecondImage;
-            StorageReference mThirdImage;
-
-            if (!checkLightTheme(context)){
-                holder.stripedImgFirst.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-                holder.stripedImgSecond.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-                holder.stripedImgThird.setBackground(ContextCompat.getDrawable(context, R.drawable.background_striped_lines_item_night));
-            }
-
-            mWinnerImage = storageRef.child("drivers/" + firstPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            mSecondImage = storageRef.child("drivers/" + secondPlace_code.toLowerCase() + "_" + mSeason + ".png");
-            mThirdImage = storageRef.child("drivers/" + thirdPlace_code.toLowerCase() + "_" + mSeason + ".png");
-
-            GlideApp.with(context)
-                    .load(mWinnerImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(holder.firstPlace_image);
-
-            GlideApp.with(context)
-                    .load(mSecondImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(holder.secondPlace_image);
-
-            GlideApp.with(context)
-                    .load(mThirdImage)
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.placeholder_driver)
-                    .into(holder.thirdPlace_image);
+        if (holder.podium != null) {
+            // the first row of the list: cards with photos
+            holder.podium.bind(mSeason, round, firstPlace_code, secondPlace_code, thirdPlace_code);
+        } else {
+            // the other rows: codes only
+            holder.firstPlace_code.setText(firstPlace_code);
+            holder.secondPlace_code.setText(secondPlace_code);
+            holder.thirdPlace_code.setText(thirdPlace_code);
         }
 
         holder.constraintLayout.setOnClickListener(v -> {
@@ -236,47 +173,29 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
     public static class DataHolder extends RecyclerView.ViewHolder{
         TextView round, day_start, day_end, raceMonth, raceCountry, raceName, circuitName,
                 secondPlace_code, firstPlace_code, thirdPlace_code, cnd;
-        ImageView secondPlace_image, firstPlace_image, thirdPlace_image;
         ConstraintLayout constraintLayout;
-        LinearLayout podiumNamesLayout, podiumImageLayout;
-        ShapeableImageView stripedImgFirst, stripedImgSecond, stripedImgThird;
+        LinearLayout podiumNamesLayout;
+        podiumCards podium;
+
         public DataHolder(@NonNull View itemView, int viewType) {
             super(itemView);
+            round = itemView.findViewById(R.id.round);
+            day_start = itemView.findViewById(R.id.day_start);
+            day_end = itemView.findViewById(R.id.day_end);
+            raceMonth = itemView.findViewById(R.id.raceMonth);
+            raceCountry = itemView.findViewById(R.id.raceCountry);
+            raceName = itemView.findViewById(R.id.raceName);
+            circuitName = itemView.findViewById(R.id.circuitName);
+            constraintLayout = itemView.findViewById(R.id.main_layout);
+            podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
+            cnd = itemView.findViewById(R.id.cnd_layout);
+
             if (viewType == 1){
-                round = itemView.findViewById(R.id.round);
-                day_start = itemView.findViewById(R.id.day_start);
-                day_end = itemView.findViewById(R.id.day_end);
-                raceMonth = itemView.findViewById(R.id.raceMonth);
-                raceCountry = itemView.findViewById(R.id.raceCountry);
-                raceName = itemView.findViewById(R.id.raceName);
-                circuitName = itemView.findViewById(R.id.circuitName);
-                secondPlace_code = itemView.findViewById(R.id.secondPlace_code);
-                firstPlace_code = itemView.findViewById(R.id.firstPlace_code);
-                thirdPlace_code = itemView.findViewById(R.id.thirdPlace_code);
-                constraintLayout = itemView.findViewById(R.id.main_layout);
-                secondPlace_image = itemView.findViewById(R.id.secondPlace_image);
-                firstPlace_image = itemView.findViewById(R.id.firstPlace_image);
-                thirdPlace_image = itemView.findViewById(R.id.thirdPlace_image);
-                podiumImageLayout = itemView.findViewById(R.id.podiumImage_layout);
-                podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
-                cnd = itemView.findViewById(R.id.cnd_layout);
-                stripedImgFirst = itemView.findViewById(R.id.stripedImg_first);
-                stripedImgSecond = itemView.findViewById(R.id.stripedImg_second);
-                stripedImgThird = itemView.findViewById(R.id.stripedImg_third);
+                podium = new podiumCards(itemView.findViewById(R.id.podiumRow), true);
             } else{
-                round = itemView.findViewById(R.id.round);
-                day_start = itemView.findViewById(R.id.day_start);
-                day_end = itemView.findViewById(R.id.day_end);
-                raceMonth = itemView.findViewById(R.id.raceMonth);
-                raceCountry = itemView.findViewById(R.id.raceCountry);
-                raceName = itemView.findViewById(R.id.raceName);
-                circuitName = itemView.findViewById(R.id.circuitName);
                 secondPlace_code = itemView.findViewById(R.id.secondPlace_code);
                 firstPlace_code = itemView.findViewById(R.id.firstPlace_code);
                 thirdPlace_code = itemView.findViewById(R.id.thirdPlace_code);
-                constraintLayout = itemView.findViewById(R.id.main_layout);
-                podiumNamesLayout = itemView.findViewById(R.id.podiumNamesLayout);
-                cnd = itemView.findViewById(R.id.cnd_layout);
             }
         }
     }

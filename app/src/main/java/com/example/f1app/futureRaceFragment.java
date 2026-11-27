@@ -29,6 +29,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
+import android.widget.TextView;
+
 public class futureRaceFragment extends Fragment {
     List<futureRaceData> datum;
     private futureRaceAdapter adapter;
@@ -142,11 +145,11 @@ public class futureRaceFragment extends Fragment {
                             }
                         });
             }
-        }else{
-            ShapeableImageView stripedImage = view.findViewById(R.id.stripedImage);
-            if (!checkLightTheme(requireContext())){
-                stripedImage.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_striped_lines_item_night));
-            }
+        } else {
+            TextView caption = view.findViewById(R.id.emptyCaption);
+            caption.setText(getString(R.string.empty_caption, String.valueOf(LocalDate.now().getYear())));
+
+            view.findViewById(R.id.emptyPastSeasons).setOnClickListener(v -> openPastSeasons());
 
             LockableNestedScrollView scrollView = view.findViewById(R.id.scrollView);
 
@@ -154,6 +157,13 @@ public class futureRaceFragment extends Fragment {
                 scrollView.setScrollingEnabled(true);
             }
         }
+    }
+
+    private void openPastSeasons() {
+        Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
+        intent.putExtra("currentSeason", requireActivity().getIntent().getStringExtra("currentSeason"));
+        startActivity(intent);
+        requireActivity().overridePendingTransition(0, 0);
     }
 
     private void setupFooterClearance(View pageRoot) {

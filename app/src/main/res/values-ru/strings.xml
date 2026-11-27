@@ -312,6 +312,11 @@
     <string name="bahrain_grand_prix_in_malaysia_text">Гран-при Бахрейна в Малазии</string>
     <string name="argentine_grand_prix_text">Гран-при Аргентины</string>
     <string name="san_marino_grand_prix_text">Гран-при Сан-Марино</string>
+    <string name="portuguese_grand_prix_text">Гран-при Португалии</string>
+    <string name="french_grand_prix_text">Гран-при Франции</string>
+    <string name="turkish_grand_prix_text">Гран-при Турции</string>
+    <string name="styrian_grand_prix_text">Гран-при Штирии</string>
+    <string name="russian_grand_prix_text">Гран-при России</string>
 
     <string name="barcelona_grand_prix_locality">Испания</string>
     <string name="brazilian_grand_prix_locality">Бразилия</string>
@@ -340,6 +345,11 @@
     <string name="são_paulo_grand_prix_locality">Бразилия</string>
     <string name="united_states_grand_prix_locality">США</string>
     <string name="bahrain_grand_prix_in_malaysia_locality">Малазия</string>
+    <string name="portuguese_grand_prix_locality">Португалия</string>
+    <string name="french_grand_prix_locality">Франция</string>
+    <string name="styrian_grand_prix_locality">Штирия</string>
+    <string name="russian_grand_prix_locality">Россия</string>
+    <string name="turkish_grand_prix_locality">Турция</string>
 
     <string name="times">раз</string>
 
@@ -369,6 +379,10 @@
     <string name="americas_text">Трасса Америк</string>
     <string name="madring_text">Мадринг</string>
     <string name="sepang_text">Сепанг</string>
+    <string name="portimao_text">Международный автодром Алгарве</string>
+    <string name="ricard_text">Автодром Поль Рикар</string>
+    <string name="istanbul_text">Истанбул Парк</string>
+    <string name="sochi_text">Сочи Автодром</string>
 
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>
@@ -1096,8 +1110,8 @@
     <string name="ps_clear_search">Очистить поиск</string>
     <string name="ps_view_as_tiles">Показать плитками</string>
     <string name="ps_view_as_list">Показать списком</string>
-    <string name="ps_history_button">Результаты прошлых лет</string>
-    <string name="ps_history_subtitle">Результаты прошлых лет</string>
+    <string name="ps_history_button">Результаты других лет</string>
+    <string name="ps_history_subtitle">Результаты других лет</string>
 
     <string name="public_stats_rank_global">в общем зачёте</string>
     <string name="public_stats_rank_season">в сезоне</string>
@@ -1261,4 +1275,97 @@
     <string name="tracks_car_best">Лучшая машина</string>
     <string name="tracks_car_second">Вторая машина</string>
     <string name="tracks_note">Данные за сезоны %1$d–%2$d, как в таблицах результатов.</string>
+
+    <string name="weather_title_race">Прогноз погоды на гонку</string>
+    <string name="weather_title_now">Погода сейчас на трассе</string>
+    <string name="weather_title_weekend">Погода на уик-энд</string>
+    <string name="weather_feels">ощущается %1$s</string>
+    <string name="weather_rain">Дождь %1$d%%</string>
+    <string name="weather_humidity">Влажность %1$d%%</string>
+    <string name="weather_wind">%1$s м/с</string>
+    <string name="weather_available_from">Прогноз появится с %1$s</string>
+    <string name="weather_updated_ago">Обновлено %1$d ч назад</string>
+    <string name="weather_unavailable">Нет данных о погоде. Проверьте подключение.</string>
+    <string name="weather_clear">Ясно</string>
+    <string name="weather_partly">Переменная облачность</string>
+    <string name="weather_cloud">Пасмурно</string>
+    <string name="weather_fog">Туман</string>
+    <string name="weather_rain_condition">Дождь</string>
+    <string name="weather_snow">Снег</string>
+    <string name="weather_storm">Гроза</string>
+    <string name="weather_title">Прогноз погоды</string>
+
+    <string name="countdown_starts">%1$s начнётся через</string>
+    <string name="countdown_ends">%1$s закончится через</string>
+    <string name="countdown_days">%1$d д %2$02d ч %3$02d мин</string>
+    <string name="live_badge">LIVE</string>
+    <string name="weather_for_session">Погода: %1$s</string>
+    <string name="weather_wind_full">Ветер %1$s</string>
+    <string name="weather_rain_short">дождь %1$d%%</string>
+    <string name="session_short_first_practice_event">ПР1</string>
+    <string name="session_short_second_practice_event">ПР2</string>
+    <string name="session_short_third_practice_event">ПР3</string>
+    <string name="session_short_sprint_quali_event">СПР-КВАЛ</string>
+    <string name="session_short_sprint_event">СПРИНТ</string>
+    <string name="session_short_quali_event">КВАЛ</string>
+    <string name="session_short_race_event">ГОНКА</string>
+
+    <string name="round_pill">R%1$s</string>
+    <string name="unit_days">дн</string>
+    <string name="unit_hours">ч</string>
+    <string name="unit_minutes">мин</string>
+    <string name="unit_seconds">сек</string>
+    <string name="podium_pole">Поул</string>
+    <string name="podium_fastest">Быстрый круг</string>
+
+    <string name="fact_climber">Больше всех обогнал</string>
+    <string name="fact_retired">Сошли</string>
+    <string name="fact_retired_value">%1$d из %2$d</string>
+    <string name="race_laps_total">Кругов: %1$d</string>
+
+    <string name="session_until">до %1$s</string>
+    <string name="in_days">через %1$d д</string>
+    <string name="in_hours">через %1$d ч</string>
+    <string name="in_minutes">через %1$d мин</string>
+    <string name="weather_precip_mm">%1$s мм</string>
+    <string name="weather_dry">сухо</string>
+    <string name="fact_weather">Погода в гонке</string>
+
+    <string name="weather_raining">дождь</string>
+    <string name="weather_rain_brief">кратко дождь</string>
+    <string name="track_dry">Сухая</string>
+    <string name="track_drying">Подсыхающая</string>
+    <string name="track_wet">Мокрая</string>
+    <string name="track_showers">Местами влажная</string>
+    <string name="sheet_air">Воздух</string>
+    <string name="sheet_track">Трасса</string>
+    <string name="sheet_humidity">Влажность</string>
+    <string name="sheet_wind">Ветер</string>
+    <string name="sheet_rain">Осадки</string>
+    <string name="sheet_state">Состояние трассы</string>
+    <string name="weather_credit">Погода: %1$s</string>
+    <string name="sheet_source_measured">Погода: Open-Meteo.com</string>
+    <string name="sheet_source_model">Расчёт модели. Погода: Open-Meteo.com</string>
+    <string name="info_forecast">Прогноз на гонку</string>
+    <string name="info_winner_prev">Победитель %1$s</string>
+    <string name="info_laps">Кругов</string>
+
+    <string name="finished_caption">Сезон %1$s завершён</string>
+    <string name="finished_title">Итоги сезона</string>
+    <string name="finished_open_leaderboard">Итоги прогнозов</string>
+    <string name="finished_points_label">очков</string>
+    <string name="finished_drivers">Пилоты →</string>
+    <string name="finished_teams">Команды →</string>
+    <string name="champion_driver">★ Чемпион мира</string>
+    <string name="champion_team">★ Кубок конструкторов</string>
+
+    <string name="finished_next_hint">Расписание сезона %1$s появится позже</string>
+
+    <string name="empty_caption">Сезон %1$s</string>
+    <string name="empty_future_title">Новых этапов пока нет</string>
+    <string name="empty_future_body">Календарь следующего сезона появится здесь, как только будут известны даты этапов.</string>
+    <string name="empty_concluded_title">Результатов пока нет</string>
+    <string name="empty_concluded_body">Результаты этапов появятся здесь после первой гонки сезона.</string>
+
+    <string name="lineup_stats_season">Статистика за %1$s</string>
 </resources>

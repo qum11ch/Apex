@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/transparent"
@@ -23,59 +21,51 @@
             android:orientation="vertical"
             android:paddingBottom="80dp">
 
-            <RelativeLayout
-                style="@style/ScheduleEmptyLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp">
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_hero_card"
+                android:orientation="vertical"
+                android:padding="20dp">
 
-                <RelativeLayout
-                    android:id="@+id/emptyFutureRace_layout"
+                <TextView
+                    android:id="@+id/emptyCaption"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:letterSpacing="0.06"
+                    android:textAllCaps="true"
+                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+                    android:textColor="@color/hero_accent"
+                    android:textSize="12sp" />
+
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginTop="10dp"
+                    android:text="@string/empty_future_title"
+                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                    android:textColor="@color/hero_text"
+                    android:textSize="22sp" />
 
-                    <com.google.android.material.imageview.ShapeableImageView
-                        android:id="@+id/stripedImage"
-                        style="@style/StripedLinesWhite"
-                        android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="10dp"
-                        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerCircle.RightSide" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/empty_future_body"
+                    android:textColor="@color/hero_text_secondary"
+                    android:textSize="14sp" />
 
-                    <TextView
-                        android:id="@+id/header_text"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:text="@string/empty_race_list_header"
-                        android:textColor="@color/text_color_schedule"
-                        android:textSize="28sp"
-                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
-
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_below="@id/header_text"
-                        android:layout_marginStart="10dp"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="16dp"
-                        android:text="@string/empty_race_list_future"
-                        android:textColor="@color/text_color_schedule"
-                        android:textStyle="normal"
-                        android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
-
-                </RelativeLayout>
-
-            </RelativeLayout>
-
+                <Button
+                    android:id="@+id/emptyPastSeasons"
+                    style="@style/Widget.Apex.MainButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="18dp"
+                    android:text="@string/ps_past_seasons_button" />
+            </LinearLayout>
         </LinearLayout>
-
     </com.example.f1app.LockableNestedScrollView>
-
 </FrameLayout>

@@ -96,8 +96,6 @@ public class futureRaceScheduleFragment extends Fragment {
         RecyclerView recyclerView = view.findViewById(R.id.recyclerview_schedule);
         // recyclerView.setHasFixedSize(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(requireContext());
-        linearLayoutManager.setReverseLayout(true);
-        linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
         if (!getArguments().isEmpty()){
@@ -202,8 +200,21 @@ public class futureRaceScheduleFragment extends Fragment {
 
             adapter = new scheduleAdapter(getActivity(), datum, false);
             recyclerView.setAdapter(adapter);
+            adapter.setOnSessionClick(sessionKey -> {
+                for (scheduleData item : datum) {
+                    if (sessionKey.equals(item.getEventName()) && item.getResults() != null) {
+                        sessionResultsSheet.show(getParentFragmentManager(),
+                                getString(getStringByName(sessionKey + "_text")), sessionKey, item.getResults());
+                        return;
+                    }
+                }
+            });
+            adapter.setOnWeatherClick((key, weather) -> weatherSheet.show(
+                    requireContext(), getString(getStringByName(key + "_text")), weather));
 
             getRaceSchedule(mRaceName, currentYear);
+            loadWeekendWeather(view, currentYear);
+            futureHeaderInfo.loadHistory(view, currentYear, getArguments().getString("circuitId"));
 
             //CollapsingToolbarLayout collapsingToolbarLayout = view.findViewById(R.id.collapsing_toolbar);
             AppBarLayout appBarLayout = view.findViewById(R.id.appbar);
@@ -219,6 +230,19 @@ public class futureRaceScheduleFragment extends Fragment {
             currentTimer = null;
         }
         isFragmentActive = false;
+    }
+
+    private void loadWeekendWeather(View root, String season) {
+        TextView note = root.findViewById(R.id.weather_note);
+
+        weekendWeather.load(requireContext(), season, mRaceName, (byKey, text) -> {
+            if (!isAdded()) return;
+
+            adapter.setWeather(byKey);
+            futureHeaderInfo.bindWeather(root, byKey.get("race_event"));
+            sourceLink.apply(note, text);
+            note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
+        });
     }
 
     private void setupWeekendPredictions(Button button, String season, String roundText) {
@@ -293,7 +317,7 @@ public class futureRaceScheduleFragment extends Fragment {
                 datum.add(firstPracticeEvent);
 
                 String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
-                if (sprintDate.equals("N/A")){
+                if (sprintDate == null || sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
                     scheduleData secondPracticeEvent = new scheduleData(secondPractice, "second_practice_event");

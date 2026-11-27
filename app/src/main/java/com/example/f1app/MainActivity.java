@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
     private mainDriversStandingsAdapter driversAdapter;
     private mainTeamsStandingsAdapter teamsAdapter;
     private mainPastRaceAdapter pastRaceAdapter;
-    private futureRaceAdapter futureRaceAdapter;
     private String currentSeason;
     private FirebaseStorage storage;
     private StorageReference storageRef;
@@ -99,6 +98,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean accountNavigationInProgress = false;
     private Button allDriversButton;
     private int progressDelayMs = 500;
+    private mainFutureRaceAdapter futureRaceAdapter;
+    private seasonFinishedBlock seasonFinished;
+    private String predictionSeason;
+    private boolean seasonOver = false;
+    private int concludedRounds = 0;
+    private int totalRounds = 0;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -211,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
         pastRaceAdapter = new mainPastRaceAdapter(this, datumPast);
         rvPast.setAdapter(pastRaceAdapter);
 
-        futureRaceAdapter = new futureRaceAdapter(this, datumFuture);
+        futureRaceAdapter = new mainFutureRaceAdapter(this, datumFuture);
         rvFuture.setAdapter(futureRaceAdapter);
 
         Button winnersWDC = findViewById(R.id.winnersWDS);
@@ -331,6 +336,54 @@ public class MainActivity extends AppCompatActivity {
 
         Button predict = findViewById(R.id.predict);
 
+        seasonFinished = new seasonFinishedBlock(
+                findViewById(R.id.seasonFinishedCard),
+                findViewById(R.id.futureRace_header),
+                futureLayout,
+                findViewById(R.id.predict),
+                new seasonFinishedBlock.Actions() {
+                    @Override
+                    public void openDrivers() {
+                        startActivity_getSeason(driversStandingsActivity.class);
+                    }
+
+                    @Override
+                    public void openTeams() {
+                        startActivity_getSeason(teamsStandingsActivity.class);
+                    }
+
+                    @Override
+                    public void openLeaderboard() {
+                        Intent intent = new Intent(MainActivity.this, leaderboardActivity.class);
+                        intent.putExtra("currentSeason", predictionSeason);
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onFinishedChanged(boolean finished) {
+                        seasonOver = finished;
+                        updateContenders();
+                        updateProgress();
+                    }
+                },
+                findViewById(R.id.top_drivers_header),
+                findViewById(R.id.top_drivers),
+                findViewById(R.id.top_teams_header),
+                findViewById(R.id.top_teams),
+                findViewById(R.id.leaderboardButton));
+
+        seasonFinished.bindSources(datumDrivers, datumTeams);
+        seasonFinished.applyRemembered();
+
+        RecyclerView.AdapterDataObserver standingsObserver = new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                seasonFinished.update();
+            }
+        };
+        driversAdapter.registerAdapterDataObserver(standingsObserver);
+        teamsAdapter.registerAdapterDataObserver(standingsObserver);
+
         DatabaseReference rootRef = database.getReference();
 
         rootRef.child("status")
@@ -338,22 +391,28 @@ public class MainActivity extends AppCompatActivity {
                         new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                String fromStatus = snapshot.child("season").getValue(String.class);
 
-                                currentSeason = snapshot.child("season").getValue(String.class);
-
-                                if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                                if (fromStatus == null || fromStatus.trim().isEmpty()) {
                                     showError("Сезон не найден в Firebase");
                                     return;
                                 }
 
-                                Boolean enabled  = snapshot.child("enablePredicts")
-                                        .getValue(Boolean.class);
+                                Boolean enabled = snapshot.child("enablePredicts").getValue(Boolean.class);
 
-                                predict.setVisibility(Boolean.TRUE.equals(enabled) ? View.VISIBLE : View.GONE);
+                                // the button of the neuro prediction stays hidden when the season is over
+                                predict.setVisibility(Boolean.TRUE.equals(enabled) && !seasonOver ? View.VISIBLE : View.GONE);
 
-                                getTeamStanding(currentSeason);
-                                getDriversStanding(currentSeason);
-                                getSchedule(currentYear, currentDate);
+                                seasonResolver.resolve(fromStatus, season -> {
+                                    if (isFinishing() || isDestroyed()) return;
+
+                                    currentSeason = season;
+
+                                    getTeamStanding(currentSeason);
+                                    getDriversStanding(currentSeason);
+                                    getSchedule(currentYear, currentDate);
+                                    seasonFinished.refresh(currentYear);
+                                });
                             }
 
                             @Override
@@ -386,6 +445,11 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
+    }
+
+    private void updateContenders() {
+        findViewById(R.id.winnersWDS).setVisibility(
+                concludedRounds > 0 && !seasonOver ? View.VISIBLE : View.GONE);
     }
 
     private void openAccountOrLogin() {
@@ -481,6 +545,13 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (seasonOver) {
+            // the results of a finished season do not change: only check the state again
+            seasonFinished.refresh(String.valueOf(LocalDate.now().getYear()));
+            swipeLayout.setRefreshing(false);
+            return;
+        }
+
         String currentYear = Integer.toString(LocalDate.now().getYear());
 
         cachedList.reset(datumDrivers);
@@ -512,15 +583,20 @@ public class MainActivity extends AppCompatActivity {
                     .addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot snapshot) {
-                            currentSeason = snapshot.child("season").getValue(String.class);
+                            String fromStatus = snapshot.child("season").getValue(String.class);
 
-                            if (currentSeason == null || currentSeason.trim().isEmpty()) {
+                            if (fromStatus == null || fromStatus.trim().isEmpty()) {
                                 swipeLayout.setRefreshing(false);
                                 showError("Firebase error");
                                 return;
                             }
 
-                            loadMainData(currentYear);
+                            seasonResolver.resolve(fromStatus, season -> {
+                                if (isFinishing() || isDestroyed()) return;
+
+                                currentSeason = season;
+                                loadMainData(currentYear);
+                            });
                         }
 
                         @Override
@@ -539,6 +615,7 @@ public class MainActivity extends AppCompatActivity {
         getTeamStanding(currentSeason);
         getDriversStanding(currentSeason);
         getSchedule(currentYear, LocalDate.now());
+        seasonFinished.refresh(currentYear);
 
         swipeLayout.setRefreshing(false);
     }
@@ -590,6 +667,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void postProgress(int progress, long totalRounds) {
+        concludedRounds = progress;
+        this.totalRounds = (int) totalRounds;
+        updateContenders();
+        updateProgress();
+
         cachedList.putExtra("main_progress", String.valueOf(progress), String.valueOf(totalRounds));
         String strProgress = progress + "/" + totalRounds;
         if (progress>10 && progress<=13){
@@ -606,6 +688,12 @@ public class MainActivity extends AppCompatActivity {
             raceProgress.setProgress(progress);
             raceProgressText.setText(strProgress);
         }, progressDelayMs);
+    }
+
+    private void updateProgress() {
+        boolean show = totalRounds > 0 && !seasonOver;
+        findViewById(R.id.progress_header).setVisibility(show ? View.VISIBLE : View.GONE);
+        findViewById(R.id.race_progress_layout).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     public void showError(String message) {
@@ -812,6 +900,11 @@ public class MainActivity extends AppCompatActivity {
                                                     smth.setSeason(season);
                                                     smth.setImageUrl(mTeamCar);
                                                     smth.setTeamColor(mTeamColor);
+                                                    teamCardColors.ensure(smth, () -> {
+                                                        if (!isFinishing() && !isDestroyed()) {
+                                                            teamsAdapter.notifyDataSetChanged();
+                                                        }
+                                                    });
                                                     datumTeams.add(smth);
                                                     hideShimmer(rvTeams, sfTeams);
                                                     teamsAdapter.notifyDataSetChanged();
@@ -865,8 +958,12 @@ public class MainActivity extends AppCompatActivity {
                                                 smth.setSeason(season);
                                                 smth.setImageUrl(mTeamCar);
                                                 smth.setTeamColor(teamColor);
-
                                                 hideShimmer(rvTeams, sfTeams);
+                                                teamCardColors.ensure(smth, () -> {
+                                                    if (!isFinishing() && !isDestroyed()) {
+                                                        teamsAdapter.notifyDataSetChanged();
+                                                    }
+                                                });
                                                 datumTeams.add(smth);
                                                 teamsAdapter.notifyDataSetChanged();
                                             }

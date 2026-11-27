@@ -86,11 +86,9 @@ public class scheduleActivity extends AppCompatActivity {
 
         currentSeason = mCurrentSeason;
 
-        // season_year_title
+        // the year of the schedule that is shown below
         android.widget.TextView seasonYearTitle = findViewById(R.id.seasonYear);
-        if (mCurrentSeason != null && !mCurrentSeason.trim().isEmpty()) {
-            seasonYearTitle.setText(mCurrentSeason.trim());
-        }
+        seasonYearTitle.setText(currentYear);
 
         swipeLayout = findViewById(R.id.swipe_layout);
         swipeLayout.setOnRefreshListener(() -> {
@@ -451,7 +449,7 @@ public class scheduleActivity extends AppCompatActivity {
 
                 if(!concludedRoundNumber.isEmpty()){
                     concludedFragmentBundle.putStringArrayList("raceRound", concludedRoundNumber);
-                    concludedFragmentBundle.putString("season", mCurrentSeason);
+                    concludedFragmentBundle.putString("season", year);
                     concludedFragmentBundle.putString("parent", "schedule");
                 }
                 if(!futureRaceRoundNumber.isEmpty()){

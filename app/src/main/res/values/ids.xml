@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="driver_photo_request_key" type="id" />
+    <item name="latest_season_image_token" type="id" />
+</resources>

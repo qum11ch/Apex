@@ -1,93 +1,157 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <androidx.cardview.widget.CardView
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="0dp"
-        android:id="@+id/cardView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:id="@+id/content_layout"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:baselineAligned="false"
-            android:elevation="10dp"
-            style="@style/ItemStyle"
-            android:backgroundTint="@color/items_color"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:minHeight="68dp"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingEnd="4dp">
+
+    <LinearLayout
+        android:layout_width="68dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/eventTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-            <LinearLayout
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="5dp"
-                android:orientation="horizontal"
-                android:layout_height="match_parent"
-                android:layout_width="wrap_content"
-                android:gravity="center">
-                <TextView
-                    android:id="@+id/eventDay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                <TextView
-                    android:textAllCaps="true"
-                    android:id="@+id/eventMonth"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textStyle="normal"
-                    android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                    android:textColor="@color/text_color_main" />
-            </LinearLayout>
-            <RelativeLayout
-                android:paddingBottom="10dp"
-                android:paddingTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <TextView
-                    android:id="@+id/eventName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:textAlignment="center"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-                    android:textSize="22sp"/>
-                <TextView
-                    android:textStyle="normal"
-                    android:textAlignment="center"
-                    android:id="@+id/eventTime"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/eventName"
-                    android:layout_marginEnd="8dp"
-                    android:textSize="22sp"
-                    android:textColor="@color/text_color_thirdly"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.ForInfo" />
+            android:includeFontPadding="false"
+            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
+            android:textColor="@color/hero_text"
+            android:textSize="14sp"
+            android:maxLines="1"/>
 
-                <TextView
-                    android:id="@+id/eventResults"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/eventTime"
-                    android:layout_marginTop="6dp"
-                    android:layout_marginEnd="8dp"
-                    android:textAlignment="center"
-                    android:textColor="@color/grey"
-                    android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-                    android:textSize="14sp"
-                    android:letterSpacing="0.03"
-                    android:visibility="gone" />
-            </RelativeLayout>
+        <TextView
+            android:id="@+id/eventDuration"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="28dp"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/railTop"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <View
+                android:id="@+id/railBottom"
+                android:layout_width="2dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/eventDot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:layout_gravity="center" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/eventName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+            android:textColor="@color/hero_text"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/eventStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="3dp"
+            android:includeFontPadding="false"
+            android:letterSpacing="0.04"
+            android:textAllCaps="true"
+            android:textColor="@color/hero_accent"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/eventResults"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:ellipsize="end"
+            android:includeFontPadding="false"
+            android:maxLines="1"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="12sp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/weatherBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="8dp"
+        android:gravity="end"
+        android:minWidth="56dp"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/eventWeatherIcon"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:importantForAccessibility="no" />
+
+            <TextView
+                android:id="@+id/eventTemp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/hero_text"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/eventWeatherDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:includeFontPadding="false"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+</LinearLayout>

@@ -29,6 +29,8 @@ import com.google.firebase.storage.StorageReference;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.bumptech.glide.RequestBuilder;
+
 public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsStandingsAdapter.DataHolder>{
     Context context;
     List<teamsList> dataList;
@@ -74,54 +76,81 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         //FirebaseStorage storage = FirebaseStorage.getInstance();
         //StorageReference storageRef = storage.getReference();
 
-        if (holder.carTarget != null) {
-            GlideApp.with(context).clear(holder.carTarget); // a late answer of the previous row is dropped
+        String carKey = datum.getTeamId()
+                + "|" + datum.getSeason()
+                + "|" + (mTeamCar == null ? "" : mTeamCar.toString());
+
+        if (!carKey.equals(holder.carRequestKey)) {
+            holder.carRequestKey = carKey;
+
+            if (holder.carTarget != null) {
+                GlideApp.with(context).clear(holder.carTarget);
+                holder.carTarget = null;
+            }
+
+            holder.teamCar.setScaleX(1f);
+            holder.teamCar.setImageDrawable(null);
+
+            final Object carToken = new Object();
+            holder.carToken = carToken;
+
+            RequestBuilder<Bitmap> carRequest = GlideApp.with(context)
+                    .asBitmap()
+                    .load(mTeamCar)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .error(R.drawable.placeholder_car);
+
+            if ("2027".equals(datum.getSeason()) && mTeamCar != null) {
+                String currentPath = mTeamCar.getPath();
+                String previousPath = currentPath.replace("2027", "2026");
+
+                // Используем тот же bucket и структуру пути.
+                // Если года в пути нет, не повторяем тот же запрос.
+                if (!previousPath.equals(currentPath)) {
+                    StorageReference previousCar = mTeamCar.getRoot()
+                            .child(previousPath.startsWith("/")
+                                    ? previousPath.substring(1)
+                                    : previousPath);
+
+                    carRequest = carRequest.error(
+                            GlideApp.with(context)
+                                    .asBitmap()
+                                    .load(previousCar)
+                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    .error(R.drawable.placeholder_car)
+                    );
+                }
+            }
+
+            holder.carTarget = carRequest.into(new CustomTarget<Bitmap>() {
+                @Override
+                public void onResourceReady(@NonNull Bitmap resource,
+                                            @Nullable Transition<? super Bitmap> transition) {
+                    if (holder.carToken != carToken) {
+                        return; // the row now shows another team
+                    }
+
+                    int width = resource.getWidth();
+                    int height = resource.getHeight();
+
+                    Bitmap displayBitmap = Bitmap.createBitmap(resource, 0, 0,
+                            width / 2, height);
+
+                    holder.teamCar.setImageBitmap(displayBitmap);
+                    holder.teamCar.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                    holder.teamCar.setScaleX(1f);
+                }
+
+                @Override
+                public void onLoadCleared(@Nullable Drawable placeholder) {
+
+                }
+            });
+
         }
 
-        final Object carToken = new Object();
-        holder.carToken = carToken;
-
-        holder.carTarget = GlideApp.with(context)
-                .asBitmap()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .error(R.drawable.placeholder_car)
-                .load(mTeamCar)
-                .into(new CustomTarget<Bitmap>() {
-                    @Override
-                    public void onResourceReady(@NonNull Bitmap resource,
-                                                @Nullable Transition<? super Bitmap> transition) {
-                        if (holder.carToken != carToken) {
-                            return; // the row now shows another team
-                        }
-
-
-                        int width = resource.getWidth();
-                        int height = resource.getHeight();
-
-                        boolean isAudi = "audi".equals(datum.getTeamId());
-
-                        int halfWidth = width / 2;
-                        int startX = isAudi ? halfWidth : 0;
-
-                        Bitmap displayBitmap = Bitmap.createBitmap(
-                                resource,
-                                startX,
-                                0,
-                                halfWidth,
-                                height
-                        );
-
-                        holder.teamCar.setScaleX(isAudi ? -1f : 1f);
-                        holder.teamCar.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        holder.teamCar.setImageBitmap(displayBitmap);
-                    }
-
-                    @Override
-                    public void onLoadCleared(@Nullable Drawable placeholder) {
-                    }
-                });
-
         int colorRgb = teamColors.parse(darkTeamColor);
+
         int alpha = 0xCC;
         int colorWithAlpha = (alpha << 24) | (colorRgb & 0x00FFFFFF);
 
@@ -179,6 +208,7 @@ public class mainTeamsStandingsAdapter extends RecyclerView.Adapter<mainTeamsSta
         CardView cardView;
         ImageView teamCar;
         LinearLayout itemTeam;
+        String carRequestKey;
         public DataHolder(@NonNull View itemView) {
             super(itemView);
             itemTeam = itemView.findViewById(R.id.item_team);
