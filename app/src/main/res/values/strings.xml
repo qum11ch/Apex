@@ -1439,4 +1439,10 @@
     <string name="announcement_cta_leaderboard">Leaderboard</string>
     <string name="announcement_cta_update">Update</string>
     <string name="announcement_cta_link">Open</string>
+
+    <string name="update_latest">You already have the latest version</string>
+    <string name="update_ready">The update is downloaded</string>
+    <string name="update_install">Install</string>
+    <string name="update_store_error">Could not open the store</string>
+    <string name="announcement_open_error">Could not open the link</string>
 </resources>

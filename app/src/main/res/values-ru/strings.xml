@@ -1420,4 +1420,10 @@
     <string name="announcement_cta_leaderboard">Рейтинг</string>
     <string name="announcement_cta_update">Обновить</string>
     <string name="announcement_cta_link">Открыть</string>
+
+    <string name="update_latest">У вас уже последняя версия</string>
+    <string name="update_ready">Обновление загружено</string>
+    <string name="update_install">Установить</string>
+    <string name="update_store_error">Не удалось открыть магазин</string>
+    <string name="announcement_open_error">Не удалось открыть ссылку</string>
 </resources>
