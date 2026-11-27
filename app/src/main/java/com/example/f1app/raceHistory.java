@@ -7,11 +7,12 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Finds the earlier runnings of a Grand Prix that have results in the database. */
+/** Finds the other runnings of a Grand Prix (earlier and later seasons) that have results in the database. */
 final class raceHistory {
 
     /** The oldest season that is looked at. Years without data simply do not appear. */
@@ -55,8 +56,32 @@ final class raceHistory {
         }
     }
 
+    /** The keys the race can have in the season of the target year, the most likely one first. */
+    private static List<String> candidates(String raceName, String gpYear, int target, int gp) {
+        String earlier = earlierName(raceName, gpYear);
+        List<String> names = new ArrayList<>();
+
+        if (target < gp) {
+            names.add(earlier);
+            names.add(raceName);
+        } else {
+            names.add(raceName);
+            names.add(earlier);
+        }
+
+        List<String> unique = new ArrayList<>();
+
+        for (String name : names) {
+            if (!unique.contains(name)) {
+                unique.add(name);
+            }
+        }
+
+        return unique;
+    }
+
     static void load(String raceName, String gpYear, Callback callback) {
-        int gp;
+        final int gp;
 
         try {
             gp = Integer.parseInt(gpYear);
@@ -65,54 +90,74 @@ final class raceHistory {
             return;
         }
 
-        final String earlier = earlierName(raceName, gpYear);
-        final int total = gp - FIRST_SEASON;
+        final int last = Math.max(LocalDate.now().getYear(), gp);
+        final List<Integer> years = new ArrayList<>();
 
-        if (total <= 0) {
+        for (int year = last; year >= FIRST_SEASON; year--) {
+            if (year != gp) {
+                years.add(year);
+            }
+        }
+
+        if (years.isEmpty()) {
             callback.onLoaded(new ArrayList<>());
             return;
         }
 
         final List<Entry> found = new ArrayList<>();
-        final int[] pending = {total};
+        final int[] pending = {years.size()};
 
-        for (int year = gp - 1; year >= FIRST_SEASON; year--) {
-            final int season = year;
+        for (int season : years) {
+            probe(season, candidates(raceName, gpYear, season, gp), 0, found, () -> {
+                pending[0]--;
 
-            FirebaseDatabase.getInstance().getReference()
-                    .child("schedule").child("season").child(String.valueOf(season)).child(earlier)
-                    .addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot race) {
-                            boolean cancelled = race.child("Canceled").getValue(Boolean.class) != null;
-
-                            if (race.hasChildren() && !cancelled) {
-                                found.add(new Entry(
-                                        season,
-                                        earlier,
-                                        pastRaceItem.nz(race.child("RaceResults/raceWinnerCode").getValue(String.class)),
-                                        pastRaceItem.nz(race.child("RaceResults/raceSecondCode").getValue(String.class)),
-                                        pastRaceItem.nz(race.child("RaceResults/raceThirdCode").getValue(String.class))
-                                ));
-                            }
-
-                            finish();
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError error) {
-                            finish();
-                        }
-
-                        private void finish() {
-                            pending[0]--;
-
-                            if (pending[0] == 0) {
-                                Collections.sort(found, (a, b) -> Integer.compare(b.year, a.year));
-                                callback.onLoaded(found);
-                            }
-                        }
-                    });
+                if (pending[0] == 0) {
+                    Collections.sort(found, (a, b) -> Integer.compare(b.year, a.year));
+                    callback.onLoaded(found);
+                }
+            });
         }
+    }
+
+    /** Tries the keys one by one until the season has the race; a race without a winner is not listed. */
+    private static void probe(int season, List<String> names, int index, List<Entry> found, Runnable done) {
+        if (index >= names.size()) {
+            done.run();
+            return;
+        }
+
+        final String name = names.get(index);
+
+        FirebaseDatabase.getInstance().getReference()
+                .child("schedule").child("season").child(String.valueOf(season)).child(name)
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot race) {
+                        if (!race.hasChildren()) {
+                            probe(season, names, index + 1, found, done);
+                            return;
+                        }
+
+                        boolean cancelled = race.child("Canceled").getValue(Boolean.class) != null;
+                        String winner = race.child("RaceResults/raceWinnerCode").getValue(String.class);
+
+                        if (!cancelled && raceWeekendStatus.isValidCode(winner)) {
+                            found.add(new Entry(
+                                    season,
+                                    name,
+                                    pastRaceItem.nz(winner),
+                                    pastRaceItem.nz(race.child("RaceResults/raceSecondCode").getValue(String.class)),
+                                    pastRaceItem.nz(race.child("RaceResults/raceThirdCode").getValue(String.class))
+                            ));
+                        }
+
+                        done.run();
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+                        done.run();
+                    }
+                });
     }
 }

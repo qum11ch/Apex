@@ -372,17 +372,6 @@ public class MainActivity extends AppCompatActivity {
                 findViewById(R.id.top_teams),
                 findViewById(R.id.leaderboardButton));
 
-        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            findViewById(R.id.mainHeader).setOnLongClickListener(v -> {
-                seasonFinishedBlock.debugForce = !seasonFinishedBlock.debugForce;
-                seasonFinished.refresh(currentSeason != null
-                        ? currentSeason : String.valueOf(LocalDate.now().getYear()));
-                Toast.makeText(this, "season finished: " + seasonFinishedBlock.debugForce,
-                        Toast.LENGTH_SHORT).show();
-                return true;
-            });
-        }
-
         seasonFinished.bindSources(datumDrivers, datumTeams);
 
         RecyclerView.AdapterDataObserver standingsObserver = new RecyclerView.AdapterDataObserver() {
@@ -414,6 +403,14 @@ public class MainActivity extends AppCompatActivity {
                                         .getValue(Boolean.class);
 
                                 predict.setVisibility(Boolean.TRUE.equals(enabled) ? View.VISIBLE : View.GONE);
+
+                                boolean otherYear = !currentSeason.equals(String.valueOf(LocalDate.now().getYear()));
+                                ((TextView) findViewById(R.id.top_drivers_header)).setText(otherYear
+                                        ? getString(R.string.top_drivers) + " " + currentSeason
+                                        : getString(R.string.top_drivers));
+                                ((TextView) findViewById(R.id.top_teams_header)).setText(otherYear
+                                        ? getString(R.string.top_3_teams) + " " + currentSeason
+                                        : getString(R.string.top_3_teams));
 
                                 getTeamStanding(currentSeason);
                                 getDriversStanding(currentSeason);

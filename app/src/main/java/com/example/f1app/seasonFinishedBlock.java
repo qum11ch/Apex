@@ -2,7 +2,6 @@ package com.example.f1app;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -47,9 +46,6 @@ final class seasonFinishedBlock {
 
         void onFinishedChanged(boolean finished);
     }
-
-    /** Only honoured in a debuggable build: long press on the title of the home screen. */
-    static boolean debugForce = false;
 
     private final Context context;
     private final Actions actions;
@@ -120,11 +116,6 @@ final class seasonFinishedBlock {
      */
     private void refresh(String season, boolean allowPrevious, boolean lenient, boolean fallback) {
         final int mine = ++token;
-
-        if (debugForce && (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            showFinished(season, false);
-            return;
-        }
 
         FirebaseDatabase.getInstance().getReference().child("schedule").child("season").child(season)
                 .addListenerForSingleValueEvent(new ValueEventListener() {

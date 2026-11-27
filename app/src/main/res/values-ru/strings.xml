@@ -1096,8 +1096,8 @@
     <string name="ps_clear_search">Очистить поиск</string>
     <string name="ps_view_as_tiles">Показать плитками</string>
     <string name="ps_view_as_list">Показать списком</string>
-    <string name="ps_history_button">Результаты прошлых лет</string>
-    <string name="ps_history_subtitle">Результаты прошлых лет</string>
+    <string name="ps_history_button">Результаты других лет</string>
+    <string name="ps_history_subtitle">Результаты других лет</string>
 
     <string name="public_stats_rank_global">в общем зачёте</string>
     <string name="public_stats_rank_season">в сезоне</string>

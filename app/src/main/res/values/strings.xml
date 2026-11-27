@@ -1117,8 +1117,8 @@
     <string name="ps_clear_search">Clear search</string>
     <string name="ps_view_as_tiles">Show as tiles</string>
     <string name="ps_view_as_list">Show as list</string>
-    <string name="ps_history_button">Past results</string>
-    <string name="ps_history_subtitle">Past results</string>
+    <string name="ps_history_button">Results of other years</string>
+    <string name="ps_history_subtitle">Results of other years</string>
 
     <string name="public_stats_rank_global">overall</string>
     <string name="public_stats_rank_season">this season</string>
