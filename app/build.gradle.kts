@@ -77,4 +77,5 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
     implementation("androidx.work:work-runtime:2.12.0")
+    implementation("ru.rustore.sdk:appupdate:10.0.0")
 }

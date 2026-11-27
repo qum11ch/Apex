@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -199,9 +201,14 @@ final class announcementBlock {
                 if (url != null && url.startsWith("https://")) {
                     open(url);
                 }
+            } else {
+                Log.w("Announcement", "unknown action " + action);
             }
-        } catch (ActivityNotFoundException ignored) {
-            // nothing can open the link on this device
+        } catch (ActivityNotFoundException error) {
+            Log.w("Announcement", "Nothing can open the action", error);
+            Toast.makeText(context, R.string.announcement_open_error, Toast.LENGTH_LONG).show();
+        } catch (RuntimeException error) {
+            Log.e("Announcement", "Action failed", error);
         }
     }
 
