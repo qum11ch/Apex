@@ -95,9 +95,37 @@ public class concludedRaceFragment extends Fragment {
             ArrayList<String> concludedRaceRoundNumber = getArguments().getStringArrayList("raceRound");
             adapterType = parent;
 
-            cachedList.restore(datum, recyclerView.getAdapter(), recyclerView, shimmerFrameLayout);
-            totalItemsToLoad = concludedRaceRoundNumber.size();
+            if ("schedule".equals(adapterType)) {
+                concludedAdapter = new concludedRacesAdapter(
+                        requireActivity(), datum);
+
+                pastSeasonAdapter = null;
+                recyclerView.setAdapter(concludedAdapter);
+            } else {
+                pastSeasonAdapter = new pastSeasonsRacesAdapter(
+                        requireActivity(), datum);
+
+                concludedAdapter = null;
+                recyclerView.setAdapter(pastSeasonAdapter);
+            }
+
+            cachedList.restore(
+                    datum,
+                    recyclerView.getAdapter(),
+                    recyclerView,
+                    shimmerFrameLayout
+            );
+
+            totalItemsToLoad = concludedRaceRoundNumber != null
+                    ? concludedRaceRoundNumber.size()
+                    : 0;
+
             loadedItemsCount = 0;
+
+            if (totalItemsToLoad == 0) {
+                hideShimmer();
+                return;
+            }
 
             for (int i = 0; i < concludedRaceRoundNumber.size(); i++) {
                 String raceRound = concludedRaceRoundNumber.get(i);
@@ -112,7 +140,12 @@ public class concludedRaceFragment extends Fragment {
                                 for (DataSnapshot ds : snapshot.getChildren()) {
                                     String winnerCode = ds.child("RaceResults/raceWinnerCode").getValue(String.class);
                                     Boolean isCanceled = ds.child("Canceled").getValue(Boolean.class);
-                                    if ((winnerCode != null && !winnerCode.equals("N/A")) || isCanceled != null) {
+                                    boolean canceled = Boolean.TRUE.equals(isCanceled);
+
+                                    boolean hasWinner = winnerCode != null
+                                            && !winnerCode.trim().isEmpty()
+                                            && !"N/A".equalsIgnoreCase(winnerCode.trim());
+                                    if (hasWinner || canceled) {
                                         String raceName = ds.child("Circuit/raceName").getValue(String.class);
                                         String dateStart = ds.child("FirstPractice/firstPracticeDate").getValue(String.class);
                                         String dateEnd = ds.child("raceDate").getValue(String.class);
@@ -133,7 +166,7 @@ public class concludedRaceFragment extends Fragment {
                                                                 circuitName, raceCountry, raceLocation,
                                                                 winnerCode, secondCode, thirdCode, season
                                                         );
-                                                        concludedRace.setCanceled(isCanceled != null);
+                                                        concludedRace.setCanceled(canceled);
 
                                                         datum.add(concludedRace);
                                                         if (adapterType.equals("schedule")) {
