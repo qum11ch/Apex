@@ -106,4 +106,9 @@
     <color name="hero_accent">#FF3B30</color>
     <color name="hero_chip_bg">#1FFFFFFF</color>
     <color name="hero_podium_plate">#14FFFFFF</color>
+
+    <color name="widget_glow_start">#2EFF3B30</color>
+    <color name="widget_glow_end">#00FF3B30</color>
+    <color name="widget_glow_live_start">#52FF3B30</color>
+    <color name="widget_seg_future">#4A4A52</color>
 </resources>

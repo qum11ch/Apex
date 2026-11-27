@@ -120,4 +120,9 @@
     <color name="podium_gold">#9A7B2F</color>
     <color name="podium_silver">#6B7580</color>
     <color name="podium_bronze">#8A5A37</color>
+
+    <color name="widget_glow_start">#26D50A00</color>
+    <color name="widget_glow_end">#00D50A00</color>
+    <color name="widget_glow_live_start">#47D50A00</color>
+    <color name="widget_seg_future">#D5D8DE</color>
 </resources>
