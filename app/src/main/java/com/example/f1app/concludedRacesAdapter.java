@@ -100,21 +100,7 @@ public class concludedRacesAdapter extends RecyclerView.Adapter<concludedRacesAd
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + mSeason;
         holder.raceName.setText(pastRaceName);
 
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("circuits").orderByChild("circuitName").equalTo(datum.getCircuitName()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot circtuitSnap: snapshot.getChildren()){
-                    String circuitId = circtuitSnap.child("circuitId").getValue(String.class);
-                    holder.circuitName.setText(context.getString(getStringByName(circuitId + "_text")));
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
+        circuitNames.bind(context, datum.getCircuitName(), holder.circuitName);
 
         String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){

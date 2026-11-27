@@ -1,152 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/main_layout"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-    <androidx.cardview.widget.CardView
-        app:cardBackgroundColor="@android:color/transparent"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="0dp"
-        android:id="@+id/cardView"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_hero_card"
+    android:orientation="vertical"
+    android:paddingStart="18dp"
+    android:paddingTop="16dp"
+    android:paddingEnd="18dp"
+    android:paddingBottom="18dp">
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-        <LinearLayout
-            android:layout_marginTop="10dp"
-            style="@style/ItemStyleInverted"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:weightSum="5">
-            <RelativeLayout
-                android:layout_marginStart="5dp"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1.1"
-                android:gravity="center">
-                <LinearLayout
-                    android:layout_marginBottom="3dp"
-                    android:id="@+id/header_layout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_centerInParent="true">
-                    <TextView
-                        style="@style/ShimmerStyle"
-                        android:layout_width="30dp"
-                        android:layout_height="match_parent"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays"/>
-                    <TextView
-                        android:textColor="@color/grey"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:gravity="center"
-                        android:text="-"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                    <TextView
-                        style="@style/ShimmerStyle"
-                        android:layout_width="30dp"
-                        android:layout_height="match_parent"
-                        android:textAppearance="@style/TextStyle.Audiowide.ForDays" />
-                </LinearLayout>
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:layout_width="match_parent"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginEnd="3dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/header_layout"
-                    android:paddingStart="3dp"
-                    android:paddingEnd="3dp"/>
-            </RelativeLayout>
-            <RelativeLayout
-                android:paddingBottom="5dp"
-                android:layout_width="0dp"
-                android:layout_weight="3.9"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:paddingEnd="8dp"
-                android:paddingTop="10dp">
-                <View
-                    style="@style/ShimmerStyle"
-                    android:id="@+id/roundLayout"
-                    android:layout_width="100dp"
-                    android:layout_height="20dp"
-                    android:layout_marginBottom="5dp"/>
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:layout_below="@id/roundLayout"
-                    android:id="@+id/raceCountry"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp"
-                    android:includeFontPadding="false"
-                    android:lineSpacingExtra="0dp"
-                    android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader" />
+        <View
+            style="@style/ShimmerStyle"
+            android:layout_width="90dp"
+            android:layout_height="14dp" />
 
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:id="@+id/raceName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/raceCountry"
-                    android:gravity="bottom"
-                    android:lineSpacingExtra="0dp"
-                    />
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-                <TextView
-                    style="@style/ShimmerStyle"
-                    android:id="@+id/circuitName"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/raceName"
-                    android:layout_marginTop="2dp"
-                    android:lineSpacingExtra="0dp"
-                    />
+        <View
+            style="@style/ShimmerStyle"
+            android:layout_width="44dp"
+            android:layout_height="22dp" />
+    </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/circuitName"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginTop="2dp"
-                    android:gravity="bottom"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
-                    <View
-                        style="@style/ShimmerStyle"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"/>
+    <View
+        style="@style/ShimmerStyle"
+        android:layout_width="260dp"
+        android:layout_height="26dp"
+        android:layout_marginTop="12dp" />
 
-                    <View
-                        style="@style/ShimmerStyle"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"/>
+    <View
+        style="@style/ShimmerStyle"
+        android:layout_width="170dp"
+        android:layout_height="14dp"
+        android:layout_marginTop="8dp" />
 
-                    <View
-                        style="@style/ShimmerStyle"
-                        android:layout_marginStart="5dp"
-                        android:layout_marginEnd="5dp"
-                        android:layout_width="0dp"
-                        android:layout_height="30dp"
-                        android:layout_weight="1"
-                        android:orientation="horizontal"/>
-                </LinearLayout>
-            </RelativeLayout>
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <View
+            style="@style/ShimmerStyle"
+            android:layout_width="0dp"
+            android:layout_height="170dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1" />
+
+        <View
+            style="@style/ShimmerStyle"
+            android:layout_width="0dp"
+            android:layout_height="170dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1" />
+
+        <View
+            style="@style/ShimmerStyle"
+            android:layout_width="0dp"
+            android:layout_height="170dp"
+            android:layout_marginStart="3dp"
+            android:layout_marginEnd="3dp"
+            android:layout_weight="1" />
+    </LinearLayout>
+</LinearLayout>

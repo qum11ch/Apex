@@ -95,20 +95,8 @@ public class mainPastRaceAdapter extends RecyclerView.Adapter<mainPastRaceAdapte
         String localeRaceName = datum.getRaceName().toLowerCase().replaceAll("\\s+", "_");
         String pastRaceName = context.getString(getStringByName(localeRaceName + "_text")) + " " + currentYear;
         holder.raceName.setText(pastRaceName);
-        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        rootRef.child("circuits").orderByChild("circuitName").equalTo(datum.getCircuitName()).addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                for(DataSnapshot circtuitSnap: snapshot.getChildren()){
-                    String circuitId = circtuitSnap.child("circuitId").getValue(String.class);
-                    holder.circuitName.setText(context.getString(getStringByName(circuitId + "_text")));
-                }
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Toast.makeText(context, "Fail while getting data from Firebase " + error.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
+
+        circuitNames.bind(context, datum.getCircuitName(), holder.circuitName);
 
         String locale;
         if (Locale.getDefault().getLanguage().equals("ru")){

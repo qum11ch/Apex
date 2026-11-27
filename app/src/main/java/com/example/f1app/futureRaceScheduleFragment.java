@@ -240,7 +240,7 @@ public class futureRaceScheduleFragment extends Fragment {
 
             adapter.setWeather(byKey);
             futureHeaderInfo.bindWeather(root, byKey.get("race_event"));
-            note.setText(text);
+            sourceLink.apply(note, text);
             note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
         });
     }

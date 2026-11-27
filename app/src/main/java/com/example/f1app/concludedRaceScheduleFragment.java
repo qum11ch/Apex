@@ -229,7 +229,7 @@ public class concludedRaceScheduleFragment extends Fragment {
             if (!isAdded()) return;
 
             adapter.setWeather(byKey);
-            note.setText(text);
+            sourceLink.apply(note, text);
             note.setVisibility(text.isEmpty() ? View.GONE : View.VISIBLE);
 
             if (podium != null) {

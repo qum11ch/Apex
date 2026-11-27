@@ -1349,9 +1349,9 @@
     <string name="sheet_wind">Wind</string>
     <string name="sheet_rain">Precipitation</string>
     <string name="sheet_state">Track condition</string>
-    <string name="sheet_source_measured">F1 measurements (OpenF1)</string>
-    <string name="sheet_source_model">Open-Meteo model</string>
-    <string name="weather_note_measured">F1 measurements (OpenF1), Open-Meteo.com</string>
+    <string name="weather_credit">Weather data by %1$s</string>
+    <string name="sheet_source_measured">Weather: Open-Meteo.com</string>
+    <string name="sheet_source_model">Model data. Weather: Open-Meteo.com</string>
     <string name="info_forecast">Race forecast</string>
     <string name="info_winner_prev">%1$s winner</string>
     <string name="info_laps">Laps</string>

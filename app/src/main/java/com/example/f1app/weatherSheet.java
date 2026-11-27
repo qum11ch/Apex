@@ -147,9 +147,9 @@ public class weatherSheet extends neuroBaseSheet {
             content.addView(wide, wideParams);
         }
 
-        TextView source = text(getString(a.getBoolean(ARG_MEASURED)
-                        ? R.string.sheet_source_measured : R.string.sheet_source_model),
-                12, R.color.text_color_thirdly);
+        TextView source = text("", 12, R.color.text_color_thirdly);
+        sourceLink.apply(source, getString(a.getBoolean(ARG_MEASURED)
+                ? R.string.sheet_source_measured : R.string.sheet_source_model));
         LinearLayout.LayoutParams sourceParams = new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         sourceParams.topMargin = dp(18);

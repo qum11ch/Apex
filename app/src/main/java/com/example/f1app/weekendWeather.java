@@ -345,7 +345,7 @@ final class weekendWeather {
             }
         }
 
-        final String note = app.getString(R.string.weather_note_measured);
+        final String note = "Open-Meteo.com";
 
         if (jobs.isEmpty()) {
             callback.onLoaded(base, base.isEmpty() ? "" : "Open-Meteo.com");

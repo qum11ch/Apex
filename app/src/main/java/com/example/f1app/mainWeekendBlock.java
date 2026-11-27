@@ -414,7 +414,7 @@ final class mainWeekendBlock {
             return;
         }
 
-        weatherNote.setText(note);
+        sourceLink.apply(weatherNote, note);
         weatherNote.setVisibility(note.isEmpty() ? View.GONE : View.VISIBLE);
         weatherMessage.setVisibility(View.GONE);
         weatherBody.setVisibility(View.VISIBLE);

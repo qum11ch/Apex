@@ -1329,9 +1329,9 @@
     <string name="sheet_wind">Ветер</string>
     <string name="sheet_rain">Осадки</string>
     <string name="sheet_state">Состояние трассы</string>
-    <string name="sheet_source_measured">Замеры F1 (OpenF1)</string>
-    <string name="sheet_source_model">Модель Open-Meteo</string>
-    <string name="weather_note_measured">Замеры F1 (OpenF1), Open-Meteo.com</string>
+    <string name="weather_credit">Погода: %1$s</string>
+    <string name="sheet_source_measured">Погода: Open-Meteo.com</string>
+    <string name="sheet_source_model">Расчёт модели. Погода: Open-Meteo.com</string>
     <string name="info_forecast">Прогноз на гонку</string>
     <string name="info_winner_prev">Победитель %1$s</string>
     <string name="info_laps">Кругов</string>
