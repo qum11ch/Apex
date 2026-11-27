@@ -121,7 +121,7 @@ final class weekendWeather {
         }
 
         boolean archive = first.isBefore(today.minusDays(PAST_LIMIT_DAYS));
-        String hourly = "temperature_2m,precipitation,weather_code,wind_speed_10m"
+        String hourly = "temperature_2m,precipitation,weather_code,wind_speed_10m,relative_humidity_2m"
                 + (archive ? "" : ",precipitation_probability");
 
         StringBuilder url = new StringBuilder(archive
@@ -172,6 +172,7 @@ final class weekendWeather {
         JSONArray prob = hourly.optJSONArray("precipitation_probability");
         JSONArray code = hourly.optJSONArray("weather_code");
         JSONArray wind = hourly.optJSONArray("wind_speed_10m");
+        JSONArray humidityArray = hourly.optJSONArray("relative_humidity_2m");
 
         int n = times.length();
         long[] stamps = new long[n];
@@ -259,13 +260,16 @@ final class weekendWeather {
 
             double windKmh = wind == null ? Double.NaN : wind.optDouble(nearest, Double.NaN);
 
-            result.put(s.key, new sessionWeather(
+            sessionWeather weather = new sessionWeather(
                     weatherCard.iconFor(wmo),
                     iconRain,
                     weatherCard.degrees(temp.optDouble(nearest, Double.NaN)),
                     rainText,
                     weatherCard.windText(app, windKmh),
-                    wet));
+                    wet);
+            weather.condition = weatherCard.conditionText(app, wmo);
+            weather.humidity = humidityArray == null ? Double.NaN : humidityArray.optDouble(nearest, Double.NaN);
+            result.put(s.key, weather);
         }
 
         return result;
@@ -501,8 +505,11 @@ final class weekendWeather {
         int icon = rainIcon ? R.drawable.ic_weather_rain
                 : model != null && !model.iconRain ? model.icon : R.drawable.ic_weather_cloud;
 
-        return new sessionWeather(icon, rainIcon, weatherCard.degrees(air), rainText, wind,
+        sessionWeather measured = new sessionWeather(icon, rainIcon, weatherCard.degrees(air), rainText, wind,
                 share >= 0.25, true, air, track, humidity, windFull, state);
+        measured.condition = rainIcon ? app.getString(R.string.weather_rain_condition)
+                : model != null ? model.condition : "";
+        return measured;
     }
 
     // ---------- helpers ----------

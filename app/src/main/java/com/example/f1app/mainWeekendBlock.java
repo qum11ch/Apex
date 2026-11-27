@@ -55,6 +55,9 @@ final class mainWeekendBlock {
     private final TextView cdA, cdB, cdC, capA, capB, capC;
     private boolean daysMode;
 
+    private java.util.Map<String, sessionWeather> byKey = new java.util.HashMap<>();
+    private String sourceNote = "";
+
     mainWeekendBlock(View root) {
         context = root.getContext();
 
@@ -109,8 +112,14 @@ final class mainWeekendBlock {
 
         hide();
         boundKey = key;
+        byKey = new java.util.HashMap<>();
+        sourceNote = "";
 
         loader.fetchRace(year, raceName, r -> {
+            if (!key.equals(boundKey)) {
+                return;
+            }
+
             result = r;
             sessions = r.race.sessions;
             selectedKey = null;
@@ -119,6 +128,19 @@ final class mainWeekendBlock {
             buildChips();
             block.setVisibility(View.VISIBLE);
             start();
+
+            // the same weather as on the race pages: session window plus F1 measurements
+            weekendWeather.load(context, year, raceName, (map, note) -> {
+                if (!key.equals(boundKey) || sessions == null) {
+                    return;
+                }
+
+                byKey = map;
+                sourceNote = note;
+                buildChips();
+                shownState = "";
+                refresh();
+            });
         });
     }
 
@@ -272,7 +294,7 @@ final class mainWeekendBlock {
         chipsRow.removeAllViews();
         chips.clear();
 
-        boolean anyWeather = !result.sessions.isEmpty();
+        boolean anyWeather = !byKey.isEmpty();
         DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("EEE", Locale.getDefault());
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -296,7 +318,7 @@ final class mainWeekendBlock {
             addCentered(chip, text(time.format(timeFormat), 14, R.color.hero_text, true), 2);
 
             if (anyWeather) {
-                weatherForecast.Hour hour = result.sessions.get(s.key);
+                sessionWeather sw = byKey.get(s.key);
 
                 LinearLayout row = new LinearLayout(context);
                 row.setGravity(Gravity.CENTER);
@@ -311,9 +333,9 @@ final class mainWeekendBlock {
                 row.addView(temp, new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-                if (hour != null) {
-                    icon.setImageResource(weatherCard.iconFor(hour.code));
-                    temp.setText(weatherCard.degrees(hour.temp));
+                if (sw != null) {
+                    icon.setImageResource(sw.icon);
+                    temp.setText(sw.temp);
                 } else {
                     temp.setText(" ");
                     row.setVisibility(View.INVISIBLE);
@@ -371,17 +393,16 @@ final class mainWeekendBlock {
     // ---------- the weather of the chosen session ----------
 
     private void showWeather() {
-        weatherForecast.Hour hour = result.sessions.get(selectedKey);
-        boolean current = false;
+        sessionWeather sw = byKey.get(selectedKey);
+        weatherForecast.Hour current = null;
 
-        if (hour == null && result.data != null && result.data.current != null) {
-            hour = result.data.current;
-            current = true;
+        if (sw == null && result.data != null && result.data.current != null) {
+            current = result.data.current;
         }
 
-        String note = weatherCard.note(context, result);
+        String note = !byKey.isEmpty() ? sourceNote : weatherCard.note(context, result);
 
-        if (hour == null) {
+        if (sw == null && current == null) {
             weatherCaption.setText(R.string.weather_title);
             weatherBody.setVisibility(View.GONE);
             weatherMessage.setText(note);
@@ -394,30 +415,51 @@ final class mainWeekendBlock {
         weatherNote.setVisibility(note.isEmpty() ? View.GONE : View.VISIBLE);
         weatherMessage.setVisibility(View.GONE);
         weatherBody.setVisibility(View.VISIBLE);
-        weatherCaption.setText(current
-                ? context.getString(R.string.weather_title_now)
-                : context.getString(R.string.weather_for_session, sessionName(selectedKey)));
 
-        weatherIcon.setImageResource(weatherCard.iconFor(hour.code));
-        weatherIcon.setColorFilter(color(R.color.hero_text));
-        weatherTemp.setText(weatherCard.degrees(hour.temp));
-        weatherCondition.setText(weatherCard.conditionText(context, hour.code));
+        if (sw != null) {
+            weatherCaption.setText(context.getString(R.string.weather_for_session, sessionName(selectedKey)));
+            weatherIcon.setImageResource(sw.icon);
+            weatherIcon.setColorFilter(color(R.color.hero_text));
+            weatherTemp.setText(sw.temp);
+            weatherCondition.setText(sw.condition);
 
-        if (hour.rain >= 0) {
             weatherRain.setVisibility(View.VISIBLE);
-            weatherRain.setText(context.getString(R.string.weather_rain, hour.rain));
-            weatherRain.setTextColor(color(hour.rain >= RAIN_WARNING
-                    ? R.color.hero_accent : R.color.hero_text));
+            weatherRain.setText(context.getString(R.string.sheet_rain) + " " + sw.rain);
+            weatherRain.setTextColor(color(sw.wet ? R.color.hero_accent : R.color.hero_text));
+
+            weatherWind.setText(context.getString(R.string.weather_wind_full, sw.wind));
+
+            if (Double.isNaN(sw.humidity)) {
+                weatherHumidity.setVisibility(View.GONE);
+            } else {
+                weatherHumidity.setVisibility(View.VISIBLE);
+                weatherHumidity.setText(context.getString(R.string.weather_humidity, (int) Math.round(sw.humidity)));
+            }
+
+            return;
+        }
+
+        // the weekend is further than the forecast reaches: the weather now at the circuit
+        weatherCaption.setText(R.string.weather_title_now);
+        weatherIcon.setImageResource(weatherCard.iconFor(current.code));
+        weatherIcon.setColorFilter(color(R.color.hero_text));
+        weatherTemp.setText(weatherCard.degrees(current.temp));
+        weatherCondition.setText(weatherCard.conditionText(context, current.code));
+
+        if (current.rain >= 0) {
+            weatherRain.setVisibility(View.VISIBLE);
+            weatherRain.setText(context.getString(R.string.weather_rain, current.rain));
+            weatherRain.setTextColor(color(current.rain >= RAIN_WARNING ? R.color.hero_accent : R.color.hero_text));
         } else {
             weatherRain.setVisibility(View.GONE);
         }
 
         weatherWind.setText(context.getString(R.string.weather_wind_full,
-                weatherCard.windText(context, hour.wind)));
+                weatherCard.windText(context, current.wind)));
 
-        if (hour.humidity >= 0) {
+        if (current.humidity >= 0) {
             weatherHumidity.setVisibility(View.VISIBLE);
-            weatherHumidity.setText(context.getString(R.string.weather_humidity, hour.humidity));
+            weatherHumidity.setText(context.getString(R.string.weather_humidity, current.humidity));
         } else {
             weatherHumidity.setVisibility(View.GONE);
         }

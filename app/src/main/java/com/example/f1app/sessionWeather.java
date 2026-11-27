@@ -13,7 +13,9 @@ final class sessionWeather {
     final boolean measured; // F1 trackside measurements instead of a model
 
     // for the details sheet; NaN when unknown
-    final double air, track, humidity;
+    final double air, track;
+    double humidity;         // model or measured
+    String condition = "";   // "Overcast", "Rain"
     final String windFull;  // "5 m/s, SW"
     final String trackState;
 
