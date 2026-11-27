@@ -156,6 +156,7 @@ public class BootService extends Service {
         intentStart.putExtra("circuitId", circuitId);
         intentStart.putExtra("title", title);
         intentStart.putExtra("body", body);
+        intentStart.putExtra("notificationId", 1000 + iterator);
         PendingIntent pendingIntentStart = PendingIntent.getBroadcast(getApplicationContext(), iterator, intentStart, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         AlarmManager alarmManagerStart = (AlarmManager) this.getSystemService(ALARM_SERVICE);
         long when = date.getTime();
