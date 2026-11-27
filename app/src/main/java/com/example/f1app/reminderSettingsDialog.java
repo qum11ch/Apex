@@ -4,11 +4,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.Dialog;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PowerManager;
 import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
@@ -116,6 +119,15 @@ final class reminderSettingsDialog {
             }
         });
 
+        TextView batteryHint = dialog.findViewById(R.id.reminderBatteryHint);
+        PowerManager power = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
+
+        if (power != null && power.isIgnoringBatteryOptimizations(activity.getPackageName())) {
+            batteryHint.setVisibility(View.GONE);
+        } else {
+            batteryHint.setOnClickListener(v -> openBatterySettings(activity));
+        }
+
         dialog.setOnDismissListener(d -> {
             boolean enabled = toggle.isChecked();
             int lead = wasLead;
@@ -141,6 +153,19 @@ final class reminderSettingsDialog {
         });
 
         dialog.show();
+    }
+
+    private static void openBatterySettings(Activity activity) {
+        try {
+            activity.startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+        } catch (ActivityNotFoundException error) {
+            try {
+                activity.startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + activity.getPackageName())));
+            } catch (ActivityNotFoundException ignored) {
+                // this device has neither screen
+            }
+        }
     }
 
     private static void applyEnabled(RadioGroup group, TextView label, boolean enabled) {

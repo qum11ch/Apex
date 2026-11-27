@@ -1426,4 +1426,6 @@
     <string name="update_install">Установить</string>
     <string name="update_store_error">Не удалось открыть магазин</string>
     <string name="announcement_open_error">Не удалось открыть ссылку</string>
+
+    <string name="reminder_battery_hint">Уведомления приходят с опозданием или не приходят? Нажмите, чтобы открыть настройки батареи, и разрешите приложению работать в фоне. На некоторых телефонах также нужно разрешить автозапуск.</string>
 </resources>
