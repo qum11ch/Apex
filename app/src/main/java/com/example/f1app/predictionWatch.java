@@ -1,18 +1,13 @@
 package com.example.f1app;
 
-import static com.example.f1app.MainActivity.APP_PREFERENCES;
-
 import android.content.Context;
 
 import androidx.work.Constraints;
-import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
 import androidx.work.NetworkType;
-import androidx.work.OneTimeWorkRequest;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 
-import java.util.HashSet;
 import java.util.concurrent.TimeUnit;
 
 final class predictionWatch {
@@ -38,19 +33,5 @@ final class predictionWatch {
                 .build();
 
         manager.enqueueUniquePeriodicWork(WORK_NAME, ExistingPeriodicWorkPolicy.KEEP, request);
-    }
-
-    /** Debug: forget what was seen and run one check at once, even at night. */
-    static void debugRun(Context context) {
-        Context app = context.getApplicationContext();
-
-        app.getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE).edit()
-                .putStringSet(predictionWatchWorker.KEY_SEEN, new HashSet<>())
-                .apply();
-
-        WorkManager.getInstance(app).enqueue(new OneTimeWorkRequest.Builder(
-                predictionWatchWorker.class)
-                .setInputData(new Data.Builder().putBoolean("force", true).build())
-                .build());
     }
 }

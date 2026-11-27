@@ -4,6 +4,7 @@ import static com.example.f1app.MainActivity.checkLightTheme;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +14,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
-import android.content.Intent;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;

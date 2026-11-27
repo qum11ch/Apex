@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.format.DateUtils;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
@@ -34,9 +36,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import android.view.View;
-import android.widget.RemoteViews;
-
 public class predictionWatchWorker extends Worker {
     static final String KEY_SEEN = "seen_open_predictions";
     private static final String CHANNEL_ID = "prediction_open";
@@ -52,7 +51,6 @@ public class predictionWatchWorker extends Worker {
     @Override
     public Result doWork() {
         Context context = getApplicationContext();
-        boolean force = getInputData().getBoolean("force", false);
 
         if (!reminderSettings.predictionAlertsEnabled(context)) {
             return Result.success();
@@ -60,7 +58,7 @@ public class predictionWatchWorker extends Worker {
 
         int hour = LocalTime.now().getHour();
 
-        if (!force && (hour >= QUIET_FROM || hour < QUIET_TO)) {
+        if (hour >= QUIET_FROM || hour < QUIET_TO) {
             return Result.success(); // not marked as seen: the next check reports them
         }
 

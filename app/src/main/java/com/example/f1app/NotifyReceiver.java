@@ -14,8 +14,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.format.DateFormat;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,19 +40,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import android.os.SystemClock;
-import android.view.View;
-import android.widget.RemoteViews;
 
 public class NotifyReceiver extends BroadcastReceiver {
     static final String CHANNEL_START = "session_start";
     static final String CHANNEL_END = "session_end";
     private static final String LEGACY_CHANNEL = "channelID2";
-    private static final long STALE_AFTER_START_MS = 5 * 60_000L;
 
     private static final class Job {
         final Context context;

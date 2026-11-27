@@ -315,22 +315,6 @@ public class MainActivity extends AppCompatActivity {
 
         predictionWatch.apply(this);
 
-        reminderButton.setOnLongClickListener(v -> {
-            boolean debuggable = (getApplicationInfo().flags
-                    & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0;
-
-            if (!debuggable) {
-                return false;
-            }
-
-            String problem = reminderSettings.debugFire(this, 10);
-            Toast.makeText(this,
-                    problem == null ? "Test notification in 10 s" : problem,
-                    Toast.LENGTH_LONG).show();
-            predictionWatch.debugRun(this);
-            return true;
-        });
-
         if (currentUser == null) {
             openUsersPredictionsButton.setVisibility(View.GONE);
         } else {

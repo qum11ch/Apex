@@ -2,9 +2,12 @@ package com.example.f1app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
 import android.view.View;
@@ -15,14 +18,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.content.ContextCompat;
-
-import android.content.res.ColorStateList;
-
 import androidx.core.graphics.ColorUtils;
 import androidx.core.widget.CompoundButtonCompat;
-
-import android.app.AlarmManager;
-import android.net.Uri;
 
 final class reminderSettingsDialog {
 
@@ -97,10 +94,6 @@ final class reminderSettingsDialog {
 
         toggle.setOnCheckedChangeListener((button, checked) -> {
             applyEnabled(group, label, checked);
-
-            if (checked && !hasNotificationPermission(activity)) {
-                openSystemNotificationSettings(activity);
-            }
 
             if (checked) {
                 if (!hasNotificationPermission(activity)) {

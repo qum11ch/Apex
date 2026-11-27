@@ -1,6 +1,8 @@
 package com.example.f1app;
 
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.android.volley.DefaultRetryPolicy;
@@ -20,13 +22,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import android.os.Handler;
-import android.os.Looper;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * A drop-in JsonObjectRequest. Every good answer from the Jolpica API is also saved to disk;
