@@ -31,10 +31,10 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.List;
 
 /**
- * "Season is over": when every race of the season is concluded or canceled, one card "Season results"
- * replaces the "upcoming race" block: the wide button of the prediction results, the podium of the drivers
- * (photos on the colour of the team) and the three teams with their cars. The champions have a gold frame
- * and a badge. The numbers come from the lists the home screen already holds.
+ * The home screen when the season is over or there is no calendar yet.
+ * - Every race of the season is concluded or canceled: one card "Season results" replaces the "upcoming race" block.
+ * - The calendar of the new year is not uploaded yet: the results of the last season stay (with a hint),
+ *   and if there is no such season either, a short "no schedule" card is shown.
  */
 final class seasonFinishedBlock {
 
@@ -53,16 +53,15 @@ final class seasonFinishedBlock {
 
     private final Context context;
     private final Actions actions;
-    private final View card, futureHeader, futureLayout, predictButton;
+    private final View card, emptyCard, futureHeader, futureLayout, predictButton;
     private final View[] hidden;
-    private final TextView caption;
+    private final TextView caption, hint;
     private final View driversLabel, teamsLabel;
-    private final LinearLayout driversRow, teamsList, teamsContainer;
+    private final LinearLayout driversRow, teamsContainer;
     private final int[] metals;
 
     private List<driversList> driverSource;
     private List<teamsList> teamSource;
-    private String season = "";
     private boolean futureHidden;
     private int token = 0;
 
@@ -71,6 +70,7 @@ final class seasonFinishedBlock {
         this.context = card.getContext();
         this.actions = actions;
         this.card = card;
+        this.emptyCard = card.getRootView().findViewById(R.id.seasonEmptyCard);
         this.futureHeader = futureHeader;
         this.futureLayout = futureLayout;
         this.predictButton = predictButton;
@@ -82,10 +82,10 @@ final class seasonFinishedBlock {
                 ContextCompat.getColor(context, R.color.podium_bronze)};
 
         caption = card.findViewById(R.id.finishedCaption);
+        hint = card.findViewById(R.id.finishedHint);
         driversLabel = card.findViewById(R.id.finishedDriversLabel);
         teamsLabel = card.findViewById(R.id.finishedTeamsLabel);
         driversRow = card.findViewById(R.id.finishedDriversRow);
-        teamsList = card.findViewById(R.id.finishedTeamsList);
         teamsContainer = card.findViewById(R.id.finishedTeamsList);
 
         card.findViewById(R.id.finishedLeaderboardButton).setOnClickListener(v -> actions.openLeaderboard());
@@ -110,14 +110,19 @@ final class seasonFinishedBlock {
     }
 
     void refresh(String season) {
-        refresh(season, true);
+        refresh(season, true, false, false);
     }
 
-    private void refresh(String season, boolean allowPrevious) {
+    /**
+     * @param allowPrevious look at the previous year when this one has no races
+     * @param lenient       a race that is over but has no results yet counts as finished
+     * @param fallback      the season is shown because the calendar of the next one is missing
+     */
+    private void refresh(String season, boolean allowPrevious, boolean lenient, boolean fallback) {
         final int mine = ++token;
 
         if (debugForce && (context.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            showFinished(season);
+            showFinished(season, false);
             return;
         }
 
@@ -137,25 +142,35 @@ final class seasonFinishedBlock {
                             races++;
                             raceWeekendStatus.State state = raceWeekendStatus.resolve(race, now);
 
-                            if (state != raceWeekendStatus.State.CONCLUDED
-                                    && state != raceWeekendStatus.State.CANCELED) {
+                            boolean over = state == raceWeekendStatus.State.CONCLUDED
+                                    || state == raceWeekendStatus.State.CANCELED
+                                    || (lenient && state == raceWeekendStatus.State.AWAITING_RESULTS);
+
+                            if (!over) {
                                 finished = false;
                                 break;
                             }
                         }
 
-                        if (races == 0 && allowPrevious) {
-                            // the calendar of the new year is not uploaded yet: keep the results of the last season
-                            try {
-                                refresh(String.valueOf(Integer.parseInt(season) - 1), false);
-                                return;
-                            } catch (NumberFormatException ignored) {
-                                // fall through to the regular screen
+                        if (races == 0) {
+                            if (allowPrevious) {
+                                try {
+                                    // the calendar of the new year is not uploaded yet: keep the last season
+                                    refresh(String.valueOf(Integer.parseInt(season) - 1), false, true, true);
+                                    return;
+                                } catch (NumberFormatException ignored) {
+                                    // fall through to the empty card
+                                }
                             }
+
+                            showEmpty();
+                            return;
                         }
 
-                        if (races > 0 && finished) {
-                            showFinished(season);
+                        if (finished) {
+                            showFinished(season, fallback);
+                        } else if (fallback) {
+                            showEmpty();
                         } else {
                             showRegular();
                         }
@@ -172,6 +187,7 @@ final class seasonFinishedBlock {
 
     private void showRegular() {
         card.setVisibility(View.GONE);
+        emptyCard.setVisibility(View.GONE);
         futureHeader.setVisibility(View.VISIBLE);
 
         if (futureHidden) { // restore only what this block has hidden itself
@@ -186,8 +202,21 @@ final class seasonFinishedBlock {
         actions.onFinishedChanged(false);
     }
 
-    private void showFinished(String season) {
-        this.season = season;
+    /** No calendar and no season to look back at: the same words as the empty schedule screen. */
+    private void showEmpty() {
+        card.setVisibility(View.GONE);
+        emptyCard.setVisibility(View.VISIBLE);
+
+        futureHeader.setVisibility(View.GONE);
+        futureLayout.setVisibility(View.GONE);
+        futureHidden = true;
+        predictButton.setVisibility(View.GONE);
+
+        actions.onFinishedChanged(false);
+    }
+
+    private void showFinished(String season, boolean fallback) {
+        emptyCard.setVisibility(View.GONE);
 
         futureHeader.setVisibility(View.GONE);
         futureLayout.setVisibility(View.GONE);
@@ -199,6 +228,19 @@ final class seasonFinishedBlock {
         }
 
         caption.setText(context.getString(R.string.finished_caption, season));
+
+        if (fallback) {
+            try {
+                hint.setText(context.getString(R.string.finished_next_hint,
+                        String.valueOf(Integer.parseInt(season) + 1)));
+                hint.setVisibility(View.VISIBLE);
+            } catch (NumberFormatException error) {
+                hint.setVisibility(View.GONE);
+            }
+        } else {
+            hint.setVisibility(View.GONE);
+        }
+
         card.setVisibility(View.VISIBLE);
 
         update();

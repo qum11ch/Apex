@@ -1344,4 +1344,12 @@
     <string name="finished_teams">Команды →</string>
     <string name="champion_driver">★ Чемпион мира</string>
     <string name="champion_team">★ Кубок конструкторов</string>
+
+    <string name="finished_next_hint">Расписание сезона %1$s появится позже</string>
+
+    <string name="empty_caption">Сезон %1$s</string>
+    <string name="empty_future_title">Новых этапов пока нет</string>
+    <string name="empty_future_body">Календарь следующего сезона появится здесь, как только будут известны даты этапов.</string>
+    <string name="empty_concluded_title">Результатов пока нет</string>
+    <string name="empty_concluded_body">Результаты этапов появятся здесь после первой гонки сезона.</string>
 </resources>

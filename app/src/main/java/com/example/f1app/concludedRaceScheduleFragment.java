@@ -383,7 +383,7 @@ public class concludedRaceScheduleFragment extends Fragment {
 
                 String sprintDate = snapshot.child("Sprint/sprintRaceDate").getValue(String.class);
                 Log.e("fatal", raceName + " " + raceQuali + " " + sprintDate);
-                if (sprintDate.equals("N/A")){
+                if (sprintDate == null || sprintDate.equals("N/A")){
                     String secondPractice = snapshot.child("SecondPractice/secondPracticeDate").getValue(String.class) +
                             " " + snapshot.child("SecondPractice/secondPracticeTime").getValue(String.class);
                     scheduleData secondPracticeEvent = new scheduleData(secondPractice, "second_practice_event");

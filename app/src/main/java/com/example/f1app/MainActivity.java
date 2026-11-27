@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
     private String predictionSeason;
     private boolean seasonOver = false;
     private int concludedRounds = 0;
+    private int totalRounds = 0;
 
     private com.google.firebase.database.Query scheduleQuery;
     private ValueEventListener scheduleListener;
@@ -362,15 +363,14 @@ public class MainActivity extends AppCompatActivity {
                     public void onFinishedChanged(boolean finished) {
                         seasonOver = finished;
                         updateContenders();
+                        updateProgress();
                     }
                 },
                 findViewById(R.id.top_drivers_header),
                 findViewById(R.id.top_drivers),
                 findViewById(R.id.top_teams_header),
                 findViewById(R.id.top_teams),
-                findViewById(R.id.leaderboardButton),
-                findViewById(R.id.progress_header),
-                findViewById(R.id.race_progress_layout));
+                findViewById(R.id.leaderboardButton));
 
         if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
             findViewById(R.id.mainHeader).setOnLongClickListener(v -> {
@@ -662,7 +662,9 @@ public class MainActivity extends AppCompatActivity {
 
     private void postProgress(int progress, long totalRounds) {
         concludedRounds = progress;
+        this.totalRounds = (int) totalRounds;
         updateContenders();
+        updateProgress();
 
         cachedList.putExtra("main_progress", String.valueOf(progress), String.valueOf(totalRounds));
         String strProgress = progress + "/" + totalRounds;
@@ -680,6 +682,12 @@ public class MainActivity extends AppCompatActivity {
             raceProgress.setProgress(progress);
             raceProgressText.setText(strProgress);
         }, progressDelayMs);
+    }
+
+    private void updateProgress() {
+        boolean show = totalRounds > 0 && !seasonOver;
+        findViewById(R.id.progress_header).setVisibility(show ? View.VISIBLE : View.GONE);
+        findViewById(R.id.race_progress_layout).setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
     public void showError(String message) {

@@ -160,6 +160,34 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/seasonEmptyCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/bg_hero_card"
+                    android:orientation="vertical"
+                    android:padding="18dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/empty_future_title"
+                        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
+                        android:textColor="@color/hero_text" />
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/empty_future_body"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/seasonFinishedCard"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -191,6 +219,15 @@
                         android:text="@string/finished_title"
                         android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
                         android:textColor="@color/hero_text" />
+
+                    <TextView
+                        android:id="@+id/finishedHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:textColor="@color/hero_text_secondary"
+                        android:textSize="13sp"
+                        android:visibility="gone" />
 
                     <Button
                         android:id="@+id/finishedLeaderboardButton"

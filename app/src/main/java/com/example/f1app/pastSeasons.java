@@ -31,9 +31,10 @@ final class pastSeasons {
         }
     }
 
-    /** The newest past season: the one before the season the app is showing now. */
+    /** The newest past season: the one before the season the app is showing now, never older than last calendar year. */
     static int lastPastSeason(String currentSeason) {
-        return parse(currentSeason, LocalDate.now().getYear()) - 1;
+        int calendar = LocalDate.now().getYear();
+        return Math.max(parse(currentSeason, calendar) - 1, calendar - 1);
     }
 
     /** Newest first, like the season buttons on the driver page. Empty when last < first. */

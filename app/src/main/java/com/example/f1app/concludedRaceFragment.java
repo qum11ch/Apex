@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import android.widget.TextView;
+import java.time.LocalDate;
+
 public class concludedRaceFragment extends Fragment {
     private List<concludedRacesData> datum;
     private RecyclerView recyclerView;
@@ -86,48 +89,12 @@ public class concludedRaceFragment extends Fragment {
             linearLayoutManager.setStackFromEnd(true);
             recyclerView.setLayoutManager(linearLayoutManager);
 
-            Button seasonsResults_2024 = view.findViewById(R.id.seasonResults_2024);
-            Button seasonsResults_2025 = view.findViewById(R.id.seasonResults_2025);
-            String buttonText_2024, buttonText_2025;
-            if (Locale.getDefault().getLanguage().equals("ru")) {
-                buttonText_2024 = getText(R.string.past_season_result) + " 2024";
-                buttonText_2025 = getText(R.string.past_season_result) + " 2025";
-            } else {
-                buttonText_2024 = "2024 " + getText(R.string.past_season_result);
-                buttonText_2025 = "2025 " + getText(R.string.past_season_result);
-            }
-
             String season = getArguments().getString("season");
             String parent = getArguments().getString("parent");
             //String mCurrentSeason = getArguments().getString("season");
             ArrayList<String> concludedRaceRoundNumber = getArguments().getStringArrayList("raceRound");
             adapterType = parent;
 
-            if (parent.equals("schedule")) {
-                seasonsResults_2024.setVisibility(View.GONE);
-                seasonsResults_2024.setOnClickListener(v -> {
-                    Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
-                    intent.putExtra("season", "2024");
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(0, 0);
-                });
-
-                seasonsResults_2025.setText(R.string.ps_past_seasons_button);
-                seasonsResults_2025.setOnClickListener(v -> {
-                    Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
-                    intent.putExtra("currentSeason", requireActivity().getIntent().getStringExtra("currentSeason"));
-                    startActivity(intent);
-                    getActivity().overridePendingTransition(0, 0);
-                });
-
-                concludedAdapter = new concludedRacesAdapter(getActivity(), datum);
-                recyclerView.setAdapter(concludedAdapter);
-            } else {
-                seasonsResults_2024.setVisibility(View.GONE);
-                seasonsResults_2025.setVisibility(View.GONE);
-                pastSeasonAdapter = new pastSeasonsRacesAdapter(getActivity(), datum);
-                recyclerView.setAdapter(pastSeasonAdapter);
-            }
             cachedList.restore(datum, recyclerView.getAdapter(), recyclerView, shimmerFrameLayout);
             totalItemsToLoad = concludedRaceRoundNumber.size();
             loadedItemsCount = 0;
@@ -205,37 +172,14 @@ public class concludedRaceFragment extends Fragment {
                         });
             }
         } else {
-            ShapeableImageView stripedImage = view.findViewById(R.id.stripedImage);
-            if (!checkLightTheme(requireContext())){
-                stripedImage.setBackground(ContextCompat.getDrawable(requireContext(), R.drawable.background_striped_lines_item_night));
-            }
+            TextView caption = view.findViewById(R.id.emptyCaption);
+            caption.setText(getString(R.string.empty_caption, String.valueOf(LocalDate.now().getYear())));
 
-            Button seasonsResults_2024 = view.findViewById(R.id.seasonResults_2024);
-            Button seasonsResults_2025 = view.findViewById(R.id.seasonResults_2025);
-
-            String buttonText_2024, buttonText_2025;
-            if (Locale.getDefault().getLanguage().equals("ru")) {
-                buttonText_2024 = getText(R.string.past_season_result) + " 2024";
-                buttonText_2025 = getText(R.string.past_season_result) + " 2025";
-            } else {
-                buttonText_2024 = "2024 " + getText(R.string.past_season_result);
-                buttonText_2025 = "2025 " + getText(R.string.past_season_result);
-            }
-
-            seasonsResults_2024.setVisibility(View.GONE);
-            seasonsResults_2024.setOnClickListener(v -> {
-                Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
-                intent.putExtra("season", "2024");
-                startActivity(intent);
-                getActivity().overridePendingTransition(0, 0);
-            });
-
-            seasonsResults_2025.setText(R.string.ps_past_seasons_button);
-            seasonsResults_2025.setOnClickListener(v -> {
+            view.findViewById(R.id.emptyPastSeasons).setOnClickListener(v -> {
                 Intent intent = new Intent(requireActivity(), pastSeasonScheduleActivity.class);
                 intent.putExtra("currentSeason", requireActivity().getIntent().getStringExtra("currentSeason"));
                 startActivity(intent);
-                getActivity().overridePendingTransition(0, 0);
+                requireActivity().overridePendingTransition(0, 0);
             });
         }
     }
