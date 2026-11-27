@@ -3,7 +3,7 @@
     <color name="light_status">#FFDDDDDD</color>
     <color name="dark_status">#FFDDDDDD</color>
     <color name="colorPrimaryDark">#090e27</color>
-    <color name="colorAccent">#03DAC5</color>
+    <color name="colorAccent">@color/hero_accent</color>
     <color name="colorPrimary">#FFF</color>
     <color name="colorPredicts">#BFDEDEDE</color>
     <color name="textColorPrimary">#FFF</color>
@@ -77,12 +77,12 @@
     <color name="search_bar_picker">#222222</color>
     <color name="table_header_color">#090e27</color>
     <color name="neuro_bg">#F5F5F7</color>
-    <color name="neuro_surface">#80DEDEDE</color>
+    <color name="neuro_surface">@color/hero_card_bg</color>
+    <color name="neuro_divider">@color/hero_card_stroke</color>
+    <color name="neuro_text">@color/hero_text</color>
+    <color name="neuro_secondary">@color/hero_text_secondary</color>
+    <color name="neuro_accent">@color/hero_accent</color>
     <color name="neuro_selected">#FCEBED</color>
-    <color name="neuro_divider">#D9DCE2</color>
-    <color name="neuro_text">#191B20</color>
-    <color name="neuro_secondary">#595E69</color>
-    <color name="neuro_accent">#C50020</color>
     <color name="prediction_race_button_color">#38393E</color>
 
     <color name="driver_status_active">#1B7F46</color>
