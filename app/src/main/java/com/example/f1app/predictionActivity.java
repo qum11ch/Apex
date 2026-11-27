@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -58,6 +59,12 @@ public class predictionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.predictions_activity);
+
+        int dismiss = getIntent().getIntExtra("dismissNotification", 0);
+
+        if (dismiss != 0) {
+            NotificationManagerCompat.from(this).cancel(dismiss);
+        }
 
         setupPredictionsInsets();
         EdgeInsets.applyBottom(findViewById(R.id.predictionsRecyclerView));

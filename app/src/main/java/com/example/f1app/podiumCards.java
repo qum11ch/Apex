@@ -12,11 +12,7 @@ import android.widget.TextView;
 
 import androidx.core.graphics.ColorUtils;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
-
-import java.util.Locale;
 
 /**
  * Three podium cards: the photo on the colour of the team, the place, the surname.

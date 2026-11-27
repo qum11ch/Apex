@@ -387,16 +387,6 @@
     <string name="delete_race_text">Вы уверены, что хотите удалить Гран-при из списка сохраненных?</string>
     <string name="race_finished_text">Заверешено</string>
     <string name="race_canceled_text">Отменено</string>
-
-    <plurals name="notify_start_title">
-        <item quantity="one">%1$s · через %2$d минуту</item>
-        <item quantity="few">%1$s · через %2$d минуты</item>
-        <item quantity="many">%1$s · через %2$d минут</item>
-        <item quantity="other">%1$s · через %2$d минуты</item>
-    </plurals>
-    <string name="notify_start_subtitle">%1$s · начало в %2$s</string>
-    <string name="notify_end_title">Завершено: %1$s</string>
-    <string name="notify_end_subtitle">%1$s · результаты в приложении</string>
     <string name="notify_action_predictions">Прогнозы (%1$d)</string>
     <string name="notify_action_disable">Отключить</string>
     <string name="notify_channel_start">Перед стартом сессии</string>
@@ -410,9 +400,24 @@
         <item quantity="many">за %d минут до старта</item>
         <item quantity="other">за %d минуты до старта</item>
     </plurals>
+    <string name="reminder_title">Уведомления</string>
+    <string name="reminder_switch">Напоминания о сессиях</string>
+    <string name="prediction_alerts_switch">Новые пользовательские прогнозы</string>
 
-    <string name="reminder_title">Напоминания о сессиях</string>
-    <string name="reminder_switch">Присылать напоминания</string>
+    <string name="notify_channel_predictions">Новые прогнозы</string>
+    <string name="notify_channel_predictions_desc">Сообщения об открытии пользовательских прогнозов</string>
+    <string name="notify_pred_title_one">Открыт новый прогноз</string>
+    <plurals name="notify_start_line">
+        <item quantity="one">%1$s начнётся через %2$d минуту</item>
+        <item quantity="few">%1$s начнётся через %2$d минуты</item>
+        <item quantity="many">%1$s начнётся через %2$d минут</item>
+        <item quantity="other">%1$s начнётся через %2$d минуты</item>
+    </plurals>
+    <string name="notify_end_line">Сессия «%1$s» завершена</string>
+    <string name="notify_end_detail">Результаты уже в приложении</string>
+    <string name="notify_pred_title_many">Открылись новые прогнозы</string>
+    <string name="notify_pred_row_deadline">до %1$s</string>
+    <string name="notify_pred_more">и ещё %1$d</string>
     <string name="reminder_lead_label">Напоминать</string>
     <string name="past_season_result">Результаты Гран-при в</string>
     <string name="last_entry_text">Последнее участие в Гран-при</string>
@@ -1409,4 +1414,10 @@
     <string name="promo_time_d">%1$d д</string>
     <string name="promo_time_h">%1$d ч</string>
     <string name="promo_time_m">%1$d мин</string>
+
+    <string name="announcement_close">Закрыть</string>
+    <string name="announcement_cta_predictions">Прогнозы</string>
+    <string name="announcement_cta_leaderboard">Рейтинг</string>
+    <string name="announcement_cta_update">Обновить</string>
+    <string name="announcement_cta_link">Открыть</string>
 </resources>

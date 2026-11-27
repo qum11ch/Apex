@@ -14,8 +14,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.text.format.DateFormat;
+import android.os.SystemClock;
 import android.util.Log;
+import android.view.View;
+import android.widget.RemoteViews;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +40,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
@@ -46,7 +47,6 @@ public class NotifyReceiver extends BroadcastReceiver {
     static final String CHANNEL_START = "session_start";
     static final String CHANNEL_END = "session_end";
     private static final String LEGACY_CHANNEL = "channelID2";
-    private static final long STALE_AFTER_START_MS = 5 * 60_000L;
 
     private static final class Job {
         final Context context;
@@ -238,7 +238,7 @@ public class NotifyReceiver extends BroadcastReceiver {
         GlideApp.with(job.context).asBitmap()
                 .load(FirebaseStorage.getInstance().getReference()
                         .child("circuits/" + job.circuitId + ".png"))
-                .override(640, 640)
+                .override(320, 320)
                 .into(new CustomTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(@NonNull Bitmap resource,
@@ -277,27 +277,35 @@ public class NotifyReceiver extends BroadcastReceiver {
                 job.raceName.toLowerCase(Locale.ROOT).replaceAll("\\s+", "_") + "_text"))
                 + " " + job.season;
 
-        String title;
-        String subtitle;
+        String line;
+        String detail;
 
         if (job.start) {
-            title = context.getResources().getQuantityString(
-                    R.plurals.notify_start_title, job.leadMinutes, session, job.leadMinutes);
-            subtitle = context.getString(R.string.notify_start_subtitle, race,
-                    DateFormat.getTimeFormat(context).format(new Date(job.startMillis)));
+            line = context.getResources().getQuantityString(
+                    R.plurals.notify_start_line, job.leadMinutes, session, job.leadMinutes);
+            detail = line;
         } else {
-            title = context.getString(R.string.notify_end_title, session);
-            subtitle = context.getString(R.string.notify_end_subtitle, race);
+            line = context.getString(R.string.notify_end_line, session);
+            detail = context.getString(R.string.notify_end_detail);
         }
 
-        String circuitLine = circuitLine(job);
+        String place = circuitLine(job);
+        Bitmap small = bitmap == null ? null : scaled(bitmap, 96);
+
+        RemoteViews collapsed = sessionViews(job, R.layout.notification_session_collapsed,
+                false, race, session, line, place, small);
+        RemoteViews expanded = sessionViews(job, R.layout.notification_session_expanded,
+                true, race, session, detail, place, bitmap);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(
                 context, job.start ? CHANNEL_START : CHANNEL_END)
                 .setSmallIcon(R.drawable.ic_stat_session)
                 .setColor(ContextCompat.getColor(context, R.color.hero_accent))
-                .setContentTitle(title)
-                .setContentText(subtitle)
+                .setContentTitle(race)
+                .setContentText(line)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setCustomContentView(collapsed)
+                .setCustomBigContentView(expanded)
                 .setContentIntent(contentIntent(job))
                 .setAutoCancel(true)
                 .setCategory(NotificationCompat.CATEGORY_EVENT)
@@ -308,34 +316,74 @@ public class NotifyReceiver extends BroadcastReceiver {
         if (job.start) {
             builder.setWhen(job.startMillis).setShowWhen(true);
 
-            long timeout = job.startMillis + STALE_AFTER_START_MS - System.currentTimeMillis();
+            long timeout = job.startMillis - System.currentTimeMillis();
 
             if (timeout > 0) {
                 builder.setTimeoutAfter(timeout);
             }
         }
 
-        if (bitmap != null) {
-            builder.setLargeIcon(bitmap).setStyle(new NotificationCompat.BigPictureStyle()
-                    .bigPicture(bitmap)
-                    .bigLargeIcon((Bitmap) null)
-                    .setSummaryText(circuitLine));
-        } else {
-            builder.setStyle(new NotificationCompat.BigTextStyle()
-                    .bigText(circuitLine.isEmpty() ? subtitle : subtitle + "\n" + circuitLine));
-        }
-
         if (job.start && job.openPredictions > 0) {
-            builder.addAction(0,
-                    context.getString(R.string.notify_action_predictions, job.openPredictions),
-                    predictionsIntent(job));
+            expanded.setTextViewText(R.id.notifPrimary,
+                    context.getString(R.string.notify_action_predictions, job.openPredictions));
+            expanded.setViewVisibility(R.id.notifPrimary, View.VISIBLE);
+            expanded.setOnClickPendingIntent(R.id.notifPrimary, predictionsIntent(job));
         }
 
-        builder.addAction(0, context.getString(R.string.notify_action_disable),
-                disableIntent(job));
+        expanded.setTextViewText(R.id.notifSecondary,
+                context.getString(R.string.notify_action_disable));
+        expanded.setOnClickPendingIntent(R.id.notifSecondary, disableIntent(job));
 
         context.getSystemService(NotificationManager.class)
                 .notify(job.notificationId, builder.build());
+    }
+
+    private RemoteViews sessionViews(Job job, int layout, boolean expanded, String race,
+                                     String session, String line, String place,
+                                     @Nullable Bitmap image) {
+        RemoteViews views = new RemoteViews(job.context.getPackageName(), layout);
+        int imageId = expanded ? R.id.notifCircuitBig : R.id.notifCircuit;
+
+        views.setTextViewText(R.id.notifRace, race);
+        views.setTextViewText(R.id.notifLine, line);
+
+        if (image != null) {
+            views.setImageViewBitmap(imageId, image);
+            views.setViewVisibility(imageId, View.VISIBLE);
+        } else {
+            views.setViewVisibility(imageId, View.GONE);
+        }
+
+        if (expanded) {
+            views.setTextViewText(R.id.notifSession, session.toUpperCase(Locale.getDefault()));
+            views.setTextViewText(R.id.notifPlace, place);
+            views.setViewVisibility(R.id.notifPlace, place.isEmpty() ? View.GONE : View.VISIBLE);
+        }
+
+        long untilStart = job.startMillis - System.currentTimeMillis();
+
+        if (job.start && untilStart > 0) {
+            views.setChronometerCountDown(R.id.notifCountdown, true);
+            views.setChronometer(R.id.notifCountdown,
+                    SystemClock.elapsedRealtime() + untilStart, null, true);
+            views.setViewVisibility(R.id.notifCountdown, View.VISIBLE);
+        } else {
+            views.setViewVisibility(R.id.notifCountdown, View.GONE);
+        }
+
+        return views;
+    }
+
+    private Bitmap scaled(Bitmap source, int box) {
+        float ratio = Math.min((float) box / source.getWidth(), (float) box / source.getHeight());
+
+        if (ratio >= 1f) {
+            return source;
+        }
+
+        return Bitmap.createScaledBitmap(source,
+                Math.max(1, Math.round(source.getWidth() * ratio)),
+                Math.max(1, Math.round(source.getHeight() * ratio)), true);
     }
 
     private String circuitLine(Job job) {
@@ -359,7 +407,7 @@ public class NotifyReceiver extends BroadcastReceiver {
             return place == null ? "" : place;
         }
 
-        return place == null ? job.circuitName : job.circuitName + " · " + place;
+        return place == null ? job.circuitName : job.circuitName + ", " + place;
     }
 
     private PendingIntent contentIntent(Job job) {
@@ -392,6 +440,7 @@ public class NotifyReceiver extends BroadcastReceiver {
         Intent predictions = new Intent(job.context, predictionActivity.class);
         predictions.putExtra("season", job.season);
         predictions.putExtra("raceRound", job.round);
+        predictions.putExtra("dismissNotification", job.notificationId);
 
         return TaskStackBuilder.create(job.context)
                 .addNextIntent(new Intent(job.context, MainActivity.class))

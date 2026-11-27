@@ -7,9 +7,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
-
-import org.json.JSONException;
 
 final class reminderSettings {
     static final String KEY_ENABLED = "reminders_enabled";
@@ -18,6 +15,15 @@ final class reminderSettings {
     static final int DEFAULT_LEAD = 15;
     static final int[] OPTIONS = {5, 10, 15, 30, 60};
     static final String CHANNEL_ID = "channelID2";
+    static final String KEY_PREDICTIONS = "prediction_alerts_enabled";
+
+    static boolean predictionAlertsEnabled(Context context) {
+        return prefs(context).getBoolean(KEY_PREDICTIONS, true);
+    }
+
+    static void savePredictionAlerts(Context context, boolean enabled) {
+        prefs(context).edit().putBoolean(KEY_PREDICTIONS, enabled).apply();
+    }
 
     private reminderSettings() {
     }
@@ -41,62 +47,6 @@ final class reminderSettings {
         }
 
         return DEFAULT_LEAD;
-    }
-
-    static String debugFire(Context context, int seconds) {
-        Context app = context.getApplicationContext();
-
-        try {
-            org.json.JSONArray events =
-                    new org.json.JSONArray(prefs(app).getString("events_json", "[]"));
-            org.json.JSONArray circuits =
-                    new org.json.JSONArray(prefs(app).getString("circuits_json", "[]"));
-
-            if (events.length() == 0) {
-                return "events_json is empty";
-            }
-
-            if (circuits.length() == 0) {
-                return "circuits_json is empty";
-            }
-
-            String first = events.getString(0);
-            String[] race = first.split("%")[0].split("\\$");
-
-            if (race.length < 2) {
-                Log.w("ReminderDebug", "Unexpected format: " + first);
-                return "Unexpected event format";
-            }
-
-            Intent intent = new Intent(app, NotifyReceiver.class);
-            intent.setAction("TAKE_THIS_NOTIFICATION_RIGHT_NOW");
-            intent.putExtra("eventKey", "quali_event");
-            intent.putExtra("start", true);
-            intent.putExtra("startMillis", System.currentTimeMillis() + leadMinutes(app) * 60_000L);
-            intent.putExtra("leadMinutes", leadMinutes(app));
-            intent.putExtra("notificationId", 9000);
-            intent.putExtra("season", race[0]);
-            intent.putExtra("raceName", race[1]);
-            intent.putExtra("circuitId", circuits.getString(0));
-
-            PendingIntent pending = PendingIntent.getBroadcast(
-                    app, 9999, intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-
-            AlarmManager alarms = (AlarmManager) app.getSystemService(Context.ALARM_SERVICE);
-            long when = System.currentTimeMillis() + seconds * 1000L;
-
-            try {
-                alarms.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pending);
-            } catch (SecurityException error) {
-                alarms.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, when, pending);
-            }
-
-            return null;
-        } catch (JSONException | RuntimeException error) {
-            Log.w("ReminderDebug", "debugFire failed", error);
-            return error.getClass().getSimpleName() + ": " + error.getMessage();
-        }
     }
 
     static void save(Context context, boolean enabled, int leadMinutes) {

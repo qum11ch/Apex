@@ -18,9 +18,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.google.firebase.storage.StorageReference;
-
 import java.util.List;
 
 public class mainDriversStandingsAdapter extends RecyclerView.Adapter<mainDriversStandingsAdapter.DataHolder> {

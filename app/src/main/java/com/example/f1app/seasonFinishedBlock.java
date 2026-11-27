@@ -2,6 +2,7 @@ package com.example.f1app;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -27,10 +28,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.List;
-
-import android.content.SharedPreferences;
 import java.time.LocalDate;
+import java.util.List;
 
 /**
  * The home screen when the season is over or there is no calendar yet.

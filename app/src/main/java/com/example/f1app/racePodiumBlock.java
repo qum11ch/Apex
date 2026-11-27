@@ -6,7 +6,6 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /** The podium of the race page: dark-glass cards plus the facts of the race. */
