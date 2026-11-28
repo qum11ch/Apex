@@ -26,6 +26,8 @@ import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import java.time.ZoneOffset;
+
 /**
  * The "next stage" widget, always two rows high; three cards by the width: SMALL (two columns),
  * MEDIUM (three columns, the default) and WIDE (four columns). The launcher picks the variant that fits.
@@ -133,7 +135,7 @@ final class widgetNextRace {
                 : R.layout.widget_next_race_small);
         resetViews(v, kind);
 
-        PendingIntent open = openApp(context);
+        PendingIntent open = openRace(context, s);
 
         if (open != null) {
             v.setOnClickPendingIntent(R.id.widget_root, open);
@@ -334,25 +336,24 @@ final class widgetNextRace {
 
     // ---------- the time ----------
 
-    /** {numbers, units}: "3 d 04 h", "4 h 42 min" or "42 min". */
+    /** {numbers, units}: "3 d 04 h", "4 h 42 min", "42 min" or "<1 min". Rounded down like the countdown of the app. */
     private static String[][] timeParts(Context context, long left, boolean live) {
         String day = context.getString(R.string.widget_unit_day);
         String hour = context.getString(R.string.widget_unit_hour);
         String minute = context.getString(R.string.widget_unit_minute);
 
         if (!live && left > DAY_MS) {
-            long hours = ceilDiv(left, HOUR_MS);
+            long hours = left / HOUR_MS;
             return new String[][]{{String.valueOf(hours / 24), two(hours % 24)}, {day, hour}};
         }
 
-        long minutes = Math.max(0, ceilDiv(left, MINUTE_MS));
+        long minutes = Math.max(0, left / MINUTE_MS);
 
         if (minutes >= 60) {
-            return new String[][]{{String.valueOf(minutes / 60), two(minutes % 60)},
-                    {hour, minute}};
+            return new String[][]{{String.valueOf(minutes / 60), two(minutes % 60)}, {hour, minute}};
         }
 
-        return new String[][]{{String.valueOf(minutes)}, {minute}};
+        return new String[][]{{minutes == 0 ? "<1" : String.valueOf(minutes)}, {minute}};
     }
 
     private static String two(long value) {
@@ -367,10 +368,6 @@ final class widgetNextRace {
         }
 
         return text.toString();
-    }
-
-    private static long ceilDiv(long value, long unit) {
-        return (value + unit - 1) / unit;
     }
 
     /** The next moment at which what the widget shows changes, or 0 when nothing is left. */
@@ -423,7 +420,7 @@ final class widgetNextRace {
 
         long left = (live != null ? live.end : next.start) - now;
         long unit = live != null || left <= DAY_MS ? MINUTE_MS : HOUR_MS;
-        long step = (left - 1) % unit + 1 + 500;
+        long step = left % unit + 1 + 500;
 
         return delay > 0 ? Math.min(delay, step) : Math.max(1000, step);
     }
@@ -442,9 +439,14 @@ final class widgetNextRace {
             return;
         }
 
-        // not a waking alarm: a sleeping phone is not woken up, the widget is redrawn when it wakes
-        alarms.set(AlarmManager.ELAPSED_REALTIME,
-                SystemClock.elapsedRealtime() + Math.max(1000, delay), tickIntent(context));
+        long triggerAt = SystemClock.elapsedRealtime() + Math.max(1000, delay);
+
+        // exact, but not waking: a sleeping phone sleeps on, the widget catches up when it wakes
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || alarms.canScheduleExactAlarms()) {
+            alarms.setExact(AlarmManager.ELAPSED_REALTIME, triggerAt, tickIntent(context));
+        } else {
+            alarms.set(AlarmManager.ELAPSED_REALTIME, triggerAt, tickIntent(context));
+        }
     }
 
     static void cancelTick(Context context) {
@@ -558,6 +560,42 @@ final class widgetNextRace {
         }
 
         return PendingIntent.getActivity(context, 0, intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    /** The tap opens the screen of the race, with the same parameters as the notifications and the home card. */
+    private static PendingIntent openRace(Context context, widgetSnapshot s) {
+        if (s == null || s.raceName.isEmpty() || s.sessions.isEmpty()) {
+            return openApp(context);
+        }
+
+        LocalDate start = Instant.ofEpochMilli(s.sessions.get(0).start)
+                .atZone(ZoneOffset.UTC).toLocalDate();
+        LocalDate end = Instant.ofEpochMilli(s.sessions.get(s.sessions.size() - 1).start)
+                .atZone(ZoneOffset.UTC).toLocalDate();
+        DateTimeFormatter full = DateTimeFormatter.ofPattern("yyyy-M-d");
+        DateTimeFormatter day = DateTimeFormatter.ofPattern("dd");
+        DateTimeFormatter month = DateTimeFormatter.ofPattern("MMM");
+
+        Bundle extras = new Bundle();
+        extras.putString("raceName", s.raceName);
+        extras.putString("circuitId", s.circuitId);
+        extras.putString("roundCount", String.valueOf(s.round));
+        extras.putString("raceCountry", s.country);
+        extras.putString("dateStart", start.format(full));
+        extras.putString("dateEnd", end.format(full));
+        extras.putString("futureRaceStartDay", start.format(day));
+        extras.putString("futureRaceEndDay", end.format(day));
+        extras.putString("futureRaceStartMonth", start.format(month));
+        extras.putString("futureRaceEndMonth", end.format(month));
+        extras.putBoolean("isCanceled", false);
+        extras.putBoolean("fromNotify", true);
+
+        Intent intent = new Intent(context, futureRaceActivity.class);
+        intent.putExtras(extras);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        return PendingIntent.getActivity(context, 2, intent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
