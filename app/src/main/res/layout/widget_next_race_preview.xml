@@ -24,7 +24,7 @@
             android:maxLines="1"
             android:text="@string/widget_preview_dates"
             android:textAllCaps="true"
-            android:textColor="@color/hero_text_secondary"
+            android:textColor="@color/widget_text_secondary"
             android:textSize="12sp"
             android:textStyle="bold" />
 
@@ -49,7 +49,7 @@
         android:layout_marginTop="6dp"
         android:maxLines="1"
         android:text="@string/widget_preview_place"
-        android:textColor="@color/hero_text"
+        android:textColor="@color/widget_text"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:maxLines="1"
         android:text="@string/widget_preview_label"
-        android:textColor="@color/hero_text"
+        android:textColor="@color/widget_text"
         android:textSize="14sp" />
 
     <LinearLayout
@@ -80,10 +80,10 @@
             android:gravity="bottom"
             android:orientation="horizontal">
 
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="4" android:textColor="@color/hero_text" android:textSize="32sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginBottom="4dp" android:text="@string/widget_unit_hour" android:textColor="@color/hero_text_secondary" android:textSize="14sp" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:includeFontPadding="false" android:text="42" android:textColor="@color/hero_text" android:textSize="32sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginBottom="4dp" android:text="@string/widget_unit_minute" android:textColor="@color/hero_text_secondary" android:textSize="14sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:includeFontPadding="false" android:text="4" android:textColor="@color/widget_text" android:textSize="32sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginBottom="4dp" android:text="@string/widget_unit_hour" android:textColor="@color/widget_text_secondary" android:textSize="14sp" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:includeFontPadding="false" android:text="42" android:textColor="@color/widget_text" android:textSize="32sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="3dp" android:layout_marginBottom="4dp" android:text="@string/widget_unit_minute" android:textColor="@color/widget_text_secondary" android:textSize="14sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -103,13 +103,13 @@
                 android:layout_marginEnd="6dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_weather_clear"
-                android:tint="@color/hero_text" />
+                android:tint="@color/widget_text" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="25°, 0%"
-                android:textColor="@color/hero_text"
+                android:textColor="@color/widget_text"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />

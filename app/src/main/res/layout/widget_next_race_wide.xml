@@ -90,7 +90,7 @@
             android:layout_marginTop="2dp"
             android:maxLines="1"
             android:text="Qatar Grand Prix 2026"
-            android:textColor="@color/hero_text_secondary"
+            android:textColor="@color/widget_text_secondary"
             android:textSize="13sp"
             tools:ignore="HardcodedText" />
 
@@ -101,7 +101,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Losail International Circuit"
-            android:textColor="@color/hero_text_secondary"
+            android:textColor="@color/widget_text_secondary"
             android:textSize="12sp"
             tools:ignore="HardcodedText" />
 
@@ -117,7 +117,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Starts in: Practice 3"
-            android:textColor="@color/hero_text"
+            android:textColor="@color/widget_text"
             android:textSize="13sp"
             tools:ignore="HardcodedText" />
 
@@ -156,7 +156,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="23°, 0%"
-                android:textColor="@color/hero_text"
+                android:textColor="@color/widget_text"
                 android:textSize="13sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
@@ -170,33 +170,33 @@
         android:orientation="vertical">
 
         <LinearLayout android:id="@+id/row_1" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginBottom="4dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
-            <TextView android:id="@+id/rl_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP1" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/rt_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Fri 16:30" android:textColor="@color/hero_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rl_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP1" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rt_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Fri 16:30" android:textColor="@color/widget_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/row_2" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginBottom="4dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
-            <TextView android:id="@+id/rl_2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP2" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/rt_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Fri 20:00" android:textColor="@color/hero_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rl_2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP2" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rt_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Fri 20:00" android:textColor="@color/widget_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/row_3" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginBottom="4dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
-            <TextView android:id="@+id/rl_3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP3" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/rt_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sat 17:30" android:textColor="@color/hero_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rl_3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="FP3" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rt_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sat 17:30" android:textColor="@color/widget_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/row_4" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginBottom="4dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
-            <TextView android:id="@+id/rl_4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="Q" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/rt_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sat 21:00" android:textColor="@color/hero_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rl_4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="Q" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rt_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sat 21:00" android:textColor="@color/widget_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/row_5" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp">
-            <TextView android:id="@+id/rl_5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="Race" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/rt_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sun 19:00" android:textColor="@color/hero_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rl_5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:text="Race" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/rt_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Sun 19:00" android:textColor="@color/widget_text_secondary" android:textSize="12sp" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/row_6" android:layout_width="match_parent" android:layout_height="0dp" android:layout_marginTop="4dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_vertical" android:orientation="horizontal" android:paddingStart="8dp" android:paddingEnd="8dp" android:visibility="gone">
-            <TextView android:id="@+id/rl_6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="11sp" android:textStyle="bold" />
-            <TextView android:id="@+id/rt_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:textColor="@color/hero_text_secondary" android:textSize="12sp" />
+            <TextView android:id="@+id/rl_6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="11sp" android:textStyle="bold" />
+            <TextView android:id="@+id/rt_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:textColor="@color/widget_text_secondary" android:textSize="12sp" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -35,7 +35,7 @@ final class widgetNextRace {
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
     private static final int MEDIUM_MIN_DP = 240;
-    private static final int WIDE_MIN_DP = 340;
+    private static final int WIDE_MIN_DP = 360;
     private static final int TIMELINE_MIN_DP = 235;
     private static final int SMALL_TITLE_MIN_DP = 190;
     private static final int SMALL_FULL_MIN_DP = 232;
@@ -49,7 +49,7 @@ final class widgetNextRace {
 
     /** Sizes (width, height in dp) at which the card changes; the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {188, 100}, {188, 190}, {188, 232}, {240, 175}, {240, 235}, {340, 232}};
+            {188, 100}, {188, 190}, {188, 232}, {240, 175}, {240, 235}, {360, 232}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
@@ -190,7 +190,7 @@ final class widgetNextRace {
         long left = (live != null ? live.end : shown.start) - now;
         boolean hasWeather = shown.hasWeather();
         String[][] parts = timeParts(context, left, live != null);
-        int timeColor = live != null ? R.color.hero_accent : R.color.hero_text;
+        int timeColor = live != null ? R.color.hero_accent : R.color.widget_text;
         int timeMax = kind == WIDE ? widthDp - 32 - 150 - 12
                 : kind == MEDIUM ? widthDp - 32 - (hasWeather ? 130 : 0) : widthDp - 24;
 
@@ -212,7 +212,7 @@ final class widgetNextRace {
 
             if (icon != 0) {
                 v.setImageViewResource(R.id.weather_icon, icon);
-                widgetGlyphs.tint(context, v, R.id.weather_icon, R.color.hero_text);
+                widgetGlyphs.tint(context, v, R.id.weather_icon, R.color.widget_text);
             }
         }
 
@@ -237,13 +237,13 @@ final class widgetNextRace {
                 v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
                         R.font.good_timing_bd, 16, Math.max(60, widthDp - 24), 2, false));
                 v.setContentDescription(R.id.title_img, raceTitle);
-                widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
+                widgetGlyphs.tint(context, v, R.id.title_img, R.color.widget_text);
             }
 
             if (showDates) {
                 v.setImageViewBitmap(R.id.dates, widgetGlyphs.text(context, range,
                         R.font.audiowide, 11, widthDp - 24, 1, true));
-                widgetGlyphs.tint(context, v, R.id.dates, R.color.hero_text_secondary);
+                widgetGlyphs.tint(context, v, R.id.dates, R.color.widget_text_secondary);
             }
 
             return v;
@@ -256,12 +256,12 @@ final class widgetNextRace {
 
         v.setImageViewBitmap(R.id.dates,
                 widgetGlyphs.text(context, range, R.font.audiowide, 12, 160, 1, true));
-        widgetGlyphs.tint(context, v, R.id.dates, R.color.hero_text_secondary);
+        widgetGlyphs.tint(context, v, R.id.dates, R.color.widget_text_secondary);
 
-        v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, head, R.font.good_timing_bd,
-                20, kind == WIDE ? widthDp - 32 - 150 - 12 : widthDp - 32, 1, false));
+        v.setImageViewBitmap(R.id.headline, widgetGlyphs.fit(context, head, R.font.good_timing_bd,
+                20, kind == WIDE ? widthDp - 32 - 150 - 12 : widthDp - 32));
         v.setContentDescription(R.id.headline, head);
-        widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
+        widgetGlyphs.tint(context, v, R.id.headline, R.color.widget_text);
 
         if (kind == WIDE) {
             v.setViewVisibility(R.id.race_name, View.VISIBLE);
@@ -506,7 +506,7 @@ final class widgetNextRace {
             v.setViewVisibility(R.id.title_img, View.VISIBLE);
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, message,
                     R.font.good_timing_bd, 15, Math.max(60, widthDp - 24), 4, false));
-            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
+            widgetGlyphs.tint(context, v, R.id.title_img, R.color.widget_text);
             return;
         }
 
@@ -520,7 +520,7 @@ final class widgetNextRace {
 
         v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, message,
                 R.font.good_timing_bd, 20, kind == WIDE ? widthDp - 194 : widthDp - 32, 2, false));
-        widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
+        widgetGlyphs.tint(context, v, R.id.headline, R.color.widget_text);
     }
 
     /** The same rule as the schedule lists: the city and the country, no city for Monaco and Singapore. */

@@ -1,56 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item>
+    <!-- the ultra-thin outer edge: separates the glass from light wallpapers -->
+    <item
+        android:bottom="0.4dp"
+        android:left="0.4dp"
+        android:right="0.4dp"
+        android:top="0.4dp">
+        <shape android:shape="rectangle">
+            <stroke android:width="0.8dp" android:color="#1A0F172A" />
+            <corners android:radius="19.6dp" />
+        </shape>
+    </item>
+
+    <!-- the translucent icy glass: the wallpaper shows through softly -->
+    <item
+        android:bottom="0.8dp"
+        android:left="0.8dp"
+        android:right="0.8dp"
+        android:top="0.8dp">
         <shape android:shape="rectangle">
             <gradient
                 android:angle="270"
-                android:endColor="#4D8A8A8E"
-                android:startColor="#FFFFFFFF" />
-            <corners android:radius="20dp" />
+                android:endColor="#A6E6EEF8"
+                android:startColor="#B8F8FBFF" />
+            <corners android:radius="19.2dp" />
         </shape>
     </item>
+
+    <!-- the bright inner edge -->
     <item
-        android:bottom="1.5dp"
-        android:left="1.5dp"
-        android:right="1.5dp"
-        android:top="1.5dp">
+        android:bottom="1.55dp"
+        android:left="1.55dp"
+        android:right="1.55dp"
+        android:top="1.55dp">
         <shape android:shape="rectangle">
-            <gradient
-                android:angle="315"
-                android:centerColor="#F0EEEEF0"
-                android:endColor="#EBE6E6E9"
-                android:startColor="#F7F7F7F8" />
-            <corners android:radius="18.5dp" />
-        </shape>
-    </item>
-    <item
-        android:bottom="1.5dp"
-        android:left="1.5dp"
-        android:right="1.5dp"
-        android:top="1.5dp">
-        <shape android:shape="rectangle">
-            <gradient
-                android:centerX="0.12"
-                android:centerY="0.0"
-                android:endColor="#00FFFFFF"
-                android:gradientRadius="85%"
-                android:startColor="#B3FFFFFF"
-                android:type="radial" />
-            <corners android:radius="18.5dp" />
-        </shape>
-    </item>
-    <item
-        android:bottom="1.5dp"
-        android:left="1.5dp"
-        android:right="1.5dp"
-        android:height="60dp"
-        android:gravity="bottom">
-        <shape android:shape="rectangle">
-            <gradient
-                android:angle="270"
-                android:endColor="#1F000000"
-                android:startColor="#00000000" />
-            <corners android:bottomLeftRadius="18.5dp" android:bottomRightRadius="18.5dp" />
+            <stroke android:width="1.5dp" android:color="#E6FFFFFF" />
+            <corners android:radius="18.45dp" />
         </shape>
     </item>
 </layer-list>

@@ -91,7 +91,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Practice 3"
-        android:textColor="@color/hero_text"
+        android:textColor="@color/widget_text"
         android:textSize="14sp"
         android:textStyle="bold"
         tools:ignore="HardcodedText" />
@@ -103,7 +103,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Sat 17:30"
-        android:textColor="@color/hero_text_secondary"
+        android:textColor="@color/widget_text_secondary"
         android:textSize="12sp"
         tools:ignore="HardcodedText" />
 
@@ -141,7 +141,7 @@
             android:layout_height="wrap_content"
             android:maxLines="1"
             android:text="23°, 0%"
-            android:textColor="@color/hero_text"
+            android:textColor="@color/widget_text"
             android:textSize="12sp"
             android:textStyle="bold"
             tools:ignore="HardcodedText" />

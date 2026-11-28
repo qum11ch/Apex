@@ -131,6 +131,10 @@
     <color name="widget_glass_bottom">#1F7D8AA3</color>
     <color name="widget_glass_bottom_clear">#007D8AA3</color>
     <color name="widget_glass_border">#CCFFFFFF</color>
-    <color name="widget_chip_fill">#B3FFFFFF</color>
-    <color name="widget_chip_border">#33000000</color>
+    <color name="widget_chip_fill">#140F172A</color>
+    <color name="widget_chip_border">#00000000</color>
+    <color name="widget_chip_selected_fill">#1AD50A00</color>
+
+    <color name="widget_text">#0F172A</color>
+    <color name="widget_text_secondary">#475569</color>
 </resources>

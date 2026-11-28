@@ -87,7 +87,7 @@
         android:maxLines="1"
         android:text="Qatar Grand Prix 2026"
         android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-        android:textColor="@color/hero_text_secondary"
+        android:textColor="@color/widget_text_secondary"
         android:textSize="14sp"
         tools:ignore="HardcodedText" />
 
@@ -99,7 +99,7 @@
         android:maxLines="1"
         android:text="Losail International Circuit"
         android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-        android:textColor="@color/hero_text_secondary"
+        android:textColor="@color/widget_text_secondary"
         android:textSize="12sp"
         tools:ignore="HardcodedText" />
 
@@ -119,7 +119,7 @@
         android:maxLines="1"
         android:text="Starts in: Practice 3"
         android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-        android:textColor="@color/hero_text"
+        android:textColor="@color/widget_text"
         android:textSize="14sp"
         tools:ignore="HardcodedText" />
 
@@ -164,7 +164,7 @@
                 android:layout_height="wrap_content"
                 android:maxLines="1"
                 android:text="23°, 0%"
-                android:textColor="@color/hero_text"
+                android:textColor="@color/widget_text"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
@@ -187,39 +187,39 @@
         android:orientation="horizontal">
 
         <LinearLayout android:id="@+id/col_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">
-            <TextView android:id="@+id/lbl_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP1" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/dy_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Fri" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/tm_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="16:30" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/lbl_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP1" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/dy_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Fri" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/tm_1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="16:30" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/col_2" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">
-            <TextView android:id="@+id/lbl_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP2" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/dy_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Fri" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/tm_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="20:00" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/lbl_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP2" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/dy_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Fri" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/tm_2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="20:00" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/col_3" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">
-            <TextView android:id="@+id/lbl_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP3" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/dy_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sat" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/tm_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="17:30" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/lbl_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="FP3" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/dy_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sat" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/tm_3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="17:30" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/col_4" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">
-            <TextView android:id="@+id/lbl_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Q" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/dy_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sat" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/tm_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="21:00" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/lbl_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Q" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/dy_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sat" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/tm_4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="21:00" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/col_5" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">
-            <TextView android:id="@+id/lbl_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Race" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/dy_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sun" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
-            <TextView android:id="@+id/tm_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="19:00" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/lbl_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:text="Race" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/dy_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="Sun" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" tools:ignore="HardcodedText" />
+            <TextView android:id="@+id/tm_5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:text="19:00" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <LinearLayout android:id="@+id/col_6" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginStart="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp" android:visibility="gone">
-            <TextView android:id="@+id/lbl_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/hero_text" android:textSize="10sp" android:textStyle="bold" />
-            <TextView android:id="@+id/dy_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/hero_text_secondary" android:textSize="11sp" />
-            <TextView android:id="@+id/tm_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:textColor="@color/hero_text" android:textSize="14sp" android:textStyle="bold" />
+            <TextView android:id="@+id/lbl_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/widget_text" android:textSize="10sp" android:textStyle="bold" />
+            <TextView android:id="@+id/dy_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:textAllCaps="true" android:textColor="@color/widget_text_secondary" android:textSize="11sp" />
+            <TextView android:id="@+id/tm_6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="1dp" android:maxLines="1" android:textColor="@color/widget_text" android:textSize="14sp" android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
 
@@ -238,7 +238,7 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:text="Leader ANT, 402 pts (+98)"
-            android:textColor="@color/hero_text"
+            android:textColor="@color/widget_text"
             android:textSize="12sp"
             tools:ignore="HardcodedText" />
 
@@ -249,7 +249,7 @@
             android:layout_marginStart="8dp"
             android:maxLines="1"
             android:text="Record 2:02.384"
-            android:textColor="@color/hero_text_secondary"
+            android:textColor="@color/widget_text_secondary"
             android:textSize="12sp"
             tools:ignore="HardcodedText" />
     </LinearLayout>
