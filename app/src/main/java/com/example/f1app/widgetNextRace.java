@@ -36,7 +36,6 @@ final class widgetNextRace {
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
     private static final int WIDE_MIN_DP = 240;
-    private static final int TIMELINE_MIN_DP = 245;
     private static final int SUBTITLE_MIN_DP = 285;
     private static final int FOOTER_MIN_DP = 310;
     private static final long MINUTE_MS = 60_000L;
@@ -44,11 +43,13 @@ final class widgetNextRace {
     private static final long DAY_MS = 24 * HOUR_MS;
     private static final int SMALL_TITLE_MIN_DP = 140;
     private static final int SMALL_CHIP_MIN_DP = 190;
+    private static final int TIMELINE_MIN_DP = 235;
+    private static final boolean DEBUG_SIZES = true;
 
     /** Sizes (width, height in dp) at which the card changes; the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
             {188, 100}, {188, 140}, {188, 190},
-            {240, 175}, {240, 245}, {240, 285}, {240, 310}
+            {240, 175}, {240, 235}, {240, 285}, {240, 310}
     };
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
@@ -177,6 +178,13 @@ final class widgetNextRace {
 
         v.setTextViewText(R.id.countdown_label, context.getString(
                 live != null ? R.string.countdown_ends : R.string.countdown_starts, sessionName));
+
+        if (DEBUG_SIZES) {
+            v.setTextViewText(R.id.countdown_label, context.getString(
+                    live != null ? R.string.countdown_ends : R.string.countdown_starts, sessionName)
+                    + " [" + widthDp + "x" + heightDp + "]");
+        }
+
         v.setViewVisibility(R.id.countdown_label, View.VISIBLE);
 
         // the time
