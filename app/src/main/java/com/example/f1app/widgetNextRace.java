@@ -24,11 +24,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
+import android.util.Log;
 
 /**
- * The "next stage" widget: two cards. SMALL is a square glass card inside the cells of the launcher
- * (the cells are taller than wide, so the empty rest is transparent); WIDE is the full card. The
- * launcher itself picks the variant that fits the real size of the widget (Android 12 and newer).
+ * The "next stage" widget: two cards. SMALL fills the cells of the launcher and shows less on a lower
+ * widget; WIDE is the full card that grows with the height. The launcher itself picks the variant that
+ * fits the real size of the widget (Android 12 and newer).
  */
 final class widgetNextRace {
 
@@ -91,8 +92,15 @@ final class widgetNextRace {
             Map<SizeF, RemoteViews> variants = new LinkedHashMap<>();
 
             for (int[] size : VARIANTS) {
-                variants.put(new SizeF(size[0], size[1]),
-                        build(context, s, size[0], size[1], now));
+                try {
+                    variants.put(new SizeF(size[0], size[1]), build(context, s, size[0], size[1], now));
+                } catch (RuntimeException error) {
+                    Log.e("NextRaceWidget", "variant " + size[0] + "x" + size[1] + " failed", error);
+                }
+            }
+
+            if (variants.isEmpty()) {
+                return build(context, s, 190, 250, now);
             }
 
             return new RemoteViews(variants);
@@ -115,6 +123,7 @@ final class widgetNextRace {
         boolean wide = widthDp >= WIDE_MIN_DP;
         RemoteViews v = new RemoteViews(context.getPackageName(),
                 wide ? R.layout.widget_next_race_wide : R.layout.widget_next_race_small);
+        resetViews(v, wide);
 
         PendingIntent open = openApp(context);
 
@@ -301,6 +310,23 @@ final class widgetNextRace {
         return v;
     }
 
+    /** The host may draw the new actions over the old state: every view is set explicitly, nothing is left over. */
+    private static void resetViews(RemoteViews v, boolean wide) {
+        int[] shown = wide
+                ? new int[]{R.id.dates, R.id.round_pill, R.id.headline, R.id.race_name,
+                R.id.circuit_name, R.id.countdown_label, R.id.countdown_img,
+                R.id.weather_chip, R.id.weather_icon, R.id.spacer_bottom,
+                R.id.timeline, R.id.footer, R.id.leader_text, R.id.record_text}
+                : new int[]{R.id.round_pill, R.id.title_img, R.id.countdown_label,
+                R.id.countdown_img, R.id.weather_chip, R.id.weather_icon};
+
+        for (int id : shown) {
+            v.setViewVisibility(id, View.VISIBLE);
+        }
+
+        v.setViewVisibility(R.id.live_badge, View.GONE);
+    }
+
     // ---------- the time and the quiet alarm ----------
 
     private static String countdownText(Context context, long left, boolean live) {
@@ -433,6 +459,7 @@ final class widgetNextRace {
             v.setViewVisibility(R.id.timeline, View.GONE);
             v.setViewVisibility(R.id.footer, View.GONE);
         } else {
+            v.setViewVisibility(R.id.title_img, View.VISIBLE);
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, message,
                     R.font.good_timing_bd, 15, Math.max(60, widthDp - 24), 3, false));
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
