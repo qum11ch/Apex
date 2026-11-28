@@ -36,8 +36,10 @@ import java.util.Map;
 final class widgetNextRace {
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
-    private static final int WIDE_MIN_DP = 235;
+    private static final int MINI_MAX_DP = 150;
+    private static final int WIDE_MIN_DP = 340;
     private static final int WIDE_MIN_HEIGHT_DP = 175;
+    private static final int SQUARE_MIN_HEIGHT_DP = 175;
     private static final int TIMELINE_MIN_DP = 245;
     private static final int SUBTITLE_MIN_DP = 285;
     private static final int FOOTER_MIN_DP = 310;
@@ -47,7 +49,7 @@ final class widgetNextRace {
 
     /** The sizes (width, height in dp) at which the layout changes: the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {180, 100}, {210, 100}, {235, 175}, {235, 245}, {235, 285}, {235, 310}};
+            {80, 100}, {150, 100}, {240, 175}, {340, 175}, {340, 245}, {340, 285}, {340, 310}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
@@ -77,6 +79,12 @@ final class widgetNextRace {
     }
 
     static void update(Context context, AppWidgetManager manager, int id) {
+        Bundle o = manager.getAppWidgetOptions(id);
+        Log.d("WidgetSize", "density=" + context.getResources().getDisplayMetrics().density
+                + " min=" + o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH)
+                + "x" + o.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT)
+                + " max=" + o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH)
+                + "x" + o.getInt(AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT));
         long now = System.currentTimeMillis();
         widgetSnapshot snapshot = widgetSnapshotStore.load(context);
 
@@ -111,10 +119,15 @@ final class widgetNextRace {
 
     static RemoteViews build(Context context, widgetSnapshot s, int minWidthDp, int minHeightDp,
                              long now) {
+        if (minWidthDp < MINI_MAX_DP) {
+            return buildMini(context, s, minWidthDp, now);
+        }
 
         boolean wide = minWidthDp >= WIDE_MIN_DP && minHeightDp >= WIDE_MIN_HEIGHT_DP;
-        RemoteViews v = new RemoteViews(context.getPackageName(),
-                wide ? R.layout.widget_next_race_wide : R.layout.widget_next_race_small);
+        boolean square = !wide && minHeightDp >= SQUARE_MIN_HEIGHT_DP;
+        RemoteViews v = new RemoteViews(context.getPackageName(), wide
+                ? R.layout.widget_next_race_wide
+                : square ? R.layout.widget_next_race_square : R.layout.widget_next_race_small);
 
         PendingIntent open = openApp(context);
 
@@ -173,12 +186,13 @@ final class widgetNextRace {
         // the time
         long left = (live != null ? live.end : shown.start) - now;
         boolean hasWeather = shown.hasWeather();
-        int countdownMax = wide ? minWidthDp - 36 - (hasWeather ? 130 : 0)
-                : minWidthDp - 32 - (hasWeather ? 70 : 0);
+        float scale = minWidthDp >= 260 ? 1.2f : 1f;
+        int countdownMax = wide ? minWidthDp - 32 - (hasWeather ? 130 : 0)
+                : square ? minWidthDp - 24 : minWidthDp - 28 - (hasWeather ? 70 : 0);
         String countdown = countdownText(context, left, live != null);
 
         v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
-                R.font.audiowide, wide ? 32 : 28, Math.max(60, countdownMax)));
+                R.font.audiowide, wide ? 32 : Math.round(28 * scale), Math.max(60, countdownMax)));
         v.setContentDescription(R.id.countdown_img, countdown);
         widgetGlyphs.tint(context, v, R.id.countdown_img,
                 live != null ? R.color.hero_accent : R.color.hero_text);
@@ -189,7 +203,8 @@ final class widgetNextRace {
         if (hasWeather) {
             int icon = shown.iconRes(context);
 
-            v.setTextViewText(R.id.weather_text, wide ? shown.temp + ", " + shown.rain : shown.temp);
+            v.setTextViewText(R.id.weather_text,
+                    wide || square ? shown.temp + ", " + shown.rain : shown.temp);
             v.setViewVisibility(R.id.weather_icon, icon != 0 ? View.VISIBLE : View.GONE);
 
             if (icon != 0) {
@@ -199,10 +214,12 @@ final class widgetNextRace {
         }
 
         if (!wide) {
-            int titleMax = minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
+            int titleMax = square ? minWidthDp - 24
+                    : minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
 
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
-                    R.font.good_timing_bd, 16, Math.max(60, titleMax), 2, false));
+                    R.font.good_timing_bd, Math.round((square ? 15 : 16) * scale),
+                    Math.max(60, titleMax), 2, false));
             v.setContentDescription(R.id.title_img, raceTitle);
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
             return v;
@@ -429,6 +446,79 @@ final class widgetNextRace {
                     R.font.good_timing_bd, 15, Math.max(60, minWidthDp - 24), 3, false));
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
         }
+    }
+
+    private static RemoteViews buildMini(Context context, widgetSnapshot s, int widthDp, long now) {
+        RemoteViews v = new RemoteViews(context.getPackageName(), R.layout.widget_next_race_mini);
+        int room = Math.max(40, widthDp - 16);
+        PendingIntent open = openApp(context);
+
+        if (open != null) {
+            v.setOnClickPendingIntent(R.id.widget_root, open);
+        }
+
+        widgetSnapshot.Session live = null;
+        widgetSnapshot.Session next = null;
+
+        if (s != null) {
+            for (widgetSnapshot.Session x : s.sessions) {
+                if (now >= x.start && now < x.end) {
+                    live = x;
+                    break;
+                }
+
+                if (x.start > now && next == null) {
+                    next = x;
+                }
+            }
+        }
+
+        widgetSnapshot.Session shown = live != null ? live : next;
+
+        if (shown == null) {
+            v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context,
+                    context.getString(R.string.app_name), R.font.good_timing_bd, 14, room, 1, false));
+            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
+            v.setViewVisibility(R.id.countdown_img, View.GONE);
+            v.setViewVisibility(R.id.weather_chip, View.GONE);
+            return v;
+        }
+
+        v.setInt(R.id.widget_root, "setBackgroundResource",
+                live != null ? R.drawable.widget_glass_live : R.drawable.widget_glass);
+
+        int labelRes = getStringByName("session_short_" + shown.key);
+        String label = labelRes == 0 ? shown.key : context.getString(labelRes);
+        String time = countdownText(context, (live != null ? live.end : shown.start) - now,
+                live != null);
+
+        v.setImageViewBitmap(R.id.title_img,
+                widgetGlyphs.text(context, label, R.font.audiowide, 11, room, 1, true));
+        widgetGlyphs.tint(context, v, R.id.title_img,
+                live != null ? R.color.hero_accent : R.color.hero_text_secondary);
+
+        v.setViewVisibility(R.id.countdown_img, View.VISIBLE);
+        v.setImageViewBitmap(R.id.countdown_img,
+                widgetGlyphs.fit(context, time, R.font.audiowide, 24, room));
+        v.setContentDescription(R.id.countdown_img, time);
+        widgetGlyphs.tint(context, v, R.id.countdown_img,
+                live != null ? R.color.hero_accent : R.color.hero_text);
+
+        v.setViewVisibility(R.id.weather_chip, shown.hasWeather() ? View.VISIBLE : View.GONE);
+
+        if (shown.hasWeather()) {
+            int icon = shown.iconRes(context);
+
+            v.setTextViewText(R.id.weather_text, shown.temp);
+            v.setViewVisibility(R.id.weather_icon, icon != 0 ? View.VISIBLE : View.GONE);
+
+            if (icon != 0) {
+                v.setImageViewResource(R.id.weather_icon, icon);
+                widgetGlyphs.tint(context, v, R.id.weather_icon, R.color.hero_text);
+            }
+        }
+
+        return v;
     }
 
     /** The same rule as the schedule lists: the city and the country, no city for Monaco and Singapore. */
