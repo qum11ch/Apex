@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/widget_glass"
         android:orientation="vertical"
-        android:padding="14dp">
+        android:padding="12dp">
 
         <!-- Верхний ряд: R22 и LIVE -->
         <LinearLayout
@@ -100,7 +100,7 @@
                 android:maxLines="2"
                 android:text="Starts in: Practice 3"
                 android:textColor="@color/hero_text_secondary"
-                android:textSize="12sp"
+                android:textSize="11sp"
                 tools:ignore="HardcodedText" />
 
             <ImageView

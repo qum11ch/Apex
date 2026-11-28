@@ -41,10 +41,12 @@ final class widgetNextRace {
     private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
     private static final long DAY_MS = 24 * HOUR_MS;
+    private static final int SMALL_TITLE_MIN_DP = 140;
+    private static final int SMALL_CHIP_MIN_DP = 190;
 
     /** Sizes (width, height in dp) at which the card changes; the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {140, 140}, {188, 188}, {188, 248}, {188, 382},
+            {188, 100}, {188, 140}, {188, 190},
             {240, 175}, {240, 245}, {240, 285}, {240, 310}
     };
 
@@ -175,7 +177,7 @@ final class widgetNextRace {
         String countdown = countdownText(context, left, live != null);
 
         v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
-                R.font.audiowide, wide ? 32 : 28, Math.max(60, countdownMax)));
+                R.font.audiowide, wide ? 32 : (heightDp >= 230 ? 28 : 24), Math.max(60, countdownMax)));
         v.setContentDescription(R.id.countdown_img, countdown);
         widgetGlyphs.tint(context, v, R.id.countdown_img,
                 live != null ? R.color.hero_accent : R.color.hero_text);
@@ -196,10 +198,19 @@ final class widgetNextRace {
         }
 
         if (!wide) {
-            v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
-                    R.font.good_timing_bd, 15, Math.max(60, widthDp - 24), 2, false));
-            v.setContentDescription(R.id.title_img, raceTitle);
-            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
+            boolean showTitle = heightDp >= SMALL_TITLE_MIN_DP;
+            boolean showChip = hasWeather && heightDp >= SMALL_CHIP_MIN_DP;
+
+            v.setViewVisibility(R.id.title_img, showTitle ? View.VISIBLE : View.GONE);
+            v.setViewVisibility(R.id.weather_chip, showChip ? View.VISIBLE : View.GONE);
+
+            if (showTitle) {
+                v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
+                        R.font.good_timing_bd, 16, Math.max(60, widthDp - 28), 2, false));
+                v.setContentDescription(R.id.title_img, raceTitle);
+                widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
+            }
+
             return v;
         }
 
@@ -239,6 +250,7 @@ final class widgetNextRace {
 
         boolean timeline = heightDp >= TIMELINE_MIN_DP;
         v.setViewVisibility(R.id.timeline, timeline ? View.VISIBLE : View.GONE);
+        v.setViewVisibility(R.id.spacer_bottom, timeline ? View.VISIBLE : View.GONE);
 
         if (timeline) {
             DateTimeFormatter day = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
@@ -415,6 +427,7 @@ final class widgetNextRace {
                     R.font.good_timing_bd, 20, widthDp - 32, 2, false));
             widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
             v.setViewVisibility(R.id.headline, View.VISIBLE);
+            v.setViewVisibility(R.id.spacer_bottom, View.GONE);
             v.setViewVisibility(R.id.race_name, View.GONE);
             v.setViewVisibility(R.id.circuit_name, View.GONE);
             v.setViewVisibility(R.id.timeline, View.GONE);
