@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.util.SizeF;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -24,33 +25,31 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import android.util.Log;
 
 /**
- * The "next stage" widget: two cards. SMALL fills the cells of the launcher and shows less on a lower
- * widget; WIDE is the full card that grows with the height. The launcher itself picks the variant that
- * fits the real size of the widget (Android 12 and newer).
+ * The "next stage" widget, always two rows high; three cards by the width: NARROW (one column),
+ * SMALL (two columns), WIDE (three columns, the default). The launcher picks the variant that fits.
  */
 final class widgetNextRace {
 
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
+    private static final int NARROW_MAX_DP = 130;
     private static final int WIDE_MIN_DP = 240;
-    private static final int SUBTITLE_MIN_DP = 285;
-    private static final int FOOTER_MIN_DP = 310;
+    private static final int TIMELINE_MIN_DP = 235;
+    private static final int SMALL_TITLE_MIN_DP = 140;
+    private static final int CHIP_MIN_DP = 190;
     private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
     private static final long DAY_MS = 24 * HOUR_MS;
-    private static final int SMALL_TITLE_MIN_DP = 140;
-    private static final int SMALL_CHIP_MIN_DP = 190;
-    private static final int TIMELINE_MIN_DP = 235;
-    private static final boolean DEBUG_SIZES = true;
+
+    private static final int NARROW = 0;
+    private static final int SMALL = 1;
+    private static final int WIDE = 2;
 
     /** Sizes (width, height in dp) at which the card changes; the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {188, 100}, {188, 140}, {188, 190},
-            {240, 175}, {240, 235}, {240, 285}, {240, 310}
-    };
+            {70, 100}, {70, 190}, {188, 100}, {188, 140}, {188, 190}, {240, 175}, {240, 235}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
@@ -94,17 +93,16 @@ final class widgetNextRace {
 
             for (int[] size : VARIANTS) {
                 try {
-                    variants.put(new SizeF(size[0], size[1]), build(context, s, size[0], size[1], now));
+                    variants.put(new SizeF(size[0], size[1]),
+                            build(context, s, size[0], size[1], now));
                 } catch (RuntimeException error) {
-                    Log.e("NextRaceWidget", "variant " + size[0] + "x" + size[1] + " failed", error);
+                    Log.e("NextRaceWidget", "variant " + size[0] + "x" + size[1], error);
                 }
             }
 
-            if (variants.isEmpty()) {
-                return build(context, s, 190, 250, now);
+            if (!variants.isEmpty()) {
+                return new RemoteViews(variants);
             }
-
-            return new RemoteViews(variants);
         }
 
         boolean portrait = context.getResources().getConfiguration().orientation
@@ -121,10 +119,12 @@ final class widgetNextRace {
 
     static RemoteViews build(Context context, widgetSnapshot s, int widthDp, int heightDp,
                              long now) {
-        boolean wide = widthDp >= WIDE_MIN_DP;
-        RemoteViews v = new RemoteViews(context.getPackageName(),
-                wide ? R.layout.widget_next_race_wide : R.layout.widget_next_race_small);
-        resetViews(v, wide);
+        int kind = widthDp >= WIDE_MIN_DP ? WIDE : widthDp < NARROW_MAX_DP ? NARROW : SMALL;
+        RemoteViews v = new RemoteViews(context.getPackageName(), kind == WIDE
+                ? R.layout.widget_next_race_wide
+                : kind == NARROW ? R.layout.widget_next_race_narrow
+                : R.layout.widget_next_race_small);
+        resetViews(v, kind);
 
         PendingIntent open = openApp(context);
 
@@ -133,7 +133,7 @@ final class widgetNextRace {
         }
 
         if (s == null || s.raceName.isEmpty() || s.sessions.isEmpty()) {
-            message(context, v, wide, widthDp, s == null || s.drivers.isEmpty()
+            message(context, v, kind, widthDp, s == null || s.drivers.isEmpty()
                     ? R.string.widget_no_data : R.string.widget_season_over);
             return v;
         }
@@ -155,11 +155,9 @@ final class widgetNextRace {
         widgetSnapshot.Session shown = live != null ? live : next;
 
         if (shown == null) {
-            message(context, v, wide, widthDp, R.string.awaiting_results_text);
+            message(context, v, kind, widthDp, R.string.awaiting_results_text);
             return v;
         }
-
-        String raceTitle = predictionRaceNameFormatter.getName(context, s.raceName);
 
         v.setInt(R.id.widget_root, "setBackgroundResource",
                 live != null ? R.drawable.widget_glass_live : R.drawable.widget_glass);
@@ -169,43 +167,47 @@ final class widgetNextRace {
         if (s.round > 0) {
             v.setImageViewBitmap(R.id.round_pill_text, widgetGlyphs.text(context,
                     context.getString(R.string.round_pill, String.valueOf(s.round)),
-                    R.font.audiowide, wide ? 12 : 11, 120, 1, false));
+                    R.font.audiowide, kind == WIDE ? 12 : kind == SMALL ? 11 : 10, 120, 1, false));
             widgetGlyphs.tint(context, v, R.id.round_pill_text, R.color.hero_accent);
         }
 
         int nameRes = getStringByName(shown.key + "_text");
         String sessionName = nameRes == 0 ? shown.key : context.getString(nameRes);
 
-        v.setTextViewText(R.id.countdown_label, context.getString(
-                live != null ? R.string.countdown_ends : R.string.countdown_starts, sessionName));
-
-        if (DEBUG_SIZES) {
+        if (kind != NARROW) {
             v.setTextViewText(R.id.countdown_label, context.getString(
-                    live != null ? R.string.countdown_ends : R.string.countdown_starts, sessionName)
-                    + " [" + widthDp + "x" + heightDp + "]");
+                    live != null ? R.string.countdown_ends : R.string.countdown_starts,
+                    sessionName));
         }
 
-        v.setViewVisibility(R.id.countdown_label, View.VISIBLE);
-
-        // the time
+        // the time with its units
         long left = (live != null ? live.end : shown.start) - now;
         boolean hasWeather = shown.hasWeather();
-        int countdownMax = wide ? widthDp - 32 - (hasWeather ? 130 : 0) : widthDp - 24;
-        String countdown = countdownText(context, left, live != null);
+        String[][] parts = timeParts(context, left, live != null);
+        int timeColor = live != null ? R.color.hero_accent : R.color.hero_text;
+        String description = describe(parts);
 
-        v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
-                R.font.audiowide, wide ? 32 : (heightDp >= 230 ? 28 : 24), Math.max(60, countdownMax)));
-        v.setContentDescription(R.id.countdown_img, countdown);
-        widgetGlyphs.tint(context, v, R.id.countdown_img,
-                live != null ? R.color.hero_accent : R.color.hero_text);
+        if (kind == NARROW) {
+            drawNarrowTime(context, v, parts, widthDp - 16, timeColor, description);
+        } else {
+            int max = kind == WIDE ? widthDp - 32 - (hasWeather ? 130 : 0) : widthDp - 24;
 
-        // the weather of the session on the countdown
-        v.setViewVisibility(R.id.weather_chip, hasWeather ? View.VISIBLE : View.GONE);
+            v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.time(context, parts[0], parts[1],
+                    R.font.audiowide, kind == WIDE ? 32 : (heightDp >= 230 ? 28 : 24),
+                    kind == WIDE ? 14 : 12, Math.max(60, max)));
+            v.setContentDescription(R.id.countdown_img, description);
+            widgetGlyphs.tint(context, v, R.id.countdown_img, timeColor);
+        }
 
-        if (hasWeather) {
+        // the weather of the session
+        boolean showChip = hasWeather && (kind == WIDE || heightDp >= CHIP_MIN_DP);
+        v.setViewVisibility(R.id.weather_chip, showChip ? View.VISIBLE : View.GONE);
+
+        if (showChip) {
             int icon = shown.iconRes(context);
 
-            v.setTextViewText(R.id.weather_text, shown.temp + ", " + shown.rain);
+            v.setTextViewText(R.id.weather_text,
+                    kind == NARROW ? shown.temp : shown.temp + ", " + shown.rain);
             v.setViewVisibility(R.id.weather_icon, icon != 0 ? View.VISIBLE : View.GONE);
 
             if (icon != 0) {
@@ -214,12 +216,23 @@ final class widgetNextRace {
             }
         }
 
-        if (!wide) {
+        String raceTitle = predictionRaceNameFormatter.getName(context, s.raceName);
+
+        if (kind == NARROW) {
+            int labelRes = getStringByName("session_short_" + shown.key);
+            String label = labelRes == 0 ? shown.key : context.getString(labelRes);
+
+            v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, label,
+                    R.font.audiowide, 11, widthDp - 16, 1, true));
+            v.setContentDescription(R.id.title_img, sessionName);
+            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text_secondary);
+            return v;
+        }
+
+        if (kind == SMALL) {
             boolean showTitle = heightDp >= SMALL_TITLE_MIN_DP;
-            boolean showChip = hasWeather && heightDp >= SMALL_CHIP_MIN_DP;
 
             v.setViewVisibility(R.id.title_img, showTitle ? View.VISIBLE : View.GONE);
-            v.setViewVisibility(R.id.weather_chip, showChip ? View.VISIBLE : View.GONE);
 
             if (showTitle) {
                 v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
@@ -231,7 +244,7 @@ final class widgetNextRace {
             return v;
         }
 
-        // the wide card: the same lines as the card of the home screen
+        // the wide card
         ZoneId zone = ZoneId.systemDefault();
         LocalDate first = Instant.ofEpochMilli(s.sessions.get(0).start).atZone(zone).toLocalDate();
         LocalDate last = Instant.ofEpochMilli(s.sessions.get(s.sessions.size() - 1).end)
@@ -243,27 +256,10 @@ final class widgetNextRace {
                 widgetGlyphs.text(context, range, R.font.audiowide, 12, 160, 1, true));
         widgetGlyphs.tint(context, v, R.id.dates, R.color.hero_text_secondary);
 
-        boolean subtitles = heightDp >= SUBTITLE_MIN_DP;
-
         v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, head, R.font.good_timing_bd,
-                20, widthDp - 32, subtitles ? 2 : 1, false));
+                20, widthDp - 32, 1, false));
         v.setContentDescription(R.id.headline, head);
         widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
-        v.setViewVisibility(R.id.headline, View.VISIBLE);
-
-        v.setViewVisibility(R.id.race_name, subtitles ? View.VISIBLE : View.GONE);
-
-        if (subtitles) {
-            v.setTextViewText(R.id.race_name,
-                    predictionRaceNameFormatter.getNameWithSeason(context, s.raceName, s.season));
-        }
-
-        int circuitRes = getStringByName(s.circuitId + "_text");
-        v.setViewVisibility(R.id.circuit_name, subtitles && circuitRes != 0 ? View.VISIBLE : View.GONE);
-
-        if (subtitles && circuitRes != 0) {
-            v.setTextViewText(R.id.circuit_name, context.getString(circuitRes));
-        }
 
         boolean timeline = heightDp >= TIMELINE_MIN_DP;
         v.setViewVisibility(R.id.timeline, timeline ? View.VISIBLE : View.GONE);
@@ -295,59 +291,65 @@ final class widgetNextRace {
             }
         }
 
-        boolean hasLeader = heightDp >= FOOTER_MIN_DP && s.drivers.size() >= 2;
-        boolean hasRecord = heightDp >= FOOTER_MIN_DP && s.recordSeconds > 0;
-
-        v.setViewVisibility(R.id.footer, hasLeader || hasRecord ? View.VISIBLE : View.GONE);
-        v.setViewVisibility(R.id.leader_text, hasLeader ? View.VISIBLE : View.GONE);
-        v.setViewVisibility(R.id.record_text, hasRecord ? View.VISIBLE : View.GONE);
-
-        if (hasLeader) {
-            widgetSnapshot.Standing a = s.drivers.get(0);
-            widgetSnapshot.Standing b = s.drivers.get(1);
-
-            v.setTextViewText(R.id.leader_text, context.getString(R.string.widget_leader,
-                    a.label, a.points, points(number(a.points) - number(b.points))));
-        }
-
-        if (hasRecord) {
-            v.setTextViewText(R.id.record_text,
-                    context.getString(R.string.widget_record, lapTime(s.recordSeconds)));
-        }
-
         return v;
     }
 
-    /** The host may draw the new actions over the old state: every view is set explicitly, nothing is left over. */
-    private static void resetViews(RemoteViews v, boolean wide) {
-        int[] shown = wide
-                ? new int[]{R.id.dates, R.id.round_pill, R.id.headline, R.id.race_name,
-                R.id.circuit_name, R.id.countdown_label, R.id.countdown_img,
-                R.id.weather_chip, R.id.weather_icon, R.id.spacer_bottom,
-                R.id.timeline, R.id.footer, R.id.leader_text, R.id.record_text}
-                : new int[]{R.id.round_pill, R.id.title_img, R.id.countdown_label,
-                R.id.countdown_img, R.id.weather_chip, R.id.weather_icon};
+    // ---------- the time ----------
 
-        for (int id : shown) {
-            v.setViewVisibility(id, View.VISIBLE);
-        }
+    /** {numbers, units}: "3 d 04 h", "4 h 42 min" or "42 min". */
+    private static String[][] timeParts(Context context, long left, boolean live) {
+        String day = context.getString(R.string.widget_unit_day);
+        String hour = context.getString(R.string.widget_unit_hour);
+        String minute = context.getString(R.string.widget_unit_minute);
 
-        v.setViewVisibility(R.id.live_badge, View.GONE);
-    }
-
-    // ---------- the time and the quiet alarm ----------
-
-    private static String countdownText(Context context, long left, boolean live) {
         if (!live && left > DAY_MS) {
             long hours = ceilDiv(left, HOUR_MS);
-            return context.getString(R.string.widget_days_hours, hours / 24, hours % 24);
+            return new String[][]{{String.valueOf(hours / 24), two(hours % 24)}, {day, hour}};
         }
 
         long minutes = Math.max(0, ceilDiv(left, MINUTE_MS));
 
-        return minutes < 60
-                ? context.getString(R.string.widget_minutes, minutes)
-                : context.getString(R.string.widget_hours_minutes, minutes / 60, minutes % 60);
+        if (minutes >= 60) {
+            return new String[][]{{String.valueOf(minutes / 60), two(minutes % 60)},
+                    {hour, minute}};
+        }
+
+        return new String[][]{{String.valueOf(minutes)}, {minute}};
+    }
+
+    private static String two(long value) {
+        return String.format(Locale.US, "%02d", value);
+    }
+
+    private static String describe(String[][] parts) {
+        StringBuilder text = new StringBuilder();
+
+        for (int i = 0; i < parts[0].length; i++) {
+            text.append(i == 0 ? "" : " ").append(parts[0][i]).append(" ").append(parts[1][i]);
+        }
+
+        return text.toString();
+    }
+
+    /** One column: every pair of number and unit on its own line. */
+    private static void drawNarrowTime(Context context, RemoteViews v, String[][] parts,
+                                       int maxDp, int color, String description) {
+        int[] views = {R.id.countdown_img, R.id.countdown_img2};
+
+        for (int i = 0; i < views.length; i++) {
+            if (i >= parts[0].length) {
+                v.setViewVisibility(views[i], View.GONE);
+                continue;
+            }
+
+            v.setViewVisibility(views[i], View.VISIBLE);
+            v.setImageViewBitmap(views[i], widgetGlyphs.time(context,
+                    new String[]{parts[0][i]}, new String[]{parts[1][i]}, R.font.audiowide,
+                    24, 11, Math.max(40, maxDp)));
+            widgetGlyphs.tint(context, v, views[i], color);
+        }
+
+        v.setContentDescription(R.id.countdown_img, description);
     }
 
     private static long ceilDiv(long value, long unit) {
@@ -445,31 +447,58 @@ final class widgetNextRace {
 
     // ---------- helpers ----------
 
-    private static void message(Context context, RemoteViews v, boolean wide, int widthDp,
-                                int text) {
+    /** The host may draw the new actions over the old state: every view is set explicitly. */
+    private static void resetViews(RemoteViews v, int kind) {
+        int[] shown;
+
+        if (kind == WIDE) {
+            shown = new int[]{R.id.dates, R.id.round_pill, R.id.headline, R.id.countdown_label,
+                    R.id.countdown_img, R.id.weather_chip, R.id.weather_icon,
+                    R.id.spacer_bottom, R.id.timeline};
+            v.setViewVisibility(R.id.race_name, View.GONE);
+            v.setViewVisibility(R.id.circuit_name, View.GONE);
+            v.setViewVisibility(R.id.footer, View.GONE);
+        } else if (kind == SMALL) {
+            shown = new int[]{R.id.round_pill, R.id.title_img, R.id.countdown_label,
+                    R.id.countdown_img, R.id.weather_chip, R.id.weather_icon};
+        } else {
+            shown = new int[]{R.id.round_pill, R.id.title_img, R.id.countdown_img,
+                    R.id.countdown_img2, R.id.weather_chip, R.id.weather_icon};
+        }
+
+        for (int id : shown) {
+            v.setViewVisibility(id, View.VISIBLE);
+        }
+
+        v.setViewVisibility(R.id.live_badge, View.GONE);
+    }
+
+    private static void message(Context context, RemoteViews v, int kind, int widthDp, int text) {
         v.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_glass);
         v.setViewVisibility(R.id.live_badge, View.GONE);
         v.setViewVisibility(R.id.round_pill, View.GONE);
-        v.setViewVisibility(R.id.countdown_label, View.GONE);
         v.setViewVisibility(R.id.countdown_img, View.GONE);
         v.setViewVisibility(R.id.weather_chip, View.GONE);
 
         String message = context.getString(text);
 
-        if (wide) {
+        if (kind == WIDE) {
+            v.setViewVisibility(R.id.countdown_label, View.GONE);
+            v.setViewVisibility(R.id.spacer_bottom, View.GONE);
+            v.setViewVisibility(R.id.timeline, View.GONE);
             v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, message,
                     R.font.good_timing_bd, 20, widthDp - 32, 2, false));
             widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
-            v.setViewVisibility(R.id.headline, View.VISIBLE);
-            v.setViewVisibility(R.id.spacer_bottom, View.GONE);
-            v.setViewVisibility(R.id.race_name, View.GONE);
-            v.setViewVisibility(R.id.circuit_name, View.GONE);
-            v.setViewVisibility(R.id.timeline, View.GONE);
-            v.setViewVisibility(R.id.footer, View.GONE);
         } else {
-            v.setViewVisibility(R.id.title_img, View.VISIBLE);
+            if (kind == SMALL) {
+                v.setViewVisibility(R.id.countdown_label, View.GONE);
+            } else {
+                v.setViewVisibility(R.id.countdown_img2, View.GONE);
+            }
+
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, message,
-                    R.font.good_timing_bd, 15, Math.max(60, widthDp - 24), 3, false));
+                    R.font.good_timing_bd, kind == NARROW ? 13 : 15, Math.max(40, widthDp - 24),
+                    kind == NARROW ? 6 : 3, false));
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
         }
     }
@@ -498,24 +527,6 @@ final class widgetNextRace {
         }
 
         return city + ", " + country;
-    }
-
-    private static double number(String value) {
-        try {
-            return Double.parseDouble(value.trim());
-        } catch (NumberFormatException error) {
-            return 0;
-        }
-    }
-
-    private static String points(double value) {
-        return value == Math.rint(value) ? String.valueOf((long) value)
-                : String.format(Locale.US, "%.1f", value);
-    }
-
-    private static String lapTime(double seconds) {
-        int minutes = (int) (seconds / 60);
-        return String.format(Locale.US, "%d:%06.3f", minutes, seconds - minutes * 60);
     }
 
     private static PendingIntent openApp(Context context) {

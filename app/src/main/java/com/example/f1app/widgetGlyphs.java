@@ -65,6 +65,52 @@ final class widgetGlyphs {
         }
     }
 
+    /** "4 ч 42 мин": the numbers big, the units smaller and paler, one baseline; shrinks to fit. */
+    static Bitmap time(Context context, String[] numbers, String[] units, int fontRes,
+                       float numberSp, float unitSp, int maxDp) {
+        float density = context.getResources().getDisplayMetrics().density;
+        int maxPx = px(context, maxDp);
+        float k = 1f;
+
+        while (true) {
+            TextPaint number = font(context, fontRes, numberSp * k);
+            TextPaint unit = font(context, fontRes, unitSp * k);
+            unit.setAlpha(170);
+
+            float inner = 3 * density * k;
+            float between = 8 * density * k;
+            float total = 0;
+
+            for (int i = 0; i < numbers.length; i++) {
+                total += number.measureText(numbers[i]) + inner + unit.measureText(units[i]);
+
+                if (i < numbers.length - 1) {
+                    total += between;
+                }
+            }
+
+            if (total <= maxPx || k <= 0.55f) {
+                Paint.FontMetrics m = number.getFontMetrics();
+                Bitmap bitmap = Bitmap.createBitmap((int) Math.ceil(total) + 2,
+                        (int) Math.ceil(m.descent - m.ascent) + 2, Bitmap.Config.ARGB_8888);
+                Canvas canvas = new Canvas(bitmap);
+                float baseline = -m.ascent + 1;
+                float x = 1;
+
+                for (int i = 0; i < numbers.length; i++) {
+                    canvas.drawText(numbers[i], x, baseline, number);
+                    x += number.measureText(numbers[i]) + inner;
+                    canvas.drawText(units[i], x, baseline, unit);
+                    x += unit.measureText(units[i]) + between;
+                }
+
+                return bitmap;
+            }
+
+            k -= 0.05f;
+        }
+    }
+
     private static Context themed(Context context, boolean night) {
         Configuration configuration = new Configuration(context.getResources().getConfiguration());
         configuration.uiMode = (configuration.uiMode & ~Configuration.UI_MODE_NIGHT_MASK)

@@ -1457,6 +1457,9 @@
     <string name="widget_days_hours">%1$d d %2$02d h</string>
     <string name="widget_hours_minutes">%1$d:%2$02d</string>
     <string name="widget_minutes">%1$d min</string>
+    <string name="widget_unit_day">d</string>
+    <string name="widget_unit_hour">h</string>
+    <string name="widget_unit_minute">min</string>
 
     <string name="widget_preview_dates">27-29 Nov</string>
     <string name="widget_preview_place">Lusail, Qatar</string>
