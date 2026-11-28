@@ -2,6 +2,8 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
     <solid android:color="@color/widget_chip_selected_fill" />
-    <stroke android:width="2dp" android:color="@color/hero_accent" />
+    <stroke
+        android:width="@dimen/widget_chip_selected_stroke"
+        android:color="@color/hero_accent" />
     <corners android:radius="12dp" />
 </shape>

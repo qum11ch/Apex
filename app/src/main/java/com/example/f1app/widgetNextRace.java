@@ -167,6 +167,7 @@ final class widgetNextRace {
         }
 
         ZoneId zone = ZoneId.systemDefault();
+        float doneAlpha = isNight(context) ? 0.45f : 0.62f;
         DateTimeFormatter dayTime = DateTimeFormatter.ofPattern("EEE HH:mm", Locale.getDefault())
                 .withZone(zone);
         String raceTitle = predictionRaceNameFormatter.getName(context, s.raceName);
@@ -291,7 +292,7 @@ final class widgetNextRace {
                 v.setTextViewText(RT[i], dayTime.format(Instant.ofEpochMilli(x.start)));
                 v.setInt(ROW[i], "setBackgroundResource",
                         selected ? R.drawable.widget_chip_selected : R.drawable.widget_chip);
-                v.setFloat(ROW[i], "setAlpha", done && !selected ? 0.45f : 1f);
+                v.setFloat(ROW[i], "setAlpha", done && !selected ? doneAlpha : 1f);
             }
 
             return v;
@@ -324,7 +325,7 @@ final class widgetNextRace {
                 v.setTextViewText(TM[i], time.format(Instant.ofEpochMilli(x.start)));
                 v.setInt(COL[i], "setBackgroundResource",
                         selected ? R.drawable.widget_chip_selected : R.drawable.widget_chip);
-                v.setFloat(COL[i], "setAlpha", done && !selected ? 0.45f : 1f);
+                v.setFloat(COL[i], "setAlpha", done && !selected ? doneAlpha : 1f);
             }
         }
 
@@ -558,5 +559,10 @@ final class widgetNextRace {
 
         return PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    private static boolean isNight(Context context) {
+        return (context.getResources().getConfiguration().uiMode
+                & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
     }
 }
