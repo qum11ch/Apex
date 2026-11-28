@@ -1,154 +1,149 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/widget_outer"
+    android:id="@+id/widget_root"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_glass"
+    android:orientation="vertical"
+    android:padding="12dp">
 
     <LinearLayout
-        android:id="@+id/widget_root"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/widget_glass"
-        android:orientation="vertical"
-        android:padding="12dp">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
-        <!-- Верхний ряд: R22 и LIVE -->
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <LinearLayout
-                android:id="@+id/round_pill"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_round_pill"
-                android:paddingStart="7dp"
-                android:paddingTop="2dp"
-                android:paddingEnd="7dp"
-                android:paddingBottom="2dp">
-
-                <ImageView
-                    android:id="@+id/round_pill_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:contentDescription="@null" />
-            </LinearLayout>
-
-            <FrameLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
-            <LinearLayout
-                android:id="@+id/live_badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_live_pill"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:paddingStart="6dp"
-                android:paddingEnd="6dp"
-                android:visibility="gone">
-
-                <ImageView
-                    android:layout_width="8dp"
-                    android:layout_height="8dp"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/live_dot"
-                    android:contentDescription="@null" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/live_badge"
-                    android:textAllCaps="true"
-                    android:textColor="@color/hero_accent"
-                    android:textSize="11sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Название Гран-при -->
-        <ImageView
-            android:id="@+id/title_img"
+            android:id="@+id/round_pill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:contentDescription="@null"
-            android:scaleType="fitStart" />
-
-        <!-- Мягкая верхняя распорка -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" />
-
-        <!-- Блок таймера -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/countdown_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="2"
-                android:text="Starts in: Practice 3"
-                android:textColor="@color/hero_text_secondary"
-                android:textSize="11sp"
-                tools:ignore="HardcodedText" />
+            android:background="@drawable/bg_round_pill"
+            android:paddingStart="6dp"
+            android:paddingTop="2dp"
+            android:paddingEnd="6dp"
+            android:paddingBottom="2dp">
 
             <ImageView
-                android:id="@+id/countdown_img"
+                android:id="@+id/round_pill_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:contentDescription="@null"
-                android:scaleType="fitStart" />
+                android:contentDescription="@null" />
         </LinearLayout>
 
-        <!-- Мягкая нижняя распорка (балансирует высоту!) -->
         <FrameLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!-- Плашка погоды -->
         <LinearLayout
-            android:id="@+id/weather_chip"
+            android:id="@+id/live_badge"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/widget_chip"
+            android:background="@drawable/bg_live_pill"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="8dp"
-            android:paddingTop="5dp"
-            android:paddingEnd="10dp"
-            android:paddingBottom="5dp">
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:visibility="gone">
 
             <ImageView
-                android:id="@+id/weather_icon"
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
                 android:layout_marginEnd="5dp"
-                android:contentDescription="@null"
-                android:src="@drawable/ic_weather_clear" />
+                android:background="@drawable/live_dot"
+                android:contentDescription="@null" />
 
             <TextView
-                android:id="@+id/weather_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:maxLines="1"
-                android:text="23°, 0%"
-                android:textColor="@color/hero_text"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                tools:ignore="HardcodedText" />
+                android:text="@string/live_badge"
+                android:textAllCaps="true"
+                android:textColor="@color/hero_accent"
+                android:textSize="11sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>
-</FrameLayout>
+
+    <ImageView
+        android:id="@+id/title_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:contentDescription="@null" />
+
+    <ImageView
+        android:id="@+id/dates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:contentDescription="@null" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <TextView
+        android:id="@+id/countdown_label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Practice 3"
+        android:textColor="@color/hero_text"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        tools:ignore="HardcodedText" />
+
+    <TextView
+        android:id="@+id/session_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Sat 17:30"
+        android:textColor="@color/hero_text_secondary"
+        android:textSize="12sp"
+        tools:ignore="HardcodedText" />
+
+    <ImageView
+        android:id="@+id/countdown_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:contentDescription="@null" />
+
+    <LinearLayout
+        android:id="@+id/weather_chip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/widget_chip"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="6dp"
+        android:paddingTop="4dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="4dp">
+
+        <ImageView
+            android:id="@+id/weather_icon"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="4dp"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_weather_clear" />
+
+        <TextView
+            android:id="@+id/weather_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:text="23°, 0%"
+            android:textColor="@color/hero_text"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
+</LinearLayout>

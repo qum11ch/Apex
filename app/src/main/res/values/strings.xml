@@ -1460,7 +1460,8 @@
     <string name="widget_unit_day">d</string>
     <string name="widget_unit_hour">h</string>
     <string name="widget_unit_minute">min</string>
-
+    <string name="widget_until_end">until the end</string>
+    
     <string name="widget_preview_dates">27-29 Nov</string>
     <string name="widget_preview_place">Lusail, Qatar</string>
     <string name="widget_preview_label">Practice 3 starts in</string>
