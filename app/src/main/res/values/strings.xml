@@ -1467,4 +1467,22 @@
     <string name="widget_preview_dates">27-29 Nov</string>
     <string name="widget_preview_place">Lusail, Qatar</string>
     <string name="widget_preview_label">Practice 3 starts in</string>
+
+    <string name="wd_label">Favorite driver</string>
+    <string name="wd_description">Your favorite driver’s season statistics</string>
+    <string name="wd_signin_message">Sign in to choose your favorite driver and follow their season.</string>
+    <string name="wd_signin">Sign in</string>
+    <string name="wd_choose_message">Choose your favorite driver in your Apex profile.</string>
+    <string name="wd_choose">Choose driver</string>
+    <string name="wd_loading">Loading driver statistics…</string>
+    <string name="wd_error">Could not update the statistics. Try again later.</string>
+    <string name="wd_no_entry">No championship entry for this driver in %1$d.</string>
+    <string name="wd_season">Season %1$d</string>
+    <string name="wd_position">Position</string>
+    <string name="wd_points">Points</string>
+    <string name="wd_wins">Wins</string>
+    <string name="wd_podiums">Podiums</string>
+    <string name="wd_poles">Poles</string>
+    <string name="wd_recent">Recent races</string>
+    <string name="wd_stale">Saved data</string>
 </resources>

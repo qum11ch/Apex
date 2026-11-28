@@ -26,7 +26,7 @@ public class widgetRefreshWorker extends ListenableWorker {
 
     private static final String PERIODIC = "widget_refresh_periodic";
     private static final String NOW = "widget_refresh_now";
-    private static final long GIVE_UP_MS = 45_000L;
+    private static final long GIVE_UP_MS = 120_000L;
 
     public widgetRefreshWorker(@NonNull Context context, @NonNull WorkerParameters params) {
         super(context, params);
@@ -51,11 +51,17 @@ public class widgetRefreshWorker extends ListenableWorker {
 
             // the builder works on the main thread, like the rest of the loaders of the app
             main.post(() -> widgetSnapshotBuilder.refresh(app, null, false, () -> {
-                if (finished.compareAndSet(false, true)) {
-                    main.removeCallbacks(giveUp);
-                    widgetRegistry.updateAll(app);
-                    completer.set(Result.success());
+                if (finished.get() || isStopped()) {
+                    return;
                 }
+
+                widgetFavoriteDriver.refresh(app, () -> {
+                    if (finished.compareAndSet(false, true)) {
+                        main.removeCallbacks(giveUp);
+                        widgetRegistry.updateAll(app);
+                        completer.set(Result.success());
+                    }
+                });
             }));
 
             return "widget refresh";

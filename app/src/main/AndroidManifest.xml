@@ -48,6 +48,18 @@
                 android:resource="@xml/widget_next_race_info" />
         </receiver>
 
+        <receiver
+            android:name=".favoriteDriverWidgetProvider"
+            android:exported="false"
+            android:label="@string/wd_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_favorite_driver_info" />
+        </receiver>
+
         <activity
             android:name=".accountSettingsActivity"
             android:windowSoftInputMode="adjustPan"

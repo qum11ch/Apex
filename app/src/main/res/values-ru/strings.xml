@@ -1448,4 +1448,22 @@
     <string name="widget_preview_dates">27-29 нояб.</string>
     <string name="widget_preview_place">Лусаил, Катар</string>
     <string name="widget_preview_label">3-я практика начнётся через</string>
+
+    <string name="wd_label">Любимый пилот</string>
+    <string name="wd_description">Статистика любимого пилота за сезон</string>
+    <string name="wd_signin_message">Войдите, чтобы выбрать любимого пилота и следить за его сезоном.</string>
+    <string name="wd_signin">Войти</string>
+    <string name="wd_choose_message">Выберите любимого пилота в профиле Apex.</string>
+    <string name="wd_choose">Выбрать пилота</string>
+    <string name="wd_loading">Загружаем статистику пилота…</string>
+    <string name="wd_error">Не удалось обновить статистику. Попробуйте позже.</string>
+    <string name="wd_no_entry">У пилота нет позиции в чемпионате %1$d года.</string>
+    <string name="wd_season">Сезон %1$d</string>
+    <string name="wd_position">Место</string>
+    <string name="wd_points">Очки</string>
+    <string name="wd_wins">Победы</string>
+    <string name="wd_podiums">Подиумы</string>
+    <string name="wd_poles">Поулы</string>
+    <string name="wd_recent">Последние гонки</string>
+    <string name="wd_stale">Сохранённые данные</string>
 </resources>

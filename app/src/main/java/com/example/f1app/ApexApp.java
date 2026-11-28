@@ -13,6 +13,14 @@ public class ApexApp extends Application {
         super.onCreate();
         appContext = getApplicationContext();
         themeStore.apply(this);
+        com.google.firebase.auth.FirebaseAuth.getInstance()
+                .addAuthStateListener(auth -> {
+                    widgetFavoriteDriver.updateAll(getApplicationContext());
+
+                    if (widgetFavoriteDriver.exists(getApplicationContext())) {
+                        widgetRefreshWorker.runNow(getApplicationContext());
+                    }
+                });
     }
 
     static Context context() {

@@ -14,11 +14,14 @@ final class widgetRegistry {
         Context app = context.getApplicationContext();
         AppWidgetManager manager = AppWidgetManager.getInstance(app);
 
-        return manager.getAppWidgetIds(new ComponentName(app, nextRaceWidgetProvider.class)).length > 0;
+        return manager.getAppWidgetIds(
+                new ComponentName(app, nextRaceWidgetProvider.class)).length > 0
+                || widgetFavoriteDriver.exists(app);
     }
 
     static void updateAll(Context context) {
         widgetNextRace.updateAll(context);
+        widgetFavoriteDriver.updateAll(context);
     }
 
     /** Called by the app: does nothing when there is no widget on the screen. */
@@ -28,6 +31,7 @@ final class widgetRegistry {
         }
 
         Context app = context.getApplicationContext();
-        widgetSnapshotBuilder.refresh(app, season, false, () -> updateAll(app));
+        widgetSnapshotBuilder.refresh(app, season, false, () ->
+                widgetFavoriteDriver.refresh(app, () -> updateAll(app)));
     }
 }
