@@ -12,7 +12,7 @@
         </shape>
     </item>
 
-    <!-- the translucent icy glass: the wallpaper shows through softly -->
+    <!-- the glass: denser at the bottom so the dark wallpaper does not show through the text -->
     <item
         android:bottom="0.8dp"
         android:left="0.8dp"
@@ -21,8 +21,8 @@
         <shape android:shape="rectangle">
             <gradient
                 android:angle="270"
-                android:endColor="#A6E6EEF8"
-                android:startColor="#B8F8FBFF" />
+                android:endColor="#D6E8EFF8"
+                android:startColor="#CCF8FBFF" />
             <corners android:radius="19.2dp" />
         </shape>
     </item>

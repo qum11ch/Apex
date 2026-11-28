@@ -136,5 +136,5 @@
     <color name="widget_chip_selected_fill">#1AE10600</color>
 
     <color name="widget_text">#0F172A</color>
-    <color name="widget_text_secondary">#475569</color>
+    <color name="widget_text_secondary">#334155</color>
 </resources>
