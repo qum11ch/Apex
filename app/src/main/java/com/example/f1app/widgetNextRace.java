@@ -114,10 +114,6 @@ final class widgetNextRace {
         int nameRes = getStringByName(shown.key + "_text");
         String name = nameRes == 0 ? shown.key : context.getString(nameRes);
 
-        if (wide) {
-            name = name + " \u00B7 " + dayTime.format(Instant.ofEpochMilli(shown.start));
-        }
-
         v.setTextViewText(R.id.session_name, name);
         v.setViewVisibility(R.id.session_name, View.VISIBLE);
         v.setViewVisibility(R.id.live_badge, live != null ? View.VISIBLE : View.GONE);
@@ -147,6 +143,8 @@ final class widgetNextRace {
         if (!wide) {
             return v;
         }
+
+        v.setTextViewText(R.id.session_time, dayTime.format(Instant.ofEpochMilli(shown.start)));
 
         // weather of the shown session
         int icon = shown.hasWeather() ? shown.iconRes(context) : 0;
@@ -198,11 +196,12 @@ final class widgetNextRace {
         }
 
         boolean hasPlace = extra && s.laps > 0 && !s.location.isEmpty();
-        v.setViewVisibility(R.id.subtitle, hasPlace ? View.VISIBLE : View.GONE);
+        v.setViewVisibility(R.id.subtitle_row, hasPlace ? View.VISIBLE : View.GONE);
 
         if (hasPlace) {
-            v.setTextViewText(R.id.subtitle, context.getString(R.string.widget_circuit_line,
-                    place(context, s.location, s.country), s.laps,
+            v.setTextViewText(R.id.subtitle, place(context, s.location, s.country));
+            v.setTextViewText(R.id.laps_text, context.getString(R.string.widget_laps, s.laps));
+            v.setTextViewText(R.id.length_text, context.getString(R.string.widget_length,
                     String.format(Locale.getDefault(), "%.3f", s.lengthKm)));
         }
 
@@ -261,7 +260,8 @@ final class widgetNextRace {
 
         if (wide) {
             v.setViewVisibility(R.id.round_chip, View.GONE);
-            v.setViewVisibility(R.id.subtitle, View.GONE);
+            v.setViewVisibility(R.id.subtitle_row, View.GONE);
+            v.setViewVisibility(R.id.session_time, View.GONE);
             v.setViewVisibility(R.id.weather_chip, View.GONE);
             v.setViewVisibility(R.id.timeline, View.GONE);
             v.setViewVisibility(R.id.footer, View.GONE);

@@ -57,17 +57,47 @@
             tools:ignore="HardcodedText" />
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/subtitle"
+    <LinearLayout
+        android:id="@+id/subtitle_row"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Lusail, Qatar · 57 laps · 5.419 km"
-        android:textColor="@color/hero_text_secondary"
-        android:textSize="11sp"
-        tools:ignore="HardcodedText" />
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Lusail, Qatar"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="11sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/laps_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:maxLines="1"
+            android:text="57 laps"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="11sp"
+            tools:ignore="HardcodedText" />
+
+        <TextView
+            android:id="@+id/length_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:maxLines="1"
+            android:text="5.419 km"
+            android:textColor="@color/hero_text_secondary"
+            android:textSize="11sp"
+            tools:ignore="HardcodedText" />
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -82,16 +112,33 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/session_name"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="Practice 3 · Sat, 14:30"
-                android:textColor="@color/hero_text_secondary"
-                android:textSize="12sp"
-                tools:ignore="HardcodedText" />
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/session_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Practice 3"
+                    android:textColor="@color/hero_text"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+
+                <TextView
+                    android:id="@+id/session_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:maxLines="1"
+                    android:text="Sat 14:30"
+                    android:textColor="@color/hero_text_secondary"
+                    android:textSize="12sp"
+                    tools:ignore="HardcodedText" />
+            </LinearLayout>
 
             <FrameLayout
                 android:layout_width="wrap_content"
@@ -218,7 +265,7 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="Leader ANT · 402 pts (+98)"
+            android:text="Leader ANT, 402 pts (+98)"
             android:textColor="@color/hero_text"
             android:textSize="11sp"
             tools:ignore="HardcodedText" />

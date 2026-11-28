@@ -1436,7 +1436,8 @@
     <string name="widget_in_days_hours">через %1$d д %2$d ч</string>
     <string name="widget_live">LIVE</string>
     <string name="widget_round">Этап %1$d/%2$d</string>
-    <string name="widget_circuit_line">%1$s · %2$d кр. · %3$s км</string>
-    <string name="widget_leader">Лидер %1$s · %2$s оч. (+%3$s)</string>
+    <string name="widget_leader">Leader %1$s, %2$s pts (+%3$s)</string>
+    <string name="widget_laps">%1$d laps</string>
+    <string name="widget_length">%1$s km</string>
     <string name="widget_record">Рекорд %1$s</string>
 </resources>
