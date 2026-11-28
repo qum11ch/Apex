@@ -1453,10 +1453,6 @@
     <string name="widget_no_data">Open Apex to load the schedule</string>
     <string name="widget_season_over">The season is over</string>
     <string name="widget_in_days_hours">in %1$d d %2$d h</string>
-    <string name="widget_live">LIVE</string>
-    <string name="widget_round">Round %1$d/%2$d</string>
     <string name="widget_leader">Leader %1$s, %2$s pts (+%3$s)</string>
-    <string name="widget_laps">%1$d laps</string>
-    <string name="widget_length">%1$s km</string>
     <string name="widget_record">Record %1$s</string>
 </resources>
