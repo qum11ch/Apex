@@ -462,6 +462,17 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
+
+        if (BuildConfig.DEBUG) {
+            widgetFavoritesLoader.load(result ->
+                    android.util.Log.d(
+                            "WidgetFavorites",
+                            "state=" + result.state
+                                    + ", hasDriver=" + result.hasDriver()
+                                    + ", hasTeam=" + result.hasTeam()
+                    )
+            );
+        }
     }
 
     @Override
