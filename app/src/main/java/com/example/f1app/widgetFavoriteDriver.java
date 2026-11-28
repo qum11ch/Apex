@@ -378,10 +378,11 @@ final class widgetFavoriteDriver {
 
     private static PendingIntent pending(Context context, Intent intent,
                                          String route) {
-        intent.setData(Uri.parse("apex-widget://favorite-driver/" + route));
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        return PendingIntent.getActivity(context, 41, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+        return widgetNavigation.open(
+                context,
+                intent,
+                "favorite-driver/" + route,
+                intent.getStringExtra("currentSeason")
+        );
     }
 }
