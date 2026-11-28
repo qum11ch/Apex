@@ -36,7 +36,7 @@ import java.util.Map;
 final class widgetNextRace {
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
-    private static final int WIDE_MIN_DP = 265;
+    private static final int WIDE_MIN_DP = 235;
     private static final int WIDE_MIN_HEIGHT_DP = 175;
     private static final int TIMELINE_MIN_DP = 245;
     private static final int SUBTITLE_MIN_DP = 285;
@@ -47,7 +47,7 @@ final class widgetNextRace {
 
     /** The sizes (width, height in dp) at which the layout changes: the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {180, 100}, {220, 100}, {265, 175}, {265, 245}, {265, 285}, {265, 310}};
+            {180, 100}, {210, 100}, {235, 175}, {235, 245}, {235, 285}, {235, 310}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
