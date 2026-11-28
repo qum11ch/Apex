@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://android.com"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/widget_glass"
-    android:gravity="center_vertical"
     android:orientation="vertical"
-    android:paddingStart="16dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="16dp"
-    android:paddingBottom="12dp">
+    android:padding="16dp">
 
+    <!-- 1. Шапка: даты + R22 -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:contentDescription="@null"
-            android:scaleType="fitStart"/>
+            android:scaleType="fitStart" />
 
         <LinearLayout
             android:id="@+id/live_badge"
@@ -74,12 +70,14 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- 2. Название места и трассы -->
     <ImageView
         android:id="@+id/headline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="6dp"
-        android:scaleType="fitStart"/>
+        android:contentDescription="@null"
+        android:scaleType="fitStart" />
 
     <TextView
         android:id="@+id/race_name"
@@ -105,11 +103,18 @@
         android:textSize="12sp"
         tools:ignore="HardcodedText" />
 
+    <!-- Мягкая распорка 1 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- 3. Таймер и погода -->
     <TextView
         android:id="@+id/countdown_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:text="Starts in: Practice 3"
@@ -166,11 +171,18 @@
         </LinearLayout>
     </LinearLayout>
 
+    <!-- Мягкая распорка 2 -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <!-- 4. Таймлайн сессий -->
     <LinearLayout
         android:id="@+id/timeline"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="6dp"
         android:orientation="horizontal">
 
         <LinearLayout android:id="@+id/col_1" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_marginEnd="6dp" android:layout_weight="1" android:background="@drawable/widget_chip" android:gravity="center_horizontal" android:orientation="vertical" android:paddingTop="6dp" android:paddingBottom="6dp">

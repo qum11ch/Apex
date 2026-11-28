@@ -1,108 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/widget_root"
+    android:id="@+id/widget_outer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/widget_glass"
-    android:gravity="center_vertical"
-    android:orientation="vertical"
-    android:paddingStart="14dp"
-    android:paddingTop="12dp"
-    android:paddingEnd="14dp"
-    android:paddingBottom="12dp">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/widget_root"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
+        android:layout_height="match_parent"
+        android:background="@drawable/widget_glass"
+        android:orientation="vertical"
+        android:padding="14dp">
 
+        <!-- Верхний ряд: R22 и LIVE -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/round_pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_round_pill"
+                android:paddingStart="7dp"
+                android:paddingTop="2dp"
+                android:paddingEnd="7dp"
+                android:paddingBottom="2dp">
+
+                <ImageView
+                    android:id="@+id/round_pill_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@null" />
+            </LinearLayout>
+
+            <FrameLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <LinearLayout
+                android:id="@+id/live_badge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_live_pill"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="8dp"
+                    android:layout_height="8dp"
+                    android:layout_marginEnd="5dp"
+                    android:background="@drawable/live_dot"
+                    android:contentDescription="@null" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/live_badge"
+                    android:textAllCaps="true"
+                    android:textColor="@color/hero_accent"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- Название Гран-при -->
         <ImageView
             android:id="@+id/title_img"
-            android:layout_width="0dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginTop="8dp"
             android:contentDescription="@null"
             android:scaleType="fitStart" />
 
-        <LinearLayout
-            android:id="@+id/live_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_live_pill"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:paddingStart="6dp"
-            android:paddingEnd="6dp"
-            android:visibility="gone">
+        <!-- Мягкая верхняя распорка -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-            <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_marginEnd="5dp"
-                android:background="@drawable/live_dot"
-                android:contentDescription="@null" />
+        <!-- Блок таймера -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:id="@+id/countdown_label"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/live_badge"
-                android:textAllCaps="true"
-                android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-                android:textColor="@color/hero_accent"
-                android:textSize="11sp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/round_pill"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="6dp"
-            android:background="@drawable/bg_round_pill"
-            android:paddingStart="6dp"
-            android:paddingTop="2dp"
-            android:paddingEnd="6dp"
-            android:paddingBottom="2dp">
+                android:ellipsize="end"
+                android:maxLines="2"
+                android:text="Starts in: Practice 3"
+                android:textColor="@color/hero_text_secondary"
+                android:textSize="12sp"
+                tools:ignore="HardcodedText" />
 
             <ImageView
-                android:id="@+id/round_pill_text"
+                android:id="@+id/countdown_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="@null"/>
+                android:layout_marginTop="2dp"
+                android:contentDescription="@null"
+                android:scaleType="fitStart" />
         </LinearLayout>
-    </LinearLayout>
 
-    <TextView
-        android:id="@+id/countdown_label"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:ellipsize="end"
-        android:maxLines="1"
-        android:text="Starts in: Practice 3"
-        android:textAppearance="@style/TextStyle.Gram.Regular.Simple"
-        android:textColor="@color/hero_text_secondary"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
+        <!-- Мягкая нижняя распорка (балансирует высоту!) -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <ImageView
-            android:id="@+id/countdown_img"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:contentDescription="@null"
-            android:scaleType="fitStart" />
-
+        <!-- Плашка погоды -->
         <LinearLayout
             android:id="@+id/weather_chip"
             android:layout_width="wrap_content"
@@ -110,16 +126,16 @@
             android:background="@drawable/widget_chip"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingStart="6dp"
-            android:paddingTop="4dp"
-            android:paddingEnd="8dp"
-            android:paddingBottom="4dp">
+            android:paddingStart="8dp"
+            android:paddingTop="5dp"
+            android:paddingEnd="10dp"
+            android:paddingBottom="5dp">
 
             <ImageView
                 android:id="@+id/weather_icon"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
-                android:layout_marginEnd="4dp"
+                android:layout_marginEnd="5dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_weather_clear" />
 
@@ -128,11 +144,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:maxLines="1"
-                android:text="23°"
+                android:text="23°, 0%"
                 android:textColor="@color/hero_text"
                 android:textSize="12sp"
                 android:textStyle="bold"
                 tools:ignore="HardcodedText" />
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</FrameLayout>
