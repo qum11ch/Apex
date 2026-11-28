@@ -2,6 +2,7 @@ package com.example.f1app;
 
 import static com.example.f1app.MainActivity.getStringByName;
 
+import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ComponentName;
@@ -9,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
@@ -20,17 +22,19 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 /**
- * The "next stage" widget in the style of the home card: the same card, fonts, pills and session
- * plates. The countdown of the last 24 hours is a Chronometer that the launcher draws by itself.
- * Colours come only from the layouts (the code switches views and drawables), so the system theme
- * is followed at once. The compact layout is for up to three columns, the wide one for more, and
- * what the wide one shows grows with its height.
+ * The "next stage" widget. The pictures with the text are drawn with the fonts of the app (see
+ * widgetGlyphs) and coloured separately for the light and the dark theme. The time is a picture too,
+ * redrawn by a quiet alarm once a minute in the last day and once an hour before that.
  */
 final class widgetNextRace {
 
+    static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
+
     private static final int WIDE_MIN_DP = 220;
+    private static final int TALL_MAX_DP = 150;
     private static final int TIMELINE_MIN_DP = 230;
     private static final int FOOTER_MIN_DP = 270;
+    private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
     private static final long DAY_MS = 24 * HOUR_MS;
 
@@ -51,6 +55,11 @@ final class widgetNextRace {
         AppWidgetManager manager = AppWidgetManager.getInstance(app);
         int[] ids = manager.getAppWidgetIds(new ComponentName(app, nextRaceWidgetProvider.class));
 
+        if (ids.length == 0) {
+            cancelTick(app);
+            return;
+        }
+
         for (int id : ids) {
             update(app, manager, id);
         }
@@ -60,16 +69,21 @@ final class widgetNextRace {
         Bundle options = manager.getAppWidgetOptions(id);
         int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
         int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
+        long now = System.currentTimeMillis();
+        widgetSnapshot snapshot = widgetSnapshotStore.load(context);
 
-        manager.updateAppWidget(id, build(context, widgetSnapshotStore.load(context), minWidth,
-                minHeight, System.currentTimeMillis()));
+        Log.d("WidgetSize", minWidth + "x" + minHeight + " dp");
+        manager.updateAppWidget(id, build(context, snapshot, minWidth, minHeight, now));
+        scheduleTick(context, snapshot, now);
     }
 
     static RemoteViews build(Context context, widgetSnapshot s, int minWidthDp, int minHeightDp,
                              long now) {
         boolean wide = minWidthDp >= WIDE_MIN_DP;
-        RemoteViews v = new RemoteViews(context.getPackageName(),
-                wide ? R.layout.widget_next_race_wide : R.layout.widget_next_race_small);
+        boolean tall = minWidthDp < TALL_MAX_DP;
+        RemoteViews v = new RemoteViews(context.getPackageName(), wide
+                ? R.layout.widget_next_race_wide
+                : tall ? R.layout.widget_next_race_tall : R.layout.widget_next_race_small);
 
         PendingIntent open = openApp(context);
 
@@ -78,7 +92,7 @@ final class widgetNextRace {
         }
 
         if (s == null || s.raceName.isEmpty() || s.sessions.isEmpty()) {
-            message(context, v, wide, s == null || s.drivers.isEmpty()
+            message(context, v, wide, minWidthDp, s == null || s.drivers.isEmpty()
                     ? R.string.widget_no_data : R.string.widget_season_over);
             return v;
         }
@@ -100,20 +114,22 @@ final class widgetNextRace {
         widgetSnapshot.Session shown = live != null ? live : next;
 
         if (shown == null) {
-            message(context, v, wide, R.string.awaiting_results_text);
+            message(context, v, wide, minWidthDp, R.string.awaiting_results_text);
             return v;
         }
 
         String raceTitle = predictionRaceNameFormatter.getName(context, s.raceName);
 
         v.setInt(R.id.widget_root, "setBackgroundResource",
-                live != null ? R.drawable.widget_background_live : R.drawable.bg_hero_card);
+                live != null ? R.drawable.widget_glass_live : R.drawable.widget_glass);
         v.setViewVisibility(R.id.live_badge, live != null ? View.VISIBLE : View.GONE);
         v.setViewVisibility(R.id.round_pill, s.round > 0 ? View.VISIBLE : View.GONE);
 
         if (s.round > 0) {
-            v.setTextViewText(R.id.round_pill,
-                    context.getString(R.string.round_pill, String.valueOf(s.round)));
+            v.setImageViewBitmap(R.id.round_pill_text, widgetGlyphs.text(context,
+                    context.getString(R.string.round_pill, String.valueOf(s.round)),
+                    R.font.audiowide, wide ? 12 : 11, 120, 1, false));
+            widgetGlyphs.tint(context, v, R.id.round_pill_text, R.color.hero_accent);
         }
 
         int nameRes = getStringByName(shown.key + "_text");
@@ -123,32 +139,23 @@ final class widgetNextRace {
                 live != null ? R.string.countdown_ends : R.string.countdown_starts, sessionName));
         v.setViewVisibility(R.id.countdown_label, View.VISIBLE);
 
+        // the time
         long left = (live != null ? live.end : shown.start) - now;
+        boolean hasWeather = shown.hasWeather();
+        int countdownMax = wide ? minWidthDp - 36 - (hasWeather ? 130 : 0)
+                : tall ? minWidthDp - 24 : minWidthDp - 28 - (hasWeather ? 70 : 0);
+        String countdown = countdownText(context, left, live != null);
 
-        if (live != null || left < DAY_MS) {
-            int on = live != null ? R.id.countdown_live : R.id.countdown;
-            int off = live != null ? R.id.countdown : R.id.countdown_live;
-
-            v.setChronometer(on, SystemClock.elapsedRealtime() + left, null, true);
-            v.setChronometerCountDown(on, true);
-            v.setViewVisibility(on, View.VISIBLE);
-            v.setChronometer(off, SystemClock.elapsedRealtime(), null, false);
-            v.setViewVisibility(off, View.GONE);
-            v.setViewVisibility(R.id.countdown_text, View.GONE);
-        } else {
-            v.setChronometer(R.id.countdown, SystemClock.elapsedRealtime(), null, false);
-            v.setChronometer(R.id.countdown_live, SystemClock.elapsedRealtime(), null, false);
-            v.setViewVisibility(R.id.countdown, View.GONE);
-            v.setViewVisibility(R.id.countdown_live, View.GONE);
-            v.setTextViewText(R.id.countdown_text, context.getString(R.string.widget_in_days_hours,
-                    left / DAY_MS, (left % DAY_MS) / HOUR_MS));
-            v.setViewVisibility(R.id.countdown_text, View.VISIBLE);
-        }
+        v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
+                R.font.audiowide, wide ? 36 : tall ? 24 : 28, Math.max(60, countdownMax)));
+        v.setContentDescription(R.id.countdown_img, countdown);
+        widgetGlyphs.tint(context, v, R.id.countdown_img,
+                live != null ? R.color.hero_accent : R.color.hero_text);
 
         // the weather of the session on the countdown
-        v.setViewVisibility(R.id.weather_chip, shown.hasWeather() ? View.VISIBLE : View.GONE);
+        v.setViewVisibility(R.id.weather_chip, hasWeather ? View.VISIBLE : View.GONE);
 
-        if (shown.hasWeather()) {
+        if (hasWeather) {
             int icon = shown.iconRes(context);
 
             v.setTextViewText(R.id.weather_text, wide ? shown.temp + ", " + shown.rain : shown.temp);
@@ -156,11 +163,19 @@ final class widgetNextRace {
 
             if (icon != 0) {
                 v.setImageViewResource(R.id.weather_icon, icon);
+                widgetGlyphs.tint(context, v, R.id.weather_icon, R.color.hero_text);
             }
         }
 
         if (!wide) {
-            v.setTextViewText(R.id.race_name, raceTitle);
+            int titleMax = tall ? minWidthDp - 24
+                    : minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
+
+            v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
+                    R.font.good_timing_bd, tall ? 15 : 16, Math.max(60, titleMax), tall ? 2 : 1,
+                    false));
+            v.setContentDescription(R.id.title_img, raceTitle);
+            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
             return v;
         }
 
@@ -169,11 +184,19 @@ final class widgetNextRace {
         LocalDate first = Instant.ofEpochMilli(s.sessions.get(0).start).atZone(zone).toLocalDate();
         LocalDate last = Instant.ofEpochMilli(s.sessions.get(s.sessions.size() - 1).end)
                 .atZone(zone).toLocalDate();
+        String range = mainFutureRaceAdapter.dateRange(first, last);
+        String head = s.location.isEmpty() ? raceTitle : place(context, s.location, s.country);
 
-        v.setTextViewText(R.id.dates, mainFutureRaceAdapter.dateRange(first, last));
-        v.setTextViewText(R.id.headline, s.location.isEmpty()
-                ? raceTitle : place(context, s.location, s.country));
+        v.setImageViewBitmap(R.id.dates,
+                widgetGlyphs.text(context, range, R.font.audiowide, 12, 160, 1, true));
+        widgetGlyphs.tint(context, v, R.id.dates, R.color.hero_text_secondary);
+
+        v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, head, R.font.good_timing_bd,
+                22, minWidthDp - 36, 2, false));
+        v.setContentDescription(R.id.headline, head);
+        widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
         v.setViewVisibility(R.id.headline, View.VISIBLE);
+
         v.setTextViewText(R.id.race_name,
                 predictionRaceNameFormatter.getNameWithSeason(context, s.raceName, s.season));
         v.setViewVisibility(R.id.race_name, View.VISIBLE);
@@ -237,6 +260,25 @@ final class widgetNextRace {
         return v;
     }
 
+    // ---------- the time and the quiet alarm ----------
+
+    private static String countdownText(Context context, long left, boolean live) {
+        if (!live && left > DAY_MS) {
+            long hours = ceilDiv(left, HOUR_MS);
+            return context.getString(R.string.widget_days_hours, hours / 24, hours % 24);
+        }
+
+        long minutes = Math.max(0, ceilDiv(left, MINUTE_MS));
+
+        return minutes < 60
+                ? context.getString(R.string.widget_minutes, minutes)
+                : context.getString(R.string.widget_hours_minutes, minutes / 60, minutes % 60);
+    }
+
+    private static long ceilDiv(long value, long unit) {
+        return (value + unit - 1) / unit;
+    }
+
     /** The next moment at which what the widget shows changes, or 0 when nothing is left. */
     static long nextBoundary(widgetSnapshot s, long now) {
         long best = 0;
@@ -258,25 +300,100 @@ final class widgetNextRace {
         return best;
     }
 
-    private static void message(Context context, RemoteViews v, boolean wide, int text) {
-        v.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.bg_hero_card);
+    /** Milliseconds up to the moment when the shown text changes, or 0 when nothing is left. */
+    private static long nextDelay(widgetSnapshot s, long now) {
+        if (s == null || s.sessions.isEmpty()) {
+            return 0;
+        }
+
+        widgetSnapshot.Session live = null;
+        widgetSnapshot.Session next = null;
+
+        for (widgetSnapshot.Session x : s.sessions) {
+            if (now >= x.start && now < x.end) {
+                live = x;
+                break;
+            }
+
+            if (x.start > now && next == null) {
+                next = x;
+            }
+        }
+
+        long boundary = nextBoundary(s, now);
+        long delay = boundary > 0 ? boundary - now + 500 : 0;
+
+        if (live == null && next == null) {
+            return delay;
+        }
+
+        long left = (live != null ? live.end : next.start) - now;
+        long unit = live != null || left <= DAY_MS ? MINUTE_MS : HOUR_MS;
+        long step = (left - 1) % unit + 1 + 500;
+
+        return delay > 0 ? Math.min(delay, step) : Math.max(1000, step);
+    }
+
+    static void scheduleTick(Context context, widgetSnapshot s, long now) {
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarms == null) {
+            return;
+        }
+
+        long delay = nextDelay(s, now);
+
+        if (delay <= 0) {
+            alarms.cancel(tickIntent(context));
+            return;
+        }
+
+        // not a waking alarm: a sleeping phone is not woken up, the widget is redrawn when it wakes
+        alarms.set(AlarmManager.ELAPSED_REALTIME,
+                SystemClock.elapsedRealtime() + Math.max(1000, delay), tickIntent(context));
+    }
+
+    static void cancelTick(Context context) {
+        AlarmManager alarms = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+
+        if (alarms != null) {
+            alarms.cancel(tickIntent(context));
+        }
+    }
+
+    private static PendingIntent tickIntent(Context context) {
+        Intent intent = new Intent(context, nextRaceWidgetProvider.class).setAction(ACTION_TICK);
+
+        return PendingIntent.getBroadcast(context, 1, intent,
+                PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+    // ---------- helpers ----------
+
+    private static void message(Context context, RemoteViews v, boolean wide, int minWidthDp,
+                                int text) {
+        v.setInt(R.id.widget_root, "setBackgroundResource", R.drawable.widget_glass);
         v.setViewVisibility(R.id.live_badge, View.GONE);
         v.setViewVisibility(R.id.round_pill, View.GONE);
         v.setViewVisibility(R.id.countdown_label, View.GONE);
-        v.setViewVisibility(R.id.countdown, View.GONE);
-        v.setViewVisibility(R.id.countdown_live, View.GONE);
-        v.setViewVisibility(R.id.countdown_text, View.GONE);
+        v.setViewVisibility(R.id.countdown_img, View.GONE);
         v.setViewVisibility(R.id.weather_chip, View.GONE);
 
+        String message = context.getString(text);
+
         if (wide) {
-            v.setTextViewText(R.id.headline, context.getString(text));
+            v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, message,
+                    R.font.good_timing_bd, 22, minWidthDp - 36, 2, false));
+            widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
             v.setViewVisibility(R.id.headline, View.VISIBLE);
             v.setViewVisibility(R.id.race_name, View.GONE);
             v.setViewVisibility(R.id.circuit_name, View.GONE);
             v.setViewVisibility(R.id.timeline, View.GONE);
             v.setViewVisibility(R.id.footer, View.GONE);
         } else {
-            v.setTextViewText(R.id.race_name, context.getString(text));
+            v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, message,
+                    R.font.good_timing_bd, 15, Math.max(60, minWidthDp - 24), 3, false));
+            widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
         }
     }
 

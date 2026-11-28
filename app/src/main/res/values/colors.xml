@@ -125,4 +125,12 @@
     <color name="widget_glow_end">#00D50A00</color>
     <color name="widget_glow_live_start">#47D50A00</color>
     <color name="widget_seg_future">#D5D8DE</color>
+
+    <color name="widget_glass_fill">#B8FFFFFF</color>
+    <color name="widget_glass_top">#99FFFFFF</color>
+    <color name="widget_glass_bottom">#1F7D8AA3</color>
+    <color name="widget_glass_bottom_clear">#007D8AA3</color>
+    <color name="widget_glass_border">#CCFFFFFF</color>
+    <color name="widget_chip_fill">#B3FFFFFF</color>
+    <color name="widget_chip_border">#40607890</color>
 </resources>

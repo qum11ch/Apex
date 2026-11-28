@@ -1452,7 +1452,9 @@
     <string name="widget_next_race_description">Countdown to the next session with the weather</string>
     <string name="widget_no_data">Open Apex to load the schedule</string>
     <string name="widget_season_over">The season is over</string>
-    <string name="widget_in_days_hours">in %1$d d %2$d h</string>
     <string name="widget_leader">Leader %1$s, %2$s pts (+%3$s)</string>
     <string name="widget_record">Record %1$s</string>
+    <string name="widget_days_hours">%1$d d %2$02d h</string>
+    <string name="widget_hours_minutes">%1$d:%2$02d</string>
+    <string name="widget_minutes">%1$d min</string>
 </resources>

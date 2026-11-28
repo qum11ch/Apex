@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -18,18 +19,13 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <TextView
+        <ImageView
             android:id="@+id/dates"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:maxLines="1"
-            android:text="27-29 Nov"
-            android:textAllCaps="true"
-            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-            android:textColor="@color/hero_text_secondary"
-            android:textSize="12sp"
-            tools:ignore="HardcodedText" />
+            android:contentDescription="@null"
+            android:scaleType="fitStart"/>
 
         <LinearLayout
             android:id="@+id/live_badge"
@@ -76,16 +72,12 @@
             tools:ignore="HardcodedText" />
     </LinearLayout>
 
-    <TextView
+    <ImageView
         android:id="@+id/headline"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:maxLines="2"
-        android:text="Lusail, Qatar"
-        android:textAppearance="@style/TextStyle.GoodTiming.Bold.ForHeader"
-        android:textColor="@color/hero_text"
-        tools:ignore="HardcodedText" />
+        android:scaleType="fitStart"/>
 
     <TextView
         android:id="@+id/race_name"
@@ -131,42 +123,13 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <FrameLayout
+        <ImageView
+            android:id="@+id/countdown_img"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1">
-
-            <Chronometer
-                android:id="@+id/countdown"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                android:textColor="@color/hero_text"
-                android:textSize="38sp" />
-
-            <Chronometer
-                android:id="@+id/countdown_live"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                android:textColor="@color/hero_accent"
-                android:textSize="38sp"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/countdown_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:includeFontPadding="false"
-                android:text="3 d 4 h"
-                android:textAppearance="@style/TextStyle.Audiowide.ForDays"
-                android:textColor="@color/hero_text"
-                android:textSize="32sp"
-                android:visibility="gone"
-                tools:ignore="HardcodedText" />
-        </FrameLayout>
+            android:layout_weight="1"
+            android:contentDescription="@null"
+            android:scaleType="fitStart" />
 
         <LinearLayout
             android:id="@+id/weather_chip"

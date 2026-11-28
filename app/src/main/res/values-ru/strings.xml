@@ -1433,7 +1433,9 @@
     <string name="widget_next_race_description">Обратный отсчёт до ближайшей сессии и погода</string>
     <string name="widget_no_data">Откройте Apex, чтобы загрузить расписание</string>
     <string name="widget_season_over">Сезон завершён</string>
-    <string name="widget_in_days_hours">через %1$d д %2$d ч</string>
     <string name="widget_leader">Лидер %1$s, %2$s оч. (+%3$s)</string>
     <string name="widget_record">Рекорд %1$s</string>
+    <string name="widget_days_hours">%1$d д %2$02d ч</string>
+    <string name="widget_hours_minutes">%1$d:%2$02d</string>
+    <string name="widget_minutes">%1$d мин</string>
 </resources>
