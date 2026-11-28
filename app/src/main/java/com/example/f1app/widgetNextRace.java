@@ -23,6 +23,11 @@ import java.util.Locale;
 
 import android.content.res.Configuration;
 
+import android.os.Build;
+import android.util.SizeF;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * The "next stage" widget. The pictures with the text are drawn with the fonts of the app (see
  * widgetGlyphs) and coloured separately for the light and the dark theme. The time is a picture too,
@@ -31,16 +36,18 @@ import android.content.res.Configuration;
 final class widgetNextRace {
 
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
-
-    private static final int TALL_MAX_DP = 175;
     private static final int WIDE_MIN_DP = 265;
-    private static final int WIDE_MIN_HEIGHT_DP = 150;
-    private static final int TIMELINE_MIN_DP = 215;
-    private static final int SUBTITLE_MIN_DP = 265;
-    private static final int FOOTER_MIN_DP = 300;
+    private static final int WIDE_MIN_HEIGHT_DP = 160;
+    private static final int TIMELINE_MIN_DP = 235;
+    private static final int SUBTITLE_MIN_DP = 275;
+    private static final int FOOTER_MIN_DP = 310;
     private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
     private static final long DAY_MS = 24 * HOUR_MS;
+
+    /** The sizes (width, height in dp) at which the layout changes: the launcher picks the one that fits. */
+    private static final int[][] VARIANTS = {
+            {180, 100}, {220, 100}, {265, 160}, {265, 235}, {265, 275}, {265, 310}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
@@ -70,30 +77,44 @@ final class widgetNextRace {
     }
 
     static void update(Context context, AppWidgetManager manager, int id) {
-        Bundle options = manager.getAppWidgetOptions(id);
-        boolean portrait = context.getResources().getConfiguration().orientation
-                != Configuration.ORIENTATION_LANDSCAPE;
-        int minWidth = options.getInt(portrait
-                ? AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
-                : AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 180);
-        int minHeight = options.getInt(portrait
-                ? AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT
-                : AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
         long now = System.currentTimeMillis();
         widgetSnapshot snapshot = widgetSnapshotStore.load(context);
 
-        Log.d("WidgetSize", minWidth + "x" + minHeight + " dp");
-        manager.updateAppWidget(id, build(context, snapshot, minWidth, minHeight, now));
+        manager.updateAppWidget(id,
+                create(context, snapshot, manager.getAppWidgetOptions(id), now));
         scheduleTick(context, snapshot, now);
+    }
+
+    private static RemoteViews create(Context context, widgetSnapshot s, Bundle options, long now) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            // the launcher itself picks the variant that fits the real size of the widget
+            Map<SizeF, RemoteViews> variants = new LinkedHashMap<>();
+
+            for (int[] size : VARIANTS) {
+                variants.put(new SizeF(size[0], size[1]), build(context, s, size[0], size[1], now));
+            }
+
+            return new RemoteViews(variants);
+        }
+
+        boolean portrait = context.getResources().getConfiguration().orientation
+                != Configuration.ORIENTATION_LANDSCAPE;
+        int width = options.getInt(portrait
+                ? AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
+                : AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 180);
+        int height = options.getInt(portrait
+                ? AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT
+                : AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
+
+        return build(context, s, width, height, now);
     }
 
     static RemoteViews build(Context context, widgetSnapshot s, int minWidthDp, int minHeightDp,
                              long now) {
-        boolean tall = minWidthDp < TALL_MAX_DP;
-        boolean wide = !tall && minWidthDp >= WIDE_MIN_DP && minHeightDp >= WIDE_MIN_HEIGHT_DP;
-        RemoteViews v = new RemoteViews(context.getPackageName(), wide
-                ? R.layout.widget_next_race_wide
-                : tall ? R.layout.widget_next_race_tall : R.layout.widget_next_race_small);
+
+        boolean wide = minWidthDp >= WIDE_MIN_DP && minHeightDp >= WIDE_MIN_HEIGHT_DP;
+        RemoteViews v = new RemoteViews(context.getPackageName(),
+                wide ? R.layout.widget_next_race_wide : R.layout.widget_next_race_small);
 
         PendingIntent open = openApp(context);
 
@@ -153,11 +174,11 @@ final class widgetNextRace {
         long left = (live != null ? live.end : shown.start) - now;
         boolean hasWeather = shown.hasWeather();
         int countdownMax = wide ? minWidthDp - 36 - (hasWeather ? 130 : 0)
-                : tall ? minWidthDp - 24 : minWidthDp - 28 - (hasWeather ? 70 : 0);
+                : minWidthDp - 28 - (hasWeather ? 70 : 0);
         String countdown = countdownText(context, left, live != null);
 
         v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
-                R.font.audiowide, wide ? 36 : tall ? 24 : 28, Math.max(60, countdownMax)));
+                R.font.audiowide, wide ? 36 : 28, Math.max(60, countdownMax)));
         v.setContentDescription(R.id.countdown_img, countdown);
         widgetGlyphs.tint(context, v, R.id.countdown_img,
                 live != null ? R.color.hero_accent : R.color.hero_text);
@@ -178,12 +199,10 @@ final class widgetNextRace {
         }
 
         if (!wide) {
-            int titleMax = tall ? minWidthDp - 24
-                    : minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
+            int titleMax = minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
 
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
-                    R.font.good_timing_bd, tall ? 15 : 16, Math.max(60, titleMax), tall ? 2 : 1,
-                    false));
+                    R.font.good_timing_bd, 16, Math.max(60, titleMax), 1, false));
             v.setContentDescription(R.id.title_img, raceTitle);
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
             return v;
