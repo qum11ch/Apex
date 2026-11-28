@@ -10,7 +10,7 @@
 
     <style name="WidgetDriverValue">
         <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">28dp</item>
+        <item name="android:layout_height">24dp</item>
         <item name="android:adjustViewBounds">true</item>
         <item name="android:scaleType">fitCenter</item>
     </style>

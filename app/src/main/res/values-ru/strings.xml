@@ -1466,4 +1466,6 @@
     <string name="wd_poles">Поулы</string>
     <string name="wd_recent">Последние гонки</string>
     <string name="wd_stale">Сохранённые данные</string>
+    <string name="wd_result_round">Э%1$d</string>
+    <string name="wd_result_accessibility">%1$s, результат %2$s. %3$s</string>
 </resources>

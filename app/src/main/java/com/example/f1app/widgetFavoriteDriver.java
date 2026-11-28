@@ -306,30 +306,22 @@ final class widgetFavoriteDriver {
                     data.optString("poles", "—"), width);
         }
 
-        boolean recent = width >= 360 && height >= 230;
-        v.setViewVisibility(R.id.wd_recent_group,
-                recent ? View.VISIBLE : View.GONE);
+        JSONArray recentRows = data.optJSONArray("recent");
+        boolean recent = width >= 360
+                && height >= 230
+                && recentRows != null
+                && recentRows.length() > 0;
+
+        v.setViewVisibility(
+                R.id.wd_recent_group,
+                recent ? View.VISIBLE : View.GONE
+        );
+
+        // Always clear children: the host may reuse the previous layout.
+        v.removeAllViews(R.id.wd_recent);
 
         if (recent) {
-            JSONArray rows = data.optJSONArray("recent");
-            StringBuilder text = new StringBuilder();
-
-            for (int i = 0; rows != null && i < rows.length(); i++) {
-                JSONObject row = rows.optJSONObject(i);
-
-                if (row == null) {
-                    continue;
-                }
-
-                if (text.length() > 0) {
-                    text.append("   ");
-                }
-
-                text.append("R").append(row.optInt("round"))
-                        .append(": ").append(row.optString("positionText", "—"));
-            }
-
-            v.setTextViewText(R.id.wd_recent, text.toString());
+            drawRecent(context, v, recentRows, width);
         }
 
         v.setViewVisibility(R.id.wd_stale,
@@ -352,10 +344,127 @@ final class widgetFavoriteDriver {
         return v;
     }
 
+    private static void drawRecent(Context context, RemoteViews parent,
+                                   JSONArray rows, int widthDp) {
+        int first = Math.max(0, rows.length() - 5);
+        int count = rows.length() - first;
+        int textWidth = Math.max(
+                24,
+                (widthDp - 24) / Math.max(1, count) - 12
+        );
+
+        for (int i = first; i < rows.length(); i++) {
+            JSONObject row = rows.optJSONObject(i);
+
+            if (row == null) {
+                continue;
+            }
+
+            RemoteViews chip = new RemoteViews(
+                    context.getPackageName(),
+                    R.layout.widget_driver_result
+            );
+
+            int position = row.optInt("position", 0);
+            String positionText = row.optString("positionText", "—");
+            String result = resultLabel(positionText, position);
+            boolean podium = position >= 1
+                    && position <= 3
+                    && String.valueOf(position).equals(positionText);
+
+            chip.setTextViewText(
+                    R.id.wdr_round,
+                    context.getString(
+                            R.string.wd_result_round,
+                            row.optInt("round")
+                    )
+            );
+
+            chip.setInt(
+                    R.id.wdr_root,
+                    "setBackgroundResource",
+                    podium
+                            ? R.drawable.widget_chip_selected
+                            : R.drawable.widget_chip
+            );
+
+            chip.setImageViewBitmap(
+                    R.id.wdr_result,
+                    widgetGlyphs.fit(
+                            context,
+                            result,
+                            R.font.audiowide,
+                            18,
+                            textWidth
+                    )
+            );
+
+            widgetGlyphs.tint(
+                    context,
+                    chip,
+                    R.id.wdr_result,
+                    podium ? R.color.hero_accent : R.color.widget_text
+            );
+
+            String raceName = predictionRaceNameFormatter.getName(
+                    context,
+                    row.optString("raceName")
+            );
+
+            chip.setContentDescription(
+                    R.id.wdr_root,
+                    context.getString(
+                            R.string.wd_result_accessibility,
+                            raceName,
+                            result,
+                            row.optString("status", "")
+                    )
+            );
+
+            parent.addView(R.id.wd_recent, chip);
+        }
+    }
+
+    private static String resultLabel(String positionText, int position) {
+        String value = positionText == null ? "" : positionText.trim();
+
+        // Keep non-numeric classifications instead of presenting them
+        // as a normal finishing position.
+        if ("R".equalsIgnoreCase(value)) {
+            return "DNF";
+        }
+
+        if ("D".equalsIgnoreCase(value)) {
+            return "DSQ";
+        }
+
+        if ("W".equalsIgnoreCase(value)) {
+            return "DNS";
+        }
+
+        if (!value.isEmpty() && !"null".equalsIgnoreCase(value)) {
+            return value;
+        }
+
+        return position > 0 ? String.valueOf(position) : "—";
+    }
+
     private static void metric(Context context, RemoteViews v, int id,
                                String text, int width) {
-        image(context, v, id, text, R.font.audiowide,
-                23, Math.max(32, (width - 24) / 3 - 8), 1);
+        boolean secondRow = id == R.id.wd_podiums || id == R.id.wd_poles;
+        int columns = secondRow ? 2 : 3;
+        int room = Math.max(32, (width - 24) / columns - 8);
+
+        image(
+                context,
+                v,
+                id,
+                text,
+                R.font.audiowide,
+                23,
+                room,
+                1
+        );
     }
 
     private static void image(Context context, RemoteViews v, int id,

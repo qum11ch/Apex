@@ -1485,4 +1485,6 @@
     <string name="wd_poles">Poles</string>
     <string name="wd_recent">Recent races</string>
     <string name="wd_stale">Saved data</string>
+    <string name="wd_result_round">R%1$d</string>
+    <string name="wd_result_accessibility">%1$s, result %2$s. %3$s</string>
 </resources>
