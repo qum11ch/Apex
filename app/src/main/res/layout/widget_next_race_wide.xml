@@ -5,7 +5,7 @@
     android:id="@+id/widget_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_hero_card"
+    android:background="@drawable/widget_glass"
     android:gravity="center_vertical"
     android:orientation="vertical"
     android:paddingStart="18dp"
@@ -56,7 +56,7 @@
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <TextView
+        <LinearLayout
             android:id="@+id/round_pill"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -64,12 +64,14 @@
             android:paddingStart="8dp"
             android:paddingTop="3dp"
             android:paddingEnd="8dp"
-            android:paddingBottom="3dp"
-            android:text="22"
-            android:textAppearance="@style/TextStyle.Audiowide.ForPTS"
-            android:textColor="@color/hero_accent"
-            android:textSize="12sp"
-            tools:ignore="HardcodedText" />
+            android:paddingBottom="3dp">
+
+            <ImageView
+                android:id="@+id/round_pill_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@null" />
+        </LinearLayout>
     </LinearLayout>
 
     <ImageView

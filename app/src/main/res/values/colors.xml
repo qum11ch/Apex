@@ -132,5 +132,5 @@
     <color name="widget_glass_bottom_clear">#007D8AA3</color>
     <color name="widget_glass_border">#CCFFFFFF</color>
     <color name="widget_chip_fill">#B3FFFFFF</color>
-    <color name="widget_chip_border">#40607890</color>
+    <color name="widget_chip_border">#33000000</color>
 </resources>

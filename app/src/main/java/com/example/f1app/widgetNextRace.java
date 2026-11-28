@@ -21,6 +21,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import android.content.res.Configuration;
+
 /**
  * The "next stage" widget. The pictures with the text are drawn with the fonts of the app (see
  * widgetGlyphs) and coloured separately for the light and the dark theme. The time is a picture too,
@@ -30,10 +32,12 @@ final class widgetNextRace {
 
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
 
-    private static final int WIDE_MIN_DP = 220;
-    private static final int TALL_MAX_DP = 150;
-    private static final int TIMELINE_MIN_DP = 230;
-    private static final int FOOTER_MIN_DP = 270;
+    private static final int TALL_MAX_DP = 175;
+    private static final int WIDE_MIN_DP = 265;
+    private static final int WIDE_MIN_HEIGHT_DP = 150;
+    private static final int TIMELINE_MIN_DP = 215;
+    private static final int SUBTITLE_MIN_DP = 265;
+    private static final int FOOTER_MIN_DP = 300;
     private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
     private static final long DAY_MS = 24 * HOUR_MS;
@@ -67,8 +71,14 @@ final class widgetNextRace {
 
     static void update(Context context, AppWidgetManager manager, int id) {
         Bundle options = manager.getAppWidgetOptions(id);
-        int minWidth = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH, 180);
-        int minHeight = options.getInt(AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
+        boolean portrait = context.getResources().getConfiguration().orientation
+                != Configuration.ORIENTATION_LANDSCAPE;
+        int minWidth = options.getInt(portrait
+                ? AppWidgetManager.OPTION_APPWIDGET_MIN_WIDTH
+                : AppWidgetManager.OPTION_APPWIDGET_MAX_WIDTH, 180);
+        int minHeight = options.getInt(portrait
+                ? AppWidgetManager.OPTION_APPWIDGET_MAX_HEIGHT
+                : AppWidgetManager.OPTION_APPWIDGET_MIN_HEIGHT, 110);
         long now = System.currentTimeMillis();
         widgetSnapshot snapshot = widgetSnapshotStore.load(context);
 
@@ -79,8 +89,8 @@ final class widgetNextRace {
 
     static RemoteViews build(Context context, widgetSnapshot s, int minWidthDp, int minHeightDp,
                              long now) {
-        boolean wide = minWidthDp >= WIDE_MIN_DP;
         boolean tall = minWidthDp < TALL_MAX_DP;
+        boolean wide = !tall && minWidthDp >= WIDE_MIN_DP && minHeightDp >= WIDE_MIN_HEIGHT_DP;
         RemoteViews v = new RemoteViews(context.getPackageName(), wide
                 ? R.layout.widget_next_race_wide
                 : tall ? R.layout.widget_next_race_tall : R.layout.widget_next_race_small);
@@ -191,20 +201,25 @@ final class widgetNextRace {
                 widgetGlyphs.text(context, range, R.font.audiowide, 12, 160, 1, true));
         widgetGlyphs.tint(context, v, R.id.dates, R.color.hero_text_secondary);
 
+        boolean subtitles = minHeightDp >= SUBTITLE_MIN_DP;
+
         v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, head, R.font.good_timing_bd,
-                22, minWidthDp - 36, 2, false));
+                22, minWidthDp - 36, subtitles ? 2 : 1, false));
         v.setContentDescription(R.id.headline, head);
         widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
         v.setViewVisibility(R.id.headline, View.VISIBLE);
 
-        v.setTextViewText(R.id.race_name,
-                predictionRaceNameFormatter.getNameWithSeason(context, s.raceName, s.season));
-        v.setViewVisibility(R.id.race_name, View.VISIBLE);
+        v.setViewVisibility(R.id.race_name, subtitles ? View.VISIBLE : View.GONE);
+
+        if (subtitles) {
+            v.setTextViewText(R.id.race_name,
+                    predictionRaceNameFormatter.getNameWithSeason(context, s.raceName, s.season));
+        }
 
         int circuitRes = getStringByName(s.circuitId + "_text");
-        v.setViewVisibility(R.id.circuit_name, circuitRes == 0 ? View.GONE : View.VISIBLE);
+        v.setViewVisibility(R.id.circuit_name, subtitles && circuitRes != 0 ? View.VISIBLE : View.GONE);
 
-        if (circuitRes != 0) {
+        if (subtitles && circuitRes != 0) {
             v.setTextViewText(R.id.circuit_name, context.getString(circuitRes));
         }
 
