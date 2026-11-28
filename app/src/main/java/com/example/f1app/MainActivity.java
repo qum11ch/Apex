@@ -464,14 +464,52 @@ public class MainActivity extends AppCompatActivity {
         });
 
         if (BuildConfig.DEBUG) {
-            widgetFavoritesLoader.load(result ->
+            widgetFavoritesLoader.load(favorites -> {
+                if (favorites.state != widgetFavoritesLoader.State.LOADED
+                        || !favorites.hasDriver()) {
                     android.util.Log.d(
-                            "WidgetFavorites",
-                            "state=" + result.state
-                                    + ", hasDriver=" + result.hasDriver()
-                                    + ", hasTeam=" + result.hasTeam()
-                    )
-            );
+                            "WidgetDriverSeason",
+                            "favorites=" + favorites.state
+                                    + ", hasDriver=" + favorites.hasDriver()
+                    );
+                    return;
+                }
+
+                widgetSnapshot current = widgetSnapshotStore.load(
+                        getApplicationContext());
+
+                if (current == null || current.season.isEmpty()) {
+                    android.util.Log.d(
+                            "WidgetDriverSeason",
+                            "Season snapshot is not ready yet"
+                    );
+                    return;
+                }
+
+                final int season;
+
+                try {
+                    season = Integer.parseInt(current.season);
+                } catch (NumberFormatException error) {
+                    android.util.Log.e(
+                            "WidgetDriverSeason", "Invalid snapshot season", error);
+                    return;
+                }
+
+                widgetDriverSeasonLoader.load(
+                        getApplicationContext(),
+                        season,
+                        favorites.driver,
+                        true,
+                        (state, snapshot, stale) ->
+                                android.util.Log.d(
+                                        "WidgetDriverSeason",
+                                        "state=" + state
+                                                + ", stale=" + stale
+                                                + ", snapshot=" + snapshot
+                                )
+                );
+            });
         }
     }
 
