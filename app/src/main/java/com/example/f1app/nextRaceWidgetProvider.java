@@ -6,16 +6,32 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-/** Draws from the stored snapshot only: no network here. */
+/** Draws from the stored snapshot only; the network is the business of the refresh worker. */
 public class nextRaceWidgetProvider extends AppWidgetProvider {
 
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
 
-        if (widgetNextRace.ACTION_TICK.equals(intent.getAction())) {
+        String action = intent.getAction();
+
+        if (widgetNextRace.ACTION_TICK.equals(action)) {
             widgetNextRace.updateAll(context);
+        } else if (Intent.ACTION_LOCALE_CHANGED.equals(action)) {
+            // the texts of the snapshot are in the old language: it is built again
+            widgetSnapshotStore.clear(context);
+            widgetNextRace.updateAll(context);
+            widgetRefreshWorker.runNow(context);
+        } else if (Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+            widgetNextRace.updateAll(context);
+            widgetRefreshWorker.schedule(context);
         }
+    }
+
+    @Override
+    public void onEnabled(Context context) {
+        widgetRefreshWorker.schedule(context);
+        widgetRefreshWorker.runNow(context);
     }
 
     @Override
@@ -34,5 +50,9 @@ public class nextRaceWidgetProvider extends AppWidgetProvider {
     @Override
     public void onDisabled(Context context) {
         widgetNextRace.cancelTick(context);
+
+        if (!widgetRegistry.hasAny(context)) {
+            widgetRefreshWorker.cancel(context);
+        }
     }
 }

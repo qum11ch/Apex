@@ -428,6 +428,7 @@ public class MainActivity extends AppCompatActivity {
                                     getDriversStanding(currentSeason);
                                     getSchedule(currentYear, currentDate);
                                     seasonFinished.refresh(currentYear);
+                                    widgetRegistry.refreshFromApp(MainActivity.this, season);
                                 });
                             }
 
@@ -461,14 +462,6 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(intent);
 
         });
-
-        if ((getApplicationInfo().flags & android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
-            widgetSnapshotBuilder.refresh(getApplicationContext(), null, true, () -> {
-                widgetSnapshot s = widgetSnapshotStore.load(getApplicationContext());
-                Log.d("WidgetSnapshot", s == null ? "null" : s.toJson());
-                widgetNextRace.updateAll(getApplicationContext());
-            });
-        }
     }
 
     @Override
