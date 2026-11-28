@@ -202,7 +202,7 @@ final class widgetNextRace {
             int titleMax = minWidthDp - 28 - (s.round > 0 ? 56 : 0) - (live != null ? 66 : 0);
 
             v.setImageViewBitmap(R.id.title_img, widgetGlyphs.text(context, raceTitle,
-                    R.font.good_timing_bd, 16, Math.max(60, titleMax), 1, false));
+                    R.font.good_timing_bd, 16, Math.max(60, titleMax), 2, false));
             v.setContentDescription(R.id.title_img, raceTitle);
             widgetGlyphs.tint(context, v, R.id.title_img, R.color.hero_text);
             return v;
