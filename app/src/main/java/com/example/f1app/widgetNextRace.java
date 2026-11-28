@@ -34,12 +34,12 @@ import java.util.Map;
  * redrawn by a quiet alarm once a minute in the last day and once an hour before that.
  */
 final class widgetNextRace {
-
     static final String ACTION_TICK = "com.example.f1app.WIDGET_TICK";
+
     private static final int WIDE_MIN_DP = 265;
-    private static final int WIDE_MIN_HEIGHT_DP = 160;
-    private static final int TIMELINE_MIN_DP = 235;
-    private static final int SUBTITLE_MIN_DP = 275;
+    private static final int WIDE_MIN_HEIGHT_DP = 175;
+    private static final int TIMELINE_MIN_DP = 245;
+    private static final int SUBTITLE_MIN_DP = 285;
     private static final int FOOTER_MIN_DP = 310;
     private static final long MINUTE_MS = 60_000L;
     private static final long HOUR_MS = 3_600_000L;
@@ -47,7 +47,7 @@ final class widgetNextRace {
 
     /** The sizes (width, height in dp) at which the layout changes: the launcher picks the one that fits. */
     private static final int[][] VARIANTS = {
-            {180, 100}, {220, 100}, {265, 160}, {265, 235}, {265, 275}, {265, 310}};
+            {180, 100}, {220, 100}, {265, 175}, {265, 245}, {265, 285}, {265, 310}};
 
     private static final int[] COL = {R.id.col_1, R.id.col_2, R.id.col_3,
             R.id.col_4, R.id.col_5, R.id.col_6};
@@ -174,11 +174,11 @@ final class widgetNextRace {
         long left = (live != null ? live.end : shown.start) - now;
         boolean hasWeather = shown.hasWeather();
         int countdownMax = wide ? minWidthDp - 36 - (hasWeather ? 130 : 0)
-                : minWidthDp - 28 - (hasWeather ? 70 : 0);
+                : minWidthDp - 32 - (hasWeather ? 70 : 0);
         String countdown = countdownText(context, left, live != null);
 
         v.setImageViewBitmap(R.id.countdown_img, widgetGlyphs.fit(context, countdown,
-                R.font.audiowide, wide ? 36 : 28, Math.max(60, countdownMax)));
+                R.font.audiowide, wide ? 32 : 28, Math.max(60, countdownMax)));
         v.setContentDescription(R.id.countdown_img, countdown);
         widgetGlyphs.tint(context, v, R.id.countdown_img,
                 live != null ? R.color.hero_accent : R.color.hero_text);
@@ -223,7 +223,7 @@ final class widgetNextRace {
         boolean subtitles = minHeightDp >= SUBTITLE_MIN_DP;
 
         v.setImageViewBitmap(R.id.headline, widgetGlyphs.text(context, head, R.font.good_timing_bd,
-                22, minWidthDp - 36, subtitles ? 2 : 1, false));
+                20, minWidthDp - 32, subtitles ? 2 : 1, false));
         v.setContentDescription(R.id.headline, head);
         widgetGlyphs.tint(context, v, R.id.headline, R.color.hero_text);
         v.setViewVisibility(R.id.headline, View.VISIBLE);
