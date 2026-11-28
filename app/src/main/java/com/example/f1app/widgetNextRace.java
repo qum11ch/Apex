@@ -91,6 +91,10 @@ final class widgetNextRace {
         long now = System.currentTimeMillis();
         widgetSnapshot snapshot = widgetSnapshotStore.load(context);
 
+        if (snapshot == null) {
+            widgetRefreshWorker.runNow(context);
+        }
+
         manager.updateAppWidget(id,
                 create(context, snapshot, manager.getAppWidgetOptions(id), now));
         scheduleTick(context, snapshot, now);
@@ -142,8 +146,11 @@ final class widgetNextRace {
         }
 
         if (s == null || s.raceName.isEmpty() || s.sessions.isEmpty()) {
-            message(context, v, kind, widthDp, s == null || s.drivers.isEmpty()
-                    ? R.string.widget_no_data : R.string.widget_season_over);
+            int text = s == null
+                    ? (networkNotice.isOnline(context) ? R.string.widget_loading : R.string.widget_offline)
+                    : s.drivers.isEmpty() ? R.string.widget_no_data : R.string.widget_season_over;
+
+            message(context, v, kind, widthDp, text);
             return v;
         }
 

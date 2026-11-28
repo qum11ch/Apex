@@ -1431,7 +1431,9 @@
 
     <string name="widget_next_race_label">Ближайший этап</string>
     <string name="widget_next_race_description">Обратный отсчёт до ближайшей сессии и погода</string>
-    <string name="widget_no_data">Откройте Apex, чтобы загрузить расписание</string>
+    <string name="widget_no_data">Пока нет данных о сезоне</string>
+    <string name="widget_loading">Загружаем расписание…</string>
+    <string name="widget_offline">Нет сети. Расписание загрузится, когда она появится</string>
     <string name="widget_season_over">Сезон завершён</string>
     <string name="widget_leader">Лидер %1$s, %2$s оч. (+%3$s)</string>
     <string name="widget_record">Рекорд %1$s</string>

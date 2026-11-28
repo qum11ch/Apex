@@ -1450,7 +1450,9 @@
 
     <string name="widget_next_race_label">Next stage</string>
     <string name="widget_next_race_description">Countdown to the next session with the weather</string>
-    <string name="widget_no_data">Open Apex to load the schedule</string>
+    <string name="widget_no_data">No data about the season yet</string>
+    <string name="widget_loading">Loading the schedule…</string>
+    <string name="widget_offline">No connection. The schedule will load when the network is back</string>
     <string name="widget_season_over">The season is over</string>
     <string name="widget_leader">Leader %1$s, %2$s pts (+%3$s)</string>
     <string name="widget_record">Record %1$s</string>
@@ -1461,7 +1463,7 @@
     <string name="widget_unit_hour">h</string>
     <string name="widget_unit_minute">min</string>
     <string name="widget_until_end">until the end</string>
-    
+
     <string name="widget_preview_dates">27-29 Nov</string>
     <string name="widget_preview_place">Lusail, Qatar</string>
     <string name="widget_preview_label">Practice 3 starts in</string>

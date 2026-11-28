@@ -78,7 +78,7 @@ public class widgetRefreshWorker extends ListenableWorker {
                 .build();
 
         WorkManager.getInstance(context.getApplicationContext())
-                .enqueueUniqueWork(NOW, ExistingWorkPolicy.REPLACE, request);
+                .enqueueUniqueWork(NOW, ExistingWorkPolicy.KEEP, request);
     }
 
     static void cancel(Context context) {
