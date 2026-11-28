@@ -1454,4 +1454,8 @@
     <string name="widget_season_over">The season is over</string>
     <string name="widget_in_days_hours">in %1$d d %2$d h</string>
     <string name="widget_live">LIVE</string>
+    <string name="widget_round">Round %1$d/%2$d</string>
+    <string name="widget_circuit_line">%1$s · %2$d laps · %3$s km</string>
+    <string name="widget_leader">Leader %1$s · %2$s pts (+%3$s)</string>
+    <string name="widget_record">Record %1$s</string>
 </resources>

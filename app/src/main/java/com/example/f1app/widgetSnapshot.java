@@ -12,8 +12,6 @@ import java.util.List;
 /** What the home-screen widgets draw: a small copy of the data the app already loads. */
 final class widgetSnapshot {
 
-    static final int VERSION = 1;
-
     static final class Session {
         String key = "";
         long start;
@@ -48,6 +46,30 @@ final class widgetSnapshot {
     long updatedAt;
     long weatherAt;
     long standingsAt;
+    static final int VERSION = 2;
+
+    int round;
+    int totalRounds;
+    String location = "";
+    String country = "";
+    int laps;
+    double lengthKm;
+    int turns;
+    double recordSeconds;
+    String recordDriver = "";
+    int recordYear;
+
+    void copyCircuitFrom(widgetSnapshot other) {
+        location = other.location;
+        country = other.country;
+        laps = other.laps;
+        lengthKm = other.lengthKm;
+        turns = other.turns;
+        recordSeconds = other.recordSeconds;
+        recordDriver = other.recordDriver;
+        recordYear = other.recordYear;
+    }
+
     final List<Session> sessions = new ArrayList<>();
     final List<Standing> drivers = new ArrayList<>();
     final List<Standing> teams = new ArrayList<>();
@@ -62,6 +84,16 @@ final class widgetSnapshot {
             o.put("updatedAt", updatedAt);
             o.put("weatherAt", weatherAt);
             o.put("standingsAt", standingsAt);
+            o.put("round", round);
+            o.put("totalRounds", totalRounds);
+            o.put("location", location);
+            o.put("country", country);
+            o.put("laps", laps);
+            o.put("lengthKm", lengthKm);
+            o.put("turns", turns);
+            o.put("recordSeconds", recordSeconds);
+            o.put("recordDriver", recordDriver);
+            o.put("recordYear", recordYear);
 
             JSONArray s = new JSONArray();
             for (Session x : sessions) {
@@ -115,6 +147,16 @@ final class widgetSnapshot {
             r.updatedAt = o.optLong("updatedAt", 0);
             r.weatherAt = o.optLong("weatherAt", 0);
             r.standingsAt = o.optLong("standingsAt", 0);
+            r.round = o.optInt("round", 0);
+            r.totalRounds = o.optInt("totalRounds", 0);
+            r.location = o.optString("location", "");
+            r.country = o.optString("country", "");
+            r.laps = o.optInt("laps", 0);
+            r.lengthKm = o.optDouble("lengthKm", 0);
+            r.turns = o.optInt("turns", 0);
+            r.recordSeconds = o.optDouble("recordSeconds", 0);
+            r.recordDriver = o.optString("recordDriver", "");
+            r.recordYear = o.optInt("recordYear", 0);
 
             JSONArray s = o.optJSONArray("sessions");
             for (int i = 0; s != null && i < s.length(); i++) {

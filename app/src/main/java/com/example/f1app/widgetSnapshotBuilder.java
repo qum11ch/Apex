@@ -161,6 +161,8 @@ final class widgetSnapshotBuilder {
             next.raceName = raceName;
             next.circuitId = pick.child("Circuit").child("circuitId").getValue(String.class) == null
                     ? "" : pick.child("Circuit").child("circuitId").getValue(String.class);
+            next.round = intOf(pick.child("round").getValue());
+            next.totalRounds = (int) schedule.getChildrenCount();
         }
 
         final boolean askWeather = pick != null && !next.circuitId.isEmpty() && (force || !sameRace
@@ -182,8 +184,8 @@ final class widgetSnapshotBuilder {
             }
         };
 
-        if (askWeather) {
-            loadWeather(app, sessions, next.circuitId, result, join);
+        if (pick != null && !next.circuitId.isEmpty()) {
+            loadCircuit(app, next, askWeather ? sessions : null, result, join);
         } else {
             join.run();
         }
@@ -205,21 +207,32 @@ final class widgetSnapshotBuilder {
         }
     }
 
-    private static void loadWeather(Context app, List<raceWeekendStatus.SessionInfo> sessions,
-                                    String circuitId, Result result, Runnable join) {
-        FirebaseDatabase.getInstance().getReference().child("circuits").child(circuitId)
+    private static void loadCircuit(Context app, widgetSnapshot next,
+                                    List<raceWeekendStatus.SessionInfo> weatherSessions,
+                                    Result result, Runnable join) {
+        FirebaseDatabase.getInstance().getReference().child("circuits").child(next.circuitId)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        next.location = text(snapshot.child("location").getValue());
+                        next.country = text(snapshot.child("country").getValue());
+                        next.laps = intOf(snapshot.child("lapsCount").getValue());
+                        next.turns = intOf(snapshot.child("turnsCount").getValue());
+                        next.lengthKm = doubleOf(snapshot.child("length").getValue());
+                        next.recordSeconds = doubleOf(snapshot.child("lapRecordTime").getValue());
+                        next.recordDriver = text(snapshot.child("lapRecordDriver").getValue());
+                        next.recordYear = intOf(snapshot.child("lapRecordYear").getValue());
+
                         Object lat = snapshot.child("lat").getValue();
                         Object lng = snapshot.child("lng").getValue();
 
-                        if (!(lat instanceof Number) || !(lng instanceof Number)) {
+                        if (weatherSessions == null || !(lat instanceof Number)
+                                || !(lng instanceof Number)) {
                             join.run();
                             return;
                         }
 
-                        weekendWeather.load(app, sessions, ((Number) lat).doubleValue(),
+                        weekendWeather.load(app, weatherSessions, ((Number) lat).doubleValue(),
                                 ((Number) lng).doubleValue(), (map, note) -> {
                                     result.weather = map;
                                     join.run();
@@ -231,6 +244,34 @@ final class widgetSnapshotBuilder {
                         join.run();
                     }
                 });
+    }
+
+    private static String text(Object value) {
+        return value == null ? "" : String.valueOf(value);
+    }
+
+    private static int intOf(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).intValue();
+        }
+
+        try {
+            return Integer.parseInt(text(value).trim());
+        } catch (NumberFormatException error) {
+            return 0;
+        }
+    }
+
+    private static double doubleOf(Object value) {
+        if (value instanceof Number) {
+            return ((Number) value).doubleValue();
+        }
+
+        try {
+            return Double.parseDouble(text(value).trim());
+        } catch (NumberFormatException error) {
+            return 0;
+        }
     }
 
     private static void assemble(Context app, widgetSnapshot next, widgetSnapshot old,
@@ -267,6 +308,10 @@ final class widgetSnapshotBuilder {
 
                 next.sessions.add(x);
             }
+        }
+
+        if (sameRace && next.laps == 0 && old.laps > 0) {
+            next.copyCircuitFrom(old);
         }
 
         boolean weatherFresh = result.weather != null && !result.weather.isEmpty();
